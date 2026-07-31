@@ -6,38 +6,35 @@
 CREATE OR REPLACE FUNCTION generate_student_code()
 RETURNS TEXT AS $$
 DECLARE
-next_num INTEGER;
-year_part TEXT;
+    next_num INTEGER;
+    year_part TEXT;
 BEGIN
-year_part := to_char(current_date, 'YY');
+    year_part := to_char(current_date, 'YY');
 
-```
-SELECT COALESCE(MAX(CAST(RIGHT(student_code,4) AS INTEGER)),0)+1
-INTO next_num
-FROM students
-WHERE student_code LIKE 'NG' || year_part || '%';
+    SELECT COALESCE(MAX(CAST(RIGHT(student_code,4) AS INTEGER)),0)+1
+    INTO next_num
+    FROM students
+    WHERE student_code LIKE 'NG' || year_part || '%';
 
-RETURN 'NG' || year_part || LPAD(next_num::TEXT,4,'0');
-```
-
+    RETURN 'NG' || year_part || LPAD(next_num::TEXT,4,'0');
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
-NEW.updated_at = now();
-RETURN NEW;
+    NEW.updated_at = now();
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION set_student_code()
 RETURNS TRIGGER AS $$
 BEGIN
-IF NEW.student_code IS NULL OR NEW.student_code = '' THEN
-NEW.student_code := generate_student_code();
-END IF;
-RETURN NEW;
+    IF NEW.student_code IS NULL OR NEW.student_code = '' THEN
+        NEW.student_code := generate_student_code();
+    END IF;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
