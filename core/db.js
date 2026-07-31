@@ -1,51 +1,10 @@
-/**
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-* NEW GLOBUS OFFICE ERP v3.0
-* Database Connection
-  */
+const SUPABASE_URL = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
 
-import { CONFIG } from './config.js';
-
-let supabase = null;
-
-export async function initDatabase() {
-if (supabase) return supabase;
-
-```
-if (typeof window.supabase === 'undefined') {
-    await loadSupabase();
-}
-
-supabase = window.supabase.createClient(
-    CONFIG.supabase.url,
-    CONFIG.supabase.anonKey
-);
-
-return supabase;
-```
-
-}
-
-async function loadSupabase() {
-return new Promise((resolve, reject) => {
-const script = document.createElement('script');
-script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-
-```
-    script.onload = resolve;
-    script.onerror = reject;
-
-    document.head.appendChild(script);
-});
-```
-
-}
+export const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export async function getDB() {
-return await initDatabase();
-}
-
-export async function query(table) {
-const db = await getDB();
-return db.from(table);
+return db;
 }
