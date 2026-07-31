@@ -1,9 +1,3 @@
-/**
-
-* NEW GLOBUS OFFICE ERP v3.0
-* Login Controller
-  */
-
 import { login } from '../../core/auth.js';
 
 const form = document.getElementById('login-form');
@@ -27,7 +21,7 @@ if (!result.success) {
     return;
 }
 
-window.location.href = 'dashboard.html';
+window.location.href = '../../dashboard.html';
 ```
 
 });
