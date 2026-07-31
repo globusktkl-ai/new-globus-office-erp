@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - NEW GLOBUS OFFICE ERP</title>
+
+```
+<style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+        font-family:Arial,Helvetica,sans-serif;
+        background:#f4f6f9;
+    }
+    header{
+        background:#1a3a5c;
+        color:#fff;
+        padding:16px 24px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    }
+    header h1{
+        font-size:22px;
+    }
+    header button{
+        padding:10px 18px;
+        border:none;
+        border-radius:8px;
+        background:#fff;
+        color:#1a3a5c;
+        cursor:pointer;
+        font-weight:600;
+    }
+    .container{
+        padding:24px;
+    }
+    .cards{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:20px;
+    }
+    .card{
+        background:#fff;
+        padding:24px;
+        border-radius:14px;
+        box-shadow:0 6px 18px rgba(0,0,0,.08);
+    }
+    .card h3{
+        color:#666;
+        margin-bottom:10px;
+        font-size:15px;
+    }
+    .value{
+        font-size:32px;
+        font-weight:700;
+        color:#1a3a5c;
+    }
+</style>
+```
+
+</head>
+<body>
+
+<header>
+    <h1>NEW GLOBUS OFFICE ERP</h1>
+    <button id="logout-btn">Logout</button>
+</header>
+
+<div class="container">
+    <div class="cards">
+
+```
+    <div class="card">
+        <h3>Total Students</h3>
+        <div class="value" id="total-students">0</div>
+    </div>
+
+    <div class="card">
+        <h3>Today's Collection</h3>
+        <div class="value" id="today-collection">₹0</div>
+    </div>
+
+    <div class="card">
+        <h3>Pending Fees</h3>
+        <div class="value" id="pending-fees">₹0</div>
+    </div>
+
+    <div class="card">
+        <h3>Active Courses</h3>
+        <div class="value" id="active-courses">0</div>
+    </div>
+
+</div>
+```
+
+</div>
+
+<script type="module">
+import { requireAuth, logout } from './core/auth.js';
+
+requireAuth();
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+    logout();
+    window.location.href = 'login.html';
+});
+</script>
+
+</body>
+</html>
