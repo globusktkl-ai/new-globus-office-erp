@@ -1,8 +1,8 @@
 import { login } from '../../core/auth.js';
 
 const form = document.getElementById('login-form');
-const email = document.getElementById('email');
-const password = document.getElementById('password');
+const emailInput = document.getElementById('email');
+const passwordInput = document.getElementById('password');
 const errorBox = document.getElementById('login-error');
 
 form.addEventListener('submit', async (e) => {
@@ -11,10 +11,10 @@ e.preventDefault();
 ```
 errorBox.textContent = '';
 
-const result = await login(
-    email.value.trim(),
-    password.value
-);
+const email = emailInput.value.trim();
+const password = passwordInput.value;
+
+const result = await login(email, password);
 
 if (!result.success) {
     errorBox.textContent = result.message;
