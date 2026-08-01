@@ -1,174 +1,137 @@
 -- ============================================================
 -- NEW GLOBUS OFFICE ERP v3.0
--- Professional Office ERP Database Schema
+-- SCHEMA: Core Tables
 -- ============================================================
 
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+-- Enable UUID extension (if not already enabled)
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ============================================================
--- INSTITUTE SETTINGS
+-- 1. INSTITUTE SETTINGS (Institute details)
 -- ============================================================
-
 CREATE TABLE institute_settings (
-id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-institute_name TEXT NOT NULL,
-tagline TEXT,
-address TEXT,
-city TEXT,
-district TEXT,
-state TEXT,
-pincode TEXT,
-phone TEXT,
-whatsapp TEXT,
-email TEXT,
-website TEXT,
-logo_url TEXT,
-primary_color TEXT DEFAULT '#1A3A5C',
-secondary_color TEXT DEFAULT '#4A90D9',
-currency_symbol TEXT DEFAULT '₹',
-financial_year TEXT DEFAULT '2026-27',
-created_at TIMESTAMPTZ DEFAULT now(),
-updated_at TIMESTAMPTZ DEFAULT now()
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    institute_name TEXT NOT NULL DEFAULT 'New Globus Office ERP',
+    tagline TEXT DEFAULT 'Professional Office Management System',
+    financial_year TEXT DEFAULT '2026-27',
+    logo_url TEXT DEFAULT '',
+    address TEXT DEFAULT '',
+    phone TEXT DEFAULT '',
+    email TEXT DEFAULT '',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ============================================================
--- USER ROLES
+-- 2. USERS (Linked to Supabase Auth)
 -- ============================================================
-
-CREATE TABLE roles (
-id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-role_name TEXT UNIQUE NOT NULL,
-description TEXT,
-created_at TIMESTAMPTZ DEFAULT now()
-);
-
-INSERT INTO roles (role_name, description) VALUES
-('super_admin','Full system access'),
-('office_admin','Office management'),
-('accounts','Fee and accounts'),
-('reception','Admissions only');
-
--- ============================================================
--- USERS
--- ============================================================
-
 CREATE TABLE users (
-id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-full_name TEXT NOT NULL,
-email TEXT UNIQUE NOT NULL,
-password_hash TEXT NOT NULL,
-role_id UUID REFERENCES roles(id),
-phone TEXT,
-is_active BOOLEAN DEFAULT true,
-created_at TIMESTAMPTZ DEFAULT now(),
-updated_at TIMESTAMPTZ DEFAULT now()
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    role TEXT NOT NULL DEFAULT 'staff' CHECK (role IN ('super_admin', 'admin', 'staff')),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_users_email ON users(email);
-
 -- ============================================================
--- COURSES
+-- 3. COURSES
 -- ============================================================
-
 CREATE TABLE courses (
-id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-course_name TEXT NOT NULL,
-course_code TEXT UNIQUE NOT NULL,
-duration_months INTEGER DEFAULT 0,
-total_fee NUMERIC(12,2) DEFAULT 0,
-description TEXT,
-is_active BOOLEAN DEFAULT true,
-created_at TIMESTAMPTZ DEFAULT now(),
-updated_at TIMESTAMPTZ DEFAULT now()
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    course_name TEXT NOT NULL,
+    course_code TEXT UNIQUE NOT NULL,
+    duration_months INTEGER NOT NULL DEFAULT 6,
+    total_fee DECIMAL(10,2) NOT NULL DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_courses_name ON courses(course_name);
-
 -- ============================================================
--- BATCHES
+-- 4. BATCHES
 -- ============================================================
-
 CREATE TABLE batches (
-id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-batch_name TEXT NOT NULL,
-course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
-start_date DATE,
-end_date DATE,
-status TEXT DEFAULT 'Active',
-created_at TIMESTAMPTZ DEFAULT now(),
-updated_at TIMESTAMPTZ DEFAULT now()
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    batch_name TEXT NOT NULL,
+    batch_code TEXT UNIQUE NOT NULL,
+    course_id UUID NOT NULL REFERENCES courses(id) ON DELETE RESTRICT,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    capacity INTEGER DEFAULT 30,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_batches_course ON batches(course_id);
-
 -- ============================================================
--- STUDENTS
+-- 5. STUDENTS
 -- ============================================================
-
 CREATE TABLE students (
-id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-student_code TEXT UNIQUE NOT NULL,
-full_name TEXT NOT NULL,
-gender TEXT,
-date_of_birth DATE,
-phone TEXT NOT NULL,
-whatsapp TEXT,
-email TEXT,
-address TEXT,
-city TEXT,
-district TEXT,
-state TEXT,
-pincode TEXT,
-qualification TEXT,
-admission_date DATE DEFAULT CURRENT_DATE,
-course_id UUID REFERENCES courses(id),
-batch_id UUID REFERENCES batches(id),
-total_fee NUMERIC(12,2) DEFAULT 0,
-discount NUMERIC(12,2) DEFAULT 0,
-paid_amount NUMERIC(12,2) DEFAULT 0,
-balance_amount NUMERIC(12,2) DEFAULT 0,
-photo_url TEXT,
-status TEXT DEFAULT 'Active',
-remarks TEXT,
-is_deleted BOOLEAN DEFAULT false,
-created_by UUID REFERENCES users(id),
-created_at TIMESTAMPTZ DEFAULT now(),
-updated_at TIMESTAMPTZ DEFAULT now()
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    student_code TEXT UNIQUE NOT NULL, -- Auto-generated by trigger
+    full_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    address TEXT,
+    date_of_birth DATE,
+    gender TEXT CHECK (gender IN ('Male', 'Female', 'Other')),
+    course_id UUID NOT NULL REFERENCES courses(id) ON DELETE RESTRICT,
+    batch_id UUID NOT NULL REFERENCES batches(id) ON DELETE RESTRICT,
+    enrollment_date DATE DEFAULT CURRENT_DATE,
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'completed', 'dropped')),
+    guardian_name TEXT,
+    guardian_phone TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- ============================================================
+-- 6. FEE PAYMENTS
+-- ============================================================
+CREATE TABLE fee_payments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    student_id UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+    amount DECIMAL(10,2) NOT NULL,
+    paid_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    payment_mode TEXT NOT NULL CHECK (payment_mode IN ('cash', 'online', 'bank')),
+    transaction_id TEXT,
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- 7. RECEIPTS (Optional PDF storage link)
+-- ============================================================
+CREATE TABLE receipts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    receipt_no TEXT UNIQUE NOT NULL, -- Auto-generated
+    student_id UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+    fee_payment_id UUID NOT NULL REFERENCES fee_payments(id) ON DELETE CASCADE,
+    receipt_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    pdf_url TEXT DEFAULT '',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- INDEXES (For faster queries)
+-- ============================================================
 CREATE INDEX idx_students_code ON students(student_code);
-CREATE INDEX idx_students_name ON students(full_name);
-CREATE INDEX idx_students_phone ON students(phone);
 CREATE INDEX idx_students_course ON students(course_id);
+CREATE INDEX idx_students_batch ON students(batch_id);
+CREATE INDEX idx_payments_student ON fee_payments(student_id);
+CREATE INDEX idx_payments_date ON fee_payments(paid_date);
+CREATE INDEX idx_receipts_student ON receipts(student_id);
 
 -- ============================================================
--- UPDATED_AT TRIGGER
+-- ENABLE RLS (Row Level Security) - Policies later
 -- ============================================================
-
-CREATE OR REPLACE FUNCTION update_updated_at()
-RETURNS TRIGGER AS $$
-BEGIN
-NEW.updated_at = now();
-RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_institute_settings
-BEFORE UPDATE ON institute_settings
-FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
-CREATE TRIGGER trg_users
-BEFORE UPDATE ON users
-FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
-CREATE TRIGGER trg_courses
-BEFORE UPDATE ON courses
-FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
-CREATE TRIGGER trg_batches
-BEFORE UPDATE ON batches
-FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-
-CREATE TRIGGER trg_students
-BEFORE UPDATE ON students
-FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+ALTER TABLE institute_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE batches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE students ENABLE ROW LEVEL SECURITY;
+ALTER TABLE fee_payments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE receipts ENABLE ROW LEVEL SECURITY;
