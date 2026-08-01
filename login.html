@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Globus Office ERP</title>
+    <!-- Link to our global CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Login page specific layout for perfect centering */
+        body {
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-dark); /* Professional dark background */
+        }
+        .login-wrapper {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+        }
+        .login-card {
+            text-align: center;
+        }
+        .login-card h2 {
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+        .login-card p {
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        .text-left {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="card login-card">
+            <h2>Globus ERP</h2>
+            <p>Enter your credentials to access the system</p>
+
+            <!-- Alert Box for Errors/Success -->
+            <div id="alertMessage" class="alert hidden"></div>
+
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div class="form-group text-left">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" required placeholder="admin@globus.com">
+                </div>
+                <div class="form-group text-left">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-control" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" id="loginBtn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Authentication JavaScript (Module) -->
+    <script type="module">
+        // Import Supabase client
+        import { supabase } from './assets/js/supabase-config.js';
+
+        // Get DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const alertMessage = document.getElementById('alertMessage');
+
+        // 1. Check if user is already logged in
+        async function checkSession() {
+            const { data, error } = await supabase.auth.getSession();
+            if (data.session) {
+                // Already logged in, redirect to dashboard
+                window.location.href = 'dashboard.html';
+            }
+        }
+        checkSession();
+
+        // Utility function to show alerts
+        function showAlert(message, isError = true) {
+            alertMessage.textContent = message;
+            alertMessage.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
+            alertMessage.style.display = 'block';
+        }
+
+        // 2. Handle Login Form Submit
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // UI Loading state
+            const originalBtnText = loginBtn.textContent;
+            loginBtn.textContent = 'Authenticating...';
+            loginBtn.disabled = true;
+            alertMessage.style.display = 'none';
+
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            try {
+                // Supabase login request
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) throw error;
+
+                // Success
+                showAlert('Login successful! Redirecting...', false);
+                
+                // Redirect to dashboard after 1 second
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+
+            } catch (error) {
+                // Error handling
+                showAlert(error.message || 'Invalid login credentials.');
+                loginBtn.textContent = originalBtnText;
+                loginBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
