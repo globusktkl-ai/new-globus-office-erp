@@ -143,7 +143,6 @@
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) window.location.href = 'login.html';
             else {
-                // Set default date to today
                 document.getElementById('joinDate').valueAsDate = new Date();
                 loadDependencies();
             }
@@ -156,7 +155,7 @@
             alertMessage.classList.remove('hidden');
         }
 
-        // 2. Load Courses and Batches from DB
+        // 2. Load Courses and ALL Batches from DB
         async function loadDependencies() {
             try {
                 // Load Active Courses
@@ -169,9 +168,9 @@
                     courseSelect.add(new Option(c.course_name, c.id));
                 });
 
-                // Load Ongoing Batches
+                // Load ALL Batches (Removed the 'ongoing' filter so user can select any for demo)
                 const { data: batches, error: batchErr } = await supabase
-                    .from('batches').select('id, batch_name, course_id').eq('status', 'ongoing');
+                    .from('batches').select('id, batch_name, course_id, status');
                 if (batchErr) throw batchErr;
                 
                 allBatches = batches || [];
@@ -186,14 +185,30 @@
             const selectedCourseId = e.target.value;
             const batchSelect = document.getElementById('batch');
             
-            // Reset Batch Dropdown
-            batchSelect.innerHTML = '<option value="">-- Choose Batch --</option>';
+            // Clear current options
+            batchSelect.innerHTML = '';
+            
+            if (!selectedCourseId) {
+                batchSelect.innerHTML = '<option value="">-- Choose Batch --</option>';
+                return;
+            }
             
             // Filter batches for the selected course
             const filteredBatches = allBatches.filter(b => b.course_id === selectedCourseId);
-            filteredBatches.forEach(b => {
-                batchSelect.add(new Option(b.batch_name, b.id));
-            });
+            
+            if (filteredBatches.length === 0) {
+                // If no batches exist for this course
+                batchSelect.innerHTML = '<option value="">-- No Batches Available for this Course --</option>';
+                // Clear the required attribute so it doesn't block the form if they choose a course without batches
+                // But generally, a student needs a batch. For this demo, let's keep it required but inform them.
+            } else {
+                batchSelect.innerHTML = '<option value="">-- Choose Batch --</option>';
+                filteredBatches.forEach(b => {
+                    // Show if batch is completed just for info
+                    const statusText = b.status !== 'ongoing' ? ` (${b.status})` : '';
+                    batchSelect.add(new Option(b.batch_name + statusText, b.id));
+                });
+            }
         });
 
         // 4. Handle Form Submission
@@ -201,6 +216,13 @@
             e.preventDefault();
             alertMessage.classList.add('hidden');
             
+            // Check if batch is empty because of no batches
+            const batchValue = document.getElementById('batch').value;
+            if (!batchValue) {
+                showAlert('Please select a valid Batch. If no batch is available, create one first in the database.');
+                return;
+            }
+
             const originalBtnText = submitBtn.textContent;
             submitBtn.textContent = 'Saving...';
             submitBtn.disabled = true;
@@ -213,7 +235,7 @@
                 email: document.getElementById('email').value || null,
                 address: document.getElementById('address').value || null,
                 course_id: document.getElementById('course').value,
-                batch_id: document.getElementById('batch').value,
+                batch_id: batchValue,
                 status: 'active'
             };
 
@@ -223,7 +245,6 @@
                     .insert([studentData]);
 
                 if (error) {
-                    // Handle Unique constraint error for Register Number
                     if (error.code === '23505') {
                         throw new Error('This Register Number already exists!');
                     }
