@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Admission - Globus Office ERP</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .navbar {
+            background-color: var(--white);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar-brand { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
+        .navbar-menu a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .navbar-menu a:hover, .navbar-menu a.active { color: var(--primary-dark); }
+        
+        .main-content { padding: 32px 24px; max-width: 900px; margin: 0 auto; }
+        .page-header { margin-bottom: 24px; }
+        
+        /* Form Grid Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .full-width { grid-column: span 2; }
+        
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
+        
+        /* Select Dropdown Styling */
+        select.form-control {
+            background-color: var(--white);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">Globus ERP</div>
+        <div class="navbar-menu">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="students.html" class="active">Students</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h2>New Student Admission</h2>
+            <p>Fill in the details to enroll a new student.</p>
+        </div>
+
+        <div class="card">
+            <div id="alertMessage" class="alert hidden"></div>
+
+            <form id="admissionForm">
+                <div class="form-grid">
+                    <!-- Register Number -->
+                    <div class="form-group">
+                        <label class="form-label">Register Number *</label>
+                        <input type="text" id="regNo" class="form-control" required placeholder="e.g. REG-1001">
+                    </div>
+                    
+                    <!-- Joining Date -->
+                    <div class="form-group">
+                        <label class="form-label">Joining Date *</label>
+                        <input type="date" id="joinDate" class="form-control" required>
+                    </div>
+
+                    <!-- Full Name -->
+                    <div class="form-group full-width">
+                        <label class="form-label">Student Full Name *</label>
+                        <input type="text" id="fullName" class="form-control" required placeholder="Enter full name">
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="text" id="phone" class="form-control" required placeholder="10-digit mobile number">
+                    </div>
+
+                    <!-- Email Address -->
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="email" class="form-control" placeholder="student@example.com">
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-group full-width">
+                        <label class="form-label">Residential Address</label>
+                        <input type="text" id="address" class="form-control" placeholder="House name, Street, City">
+                    </div>
+
+                    <!-- Course Selection -->
+                    <div class="form-group">
+                        <label class="form-label">Select Course *</label>
+                        <select id="course" class="form-control" required>
+                            <option value="">-- Choose Course --</option>
+                        </select>
+                    </div>
+
+                    <!-- Batch Selection -->
+                    <div class="form-group">
+                        <label class="form-label">Select Batch *</label>
+                        <select id="batch" class="form-control" required>
+                            <option value="">-- Choose Batch --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4" style="text-align: right;">
+                    <button type="button" class="btn" style="background: transparent; color: var(--text-muted); border: 1px solid var(--border); margin-right: 10px;" onclick="window.location.href='students.html'">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Save Admission</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+
+        let allBatches = []; // To store batches for filtering
+        const alertMessage = document.getElementById('alertMessage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // 1. Session Check
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) window.location.href = 'login.html';
+            else {
+                // Set default date to today
+                document.getElementById('joinDate').valueAsDate = new Date();
+                loadDependencies();
+            }
+        }
+
+        // Utility to show alerts
+        function showAlert(msg, isError = true) {
+            alertMessage.textContent = msg;
+            alertMessage.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
+            alertMessage.classList.remove('hidden');
+        }
+
+        // 2. Load Courses and Batches from DB
+        async function loadDependencies() {
+            try {
+                // Load Active Courses
+                const { data: courses, error: courseErr } = await supabase
+                    .from('courses').select('id, course_name').eq('status', 'active');
+                if (courseErr) throw courseErr;
+                
+                const courseSelect = document.getElementById('course');
+                courses.forEach(c => {
+                    courseSelect.add(new Option(c.course_name, c.id));
+                });
+
+                // Load Ongoing Batches
+                const { data: batches, error: batchErr } = await supabase
+                    .from('batches').select('id, batch_name, course_id').eq('status', 'ongoing');
+                if (batchErr) throw batchErr;
+                
+                allBatches = batches || [];
+            } catch (err) {
+                showAlert('Failed to load courses or batches. Check database.');
+                console.error(err);
+            }
+        }
+
+        // 3. Filter Batches when Course changes
+        document.getElementById('course').addEventListener('change', (e) => {
+            const selectedCourseId = e.target.value;
+            const batchSelect = document.getElementById('batch');
+            
+            // Reset Batch Dropdown
+            batchSelect.innerHTML = '<option value="">-- Choose Batch --</option>';
+            
+            // Filter batches for the selected course
+            const filteredBatches = allBatches.filter(b => b.course_id === selectedCourseId);
+            filteredBatches.forEach(b => {
+                batchSelect.add(new Option(b.batch_name, b.id));
+            });
+        });
+
+        // 4. Handle Form Submission
+        document.getElementById('admissionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alertMessage.classList.add('hidden');
+            
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+
+            const studentData = {
+                register_number: document.getElementById('regNo').value,
+                joining_date: document.getElementById('joinDate').value,
+                full_name: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value || null,
+                address: document.getElementById('address').value || null,
+                course_id: document.getElementById('course').value,
+                batch_id: document.getElementById('batch').value,
+                status: 'active'
+            };
+
+            try {
+                const { data, error } = await supabase
+                    .from('students')
+                    .insert([studentData]);
+
+                if (error) {
+                    // Handle Unique constraint error for Register Number
+                    if (error.code === '23505') {
+                        throw new Error('This Register Number already exists!');
+                    }
+                    throw error;
+                }
+
+                showAlert('Student admitted successfully! Redirecting...', false);
+                
+                setTimeout(() => {
+                    window.location.href = 'students.html';
+                }, 1500);
+
+            } catch (err) {
+                showAlert(err.message || 'An error occurred during admission.');
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Initialize Page
+        checkAuth();
+    </script>
+</body>
+</html>
