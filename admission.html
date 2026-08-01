@@ -26,7 +26,6 @@
         .main-content { padding: 32px 24px; max-width: 900px; margin: 0 auto; }
         .page-header { margin-bottom: 24px; }
         
-        /* Form Grid Layout */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -39,7 +38,6 @@
             .full-width { grid-column: span 1; }
         }
         
-        /* Select Dropdown Styling */
         select.form-control {
             background-color: var(--white);
             cursor: pointer;
@@ -48,7 +46,6 @@
 </head>
 <body>
 
-    <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="navbar-brand">Globus ERP</div>
         <div class="navbar-menu">
@@ -57,7 +54,6 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="main-content">
         <div class="page-header">
             <h2>New Student Admission</h2>
@@ -65,59 +61,52 @@
         </div>
 
         <div class="card">
+            <!-- Alert message box for clear error tracking -->
             <div id="alertMessage" class="alert hidden"></div>
 
             <form id="admissionForm">
                 <div class="form-grid">
-                    <!-- Register Number -->
                     <div class="form-group">
                         <label class="form-label">Register Number *</label>
                         <input type="text" id="regNo" class="form-control" required placeholder="e.g. REG-1001">
                     </div>
                     
-                    <!-- Joining Date -->
                     <div class="form-group">
                         <label class="form-label">Joining Date *</label>
                         <input type="date" id="joinDate" class="form-control" required>
                     </div>
 
-                    <!-- Full Name -->
                     <div class="form-group full-width">
                         <label class="form-label">Student Full Name *</label>
                         <input type="text" id="fullName" class="form-control" required placeholder="Enter full name">
                     </div>
 
-                    <!-- Phone Number -->
                     <div class="form-group">
                         <label class="form-label">Phone Number *</label>
                         <input type="text" id="phone" class="form-control" required placeholder="10-digit mobile number">
                     </div>
 
-                    <!-- Email Address -->
                     <div class="form-group">
                         <label class="form-label">Email Address</label>
                         <input type="email" id="email" class="form-control" placeholder="student@example.com">
                     </div>
 
-                    <!-- Address -->
                     <div class="form-group full-width">
                         <label class="form-label">Residential Address</label>
                         <input type="text" id="address" class="form-control" placeholder="House name, Street, City">
                     </div>
 
-                    <!-- Course Selection -->
                     <div class="form-group">
                         <label class="form-label">Select Course *</label>
                         <select id="course" class="form-control" required>
-                            <option value="">-- Choose Course --</option>
+                            <option value="">-- Loading Courses... --</option>
                         </select>
                     </div>
 
-                    <!-- Batch Selection -->
                     <div class="form-group">
                         <label class="form-label">Select Batch *</label>
                         <select id="batch" class="form-control" required>
-                            <option value="">-- Choose Batch --</option>
+                            <option value="">-- Waiting for Course Selection --</option>
                         </select>
                     </div>
                 </div>
@@ -130,62 +119,70 @@
         </div>
     </main>
 
-    <!-- JavaScript -->
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        let allBatches = []; // To store batches for filtering
+        let allBatches = [];
         const alertMessage = document.getElementById('alertMessage');
         const submitBtn = document.getElementById('submitBtn');
+        const courseSelect = document.getElementById('course');
+        const batchSelect = document.getElementById('batch');
 
-        // 1. Session Check
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) window.location.href = 'login.html';
-            else {
+            if (!session) {
+                window.location.href = 'login.html';
+            } else {
                 document.getElementById('joinDate').valueAsDate = new Date();
                 loadDependencies();
             }
         }
 
-        // Utility to show alerts
         function showAlert(msg, isError = true) {
             alertMessage.textContent = msg;
             alertMessage.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
             alertMessage.classList.remove('hidden');
         }
 
-        // 2. Load Courses and ALL Batches from DB
+        // Modified: Very strict checking & UI updates for empty data
         async function loadDependencies() {
             try {
-                // Load Active Courses
+                // 1. Fetch Courses
                 const { data: courses, error: courseErr } = await supabase
                     .from('courses').select('id, course_name').eq('status', 'active');
-                if (courseErr) throw courseErr;
                 
-                const courseSelect = document.getElementById('course');
-                courses.forEach(c => {
-                    courseSelect.add(new Option(c.course_name, c.id));
-                });
+                if (courseErr) throw new Error("Course fetch error: " + courseErr.message);
+                
+                courseSelect.innerHTML = '<option value="">-- Choose Course --</option>';
+                
+                // If Database is empty
+                if (!courses || courses.length === 0) {
+                    courseSelect.innerHTML = '<option value="">-- No Courses in Database --</option>';
+                    showAlert('No Active Courses found! Please add courses in Supabase first.');
+                } else {
+                    courses.forEach(c => {
+                        courseSelect.add(new Option(c.course_name, c.id));
+                    });
+                }
 
-                // Load ALL Batches (Removed the 'ongoing' filter so user can select any for demo)
+                // 2. Fetch Batches
                 const { data: batches, error: batchErr } = await supabase
                     .from('batches').select('id, batch_name, course_id, status');
-                if (batchErr) throw batchErr;
+                
+                if (batchErr) throw new Error("Batch fetch error: " + batchErr.message);
                 
                 allBatches = batches || [];
+
             } catch (err) {
-                showAlert('Failed to load courses or batches. Check database.');
+                courseSelect.innerHTML = '<option value="">-- Error Loading Data --</option>';
+                showAlert('System Error: ' + err.message);
                 console.error(err);
             }
         }
 
-        // 3. Filter Batches when Course changes
-        document.getElementById('course').addEventListener('change', (e) => {
+        // When Course Changes
+        courseSelect.addEventListener('change', (e) => {
             const selectedCourseId = e.target.value;
-            const batchSelect = document.getElementById('batch');
-            
-            // Clear current options
             batchSelect.innerHTML = '';
             
             if (!selectedCourseId) {
@@ -193,33 +190,27 @@
                 return;
             }
             
-            // Filter batches for the selected course
             const filteredBatches = allBatches.filter(b => b.course_id === selectedCourseId);
             
             if (filteredBatches.length === 0) {
-                // If no batches exist for this course
                 batchSelect.innerHTML = '<option value="">-- No Batches Available for this Course --</option>';
-                // Clear the required attribute so it doesn't block the form if they choose a course without batches
-                // But generally, a student needs a batch. For this demo, let's keep it required but inform them.
             } else {
                 batchSelect.innerHTML = '<option value="">-- Choose Batch --</option>';
                 filteredBatches.forEach(b => {
-                    // Show if batch is completed just for info
                     const statusText = b.status !== 'ongoing' ? ` (${b.status})` : '';
                     batchSelect.add(new Option(b.batch_name + statusText, b.id));
                 });
             }
         });
 
-        // 4. Handle Form Submission
+        // Form Submit
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             alertMessage.classList.add('hidden');
             
-            // Check if batch is empty because of no batches
-            const batchValue = document.getElementById('batch').value;
+            const batchValue = batchSelect.value;
             if (!batchValue) {
-                showAlert('Please select a valid Batch. If no batch is available, create one first in the database.');
+                showAlert('Please select a valid Batch.');
                 return;
             }
 
@@ -234,28 +225,21 @@
                 phone: document.getElementById('phone').value,
                 email: document.getElementById('email').value || null,
                 address: document.getElementById('address').value || null,
-                course_id: document.getElementById('course').value,
+                course_id: courseSelect.value,
                 batch_id: batchValue,
                 status: 'active'
             };
 
             try {
-                const { data, error } = await supabase
-                    .from('students')
-                    .insert([studentData]);
+                const { data, error } = await supabase.from('students').insert([studentData]);
 
                 if (error) {
-                    if (error.code === '23505') {
-                        throw new Error('This Register Number already exists!');
-                    }
+                    if (error.code === '23505') throw new Error('This Register Number already exists!');
                     throw error;
                 }
 
                 showAlert('Student admitted successfully! Redirecting...', false);
-                
-                setTimeout(() => {
-                    window.location.href = 'students.html';
-                }, 1500);
+                setTimeout(() => { window.location.href = 'students.html'; }, 1500);
 
             } catch (err) {
                 showAlert(err.message || 'An error occurred during admission.');
@@ -264,7 +248,6 @@
             }
         });
 
-        // Initialize Page
         checkAuth();
     </script>
 </body>
