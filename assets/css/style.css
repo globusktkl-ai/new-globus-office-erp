@@ -1,0 +1,141 @@
+/* Google Fonts - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* GLOBAL THEME VARIABLES */
+:root {
+    --primary-dark: #1A3A5C;
+    --primary-light: #2c5885;
+    --bg-light: #F4F7F9;
+    --white: #FFFFFF;
+    --text-dark: #1E293B;
+    --text-muted: #64748B;
+    --border: #E2E8F0;
+    --error: #EF4444;
+    --success: #10B981;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* CARDS & CONTAINERS */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    width: 100%;
+}
+
+.card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 32px;
+    border: 1px solid var(--border);
+}
+
+/* TYPOGRAPHY */
+h1, h2, h3, h4 {
+    color: var(--primary-dark);
+    font-weight: 600;
+}
+
+p {
+    color: var(--text-muted);
+}
+
+/* FORMS & INPUTS */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-dark);
+    box-shadow: 0 0 0 3px rgba(26, 58, 92, 0.15);
+}
+
+/* BUTTONS */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: var(--primary-dark);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-light);
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* ALERTS (For Error & Success Messages) */
+.alert {
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.alert-error {
+    background-color: #FEF2F2;
+    color: var(--error);
+    border: 1px solid #FECACA;
+}
+
+.alert-success {
+    background-color: #ECFDF5;
+    color: var(--success);
+    border: 1px solid #A7F3D0;
+}
+
+/* UTILITIES */
+.text-center { text-align: center; }
+.mt-4 { margin-top: 16px; }
+.mb-4 { margin-bottom: 16px; }
+.hidden { display: none !important; }
