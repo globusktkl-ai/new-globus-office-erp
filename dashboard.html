@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Globus Office ERP</title>
+    <!-- Link to global CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Dashboard specific layout styles */
+        .navbar {
+            background-color: var(--white);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        .btn-logout {
+            background-color: transparent;
+            color: var(--error);
+            border: 1px solid var(--error);
+            padding: 8px 16px;
+        }
+        .btn-logout:hover {
+            background-color: #FEF2F2;
+        }
+        
+        .main-content {
+            padding: 32px 24px;
+        }
+        
+        /* Grid for Stat Cards */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+        .stat-card {
+            padding: 24px;
+            border-left: 4px solid var(--primary-dark);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        .stat-card h3 {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">Globus ERP</div>
+        <div class="navbar-user">
+            <span id="userName" class="user-name">Loading...</span>
+            <button id="logoutBtn" class="btn btn-logout">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content container">
+        <h2>Dashboard Overview</h2>
+        <p>Welcome back! Here is what's happening today.</p>
+
+        <!-- Statistics Grid -->
+        <div class="grid-cards">
+            <div class="card stat-card">
+                <h3>Total Students</h3>
+                <div class="value" id="statStudents">0</div>
+            </div>
+            <div class="card stat-card">
+                <h3>Active Courses</h3>
+                <div class="value" id="statCourses">0</div>
+            </div>
+            <div class="card stat-card">
+                <h3>Pending Fees</h3>
+                <div class="value" id="statPendingFees">₹ 0</div>
+            </div>
+            <div class="card stat-card">
+                <h3>Today's Collection</h3>
+                <div class="value" id="statTodayCollection">₹ 0</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Authentication & Data Fetching JavaScript -->
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userNameEl = document.getElementById('userName');
+
+        // 1. Session Check (Protecting the page)
+        async function checkAuth() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            // If no session exists, kick back to login page
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Display Logged-in User's Email or Name
+            const userMeta = session.user.user_metadata;
+            userNameEl.textContent = userMeta.full_name || session.user.email;
+            
+            // Load dashboard data
+            loadDashboardData();
+        }
+
+        // 2. Fetch Dashboard Statistics
+        async function loadDashboardData() {
+            try {
+                // Fetch Active Students Count
+                const { count: studentCount } = await supabase
+                    .from('students')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'active');
+                document.getElementById('statStudents').textContent = studentCount || 0;
+
+                // Fetch Active Courses Count
+                const { count: courseCount } = await supabase
+                    .from('courses')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'active');
+                document.getElementById('statCourses').textContent = courseCount || 0;
+
+                // Fetch Today's Collection Sum
+                const todayDate = new Date().toISOString().split('T')[0];
+                const { data: collections } = await supabase
+                    .from('fee_payments')
+                    .select('amount_paid')
+                    .gte('payment_date', `${todayDate}T00:00:00Z`);
+                
+                let todayTotal = 0;
+                if (collections) {
+                    todayTotal = collections.reduce((sum, record) => sum + Number(record.amount_paid), 0);
+                }
+                document.getElementById('statTodayCollection').textContent = '₹ ' + todayTotal;
+
+                // Pending Fees (We will calculate this perfectly in Phase 3)
+                document.getElementById('statPendingFees').textContent = '₹ 0';
+
+            } catch (err) {
+                console.error('Error loading dashboard stats:', err);
+            }
+        }
+
+        // 3. Handle Logout
+        logoutBtn.addEventListener('click', async () => {
+            const { error } = await supabase.auth.signOut();
+            if (!error) {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Initialize Page
+        checkAuth();
+    </script>
+</body>
+</html>
