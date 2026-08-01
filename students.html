@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students - Globus Office ERP</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Navbar additions for navigation links */
+        .navbar {
+            background-color: var(--white);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar-brand { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
+        .navbar-menu a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .navbar-menu a:hover, .navbar-menu a.active {
+            color: var(--primary-dark);
+        }
+        .navbar-user { display: flex; align-items: center; gap: 16px; }
+        .btn-logout { background-color: transparent; color: var(--error); border: 1px solid var(--error); padding: 8px 16px; border-radius: var(--radius-md); cursor: pointer;}
+        
+        .main-content { padding: 32px 24px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        
+        /* Table Styles */
+        .table-container { padding: 0; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { padding: 16px 24px; background-color: var(--bg-light); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 14px; color: var(--text-muted); }
+        td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #F8FAFC; }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-active { background-color: #ECFDF5; color: var(--success); }
+        .badge-inactive { background-color: #F1F5F9; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">Globus ERP</div>
+        <div class="navbar-menu">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="students.html" class="active">Students</a>
+        </div>
+        <div class="navbar-user">
+            <button id="logoutBtn" class="btn-logout">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content container">
+        <div class="page-header">
+            <div>
+                <h2>Students Directory</h2>
+                <p>Manage all admitted students</p>
+            </div>
+            <!-- Redirects to admission.html (Next file we will build) -->
+            <button class="btn btn-primary" onclick="window.location.href='admission.html'">+ New Admission</button>
+        </div>
+
+        <div class="card table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reg No</th>
+                        <th>Student Name</th>
+                        <th>Phone Number</th>
+                        <th>Course Enrolled</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsTableBody">
+                    <tr><td colspan="5" class="text-center">Loading students data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+
+        // 1. Session Check
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            loadStudents();
+        }
+
+        // 2. Load Students from Database
+        async function loadStudents() {
+            const tbody = document.getElementById('studentsTableBody');
+            try {
+                // Fetch students and join with courses table to get course_name
+                const { data, error } = await supabase
+                    .from('students')
+                    .select(`
+                        register_number,
+                        full_name,
+                        phone,
+                        status,
+                        courses ( course_name )
+                    `)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                // Check if table is empty
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--text-muted);">No students found. Click on '+ New Admission' to add one.</td></tr>`;
+                    return;
+                }
+
+                // Render Data Rows
+                tbody.innerHTML = data.map(student => `
+                    <tr>
+                        <td style="font-weight: 600; color: var(--primary-dark);">${student.register_number}</td>
+                        <td style="font-weight: 500;">${student.full_name}</td>
+                        <td>${student.phone}</td>
+                        <td>${student.courses ? student.courses.course_name : 'N/A'}</td>
+                        <td>
+                            <span class="badge ${student.status === 'active' ? 'badge-active' : 'badge-inactive'}">
+                                ${student.status.toUpperCase()}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                console.error('Error fetching students:', err);
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--error);">Failed to load data. Please refresh.</td></tr>`;
+            }
+        }
+
+        // 3. Logout Handler
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
+
+        // Initialize Page
+        checkAuth();
+    </script>
+</body>
+</html>
