@@ -176,10 +176,10 @@
 
     <script>
         // ============================================================
-        // SUPABASE CONFIGURATION (REPLACE WITH YOUR OWN VALUES!)
+        // SUPABASE CONFIGURATION (നിങ്ങളുടെ Credentials ഇതിൽ ഉൾപ്പെടുത്തിയിരിക്കുന്നു)
         // ============================================================
-        const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-        const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+        const SUPABASE_URL = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
 
         // Initialize Supabase Client
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -199,6 +199,7 @@
         function showMessage(text, type = 'error') {
             messageDiv.textContent = text;
             messageDiv.className = type; // 'error' or 'success'
+            messageDiv.style.display = 'block';
         }
 
         function clearMessage() {
@@ -233,7 +234,6 @@
                 });
 
                 if (error) {
-                    // Handle specific Supabase errors
                     if (error.message.includes('Invalid login credentials')) {
                         showMessage('❌ Invalid email or password. Please try again.', 'error');
                     } else if (error.message.includes('Email not confirmed')) {
@@ -250,13 +250,13 @@
                 if (data && data.session) {
                     showMessage('✅ Login successful! Redirecting...', 'success');
                     
-                    // Save session info to localStorage (optional, but useful)
+                    // Save session info to localStorage
                     localStorage.setItem('supabaseSession', JSON.stringify(data.session));
                     
                     // Redirect to dashboard after a short delay
                     setTimeout(() => {
                         window.location.href = 'dashboard.html';
-                    }, 1000);
+                    }, 1500);
                 } else {
                     showMessage('⚠️ Unexpected response. Please try again.', 'error');
                     loginBtn.disabled = false;
@@ -282,14 +282,9 @@
                     window.location.href = 'dashboard.html';
                 }
             } catch (e) {
-                // Silently ignore (no session)
                 console.log('No active session.');
             }
         })();
-
-        // Also check localStorage session backup
-        // (This helps if the page reloads quickly)
-        // ============================================================
     </script>
 </body>
 </html>
