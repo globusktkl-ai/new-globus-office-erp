@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Directory - Globus Technical Academy</title>
+    <title>Directory - Globus technical academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -76,12 +76,10 @@
                 const pFees = s.fee_payments ? s.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0;
                 const bal = tFee - aFee - pFees;
                 
-                // Red color for balance
                 const balColor = bal > 0 ? '#EF4444' : '#10B981';
                 const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
                 const cName = s.courses ? s.courses.course_name : 'N/A';
 
-                // Photo Logic
                 let avatarUrl = s.photo_url;
                 if (!avatarUrl) {
                     avatarUrl = s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy';
@@ -89,6 +87,7 @@
 
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
+                // ഡിലീറ്റ് ബട്ടണിൽ id-യോടൊപ്പം register_number കൂടി പാസ് ചെയ്യുന്നു
                 card.innerHTML = `
                     <div class="smc-header">
                         <div class="smc-header-left">
@@ -109,7 +108,7 @@
                     <div class="smc-actions">
                         <button onclick="alert('View details of ${s.full_name}')" class="smc-btn btn-view">View</button>
                         <button onclick="alert('Edit details of ${s.full_name}')" class="smc-btn btn-edit">Edit</button>
-                        <button onclick="deleteStudent('${s.id}')" class="smc-btn btn-delete">Delete</button>
+                        <button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="smc-btn btn-delete">Delete</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -140,11 +139,19 @@
         document.getElementById('filterCourse').addEventListener('change', applyFilters);
         document.getElementById('filterFee').addEventListener('change', applyFilters);
 
-        window.deleteStudent = async function(studentId) {
-            if (confirm("Are you sure you want to delete this student?")) {
+        // പുതിയ ഡിലീറ്റ് ഫംഗ്ഷൻ (Verify Register Number)
+        window.deleteStudent = async function(studentId, regNo) {
+            const userInput = prompt(`⚠️ WARNING: Deletion is permanent.\nTo confirm, please type the register number: ${regNo}`);
+            
+            if (userInput !== null && userInput.trim() === regNo) {
+                // രജിസ്റ്റർ നമ്പർ ശരിയാണെങ്കിൽ മാത്രം ഡിലീറ്റ് ചെയ്യുക
                 await supabase.from('fee_payments').delete().eq('student_id', studentId);
                 await supabase.from('students').delete().eq('id', studentId);
+                alert('Student deleted successfully.');
                 fetchStudents(); 
+            } else if (userInput !== null) {
+                // തെറ്റായി ടൈപ്പ് ചെയ്താൽ മുന്നറിയിപ്പ് നൽകുക
+                alert('Register number does not match. Deletion cancelled.');
             }
         };
 
