@@ -6,113 +6,99 @@
     <title>New Admission - Globus Office ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        .navbar {
-            background-color: var(--white);
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .navbar { background-color: var(--white); padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .navbar-brand { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
-        .navbar-menu a {
-            margin-right: 20px;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+        .navbar-menu a { margin-right: 20px; text-decoration: none; color: var(--text-muted); font-weight: 500; }
         .navbar-menu a:hover, .navbar-menu a.active { color: var(--primary-dark); }
-        
-        .main-content { padding: 32px 24px; max-width: 900px; margin: 0 auto; }
-        .page-header { margin-bottom: 24px; }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+        .main-content { padding: 32px 24px; max-width: 800px; margin: 0 auto; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-width { grid-column: span 2; }
-        
-        @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .full-width { grid-column: span 1; }
-        }
-        
-        select.form-control {
-            background-color: var(--white);
-            cursor: pointer;
-        }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
     </style>
 </head>
 <body>
-
     <nav class="navbar">
         <div class="navbar-brand">Globus ERP</div>
         <div class="navbar-menu">
             <a href="dashboard.html">Dashboard</a>
             <a href="students.html" class="active">Students</a>
+            <a href="fees.html">Fees</a>
         </div>
     </nav>
 
     <main class="main-content">
-        <div class="page-header">
-            <h2>New Student Admission</h2>
-            <p>Fill in the details to enroll a new student.</p>
+        <div class="page-header" style="margin-bottom:24px;">
+            <h2>New Admission</h2>
         </div>
 
         <div class="card">
-            <!-- Alert message box for clear error tracking -->
             <div id="alertMessage" class="alert hidden"></div>
-
             <form id="admissionForm">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label class="form-label">Register Number *</label>
-                        <input type="text" id="regNo" class="form-control" required placeholder="e.g. REG-1001">
+                        <label class="form-label">Joining Date *</label>
+                        <input type="date" id="admissionDate" class="form-control" required>
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Joining Date *</label>
-                        <input type="date" id="joinDate" class="form-control" required>
+                        <label class="form-label">Qualification</label>
+                        <select id="qualification" class="form-control">
+                            <option value="No Qualification">-- Select Qualification --</option>
+                            <option value="SSLC">SSLC</option>
+                            <option value="Plus Two">Plus Two</option>
+                            <option value="Degree">Degree</option>
+                        </select>
                     </div>
 
                     <div class="form-group full-width">
                         <label class="form-label">Student Full Name *</label>
-                        <input type="text" id="fullName" class="form-control" required placeholder="Enter full name">
+                        <input type="text" id="fullName" class="form-control" required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Phone Number *</label>
-                        <input type="text" id="phone" class="form-control" required placeholder="10-digit mobile number">
+                        <input type="tel" id="phone" class="form-control" required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Email Address</label>
-                        <input type="email" id="email" class="form-control" placeholder="student@example.com">
+                        <input type="email" id="email" class="form-control">
                     </div>
 
                     <div class="form-group full-width">
-                        <label class="form-label">Residential Address</label>
-                        <input type="text" id="address" class="form-control" placeholder="House name, Street, City">
-                    </div>
-
-                    <div class="form-group">
                         <label class="form-label">Select Course *</label>
-                        <select id="course" class="form-control" required>
+                        <select id="courseId" class="form-control" required>
                             <option value="">-- Loading Courses... --</option>
                         </select>
                     </div>
 
                     <div class="form-group">
+                        <label class="form-label">Total Course Fee (₹) *</label>
+                        <input type="number" id="totalFee" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Admission Fee Paid Now (₹)</label>
+                        <input type="number" id="admissionFee" class="form-control" value="0" min="0">
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label">Select Batch *</label>
-                        <select id="batch" class="form-control" required>
-                            <option value="">-- Waiting for Course Selection --</option>
+                        <select id="batchId" class="form-control" required>
+                            <option value="">-- Loading Batches... --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select id="gender" class="form-control">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                 </div>
-
                 <div class="form-group mt-4" style="text-align: right;">
-                    <button type="button" class="btn" style="background: transparent; color: var(--text-muted); border: 1px solid var(--border); margin-right: 10px;" onclick="window.location.href='students.html'">Cancel</button>
                     <button type="submit" class="btn btn-primary" id="submitBtn">Save Admission</button>
                 </div>
             </form>
@@ -122,133 +108,91 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        let allBatches = [];
         const alertMessage = document.getElementById('alertMessage');
         const submitBtn = document.getElementById('submitBtn');
-        const courseSelect = document.getElementById('course');
-        const batchSelect = document.getElementById('batch');
 
-        async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.href = 'login.html';
-            } else {
-                document.getElementById('joinDate').valueAsDate = new Date();
-                loadDependencies();
-            }
-        }
+        document.getElementById('admissionDate').valueAsDate = new Date();
 
-        function showAlert(msg, isError = true) {
-            alertMessage.textContent = msg;
-            alertMessage.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
-            alertMessage.classList.remove('hidden');
-        }
-
-        // Modified: Very strict checking & UI updates for empty data
         async function loadDependencies() {
             try {
-                // 1. Fetch Courses
-                const { data: courses, error: courseErr } = await supabase
-                    .from('courses').select('id, course_name').eq('status', 'active');
-                
-                if (courseErr) throw new Error("Course fetch error: " + courseErr.message);
-                
-                courseSelect.innerHTML = '<option value="">-- Choose Course --</option>';
-                
-                // If Database is empty
-                if (!courses || courses.length === 0) {
-                    courseSelect.innerHTML = '<option value="">-- No Courses in Database --</option>';
-                    showAlert('No Active Courses found! Please add courses in Supabase first.');
-                } else {
-                    courses.forEach(c => {
-                        courseSelect.add(new Option(c.course_name, c.id));
-                    });
-                }
+                // Load Courses
+                const { data: courses, error: cError } = await supabase.from('courses').select('id, course_name, fee_amount');
+                if (cError) throw cError;
+                window.courseList = courses;
+                const courseSelect = document.getElementById('courseId');
+                courseSelect.innerHTML = '<option value="">-- Select Course --</option>';
+                courses.forEach(c => courseSelect.add(new Option(c.course_name, c.id)));
 
-                // 2. Fetch Batches
-                const { data: batches, error: batchErr } = await supabase
-                    .from('batches').select('id, batch_name, course_id, status');
-                
-                if (batchErr) throw new Error("Batch fetch error: " + batchErr.message);
-                
-                allBatches = batches || [];
-
+                // Load Batches
+                const { data: batches, error: bError } = await supabase.from('batches').select('id, batch_name');
+                if (bError) throw bError;
+                const batchSelect = document.getElementById('batchId');
+                batchSelect.innerHTML = '<option value="">-- Select Batch --</option>';
+                batches.forEach(b => batchSelect.add(new Option(b.batch_name, b.id)));
             } catch (err) {
-                courseSelect.innerHTML = '<option value="">-- Error Loading Data --</option>';
-                showAlert('System Error: ' + err.message);
-                console.error(err);
+                console.error('Error fetching dependencies:', err);
             }
         }
 
-        // When Course Changes
-        courseSelect.addEventListener('change', (e) => {
-            const selectedCourseId = e.target.value;
-            batchSelect.innerHTML = '';
-            
-            if (!selectedCourseId) {
-                batchSelect.innerHTML = '<option value="">-- Choose Batch --</option>';
-                return;
-            }
-            
-            const filteredBatches = allBatches.filter(b => b.course_id === selectedCourseId);
-            
-            if (filteredBatches.length === 0) {
-                batchSelect.innerHTML = '<option value="">-- No Batches Available for this Course --</option>';
-            } else {
-                batchSelect.innerHTML = '<option value="">-- Choose Batch --</option>';
-                filteredBatches.forEach(b => {
-                    const statusText = b.status !== 'ongoing' ? ` (${b.status})` : '';
-                    batchSelect.add(new Option(b.batch_name + statusText, b.id));
-                });
-            }
+        // Auto-fill total fee when course is selected
+        document.getElementById('courseId').addEventListener('change', (e) => {
+            const selected = window.courseList?.find(c => c.id === e.target.value);
+            document.getElementById('totalFee').value = selected ? selected.fee_amount : '';
         });
 
-        // Form Submit
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alertMessage.classList.add('hidden');
-            
-            const batchValue = batchSelect.value;
-            if (!batchValue) {
-                showAlert('Please select a valid Batch.');
-                return;
-            }
-
-            const originalBtnText = submitBtn.textContent;
             submitBtn.textContent = 'Saving...';
             submitBtn.disabled = true;
 
+            const regNo = 'REG-' + Math.floor(10000 + Math.random() * 90000);
+            
             const studentData = {
-                register_number: document.getElementById('regNo').value,
-                joining_date: document.getElementById('joinDate').value,
+                register_number: regNo,
                 full_name: document.getElementById('fullName').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value || null,
-                address: document.getElementById('address').value || null,
-                course_id: courseSelect.value,
-                batch_id: batchValue,
+                phone_number: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                course_id: document.getElementById('courseId').value,
+                batch_id: document.getElementById('batchId').value,
+                admission_date: document.getElementById('admissionDate').value,
+                gender: document.getElementById('gender').value,
+                qualification: document.getElementById('qualification').value,
+                total_fee: document.getElementById('totalFee').value,
+                admission_fee: document.getElementById('admissionFee').value,
                 status: 'active'
             };
 
             try {
-                const { data, error } = await supabase.from('students').insert([studentData]);
+                // 1. Save Student
+                const { data: stuData, error: stuErr } = await supabase.from('students').insert([studentData]).select();
+                if (stuErr) throw stuErr;
 
-                if (error) {
-                    if (error.code === '23505') throw new Error('This Register Number already exists!');
-                    throw error;
+                // 2. Save Admission Fee to fee_payments if paid
+                if (studentData.admission_fee > 0 && stuData && stuData.length > 0) {
+                    const payData = {
+                        student_id: stuData[0].id,
+                        amount: studentData.admission_fee,
+                        payment_date: studentData.admission_date,
+                        payment_mode: 'Cash',
+                        remarks: 'Admission Fee Paid'
+                    };
+                    await supabase.from('fee_payments').insert([payData]);
                 }
 
-                showAlert('Student admitted successfully! Redirecting...', false);
-                setTimeout(() => { window.location.href = 'students.html'; }, 1500);
-
+                alertMessage.textContent = 'Admission Successful!';
+                alertMessage.className = 'alert alert-success';
+                alertMessage.classList.remove('hidden');
+                setTimeout(() => window.location.href = 'students.html', 1500);
             } catch (err) {
-                showAlert(err.message || 'An error occurred during admission.');
-                submitBtn.textContent = originalBtnText;
+                alertMessage.textContent = 'Error: ' + err.message;
+                alertMessage.className = 'alert alert-error';
+                alertMessage.classList.remove('hidden');
+                submitBtn.textContent = 'Save Admission';
                 submitBtn.disabled = false;
             }
         });
 
-        checkAuth();
+        loadDependencies();
     </script>
 </body>
 </html>
