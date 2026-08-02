@@ -2,92 +2,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Admission - Globus Office ERP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>New Admission - VPKTechsolutions</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        .navbar { background-color: var(--white); padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .navbar-left { display: flex; align-items: center; gap: 15px; }
-        .btn-back { text-decoration: none; padding: 6px 12px; background: #F1F5F9; color: var(--text-dark); border-radius: 4px; font-weight: 600; font-size: 14px; border: 1px solid var(--border); }
-        .btn-back:hover { background: #E2E8F0; }
-        .navbar-brand { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
-        .navbar-menu { display: flex; gap: 20px; }
-        .navbar-menu a { text-decoration: none; color: var(--text-muted); font-weight: 500; }
-        .navbar-menu a:hover, .navbar-menu a.active { color: var(--primary-dark); }
-        .navbar-user { display: flex; align-items: center; gap: 15px; }
-        .user-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
-        .btn-logout { background-color: transparent; color: var(--error); border: 1px solid var(--error); padding: 6px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; }
-        .main-content { padding: 32px 24px; max-width: 800px; margin: 0 auto; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .full-width { grid-column: span 2; }
-        .req-star { color: #ef4444; font-weight: bold; margin-left: 4px; }
-    </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-left">
-            <a href="javascript:history.back()" class="btn-back">← Back</a>
-            <div class="navbar-brand">Globus ERP</div>
+
+    <!-- Professional App Header -->
+    <nav class="app-header">
+        <div class="header-left">
+            <a href="dashboard.html" class="btn-back-icon">←</a>
+            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
         </div>
-        <div class="navbar-menu">
-            <a href="dashboard.html">Dashboard</a>
-            <a href="students.html" class="active">Students</a>
-            <a href="fees.html">Fees</a>
-        </div>
-        <div class="navbar-user">
-            <span id="userName" class="user-name">Loading...</span>
-            <button id="logoutBtn" class="btn-logout">Logout</button>
+        <div class="header-center">New Admission</div>
+        <div class="header-right">
+            <span class="user-name-small" id="userName">Loading...</span>
+            <button class="btn-logout-small" id="logoutBtn">Logout</button>
         </div>
     </nav>
 
     <main class="main-content">
-        <div class="page-header" style="margin-bottom:24px;"><h2>New Admission</h2></div>
         <div class="card">
-            <div id="alertMessage" class="alert hidden"></div>
+            <div id="alertMessage" class="alert hidden" style="margin-bottom:16px;"></div>
             <form id="admissionForm">
-                <div class="form-grid">
-                    <div class="form-group">
+                
+                <!-- Row 1: Joining Date & Qualification (Same width) -->
+                <div class="form-row-2">
+                    <div class="form-group-mobile">
                         <label class="form-label">Joining Date <span class="req-star">*</span></label>
                         <input type="date" id="admissionDate" class="form-control" required>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group-mobile">
                         <label class="form-label">Qualification <span class="req-star">*</span></label>
                         <select id="qualification" class="form-control" required>
-                            <option value="No Qualification">-- Select Qualification --</option>
+                            <option value="No Qual.">-- Select --</option>
                             <option value="SSLC">SSLC</option>
                             <option value="Plus Two">Plus Two</option>
                             <option value="Degree">Degree</option>
                         </select>
                     </div>
-                    <div class="form-group full-width">
-                        <label class="form-label">Student Full Name <span class="req-star">*</span></label>
-                        <input type="text" id="fullName" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Student Full Name <span class="req-star">*</span></label>
+                    <input type="text" id="fullName" class="form-control" placeholder="Enter full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number <span class="req-star">*</span></label>
+                    <input type="tel" id="phone" class="form-control" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Select Course <span class="req-star">*</span></label>
+                    <select id="courseId" class="form-control" required><option value="">-- Loading Courses... --</option></select>
+                </div>
+
+                <!-- Row 2: Total Fee & Admission Fee (Same width) -->
+                <div class="form-row-2">
+                    <div class="form-group-mobile">
+                        <label class="form-label">Total Course Fee <span class="req-star">*</span></label>
+                        <input type="number" id="totalFee" class="form-control" placeholder="₹" required min="0">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone Number (10 Digits) <span class="req-star">*</span></label>
-                        <input type="tel" id="phone" class="form-control" pattern="[0-9]{10}" maxlength="10" required>
+                    <div class="form-group-mobile">
+                        <label class="form-label">Admission Fee Paid</label>
+                        <input type="number" id="admissionFee" class="form-control" placeholder="₹" value="0" min="0">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" id="email" class="form-control">
-                    </div>
-                    <div class="form-group full-width">
-                        <label class="form-label">Select Course <span class="req-star">*</span></label>
-                        <select id="courseId" class="form-control" required><option value="">-- Loading Courses... --</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Total Course Fee (₹) <span class="req-star">*</span></label>
-                        <input type="number" id="totalFee" class="form-control" required min="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Admission Fee Paid Now (₹)</label>
-                        <input type="number" id="admissionFee" class="form-control" value="0" min="0">
-                    </div>
-                    <div class="form-group">
+                </div>
+
+                <!-- Row 3: Batch & Gender (Same width) -->
+                <div class="form-row-2">
+                    <div class="form-group-mobile">
                         <label class="form-label">Select Batch <span class="req-star">*</span></label>
-                        <select id="batchId" class="form-control" required><option value="">-- Loading Batches... --</option></select>
+                        <select id="batchId" class="form-control" required><option value="">-- Loading... --</option></select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group-mobile">
                         <label class="form-label">Gender <span class="req-star">*</span></label>
                         <select id="gender" class="form-control" required>
                             <option value="Male">Male</option>
@@ -96,7 +85,8 @@
                         </select>
                     </div>
                 </div>
-                <div class="form-group mt-4" style="text-align: right;">
+
+                <div class="form-group mt-4">
                     <button type="submit" class="btn btn-primary" id="submitBtn">Save Admission</button>
                 </div>
             </form>
@@ -106,16 +96,12 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        const alertMessage = document.getElementById('alertMessage');
-        const submitBtn = document.getElementById('submitBtn');
-        const userNameEl = document.getElementById('userName');
-
         document.getElementById('admissionDate').valueAsDate = new Date();
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            userNameEl.textContent = session.user.user_metadata.full_name || session.user.email;
+            document.getElementById('userName').textContent = session.user.user_metadata.full_name || session.user.email.split('@')[0];
             loadDependencies();
         }
 
@@ -124,27 +110,17 @@
             window.location.href = 'login.html';
         });
 
-        function showAlert(msg, isError = false) {
-            alertMessage.textContent = msg;
-            alertMessage.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
-            alertMessage.classList.remove('hidden');
-        }
-
         async function loadDependencies() {
-            try {
-                const { data: courses } = await supabase.from('courses').select('id, course_name, fee_amount');
-                window.courseList = courses;
-                const courseSelect = document.getElementById('courseId');
-                courseSelect.innerHTML = '<option value="">-- Select Course --</option>';
-                courses.forEach(c => courseSelect.add(new Option(c.course_name, c.id)));
+            const { data: courses } = await supabase.from('courses').select('id, course_name, fee_amount');
+            window.courseList = courses;
+            const courseSelect = document.getElementById('courseId');
+            courseSelect.innerHTML = '<option value="">-- Select Course --</option>';
+            courses?.forEach(c => courseSelect.add(new Option(c.course_name, c.id)));
 
-                const { data: batches } = await supabase.from('batches').select('id, batch_name');
-                const batchSelect = document.getElementById('batchId');
-                batchSelect.innerHTML = '<option value="">-- Select Batch --</option>';
-                batches.forEach(b => batchSelect.add(new Option(b.batch_name, b.id)));
-            } catch (err) {
-                showAlert('Failed to load dependencies.', true);
-            }
+            const { data: batches } = await supabase.from('batches').select('id, batch_name');
+            const batchSelect = document.getElementById('batchId');
+            batchSelect.innerHTML = '<option value="">-- Select Batch --</option>';
+            batches?.forEach(b => batchSelect.add(new Option(b.batch_name, b.id)));
         }
 
         document.getElementById('courseId').addEventListener('change', (e) => {
@@ -154,47 +130,30 @@
 
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+            const submitBtn = document.getElementById('submitBtn');
             const totalFeeVal = parseFloat(document.getElementById('totalFee').value) || 0;
             const admissionFeeVal = parseFloat(document.getElementById('admissionFee').value) || 0;
 
-            if (admissionFeeVal > totalFeeVal) {
-                showAlert('Admission Fee cannot be greater than the Total Course Fee.', true);
-                return;
-            }
+            if (admissionFeeVal > totalFeeVal) { alert('Admission Fee cannot be greater than Total Course Fee.'); return; }
 
-            submitBtn.textContent = 'Saving...';
-            submitBtn.disabled = true;
-            alertMessage.classList.add('hidden');
-
+            submitBtn.textContent = 'Saving...'; submitBtn.disabled = true;
             const regNo = 'REG-' + Math.floor(10000 + Math.random() * 90000);
             
             const studentData = {
-                register_number: regNo,
-                full_name: document.getElementById('fullName').value,
-                phone_number: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                course_id: document.getElementById('courseId').value,
-                batch_id: document.getElementById('batchId').value,
-                admission_date: document.getElementById('admissionDate').value,
-                gender: document.getElementById('gender').value,
-                qualification: document.getElementById('qualification').value,
-                total_fee: totalFeeVal,
-                admission_fee: admissionFeeVal, 
-                status: 'active'
+                register_number: regNo, full_name: document.getElementById('fullName').value,
+                phone_number: document.getElementById('phone').value, course_id: document.getElementById('courseId').value,
+                batch_id: document.getElementById('batchId').value, admission_date: document.getElementById('admissionDate').value,
+                gender: document.getElementById('gender').value, qualification: document.getElementById('qualification').value,
+                total_fee: totalFeeVal, admission_fee: admissionFeeVal, status: 'active'
             };
 
-            try {
-                // Save to students table (which now includes admission_fee column)
-                const { error: stuErr } = await supabase.from('students').insert([studentData]);
-                if (stuErr) throw stuErr;
-
-                showAlert('Admission Successful! Redirecting...', false);
-                setTimeout(() => window.location.href = 'students.html', 1500);
-            } catch (err) {
-                showAlert('Error saving admission: ' + err.message, true);
-                submitBtn.textContent = 'Save Admission';
-                submitBtn.disabled = false;
+            const { error: stuErr } = await supabase.from('students').insert([studentData]);
+            if (!stuErr) {
+                alert('Admission Successful!');
+                window.location.href = 'students.html';
+            } else {
+                alert('Error: ' + stuErr.message);
+                submitBtn.textContent = 'Save Admission'; submitBtn.disabled = false;
             }
         });
 
