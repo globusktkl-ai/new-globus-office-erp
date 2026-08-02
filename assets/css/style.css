@@ -1,78 +1,76 @@
-:root {
-    --primary: #4F46E5;
-    --primary-dark: #3730A3;
-    --secondary: #10B981;
-    --danger: #EF4444;
-    --bg-main: #F4F6F8; /* Cleaner background */
-    --card-bg: #FFFFFF;
-    --text-main: #111827;
-    --text-muted: #6B7280;
-    --border: #E5E7EB;
-    --radius-sm: 8px;
-    --radius-md: 16px;
+/* പുതിയ ഹെഡർ ഡിസൈൻ */
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    position: relative; /* നടുവിൽ പേര് കൊണ്ടുവരാൻ */
+    min-height: 60px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
-body { background-color: var(--bg-main); color: var(--text-main); width: 100vw; overflow-x: hidden; font-size: 14px; }
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 2;
+}
 
-/* Header */
-.app-header { background-color: #FFFFFF; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
-.header-left { display: flex; align-items: center; gap: 10px; width: 30%; }
-.header-center { width: 40%; text-align: center; font-size: 16px; font-weight: 700; color: var(--primary-dark); white-space: nowrap; }
-.header-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; width: 30%; gap: 3px; }
-.logo-small { height: 26px; width: auto; border-radius: 4px; object-fit: contain; }
-.btn-back-icon { font-size: 20px; color: var(--text-main); text-decoration: none; font-weight: 600; }
-.user-name-small { font-size: 11px; color: var(--text-muted); font-weight: 700; line-height: 1; }
-.btn-logout-small { background: #FEF2F2; color: var(--danger); border: 1px solid #FECACA; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; line-height: 1; text-transform: uppercase; }
+/* പേര് രണ്ട് വരികളായി നടുവിൽ കാണിക്കാൻ */
+.header-center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    pointer-events: none; /* മറ്റ് ബട്ടണുകളുടെ പ്രവർത്തനത്തെ തടസ്സപ്പെടുത്താതിരിക്കാൻ */
+}
 
-/* Main & Cards */
-.main-content { padding: 20px 16px; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
-.card { background: var(--card-bg); border-radius: var(--radius-md); padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid var(--border); margin-bottom: 20px; }
+.brand-top {
+    font-size: 19px;
+    font-weight: 900;
+    color: var(--primary-dark);
+    line-height: 1;
+    text-transform: uppercase;
+}
 
-/* Forms (Perfect Equal Widths) */
-.form-group { margin-bottom: 16px; }
-.form-row-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
-.form-group-mobile { margin-bottom: 0; width: 100%; }
-.form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-.form-control { width: 100%; padding: 12px 14px; background-color: #F9FAFB; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; color: var(--text-main); outline: none; }
-.form-control:focus { background-color: var(--card-bg); border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-.req-star { color: #ef4444; font-weight: bold; margin-left: 2px; }
+.brand-bottom {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4B5563;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
 
-.btn-primary { width: 100%; display: block; text-align: center; background: var(--primary); color: white; border: none; padding: 14px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; }
+.header-right {
+    display: flex;
+    align-items: center;
+    z-index: 2;
+}
 
-/* Dashboard Cleaner Stats */
-.stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-.stat-box { background: var(--card-bg); padding: 16px; border-radius: var(--radius-sm); box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); }
-.stat-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
-.stat-value { font-size: 20px; font-weight: 800; color: var(--text-main); }
-.nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-.nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card-bg); padding: 16px 10px; border-radius: var(--radius-sm); text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-.nav-icon { font-size: 20px; margin-bottom: 8px; color: var(--primary); }
+/* വലിപ്പം കൂട്ടിയ Floating Glass Back Button */
+.btn-back-glass {
+    display: flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; text-decoration: none;
+    font-size: 26px; /* ഐക്കൺ സൈസ് കൂട്ടി */
+    font-weight: bold; color: var(--primary-dark);
+    background: rgba(220, 226, 235, 0.4);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0; transition: all 0.3s ease; pointer-events: auto;
+}
 
-/* Students Directory Layout */
-.student-mobile-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.03); }
-.smc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #f0f0f0; padding-bottom: 12px; }
-.smc-header-left { flex: 1; text-align: left; }
-.smc-header-center { flex: 0 0 50px; display: flex; justify-content: center; margin: 0 10px; }
-.smc-header-right { flex: 1; text-align: right; }
+.btn-back-glass:hover { transform: scale(1.05); background: rgba(220, 226, 235, 0.6); }
 
-.student-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
-.smc-name { font-size: 15px; font-weight: 700; color: var(--primary-dark); }
-.smc-reg { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
-.smc-status { font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 12px; display: inline-block; }
-.status-active { background: #DCFCE7; color: #166534; }
-.status-inactive { background: #FEE2E2; color: #991B1B; }
+.logo-small { height: 34px; border-radius: 4px; flex-shrink: 0; }
 
-.smc-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
-.smc-label { color: var(--text-muted); font-weight: 500; }
-.smc-value { font-weight: 600; color: var(--text-main); text-align: right; }
-
-/* Action Buttons (Edit, View, Delete) */
-.smc-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #E5E7EB; }
-.smc-btn { flex: 1; text-align: center; padding: 8px 4px; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; color: #fff; }
-.btn-view { background-color: #3b82f6; } 
-.btn-edit { background-color: #f59e0b; } 
-.btn-delete { background-color: #ef4444; }
-
-.filter-section { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-.hidden { display: none !important; }
+/* ലോഗ്ഔട്ട് ബട്ടൺ */
+.btn-logout-custom {
+    padding: 8px 20px; font-size: 14px; font-weight: 600; color: #fff;
+    background: #EF4444; border: none; border-radius: 8px; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); pointer-events: auto;
+}
