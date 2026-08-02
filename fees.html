@@ -5,57 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Collect Fee - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        .app-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; }
-        
-        .header-left-group { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-        
-        /* Floating Glass Back Button */
-        .btn-back-glass {
-            display: flex; align-items: center; justify-content: center;
-            width: 38px; height: 38px; text-decoration: none;
-            font-size: 24px; font-weight: bold; color: var(--primary-dark);
-            background: rgba(220, 226, 235, 0.4);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 50%; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            flex-shrink: 0; transition: all 0.3s ease;
-        }
-        .btn-back-glass:hover { transform: scale(1.05); background: rgba(220, 226, 235, 0.6); }
-
-        .logo-small { height: 32px; border-radius: 4px; flex-shrink: 0; }
-        
-        /* Institute Name */
-        .header-brand-title {
-            font-size: 15px; font-weight: 700; color: var(--primary-dark);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        }
-
-        /* Wider Logout Button */
-        .header-right { flex-shrink: 0; margin-left: 10px; }
-        .btn-logout-custom {
-            padding: 8px 24px; font-size: 14px; font-weight: 600; color: #fff;
-            background: #EF4444; border: none; border-radius: 8px; cursor: pointer;
-            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
-        }
-    </style>
 </head>
 <body>
-   <nav class="app-header">
-        <!-- ഇടത് വശം: ബാക്ക് ബട്ടൺ + ലോഗോ -->
-        <div class="header-left">
-            <a href="dashboard.html" class="btn-back-glass">←</a>
+    
+    <!-- അപ്ഡേറ്റ് ചെയ്ത ഹെഡർ: ബാക്ക് ബട്ടൺ ഒഴിവാക്കി -->
+    <nav class="app-header">
+        <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <div style="display: flex; flex-direction: column; overflow: hidden;">
+                <span class="brand-top" style="font-size: 16px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Globus</span>
+                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Technical Academy</span>
+            </div>
         </div>
         
-        <!-- നടുവിൽ: സ്ഥാപനത്തിന്റെ പേര് (രണ്ട് വരിയിൽ) -->
-        <div class="header-center">
-            <span class="brand-top">Globus</span>
-            <span class="brand-bottom">Technical Academy</span>
-        </div>
-        
-        <!-- വലത് വശം: ലോഗ്ഔട്ട് ബട്ടൺ -->
-        <div class="header-right">
+        <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
             <button class="btn-logout-custom" id="logoutBtn">Logout</button>
         </div>
     </nav>
@@ -77,6 +40,10 @@
                 <div class="form-group" style="margin-bottom: 24px;"><label class="form-label">Payment Date</label><input type="date" id="paymentDate" class="form-control" required></div>
                 <button type="submit" class="btn btn-primary" id="submitBtn">Submit Payment</button>
             </form>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="dashboard.html" style="color: var(--primary-light); text-decoration: none; font-weight: 600;">Return to Dashboard</a>
+            </div>
         </div>
     </main>
 
@@ -87,7 +54,6 @@
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            // Username ഒഴിവാക്കി
             document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
             fetchStudents();
         }
