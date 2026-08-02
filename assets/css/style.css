@@ -1,4 +1,36 @@
-/* പുതിയ ഹെഡർ ഡിസൈൻ */
+/* Google Fonts - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* Color Variables */
+:root {
+    --primary-dark: #1E293B;
+    --primary-light: #3B82F6;
+    --bg-color: #F9FAFB;
+    --card-bg: #FFFFFF;
+    --text-main: #111827;
+    --text-muted: #6B7280;
+    --border-color: #E5E7EB;
+    --success: #10B981;
+    --danger: #EF4444;
+}
+
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================
+   1. APP HEADER STYLES (NEW DESIGN)
+   ========================================= */
 .app-header {
     display: flex;
     align-items: center;
@@ -6,6 +38,11 @@
     padding: 10px 12px;
     position: relative; /* നടുവിൽ പേര് കൊണ്ടുവരാൻ */
     min-height: 60px;
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 50;
 }
 
 .header-left {
@@ -15,7 +52,6 @@
     z-index: 2;
 }
 
-/* പേര് രണ്ട് വരികളായി നടുവിൽ കാണിക്കാൻ */
 .header-center {
     position: absolute;
     left: 0;
@@ -25,7 +61,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1;
-    pointer-events: none; /* മറ്റ് ബട്ടണുകളുടെ പ്രവർത്തനത്തെ തടസ്സപ്പെടുത്താതിരിക്കാൻ */
+    pointer-events: none; 
 }
 
 .brand-top {
@@ -51,11 +87,11 @@
     z-index: 2;
 }
 
-/* വലിപ്പം കൂട്ടിയ Floating Glass Back Button */
+/* Floating Glass Back Button */
 .btn-back-glass {
     display: flex; align-items: center; justify-content: center;
     width: 42px; height: 42px; text-decoration: none;
-    font-size: 26px; /* ഐക്കൺ സൈസ് കൂട്ടി */
+    font-size: 26px; 
     font-weight: bold; color: var(--primary-dark);
     background: rgba(220, 226, 235, 0.4);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -66,11 +102,242 @@
 
 .btn-back-glass:hover { transform: scale(1.05); background: rgba(220, 226, 235, 0.6); }
 
-.logo-small { height: 34px; border-radius: 4px; flex-shrink: 0; }
+.logo-small { height: 34px; border-radius: 4px; flex-shrink: 0; object-fit: contain; }
 
-/* ലോഗ്ഔട്ട് ബട്ടൺ */
 .btn-logout-custom {
     padding: 8px 20px; font-size: 14px; font-weight: 600; color: #fff;
     background: #EF4444; border: none; border-radius: 8px; cursor: pointer;
     box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); pointer-events: auto;
+    transition: 0.3s;
+}
+
+.btn-logout-custom:hover { background: #DC2626; }
+
+/* =========================================
+   2. MAIN CONTENT LAYOUT
+   ========================================= */
+.main-content {
+    padding: 16px;
+    max-width: 600px; /* പിസിയിൽ തുറന്നാലും മൊബൈൽ ലുക്കിൽ കാണിക്കാൻ */
+    margin: 0 auto;
+    padding-bottom: 40px;
+}
+
+/* =========================================
+   3. DASHBOARD COMPONENTS
+   ========================================= */
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.stat-box {
+    background: var(--card-bg);
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--primary-dark);
+}
+
+.nav-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.nav-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 20px 12px;
+    border-radius: 16px;
+    text-decoration: none;
+    color: var(--primary-dark);
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    transition: 0.2s;
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border-color: var(--primary-light);
+}
+
+.nav-icon { font-size: 28px; }
+
+/* =========================================
+   4. FORMS (ADMISSION & FEES)
+   ========================================= */
+.form-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 15px;
+    color: var(--text-main);
+    background-color: var(--bg-color);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    background-color: #fff;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary-dark);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(30, 41, 59, 0.25);
+}
+
+.btn-primary:hover {
+    background-color: #0f172a;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   5. STUDENT DIRECTORY MOBILE CARDS
+   ========================================= */
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.student-mobile-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+}
+
+.smc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+.smc-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--primary-dark);
+}
+
+.smc-reg {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.student-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+
+.smc-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.smc-label {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.smc-value {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.smc-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.smc-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-delete {
+    background-color: #FEE2E2;
+    color: var(--danger);
+}
+
+.btn-delete:hover {
+    background-color: #FECACA;
 }
