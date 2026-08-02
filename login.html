@@ -2,127 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Globus Office ERP</title>
-    <!-- Link to our global CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login - VPKTechsolutions</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* Login page specific layout for perfect centering */
-        body {
-            justify-content: center;
-            align-items: center;
-            background-color: var(--primary-dark); /* Professional dark background */
-        }
-        .login-wrapper {
-            max-width: 400px;
-            width: 100%;
-            padding: 20px;
-        }
-        .login-card {
-            text-align: center;
-        }
-        .login-card h2 {
-            margin-bottom: 8px;
-            color: var(--primary-dark);
-        }
-        .login-card p {
-            margin-bottom: 24px;
-            font-size: 14px;
-        }
-        .text-left {
-            text-align: left;
-        }
+        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: var(--primary-dark); }
+        .login-card { background: var(--card-bg); width: 90%; max-width: 400px; padding: 40px 24px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+        .login-logo { height: 60px; margin-bottom: 20px; border-radius: 8px; }
+        .login-title { font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        .login-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 30px; }
     </style>
 </head>
 <body>
 
-    <div class="login-wrapper">
-        <div class="card login-card">
-            <h2>Globus ERP</h2>
-            <p>Enter your credentials to access the system</p>
+    <div class="login-card">
+        <img src="assets/images/logo.png" alt="VPKTechsolutions Logo" class="login-logo" onerror="this.style.display='none'">
+        <h1 class="login-title">Welcome Back</h1>
+        <p class="login-subtitle">Sign in to manage your institute</p>
 
-            <!-- Alert Box for Errors/Success -->
-            <div id="alertMessage" class="alert hidden"></div>
-
-            <!-- Login Form -->
-            <form id="loginForm">
-                <div class="form-group text-left">
-                    <label class="form-label" for="email">Email Address</label>
-                    <input type="email" id="email" class="form-control" required placeholder="admin@globus.com">
-                </div>
-                <div class="form-group text-left">
-                    <label class="form-label" for="password">Password</label>
-                    <input type="password" id="password" class="form-control" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn btn-primary btn-full" id="loginBtn">Login</button>
-            </form>
-        </div>
+        <form id="loginForm">
+            <div class="form-group" style="text-align: left;">
+                <label class="form-label">Email Address</label>
+                <input type="email" id="email" class="form-control" required placeholder="admin@example.com">
+            </div>
+            <div class="form-group" style="text-align: left; margin-bottom: 24px;">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-control" required placeholder="••••••••">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="loginBtn">Sign In securely</button>
+        </form>
     </div>
 
-    <!-- Authentication JavaScript (Module) -->
     <script type="module">
-        // Import Supabase client
         import { supabase } from './assets/js/supabase-config.js';
 
-        // Get DOM Elements
-        const loginForm = document.getElementById('loginForm');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const loginBtn = document.getElementById('loginBtn');
-        const alertMessage = document.getElementById('alertMessage');
+        // Check if already logged in
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) window.location.href = 'dashboard.html';
+        });
 
-        // 1. Check if user is already logged in
-        async function checkSession() {
-            const { data, error } = await supabase.auth.getSession();
-            if (data.session) {
-                // Already logged in, redirect to dashboard
-                window.location.href = 'dashboard.html';
-            }
-        }
-        checkSession();
-
-        // Utility function to show alerts
-        function showAlert(message, isError = true) {
-            alertMessage.textContent = message;
-            alertMessage.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
-            alertMessage.style.display = 'block';
-        }
-
-        // 2. Handle Login Form Submit
-        loginForm.addEventListener('submit', async (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            // UI Loading state
-            const originalBtnText = loginBtn.textContent;
-            loginBtn.textContent = 'Authenticating...';
-            loginBtn.disabled = true;
-            alertMessage.style.display = 'none';
+            const btn = document.getElementById('loginBtn');
+            btn.textContent = 'Authenticating...'; btn.disabled = true;
 
-            const email = emailInput.value;
-            const password = passwordInput.value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-            try {
-                // Supabase login request
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password,
-                });
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-                if (error) throw error;
-
-                // Success
-                showAlert('Login successful! Redirecting...', false);
-                
-                // Redirect to dashboard after 1 second
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1000);
-
-            } catch (error) {
-                // Error handling
-                showAlert(error.message || 'Invalid login credentials.');
-                loginBtn.textContent = originalBtnText;
-                loginBtn.disabled = false;
+            if (error) {
+                alert('Login Failed: ' + error.message);
+                btn.textContent = 'Sign In securely'; btn.disabled = false;
+            } else {
+                window.location.href = 'dashboard.html';
             }
         });
     </script>
