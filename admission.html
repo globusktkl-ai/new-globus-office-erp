@@ -37,13 +37,17 @@
                     <input type="text" id="regNo" class="form-control" required placeholder="e.g. GTA-001">
                 </div>
                 
-                <!-- ഫോൺ നമ്പർ 10 അക്കത്തിൽ പരിമിതപ്പെടുത്തിയിരിക്കുന്നു (maxLength: 10) -->
                 <div class="form-group">
                     <label class="form-label">Phone Number</label>
                     <input type="tel" id="phone" class="form-control" required placeholder="10-digit mobile number" maxlength="10">
                 </div>
 
-                <!-- വിദ്യാഭ്യാസ യോഗ്യതയ്ക്കുള്ള ഡ്രോപ്പ്ഡൗൺ മെനു -->
+                <!-- അഡ്രസ് ചേർക്കാനുള്ള നീളത്തിലുള്ള ബോക്സ് -->
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <textarea id="address" class="form-control" rows="3" required placeholder="Enter student residential address" style="resize: none; height: auto; padding: 10px;"></textarea>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label">Educational Qualification</label>
                     <select id="qualification" class="form-control" required>
@@ -111,7 +115,6 @@
             }
         }
 
-        // ഫോൺ നമ്പർ 10 അക്കത്തിൽ കൂടുതൽ അടിക്കാൻ കഴിയാത്ത രീതിയിൽ നിയന്ത്രിക്കുന്നു
         document.getElementById('phone').addEventListener('input', function() {
             let val = this.value.trim();
             if (/^\d+$/.test(val) && val.length > 10) {
@@ -148,6 +151,7 @@
                     full_name: document.getElementById('fullName').value,
                     register_number: document.getElementById('regNo').value,
                     phone_number: phoneVal,
+                    address: document.getElementById('address').value,
                     qualification: document.getElementById('qualification').value,
                     gender: document.getElementById('gender').value,
                     photo_url: photoUrl,
