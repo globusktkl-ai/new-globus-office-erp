@@ -6,6 +6,7 @@
     <title>New Admission - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
+        /* അപ്ഡേറ്റ് ചെയ്ത ഹെഡർ ഡിസൈൻ */
         .app-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; }
         .header-left-group { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
         .btn-back-glass { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; text-decoration: none; font-size: 24px; font-weight: bold; color: var(--primary-dark); background: rgba(220, 226, 235, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 50%; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); flex-shrink: 0; transition: 0.3s; }
@@ -24,8 +25,119 @@
             <span class="header-brand-title">Globus Technical Academy</span>
         </div>
         <div class="header-right">
+            <!-- ലോഗ്ഔട്ട് ബട്ടൺ (യൂസർ നെയിം ഒഴിവാക്കി) -->
             <button class="btn-logout-custom" id="logoutBtn">Logout</button>
         </div>
     </nav>
     
-    <!-- നിങ്ങളുടെ പഴയ <main class="main-content"> ഉം ഫീൽഡുകളും ഇതിനു താഴെ നിലനിർത്തുക -->
+    <main class="main-content">
+        <div class="form-card">
+            <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--primary-dark);">New Student Admission</h2>
+            
+            <form id="admissionForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="fullName" class="form-control" required placeholder="Enter student name">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Register Number</label>
+                    <input type="text" id="regNo" class="form-control" required placeholder="e.g. GTA-001">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" id="phone" class="form-control" required placeholder="10-digit mobile number">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <select id="gender" class="form-control" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Select Course</label>
+                    <select id="courseSelect" class="form-control" required>
+                        <option value="">-- Select Course --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Total Course Fee (₹)</label>
+                    <input type="number" id="totalFee" class="form-control" required placeholder="e.g. 15000">
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label class="form-label">Admission Fee Paid (₹)</label>
+                    <input type="number" id="admissionFee" class="form-control" required placeholder="Amount paid during admission">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="submitBtn">Submit Admission</button>
+            </form>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+
+        // 1. Auth Check (Admin Name ഒഴിവാക്കി)
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { 
+                window.location.href = 'login.html'; 
+                return; 
+            }
+            fetchCourses();
+        }
+
+        // 2. Fetch Courses for Dropdown
+        async function fetchCourses() {
+            const { data } = await supabase.from('courses').select('id, course_name').eq('status', 'active');
+            if (data) {
+                const select = document.getElementById('courseSelect');
+                data.forEach(c => select.add(new Option(c.course_name, c.id)));
+            }
+        }
+
+        // 3. Submit Form Data to Supabase
+        document.getElementById('admissionForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            const btn = document.getElementById('submitBtn');
+            btn.textContent = 'Processing...'; btn.disabled = true;
+
+            const { error } = await supabase.from('students').insert([{
+                full_name: document.getElementById('fullName').value,
+                register_number: document.getElementById('regNo').value,
+                phone_number: document.getElementById('phone').value,
+                gender: document.getElementById('gender').value,
+                course_id: document.getElementById('courseSelect').value,
+                total_fee: document.getElementById('totalFee').value,
+                admission_fee: document.getElementById('admissionFee').value,
+                status: 'active'
+            }]);
+
+            if (error) { 
+                alert('Error: ' + error.message); 
+                btn.textContent = 'Submit Admission'; btn.disabled = false;
+            } else { 
+                alert('Admission Successful!'); 
+                window.location.reload(); 
+            }
+        });
+
+        // 4. Secure Logout Script
+        document.getElementById('logoutBtn').addEventListener('click', async () => { 
+            await supabase.auth.signOut(); 
+            localStorage.clear(); 
+            sessionStorage.clear();
+            window.history.replaceState(null, '', 'login.html'); 
+            window.location.replace('login.html'); 
+        });
+
+        checkAuth();
+    </script>
+</body>
+</html>
