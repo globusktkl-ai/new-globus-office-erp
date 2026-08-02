@@ -13,16 +13,47 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
+        
+        .navbar-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back {
+            text-decoration: none;
+            padding: 6px 12px;
+            background: #F1F5F9;
+            color: var(--text-dark);
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid var(--border);
+        }
+        .btn-back:hover { background: #E2E8F0; }
+
         .navbar-brand { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
+        
+        .navbar-menu { display: flex; gap: 20px; }
         .navbar-menu a {
-            margin-right: 20px;
             text-decoration: none;
             color: var(--text-muted);
             font-weight: 500;
         }
         .navbar-menu a:hover, .navbar-menu a.active { color: var(--primary-dark); }
         
+        /* User Profile & Logout */
+        .navbar-user { display: flex; align-items: center; gap: 15px; }
+        .user-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+        .btn-logout {
+            background-color: transparent;
+            color: var(--error);
+            border: 1px solid var(--error);
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-logout:hover { background-color: #FEF2F2; }
+
         .main-content { padding: 32px 24px; max-width: 800px; margin: 0 auto; }
         .page-header { margin-bottom: 24px; }
         
@@ -36,6 +67,8 @@
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
             .full-width { grid-column: span 1; }
+            .navbar { flex-direction: column; align-items: flex-start; }
+            .navbar-user { width: 100%; justify-content: space-between; }
         }
         
         select.form-control {
@@ -58,11 +91,20 @@
 <body>
 
     <nav class="navbar">
-        <div class="navbar-brand">Globus ERP</div>
+        <div class="navbar-left">
+            <a href="javascript:history.back()" class="btn-back">← Back</a>
+            <div class="navbar-brand">Globus ERP</div>
+        </div>
+        
         <div class="navbar-menu">
             <a href="dashboard.html">Dashboard</a>
             <a href="students.html">Students</a>
             <a href="fees.html" class="active">Fees</a>
+        </div>
+
+        <div class="navbar-user">
+            <span id="userName" class="user-name">Loading...</span>
+            <button id="logoutBtn" class="btn-logout">Logout</button>
         </div>
     </nav>
 
@@ -73,7 +115,7 @@
         </div>
 
         <div class="card">
-            <div id="alertMessage" class="alert hidden"></div>
+            <div id="alertMessage" class="alert hidden" style="margin-bottom: 20px;"></div>
 
             <form id="feeForm">
                 <div class="form-grid">
@@ -84,7 +126,7 @@
                         </select>
                     </div>
 
-                    <!-- Student Details Card (Shows up after selecting a student) -->
+                    <!-- Student Details Card -->
                     <div id="studentDetailsCard" class="form-group full-width student-card">
                         <p>Name: <span id="dispName">N/A</span></p>
                         <p>Course: <span id="dispCourse">N/A</span></p>
@@ -101,6 +143,7 @@
                         <input type="number" id="amount" class="form-control" required placeholder="0.00" min="1">
                     </div>
 
+                    <!-- നമ്മൾ തൽക്കാലം payment_mode സൂക്ഷിക്കാൻ ഒരു പ്രത്യേക കോളം ഉണ്ടാക്കിയിട്ടില്ലാത്തത് കൊണ്ട് ഇത് ഒഴിവാക്കാം അല്ലെങ്കിൽ receipt_no യിൽ കൂട്ടി ചേർക്കാം -->
                     <div class="form-group">
                         <label class="form-label">Payment Mode *</label>
                         <select id="paymentMode" class="form-control" required>
@@ -111,7 +154,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Reference / Transaction ID</label>
+                        <label class="form-label">Reference / Receipt No</label>
                         <input type="text" id="reference" class="form-control" placeholder="e.g. UPI Ref No">
                     </div>
                 </div>
@@ -129,24 +172,41 @@
         const alertMessage = document.getElementById('alertMessage');
         const submitBtn = document.getElementById('submitBtn');
         const studentSelect = document.getElementById('studentId');
+        const userNameEl = document.getElementById('userName');
+        const logoutBtn = document.getElementById('logoutBtn');
         let allStudents = [];
 
+        // 1. Check Authentication & Set User Name
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
             if (!session) {
                 window.location.href = 'login.html';
-            } else {
-                document.getElementById('paymentDate').valueAsDate = new Date();
-                loadStudents();
-            }
+                return;
+            } 
+            
+            // Set User Name
+            const userMeta = session.user.user_metadata;
+            userNameEl.textContent = userMeta.full_name || session.user.email;
+            
+            document.getElementById('paymentDate').valueAsDate = new Date();
+            loadStudents();
         }
 
+        // 2. Handle Logout
+        logoutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
+
+        // Show Alert Function
         function showAlert(msg, isError = true) {
             alertMessage.textContent = msg;
             alertMessage.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
             alertMessage.classList.remove('hidden');
         }
 
+        // 3. Load Students into Dropdown
         async function loadStudents() {
             try {
                 const { data, error } = await supabase
@@ -164,11 +224,11 @@
                 });
             } catch (err) {
                 studentSelect.innerHTML = '<option value="">-- Error Loading Data --</option>';
-                console.error(err);
+                console.error("Student Load Error:", err);
             }
         }
 
-        // Show student details when selected
+        // 4. Show student details when selected
         studentSelect.addEventListener('change', (e) => {
             const studentId = e.target.value;
             const detailsCard = document.getElementById('studentDetailsCard');
@@ -181,12 +241,13 @@
             const student = allStudents.find(s => s.id === studentId);
             if (student) {
                 document.getElementById('dispName').textContent = student.full_name;
-                document.getElementById('dispReg').textContent = student.register_number;
+                document.getElementById('dispReg').textContent = student.register_number || 'N/A';
                 document.getElementById('dispCourse').textContent = student.courses ? student.courses.course_name : 'N/A';
                 detailsCard.style.display = 'block';
             }
         });
 
+        // 5. Submit Fee Data
         document.getElementById('feeForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             alertMessage.classList.add('hidden');
@@ -195,27 +256,39 @@
             submitBtn.textContent = 'Processing...';
             submitBtn.disabled = true;
 
+            const mode = document.getElementById('paymentMode').value;
+            const ref = document.getElementById('reference').value;
+            const combinedReceipt = ref ? `${mode} - ${ref}` : mode;
+
+            // ഡാറ്റാബേസിലെ കോളങ്ങൾക്ക് കൃത്യമായി ചേരുന്ന രീതിയിലുള്ള ഡാറ്റ സ്ട്രക്ച്ചർ
             const paymentData = {
                 student_id: studentSelect.value,
-                amount: parseFloat(document.getElementById('amount').value),
+                amount_paid: parseFloat(document.getElementById('amount').value),
                 payment_date: document.getElementById('paymentDate').value,
-                payment_mode: document.getElementById('paymentMode').value,
-                remarks: document.getElementById('reference').value || null
+                receipt_no: combinedReceipt
             };
 
             try {
                 const { data, error } = await supabase.from('fee_payments').insert([paymentData]);
+                
                 if (error) throw error;
 
                 showAlert('Payment saved successfully! Redirecting...', false);
                 setTimeout(() => { window.location.reload(); }, 1500);
+                
             } catch (err) {
-                showAlert(err.message || 'An error occurred while saving.');
+                console.error("Save Error:", err);
+                
+                let errorMsg = err.message || 'An error occurred while saving.';
+                if (err.details) errorMsg += " | Details: " + err.details;
+                
+                showAlert(errorMsg);
                 submitBtn.textContent = originalBtnText;
                 submitBtn.disabled = false;
             }
         });
 
+        // Initialize Page
         checkAuth();
     </script>
 </body>
