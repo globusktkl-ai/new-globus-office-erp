@@ -21,6 +21,25 @@
             font-weight: 700;
             color: var(--primary-dark);
         }
+        
+        /* Navigation Menu Styles */
+        .navbar-menu {
+            display: flex;
+            gap: 20px;
+        }
+        .navbar-menu a { 
+            text-decoration: none; 
+            color: var(--text-muted); 
+            font-weight: 500; 
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .navbar-menu a:hover, .navbar-menu a.active { 
+            color: var(--primary-dark); 
+            background-color: #F1F5F9;
+        }
+
         .navbar-user {
             display: flex;
             align-items: center;
@@ -36,6 +55,8 @@
             color: var(--error);
             border: 1px solid var(--error);
             padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
         }
         .btn-logout:hover {
             background-color: #FEF2F2;
@@ -56,6 +77,9 @@
             padding: 24px;
             border-left: 4px solid var(--primary-dark);
             transition: transform 0.2s;
+            background: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .stat-card:hover {
             transform: translateY(-2px);
@@ -79,6 +103,15 @@
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="navbar-brand">Globus ERP</div>
+        
+        <!-- Navigation Links Added Here -->
+        <div class="navbar-menu">
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="admission.html">New Admission</a>
+            <a href="students.html">Students Directory</a>
+            <a href="fees.html">Fees Management</a>
+        </div>
+
         <div class="navbar-user">
             <span id="userName" class="user-name">Loading...</span>
             <button id="logoutBtn" class="btn btn-logout">Logout</button>
@@ -166,7 +199,7 @@
                 }
                 document.getElementById('statTodayCollection').textContent = '₹ ' + todayTotal;
 
-                // Pending Fees (We will calculate this perfectly in Phase 3)
+                // Pending Fees
                 document.getElementById('statPendingFees').textContent = '₹ 0';
 
             } catch (err) {
