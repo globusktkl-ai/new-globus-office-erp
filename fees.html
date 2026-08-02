@@ -25,23 +25,40 @@
     <main class="main-content">
         <div class="form-card">
             <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--primary-dark);">Collect Fee</h2>
+            
             <form id="feeForm">
+                <!-- പേര്, രജിസ്റ്റർ നമ്പർ, ഫോൺ നമ്പർ എന്നിവ വെച്ച് സെർച്ച് ചെയ്യാനുള്ള ബോക്സ് -->
                 <div class="form-group">
-                    <label class="form-label">Select Student</label>
-                    <select id="studentSelect" class="form-control" required><option value="">-- Select Student --</option></select>
+                    <label class="form-label">Search Student (Name / Reg No / Phone)</label>
+                    <input type="text" id="studentSearchInput" class="form-control" placeholder="Type name, reg no, or phone to search..." autocomplete="off">
+                    
+                    <!-- സെർച്ച് റിസൾട്ട് കാണിക്കുന്ന ഡ്രോപ്പ്ഡൗൺ/ലിസ്റ്റ് -->
+                    <select id="studentSelect" class="form-control" size="4" style="margin-top: 8px; display: none; height: auto;" required>
+                        <option value="">-- Select Student from search results --</option>
+                    </select>
                 </div>
-                <div id="feeDetails" style="display: none; background: #F3F4F6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="color: #6B7280; font-size: 14px;">Total Fee:</span><span id="txtTotalFee" style="font-weight: 600;">₹ 0</span></div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="color: #6B7280; font-size: 14px;">Total Paid:</span><span id="txtTotalPaid" style="font-weight: 600; color: #10B981;">₹ 0</span></div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E7EB;"><span style="color: #111827; font-size: 16px; font-weight: 700;">Pending Balance:</span><span id="txtPending" style="font-size: 18px; font-weight: 800; color: #EF4444;">₹ 0</span></div>
+
+                <!-- ബാലൻസ് ഫീ വ്യക്തമായി ചുവന്ന അക്ഷരത്തിൽ കാണിക്കുന്ന ബോക്സ് -->
+                <div id="feeDetails" style="display: none; background: #FEF2F2; border: 1px solid #FCA5A5; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #6B7280; font-size: 14px;">Total Fee:</span>
+                        <span id="txtTotalFee" style="font-weight: 600;">₹ 0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #6B7280; font-size: 14px;">Total Paid:</span>
+                        <span id="txtTotalPaid" style="font-weight: 600; color: #10B981;">₹ 0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #FCA5A5;">
+                        <span style="color: #111827; font-size: 16px; font-weight: 700;">Pending Balance:</span>
+                        <span id="txtPending" style="font-size: 18px; font-weight: 800; color: #EF4444;">₹ 0</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Amount to Pay (₹)</label>
-                    <input type="number" id="amountPaid" class="form-control" required min="1">
+                    <input type="number" id="amountPaid" class="form-control" required min="1" placeholder="Enter amount">
                 </div>
 
-                <!-- പേയ്മെന്റ് മാർഗ്ഗം ബോക്സ് (ഒരു വരിയിൽ മുഴുവനായി) -->
                 <div class="form-group">
                     <label class="form-label">Payment Mode</label>
                     <select id="paymentMode" class="form-control" required>
@@ -51,7 +68,6 @@
                     </select>
                 </div>
 
-                <!-- റെസീപ്റ്റ് / ട്രാൻസാക്ഷൻ ഐഡി ബോക്സ് (ഒരു വരിയിൽ മുഴുവനായി) -->
                 <div class="form-group">
                     <label class="form-label">Receipt / Transaction ID</label>
                     <input type="text" id="txnId" class="form-control" placeholder="Enter receipt or transaction ID (optional)">
@@ -74,6 +90,7 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         let studentsData = [];
+        let selectedStudentId = null;
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -83,35 +100,87 @@
         }
 
         async function fetchStudents() {
-            const { data } = await supabase.from('students').select('id, register_number, full_name, total_fee, admission_fee, fee_payments(amount_paid)').eq('status', 'active').order('full_name');
+            const { data } = await supabase.from('students').select('id, register_number, full_name, phone_number, total_fee, admission_fee, fee_payments(amount_paid)').eq('status', 'active').order('full_name');
             studentsData = data || [];
-            const select = document.getElementById('studentSelect');
-            studentsData.forEach(s => select.add(new Option(`${s.full_name} (${s.register_number})`, s.id)));
         }
 
+        // സെർച്ച് ഇൻപുട്ടിൽ അടിക്കുമ്പോൾ മാച്ച് ചെയ്യുന്ന കുട്ടികളെ മാത്രം കാണിക്കുക
+        document.getElementById('studentSearchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const select = document.getElementById('studentSelect');
+            select.innerHTML = '';
+            
+            if (query.length === 0) {
+                select.style.display = 'none';
+                return;
+            }
+
+            const filtered = studentsData.filter(s => 
+                s.full_name?.toLowerCase().includes(query) || 
+                s.register_number?.toLowerCase().includes(query) || 
+                s.phone_number?.toLowerCase().includes(query)
+            );
+
+            if (filtered.length > 0) {
+                select.style.display = 'block';
+                filtered.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.textContent = `${s.full_name} (${s.register_number}) - ${s.phone_number}`;
+                    select.appendChild(opt);
+                });
+            } else {
+                select.style.display = 'none';
+            }
+        });
+
+        // ലിസ്റ്റിൽ നിന്ന് കുട്ടിക്ക് ക്ലിക്ക് ചെയ്യുമ്പോൾ അല്ലെങ്കിൽ സെലക്ട് ചെയ്യുമ്പോൾ
         document.getElementById('studentSelect').addEventListener('change', function() {
-            const stId = this.value; const div = document.getElementById('feeDetails');
-            if (!stId) { div.style.display = 'none'; return; }
-            const s = studentsData.find(x => x.id === stId);
+            selectedStudentId = this.value;
+            const div = document.getElementById('feeDetails');
+            
+            if (!selectedStudentId) { 
+                div.style.display = 'none'; 
+                return; 
+            }
+
+            const s = studentsData.find(x => x.id === selectedStudentId);
             if (s) {
-                const tFee = Number(s.total_fee)||0, aFee = Number(s.admission_fee)||0;
-                const pay = s.fee_payments ? s.fee_payments.reduce((sum,p)=>sum+Number(p.amount_paid),0) : 0;
+                // സെർച്ച് ബോക്സിൽ കുട്ടിയുടെ പേര് വെക്കുക
+                document.getElementById('studentSearchInput').value = `${s.full_name} (${s.register_number})`;
+                this.style.display = 'none'; // സെലക്ട് ചെയ്ത ശേഷം ലിസ്റ്റ് മറയ്ക്കുക
+
+                const tFee = Number(s.total_fee) || 0;
+                const aFee = Number(s.admission_fee) || 0;
+                const pay = s.fee_payments ? s.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0;
                 const bal = tFee - (aFee + pay);
+
                 document.getElementById('txtTotalFee').textContent = `₹ ${tFee}`;
                 document.getElementById('txtTotalPaid').textContent = `₹ ${aFee + pay}`;
-                const pEl = document.getElementById('txtPending'); pEl.textContent = `₹ ${bal}`;
-                pEl.style.color = bal <= 0 ? "#10B981" : "#EF4444";
-                if(bal <= 0) pEl.textContent = "Fully Paid";
+                
+                const pEl = document.getElementById('txtPending');
+                if (bal <= 0) {
+                    pEl.textContent = "Fully Paid (₹ 0)";
+                    pEl.style.color = "#10B981"; // പണം മുഴുവൻ അടച്ചു കഴിഞ്ഞാൽ പച്ച നിറം
+                } else {
+                    pEl.textContent = `₹ ${bal}`;
+                    pEl.style.color = "#EF4444"; // ബാലൻസ് ഉണ്ടെങ്കിൽ കൃത്യമായി ചുവന്ന നിറത്തിൽ
+                }
                 div.style.display = 'block';
             }
         });
 
         document.getElementById('feeForm').addEventListener('submit', async (e) => {
             e.preventDefault(); 
+            if (!selectedStudentId) {
+                alert('Please select a student from search results.');
+                return;
+            }
+
             document.getElementById('submitBtn').disabled = true;
             
             const { error } = await supabase.from('fee_payments').insert([{
-                student_id: document.getElementById('studentSelect').value,
+                student_id: selectedStudentId,
                 amount_paid: document.getElementById('amountPaid').value,
                 payment_mode: document.getElementById('paymentMode').value,
                 transaction_id: document.getElementById('txnId').value,
@@ -131,6 +200,7 @@
             await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
             window.history.replaceState(null, '', 'login.html'); window.location.replace('login.html'); 
         });
+
         checkAuth();
     </script>
 </body>
