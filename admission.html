@@ -8,7 +8,6 @@
 </head>
 <body>
     
-    <!-- അപ്ഡേറ്റ് ചെയ്ത ഹെഡർ: ബാക്ക് ബട്ടൺ ഒഴിവാക്കി -->
     <nav class="app-header">
         <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
@@ -42,6 +41,12 @@
                     <label class="form-label">Phone Number</label>
                     <input type="tel" id="phone" class="form-control" required placeholder="10-digit mobile number">
                 </div>
+
+                <!-- വിദ്യാഭ്യാസ യോഗ്യത ചേർക്കാനുള്ള ബോക്സ് (ഒരു വരിയിൽ മുഴുവനായി) -->
+                <div class="form-group">
+                    <label class="form-label">Educational Qualification</label>
+                    <input type="text" id="qualification" class="form-control" required placeholder="e.g. Plus Two / Degree / Diploma">
+                </div>
                 
                 <div class="form-group">
                     <label class="form-label">Gender</label>
@@ -49,6 +54,12 @@
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
+                </div>
+
+                <!-- ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യാനുള്ള ബോക്സ് (ഒരു വരിയിൽ മുഴുവനായി) -->
+                <div class="form-group">
+                    <label class="form-label">Student Photo</label>
+                    <input type="file" id="photoFile" class="form-control" accept="image/*">
                 </div>
                 
                 <div class="form-group">
@@ -99,23 +110,41 @@
             const btn = document.getElementById('submitBtn');
             btn.textContent = 'Processing...'; btn.disabled = true;
 
-            const { error } = await supabase.from('students').insert([{
-                full_name: document.getElementById('fullName').value,
-                register_number: document.getElementById('regNo').value,
-                phone_number: document.getElementById('phone').value,
-                gender: document.getElementById('gender').value,
-                course_id: document.getElementById('courseSelect').value,
-                total_fee: document.getElementById('totalFee').value,
-                admission_fee: document.getElementById('admissionFee').value,
-                status: 'active'
-            }]);
+            let photoUrl = '';
+            const fileInput = document.getElementById('photoFile');
+            
+            try {
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const fileName = `${Date.now()}_${file.name}`;
+                    const { data: uploadData, error: uploadError } = await supabase.storage.from('student-photos').upload(fileName, file);
+                    if (uploadError) throw uploadError;
+                    
+                    const { data: publicUrlData } = supabase.storage.from('student-photos').getPublicUrl(fileName);
+                    photoUrl = publicUrlData.publicUrl;
+                }
 
-            if (error) { 
-                alert('Error: ' + error.message); 
-                btn.textContent = 'Submit Admission'; btn.disabled = false;
-            } else { 
+                const { error } = await supabase.from('students').insert([{
+                    full_name: document.getElementById('fullName').value,
+                    register_number: document.getElementById('regNo').value,
+                    phone_number: document.getElementById('phone').value,
+                    qualification: document.getElementById('qualification').value,
+                    gender: document.getElementById('gender').value,
+                    photo_url: photoUrl,
+                    course_id: document.getElementById('courseSelect').value,
+                    total_fee: document.getElementById('totalFee').value,
+                    admission_fee: document.getElementById('admissionFee').value,
+                    status: 'active'
+                }]);
+
+                if (error) throw error;
+
                 alert('Admission Successful!'); 
-                window.location.reload(); 
+                window.location.href = 'dashboard.html'; 
+            } catch (err) {
+                alert('Error: ' + err.message);
+                btn.textContent = 'Submit Admission'; 
+                btn.disabled = false;
             }
         });
 
