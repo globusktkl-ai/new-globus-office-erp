@@ -3,163 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students - Globus Office ERP</title>
+    <title>Students Directory - Globus Office ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* Navbar additions for navigation links */
-        .navbar {
-            background-color: var(--white);
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .navbar { background-color: var(--white); padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .navbar-brand { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
-        .navbar-menu a {
-            margin-right: 20px;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-        .navbar-menu a:hover, .navbar-menu a.active {
-            color: var(--primary-dark);
-        }
-        .navbar-user { display: flex; align-items: center; gap: 16px; }
-        .btn-logout { background-color: transparent; color: var(--error); border: 1px solid var(--error); padding: 8px 16px; border-radius: var(--radius-md); cursor: pointer;}
+        .navbar-menu a { margin-right: 20px; text-decoration: none; color: var(--text-muted); font-weight: 500; }
+        .navbar-menu a:hover, .navbar-menu a.active { color: var(--primary-dark); }
         
-        .main-content { padding: 32px 24px; }
+        .main-content { padding: 32px 24px; max-width: 1000px; margin: 0 auto; }
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
         
-        /* Table Styles */
-        .table-container { padding: 0; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { padding: 16px 24px; background-color: var(--bg-light); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 14px; color: var(--text-muted); }
-        td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #F8FAFC; }
-        
-        .badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .badge-active { background-color: #ECFDF5; color: var(--success); }
-        .badge-inactive { background-color: #F1F5F9; color: var(--text-muted); }
+        table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: var(--radius-md); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { background-color: #F8FAFC; font-weight: 600; color: var(--text-muted); }
+
+        /* Qualification Badge Styles */
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .qual-sslc { background-color: #f59e0b; color: white; }
+        .qual-plus2 { background-color: #3b82f6; color: white; }
+        .qual-degree { background-color: #8b5cf6; color: white; }
+        .qual-none { background-color: #9ca3af; color: white; }
     </style>
 </head>
 <body>
-
-    <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="navbar-brand">Globus ERP</div>
         <div class="navbar-menu">
             <a href="dashboard.html">Dashboard</a>
             <a href="students.html" class="active">Students</a>
-        </div>
-        <div class="navbar-user">
-            <button id="logoutBtn" class="btn-logout">Logout</button>
+            <a href="fees.html">Fees</a>
         </div>
     </nav>
-
-    <!-- Main Content -->
-    <main class="main-content container">
+    <main class="main-content">
         <div class="page-header">
             <div>
                 <h2>Students Directory</h2>
-                <p>Manage all admitted students</p>
+                <p>Manage all enrolled students.</p>
             </div>
-            <!-- Redirects to admission.html (Next file we will build) -->
-            <button class="btn btn-primary" onclick="window.location.href='admission.html'">+ New Admission</button>
+            <a href="admission.html" class="btn btn-primary" style="text-decoration:none;">+ New Admission</a>
         </div>
-
-        <div class="card table-container">
+        <div style="overflow-x:auto;">
             <table>
                 <thead>
                     <tr>
-                        <th>Reg No</th>
-                        <th>Student Name</th>
-                        <th>Phone Number</th>
-                        <th>Course Enrolled</th>
+                        <th>Reg. No</th>
+                        <th>Name</th>
+                        <th>Course</th>
+                        <th>Qualification</th>
                         <th>Status</th>
                     </tr>
                 </thead>
                 <tbody id="studentsTableBody">
-                    <tr><td colspan="5" class="text-center">Loading students data...</td></tr>
+                    <tr><td colspan="5" style="text-align:center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
     </main>
-
-    <!-- JavaScript -->
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-
-        // 1. Session Check
-        async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.href = 'login.html';
-                return;
-            }
-            loadStudents();
-        }
-
-        // 2. Load Students from Database
-        async function loadStudents() {
-            const tbody = document.getElementById('studentsTableBody');
+        
+        async function fetchStudents() {
             try {
-                // Fetch students and join with courses table to get course_name
                 const { data, error } = await supabase
                     .from('students')
-                    .select(`
-                        register_number,
-                        full_name,
-                        phone,
-                        status,
-                        courses ( course_name )
-                    `)
+                    .select('register_number, full_name, status, qualification, courses(course_name)')
                     .order('created_at', { ascending: false });
-
+                    
                 if (error) throw error;
-
-                // Check if table is empty
+                
+                const tbody = document.getElementById('studentsTableBody');
+                tbody.innerHTML = '';
+                
                 if (!data || data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--text-muted);">No students found. Click on '+ New Admission' to add one.</td></tr>`;
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No students found.</td></tr>';
                     return;
                 }
-
-                // Render Data Rows
-                tbody.innerHTML = data.map(student => `
-                    <tr>
-                        <td style="font-weight: 600; color: var(--primary-dark);">${student.register_number}</td>
-                        <td style="font-weight: 500;">${student.full_name}</td>
-                        <td>${student.phone}</td>
-                        <td>${student.courses ? student.courses.course_name : 'N/A'}</td>
-                        <td>
-                            <span class="badge ${student.status === 'active' ? 'badge-active' : 'badge-inactive'}">
-                                ${student.status.toUpperCase()}
-                            </span>
-                        </td>
-                    </tr>
-                `).join('');
-
+                
+                data.forEach(s => {
+                    let qualClass = 'qual-none';
+                    let qualText = s.qualification || 'No Qualification';
+                    
+                    if (qualText === 'SSLC') qualClass = 'qual-sslc';
+                    else if (qualText === 'Plus Two') qualClass = 'qual-plus2';
+                    else if (qualText === 'Degree') qualClass = 'qual-degree';
+                    else qualText = 'No Qualification';
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${s.register_number}</td>
+                        <td style="font-weight:600;">${s.full_name}</td>
+                        <td>${s.courses ? s.courses.course_name : 'N/A'}</td>
+                        <td><span class="badge ${qualClass}">${qualText}</span></td>
+                        <td><span style="color: green; font-weight: 500;">${s.status.toUpperCase()}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
             } catch (err) {
                 console.error('Error fetching students:', err);
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--error);">Failed to load data. Please refresh.</td></tr>`;
+                document.getElementById('studentsTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Failed to load data.</td></tr>';
             }
         }
-
-        // 3. Logout Handler
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabase.auth.signOut();
-            window.location.href = 'login.html';
-        });
-
-        // Initialize Page
-        checkAuth();
+        fetchStudents();
     </script>
 </body>
 </html>
