@@ -8,7 +8,6 @@
 </head>
 <body>
     
-    <!-- അപ്ഡേറ്റ് ചെയ്ത ഹെഡർ: ബാക്ക് ബട്ടൺ ഒഴിവാക്കി -->
     <nav class="app-header">
         <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
@@ -36,8 +35,33 @@
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="color: #6B7280; font-size: 14px;">Total Paid:</span><span id="txtTotalPaid" style="font-weight: 600; color: #10B981;">₹ 0</span></div>
                     <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E7EB;"><span style="color: #111827; font-size: 16px; font-weight: 700;">Pending Balance:</span><span id="txtPending" style="font-size: 18px; font-weight: 800; color: #EF4444;">₹ 0</span></div>
                 </div>
-                <div class="form-group"><label class="form-label">Amount to Pay (₹)</label><input type="number" id="amountPaid" class="form-control" required min="1"></div>
-                <div class="form-group" style="margin-bottom: 24px;"><label class="form-label">Payment Date</label><input type="date" id="paymentDate" class="form-control" required></div>
+                
+                <div class="form-group">
+                    <label class="form-label">Amount to Pay (₹)</label>
+                    <input type="number" id="amountPaid" class="form-control" required min="1">
+                </div>
+
+                <!-- പേയ്മെന്റ് മാർഗ്ഗം ബോക്സ് (ഒരു വരിയിൽ മുഴുവനായി) -->
+                <div class="form-group">
+                    <label class="form-label">Payment Mode</label>
+                    <select id="paymentMode" class="form-control" required>
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Bank Transfer">Bank Transfer</option>
+                    </select>
+                </div>
+
+                <!-- റെസീപ്റ്റ് / ട്രാൻസാക്ഷൻ ഐഡി ബോക്സ് (ഒരു വരിയിൽ മുഴുവനായി) -->
+                <div class="form-group">
+                    <label class="form-label">Receipt / Transaction ID</label>
+                    <input type="text" id="txnId" class="form-control" placeholder="Enter receipt or transaction ID (optional)">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label class="form-label">Payment Date</label>
+                    <input type="date" id="paymentDate" class="form-control" required>
+                </div>
+
                 <button type="submit" class="btn btn-primary" id="submitBtn">Submit Payment</button>
             </form>
             
@@ -83,13 +107,24 @@
         });
 
         document.getElementById('feeForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); document.getElementById('submitBtn').disabled = true;
+            e.preventDefault(); 
+            document.getElementById('submitBtn').disabled = true;
+            
             const { error } = await supabase.from('fee_payments').insert([{
                 student_id: document.getElementById('studentSelect').value,
                 amount_paid: document.getElementById('amountPaid').value,
+                payment_mode: document.getElementById('paymentMode').value,
+                transaction_id: document.getElementById('txnId').value,
                 payment_date: document.getElementById('paymentDate').value
             }]);
-            if (error) alert('Error: ' + error.message); else { alert('Success!'); window.location.reload(); }
+
+            if (error) {
+                alert('Error: ' + error.message);
+                document.getElementById('submitBtn').disabled = false;
+            } else { 
+                alert('Payment Recorded Successfully!'); 
+                window.location.href = 'dashboard.html'; 
+            }
         });
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
