@@ -155,8 +155,20 @@
             }
         };
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); window.location.href = 'login.html'; });
+      document.getElementById('logoutBtn').addEventListener('click', async () => { 
+            // 1. Supabase-ൽ നിന്ന് ലോഗ്ഔട്ട് ചെയ്യുന്നു
+            await supabase.auth.signOut(); 
+            
+            // 2. ബ്രൗസർ ക്യാഷും സ്റ്റോറേജും ക്ലിയർ ചെയ്യുന്നു
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // 3. Back ബട്ടൺ അമർത്തിയാൽ തിരികെ വരാതിരിക്കാൻ ഹിസ്റ്ററി ക്ലിയർ ചെയ്ത് ലോഗിൻ പേജിലേക്ക് മാറ്റുന്നു
+            window.history.replaceState(null, '', 'login.html');
+            window.location.replace('login.html'); 
+        });
+        
         checkAuth();
     </script>
 </body>
-</html>
+</html> 
