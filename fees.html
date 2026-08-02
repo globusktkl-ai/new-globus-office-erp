@@ -6,91 +6,67 @@
     <title>Collect Fee - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* ഹെഡറിനുള്ളിലെ എലിമെന്റുകളുടെ അലൈൻമെന്റ് കൃത്യമാക്കാൻ */
-        .app-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 12px;
+        .app-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; }
+        
+        .header-left-group { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+        
+        /* Floating Glass Back Button */
+        .btn-back-glass {
+            display: flex; align-items: center; justify-content: center;
+            width: 38px; height: 38px; text-decoration: none;
+            font-size: 24px; font-weight: bold; color: var(--primary-dark);
+            background: rgba(220, 226, 235, 0.4);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0; transition: all 0.3s ease;
         }
-        .header-left-group {
-            display: flex;
-            align-items: center;
-            gap: 6px; /* ഐക്കണുകൾ തമ്മിലുള്ള ഇടവേള കുറച്ചു */
-            flex: 1;
-            min-width: 0; /* ടെക്സ്റ്റ് ലോഗ്ഔട്ട് ബട്ടണിൽ ഇടിക്കാതെ നിർത്താൻ */
-        }
+        .btn-back-glass:hover { transform: scale(1.05); background: rgba(220, 226, 235, 0.6); }
+
+        .logo-small { height: 32px; border-radius: 4px; flex-shrink: 0; }
+        
+        /* Institute Name */
         .header-brand-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--primary-dark);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; /* വലിയ ഫോണുകളിലും കൃത്യമായി കാണിക്കാൻ */
+            font-size: 15px; font-weight: 700; color: var(--primary-dark);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
         }
-        .btn-back-icon {
-            text-decoration: none;
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--primary-dark);
-            padding-right: 4px;
+
+        /* Wider Logout Button */
+        .header-right { flex-shrink: 0; margin-left: 10px; }
+        .btn-logout-custom {
+            padding: 8px 24px; font-size: 14px; font-weight: 600; color: #fff;
+            background: #EF4444; border: none; border-radius: 8px; cursor: pointer;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
         }
     </style>
 </head>
 <body>
     <nav class="app-header">
-        <!-- ഇടത് വശം: ബാക്ക് ബട്ടൺ, ലോഗോ, സ്ഥാപനത്തിന്റെ പേര് -->
         <div class="header-left-group">
-            <a href="dashboard.html" class="btn-back-icon">←</a>
-            <img src="assets/images/logo.png" class="logo-small" alt="Globus Technical Academy" onerror="this.style.display='none'">
+            <a href="dashboard.html" class="btn-back-glass">←</a>
+            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <span class="header-brand-title">Globus Technical Academy</span>
         </div>
-
-        <!-- വലത് വശം: യൂസർ നെയിം & ലോഗ്ഔട്ട് -->
-        <div class="header-right" style="flex-shrink: 0; display: flex; align-items: center; gap: 8px;">
-            <span class="user-name-small" id="userName">Loading...</span>
-            <button class="btn-logout-small" id="logoutBtn">Logout</button>
+        <div class="header-right">
+            <button class="btn-logout-custom" id="logoutBtn">Logout</button>
         </div>
     </nav>
 
     <main class="main-content">
         <div class="form-card">
             <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--primary-dark);">Collect Fee</h2>
-            
             <form id="feeForm">
                 <div class="form-group">
                     <label class="form-label">Select Student</label>
-                    <select id="studentSelect" class="form-control" required>
-                        <option value="">-- Select Student --</option>
-                    </select>
+                    <select id="studentSelect" class="form-control" required><option value="">-- Select Student --</option></select>
                 </div>
-
-                <!-- Fee Details Section -->
                 <div id="feeDetails" style="display: none; background: #F3F4F6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #6B7280; font-size: 14px;">Total Fee:</span>
-                        <span id="txtTotalFee" style="font-weight: 600;">₹ 0</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #6B7280; font-size: 14px;">Total Paid (incl. Admission):</span>
-                        <span id="txtTotalPaid" style="font-weight: 600; color: #10B981;">₹ 0</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E7EB;">
-                        <span style="color: #111827; font-size: 16px; font-weight: 700;">Pending Balance:</span>
-                        <span id="txtPending" style="font-size: 18px; font-weight: 800; color: #EF4444;">₹ 0</span>
-                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="color: #6B7280; font-size: 14px;">Total Fee:</span><span id="txtTotalFee" style="font-weight: 600;">₹ 0</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="color: #6B7280; font-size: 14px;">Total Paid:</span><span id="txtTotalPaid" style="font-weight: 600; color: #10B981;">₹ 0</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E7EB;"><span style="color: #111827; font-size: 16px; font-weight: 700;">Pending Balance:</span><span id="txtPending" style="font-size: 18px; font-weight: 800; color: #EF4444;">₹ 0</span></div>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label">Amount to Pay (₹)</label>
-                    <input type="number" id="amountPaid" class="form-control" required min="1" placeholder="Enter amount">
-                </div>
-
-                <div class="form-group" style="margin-bottom: 24px;">
-                    <label class="form-label">Payment Date</label>
-                    <input type="date" id="paymentDate" class="form-control" required>
-                </div>
-
+                <div class="form-group"><label class="form-label">Amount to Pay (₹)</label><input type="number" id="amountPaid" class="form-control" required min="1"></div>
+                <div class="form-group" style="margin-bottom: 24px;"><label class="form-label">Payment Date</label><input type="date" id="paymentDate" class="form-control" required></div>
                 <button type="submit" class="btn btn-primary" id="submitBtn">Submit Payment</button>
             </form>
         </div>
@@ -103,102 +79,49 @@
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            document.getElementById('userName').textContent = session.user.user_metadata.full_name || 'Admin';
-            
+            // Username ഒഴിവാക്കി
             document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
             fetchStudents();
         }
 
         async function fetchStudents() {
-            const { data, error } = await supabase
-                .from('students')
-                .select('id, register_number, full_name, total_fee, admission_fee, fee_payments(amount_paid)')
-                .eq('status', 'active')
-                .order('full_name', { ascending: true });
-
-            if (error) {
-                console.error(error);
-                return;
-            }
-            
+            const { data } = await supabase.from('students').select('id, register_number, full_name, total_fee, admission_fee, fee_payments(amount_paid)').eq('status', 'active').order('full_name');
             studentsData = data || [];
             const select = document.getElementById('studentSelect');
-            
-            studentsData.forEach(student => {
-                const option = document.createElement('option');
-                option.value = student.id;
-                option.textContent = `${student.full_name} (${student.register_number})`;
-                select.appendChild(option);
-            });
+            studentsData.forEach(s => select.add(new Option(`${s.full_name} (${s.register_number})`, s.id)));
         }
 
         document.getElementById('studentSelect').addEventListener('change', function() {
-            const studentId = this.value;
-            const detailsDiv = document.getElementById('feeDetails');
-            
-            if (!studentId) {
-                detailsDiv.style.display = 'none';
-                return;
-            }
-
-            const student = studentsData.find(s => s.id === studentId);
-            if (student) {
-                const totalFee = Number(student.total_fee) || 0;
-                const admissionFee = Number(student.admission_fee) || 0;
-                const payments = student.fee_payments ? student.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0;
-                
-                const totalPaid = admissionFee + payments;
-                const pendingFee = totalFee - totalPaid;
-
-                document.getElementById('txtTotalFee').textContent = `₹ ${totalFee}`;
-                document.getElementById('txtTotalPaid').textContent = `₹ ${totalPaid}`;
-                
-                const pendingEl = document.getElementById('txtPending');
-                pendingEl.textContent = `₹ ${pendingFee}`;
-                
-                if (pendingFee <= 0) {
-                    pendingEl.textContent = "Fully Paid";
-                    pendingEl.style.color = "#10B981"; 
-                } else {
-                    pendingEl.style.color = "#EF4444"; 
-                }
-
-                detailsDiv.style.display = 'block';
+            const stId = this.value; const div = document.getElementById('feeDetails');
+            if (!stId) { div.style.display = 'none'; return; }
+            const s = studentsData.find(x => x.id === stId);
+            if (s) {
+                const tFee = Number(s.total_fee)||0, aFee = Number(s.admission_fee)||0;
+                const pay = s.fee_payments ? s.fee_payments.reduce((sum,p)=>sum+Number(p.amount_paid),0) : 0;
+                const bal = tFee - (aFee + pay);
+                document.getElementById('txtTotalFee').textContent = `₹ ${tFee}`;
+                document.getElementById('txtTotalPaid').textContent = `₹ ${aFee + pay}`;
+                const pEl = document.getElementById('txtPending'); pEl.textContent = `₹ ${bal}`;
+                pEl.style.color = bal <= 0 ? "#10B981" : "#EF4444";
+                if(bal <= 0) pEl.textContent = "Fully Paid";
+                div.style.display = 'block';
             }
         });
 
         document.getElementById('feeForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.textContent = 'Processing...'; 
-            btn.disabled = true;
-
-            const student_id = document.getElementById('studentSelect').value;
-            const amount_paid = document.getElementById('amountPaid').value;
-            const payment_date = document.getElementById('paymentDate').value;
-
-            const { error } = await supabase.from('fee_payments').insert([
-                { student_id, amount_paid, payment_date }
-            ]);
-
-            if (error) {
-                alert('Payment Failed: ' + error.message);
-                btn.textContent = 'Submit Payment'; 
-                btn.disabled = false;
-            } else {
-                alert('Fee Payment Added Successfully!');
-                window.location.reload();
-            }
+            e.preventDefault(); document.getElementById('submitBtn').disabled = true;
+            const { error } = await supabase.from('fee_payments').insert([{
+                student_id: document.getElementById('studentSelect').value,
+                amount_paid: document.getElementById('amountPaid').value,
+                payment_date: document.getElementById('paymentDate').value
+            }]);
+            if (error) alert('Error: ' + error.message); else { alert('Success!'); window.location.reload(); }
         });
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            await supabase.auth.signOut(); 
-            localStorage.clear();
-            sessionStorage.clear();
-            window.history.replaceState(null, '', 'login.html');
-            window.location.replace('login.html'); 
+            await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
+            window.history.replaceState(null, '', 'login.html'); window.location.replace('login.html'); 
         });
-
         checkAuth();
     </script>
 </body>
