@@ -5,42 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        /* ഹെഡറിനുള്ളിലെ എലിമെന്റുകളുടെ അലൈൻമെന്റ് കൃത്യമാക്കാൻ */
-        .app-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 12px;
-        }
-        .header-left-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex: 1;
-            min-width: 0; 
-        }
-        .header-brand-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--primary-dark);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; 
-        }
-    </style>
 </head>
 <body>
+    
+    <!-- അപ്ഡേറ്റ് ചെയ്ത പുതിയ ഹെഡർ -->
     <nav class="app-header">
-        <!-- ഇടത് വശം: ലോഗോ, സ്ഥാപനത്തിന്റെ പേര് -->
-        <div class="header-left-group">
-            <img src="assets/images/logo.png" class="logo-small" alt="Globus Technical Academy" onerror="this.style.display='none'">
-            <span class="header-brand-title">Globus Technical Academy</span>
+        <div class="header-left">
+            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
         </div>
         
-        <!-- വലത് വശം: ലോഗ്ഔട്ട് മാത്രം (Admin പേര് ഒഴിവാക്കി) -->
-        <div class="header-right" style="flex-shrink: 0; display: flex; align-items: center;">
-            <button class="btn-logout-small" id="logoutBtn">Logout</button>
+        <div class="header-center">
+            <span class="brand-top">Globus</span>
+            <span class="brand-bottom">Technical Academy</span>
+        </div>
+        
+        <div class="header-right">
+            <button class="btn-logout-custom" id="logoutBtn">Logout</button>
         </div>
     </nav>
 
@@ -66,6 +46,7 @@
             </div>
         </div>
 
+        <!-- ലിങ്കുകൾ ശരിയാക്കിയ Nav Grid -->
         <div class="nav-grid">
             <a href="admission.html" class="nav-btn"><span class="nav-icon">🎓</span>New Admission</a>
             <a href="fees.html" class="nav-btn"><span class="nav-icon">💰</span>Collect Fee</a>
@@ -80,7 +61,6 @@
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            // Admin പേര് കൊടുത്തിരുന്ന വരി ഇവിടെ നിന്നും ഒഴിവാക്കിയിട്ടുണ്ട്
             loadDashboardData();
         }
 
