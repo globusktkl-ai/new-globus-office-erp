@@ -1,1 +1,177 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Collect Fee - Globus technical academy</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <nav class="app-header">
+        <div class="header-left" style="width: 70%; display: flex; align-items: center;">
+            <a href="dashboard.html" class="btn-back-icon">←</a>
+            <img src="assets/images/logo.png" class="logo-small" alt="Globus technical academy" onerror="this.style.display='none'" style="margin-left: 8px;">
+            <span style="font-size: 15px; font-weight: 700; color: var(--primary-dark); white-space: nowrap; margin-left: 8px;">Globus technical academy</span>
+        </div>
+        <div class="header-right" style="width: 30%;">
+            <span class="user-name-small" id="userName">Loading...</span>
+            <button class="btn-logout-small" id="logoutBtn">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="form-card">
+            <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--primary-dark);">Collect Fee</h2>
+            
+            <form id="feeForm">
+                <div class="form-group">
+                    <label class="form-label">Select Student</label>
+                    <select id="studentSelect" class="form-control" required>
+                        <option value="">-- Select Student --</option>
+                    </select>
+                </div>
+
+                <!-- Fee Details Section (കുട്ടിയെ സെലക്ട് ചെയ്യുമ്പോൾ മാത്രം കാണിക്കും) -->
+                <div id="feeDetails" style="display: none; background: #F3F4F6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #6B7280; font-size: 14px;">Total Fee:</span>
+                        <span id="txtTotalFee" style="font-weight: 600;">₹ 0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #6B7280; font-size: 14px;">Total Paid (incl. Admission):</span>
+                        <span id="txtTotalPaid" style="font-weight: 600; color: #10B981;">₹ 0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E7EB;">
+                        <span style="color: #111827; font-size: 16px; font-weight: 700;">Pending Balance:</span>
+                        <!-- പെൻഡിങ് ഫീസ് ചുവപ്പ് നിറത്തിൽ (Red color) -->
+                        <span id="txtPending" style="font-size: 18px; font-weight: 800; color: #EF4444;">₹ 0</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Amount to Pay (₹)</label>
+                    <input type="number" id="amountPaid" class="form-control" required min="1" placeholder="Enter amount">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label class="form-label">Payment Date</label>
+                    <input type="date" id="paymentDate" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submitBtn">Submit Payment</button>
+            </form>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+        let studentsData = [];
+
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            document.getElementById('userName').textContent = session.user.user_metadata.full_name || 'Admin';
+            
+            // ഇന്നത്തെ തിയ്യതി ഡീഫോൾട്ട് ആയി നൽകാൻ
+            document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
+            fetchStudents();
+        }
+
+        async function fetchStudents() {
+            const { data, error } = await supabase
+                .from('students')
+                .select('id, register_number, full_name, total_fee, admission_fee, fee_payments(amount_paid)')
+                .eq('status', 'active')
+                .order('full_name', { ascending: true });
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+            
+            studentsData = data || [];
+            const select = document.getElementById('studentSelect');
+            
+            studentsData.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.full_name} (${student.register_number})`;
+                select.appendChild(option);
+            });
+        }
+
+        // കുട്ടിയെ സെലക്ട് ചെയ്യുമ്പോൾ ഫീസ് വിവരങ്ങൾ കണക്കാക്കി കാണിക്കാൻ
+        document.getElementById('studentSelect').addEventListener('change', function() {
+            const studentId = this.value;
+            const detailsDiv = document.getElementById('feeDetails');
+            
+            if (!studentId) {
+                detailsDiv.style.display = 'none';
+                return;
+            }
+
+            const student = studentsData.find(s => s.id === studentId);
+            if (student) {
+                const totalFee = Number(student.total_fee) || 0;
+                const admissionFee = Number(student.admission_fee) || 0;
+                const payments = student.fee_payments ? student.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0;
+                
+                const totalPaid = admissionFee + payments;
+                const pendingFee = totalFee - totalPaid;
+
+                document.getElementById('txtTotalFee').textContent = `₹ ${totalFee}`;
+                document.getElementById('txtTotalPaid').textContent = `₹ ${totalPaid}`;
+                
+                const pendingEl = document.getElementById('txtPending');
+                pendingEl.textContent = `₹ ${pendingFee}`;
+                // ഫീസ് അടച്ചു തീർന്നെങ്കിൽ പച്ച നിറം, അല്ലെങ്കിൽ ചുവപ്പ്
+                if (pendingFee <= 0) {
+                    pendingEl.textContent = "Fully Paid";
+                    pendingEl.style.color = "#10B981"; 
+                } else {
+                    pendingEl.style.color = "#EF4444"; 
+                }
+
+                detailsDiv.style.display = 'block';
+            }
+        });
+
+        // ഫീസ് അടയ്ക്കുന്ന ഫോം സബ്മിറ്റ് ചെയ്യുമ്പോൾ
+        document.getElementById('feeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.textContent = 'Processing...'; 
+            btn.disabled = true;
+
+            const student_id = document.getElementById('studentSelect').value;
+            const amount_paid = document.getElementById('amountPaid').value;
+            const payment_date = document.getElementById('paymentDate').value;
+
+            const { error } = await supabase.from('fee_payments').insert([
+                { student_id, amount_paid, payment_date }
+            ]);
+
+            if (error) {
+                alert('Payment Failed: ' + error.message);
+                btn.textContent = 'Submit Payment'; 
+                btn.disabled = false;
+            } else {
+                alert('Fee Payment Added Successfully!');
+                window.location.reload(); // പേജ് റീലോഡ് ചെയ്ത് പുതിയ വിവരങ്ങൾ അപ്ഡേറ്റ് ചെയ്യാൻ
+            }
+        });
+
+        // പുതിയ സുരക്ഷിതമായ ലോഗ്ഔട്ട് കോഡ് (Cache & Storage Clear)
+        document.getElementById('logoutBtn').addEventListener('click', async () => { 
+            await supabase.auth.signOut(); 
+            localStorage.clear();
+            sessionStorage.clear();
+            window.history.replaceState(null, '', 'login.html');
+            window.location.replace('login.html'); 
+        });
+
+        checkAuth();
+    </script>
+</body>
+</html>
