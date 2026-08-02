@@ -6,26 +6,80 @@
     <title>New Admission - Globus Office ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        .navbar { background-color: var(--white); padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        /* Navbar Styles with Back, User Name & Logout */
+        .navbar { 
+            background-color: var(--white); 
+            padding: 16px 24px; 
+            border-bottom: 1px solid var(--border); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .navbar-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back {
+            text-decoration: none;
+            padding: 6px 12px;
+            background: #F1F5F9;
+            color: var(--text-dark);
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            border: 1px solid var(--border);
+        }
+        .btn-back:hover { background: #E2E8F0; }
         .navbar-brand { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
-        .navbar-menu a { margin-right: 20px; text-decoration: none; color: var(--text-muted); font-weight: 500; }
+        
+        .navbar-menu { display: flex; gap: 20px; }
+        .navbar-menu a { margin-right: 0; text-decoration: none; color: var(--text-muted); font-weight: 500; }
         .navbar-menu a:hover, .navbar-menu a.active { color: var(--primary-dark); }
+        
+        .navbar-user { display: flex; align-items: center; gap: 15px; }
+        .user-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+        .btn-logout {
+            background-color: transparent;
+            color: var(--error);
+            border: 1px solid var(--error);
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-logout:hover { background-color: #FEF2F2; }
+
         .main-content { padding: 32px 24px; max-width: 800px; margin: 0 auto; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-width { grid-column: span 2; }
-        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
+        
+        @media (max-width: 768px) { 
+            .form-grid { grid-template-columns: 1fr; } 
+            .full-width { grid-column: span 1; } 
+            .navbar { flex-direction: column; align-items: flex-start; }
+            .navbar-user { width: 100%; justify-content: space-between; }
+        }
         
         /* Red Star for required fields */
         .req-star { color: #ef4444; font-weight: bold; margin-left: 4px; }
     </style>
 </head>
 <body>
+    <!-- Updated Navbar -->
     <nav class="navbar">
-        <div class="navbar-brand">Globus ERP</div>
+        <div class="navbar-left">
+            <a href="javascript:history.back()" class="btn-back">← Back</a>
+            <div class="navbar-brand">Globus ERP</div>
+        </div>
+        
         <div class="navbar-menu">
             <a href="dashboard.html">Dashboard</a>
             <a href="students.html" class="active">Students</a>
             <a href="fees.html">Fees</a>
+        </div>
+
+        <div class="navbar-user">
+            <span id="userName" class="user-name">Loading...</span>
+            <button id="logoutBtn" class="btn-logout">Logout</button>
         </div>
     </nav>
 
@@ -113,8 +167,30 @@
 
         const alertMessage = document.getElementById('alertMessage');
         const submitBtn = document.getElementById('submitBtn');
+        const userNameEl = document.getElementById('userName');
+        const logoutBtn = document.getElementById('logoutBtn');
 
         document.getElementById('admissionDate').valueAsDate = new Date();
+
+        // 1. Auth Check & Setup
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const userMeta = session.user.user_metadata;
+            userNameEl.textContent = userMeta.full_name || session.user.email;
+            
+            loadDependencies();
+        }
+
+        // Logout
+        logoutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        });
 
         function showAlert(msg, isError = false) {
             alertMessage.textContent = msg;
@@ -198,10 +274,9 @@
                 if (admissionFeeVal > 0 && stuData && stuData.length > 0) {
                     const payData = {
                         student_id: stuData[0].id,
-                        amount: admissionFeeVal,
+                        amount_paid: admissionFeeVal, // Fixed Column Name
                         payment_date: studentData.admission_date,
-                        payment_mode: 'Cash',
-                        remarks: 'Admission Fee Paid'
+                        receipt_no: 'Cash - Admission Fee Paid' // Fixed Column Name
                     };
                     const { error: payErr } = await supabase.from('fee_payments').insert([payData]);
                     if (payErr) console.error("Fee payment insert error:", payErr);
@@ -217,7 +292,8 @@
             }
         });
 
-        loadDependencies();
+        // Initialize App
+        checkAuth();
     </script>
 </body>
 </html>
