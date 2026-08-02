@@ -8,7 +8,6 @@
 </head>
 <body>
     
-    <!-- അപ്ഡേറ്റ് ചെയ്ത ഹെഡർ: ബാക്ക് ബട്ടൺ ഒഴിവാക്കി -->
     <nav class="app-header">
         <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
@@ -34,6 +33,17 @@
         <div id="studentsList"><div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div></div>
     </main>
 
+    <!-- Student Details / Edit Modal Popup -->
+    <div id="studentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; justify-content:center; align-items:center; padding:15px;">
+        <div style="background:#fff; width:100%; max-width:450px; border-radius:12px; padding:20px; max-height:90vh; overflow-y:auto;">
+            <h3 id="modalTitle" style="margin-bottom:15px; font-size:18px; color:var(--primary-dark);">Student Details</h3>
+            <div id="modalContent"></div>
+            <div style="margin-top:20px; text-align:right;">
+                <button type="button" onclick="closeModal()" style="padding:8px 16px; background:#6B7280; color:#fff; border:none; border-radius:6px; cursor:pointer;">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         let allStudents = [];
@@ -45,7 +55,7 @@
         }
 
         async function fetchStudents() {
-            const { data } = await supabase.from('students').select('id, register_number, full_name, phone_number, gender, status, total_fee, admission_fee, photo_url, courses(course_name), fee_payments(amount_paid)').order('created_at', { ascending: false });
+            const { data } = await supabase.from('students').select('id, register_number, full_name, phone_number, gender, qualification, status, total_fee, admission_fee, photo_url, courses(course_name), fee_payments(amount_paid)').order('created_at', { ascending: false });
             allStudents = data || [];
             renderList(allStudents);
         }
@@ -64,23 +74,84 @@
                 card.className = 'student-mobile-card';
                 card.innerHTML = `
                     <div class="smc-header">
-                        <div class="smc-header-left"><div class="smc-name">${s.full_name}</div><div class="smc-reg">${s.register_number}</div></div>
+                        <div class="smc-header-left">
+                            <div class="smc-name">${s.full_name}</div>
+                            <div class="smc-reg">${s.register_number}</div>
+                        </div>
                         <div class="smc-header-center"><img src="${avatarUrl}" class="student-avatar" alt="Photo"></div>
                     </div>
                     <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value">${s.courses?.course_name || 'N/A'}</span></div>
+                    <div class="smc-row"><span class="smc-label">Qualification:</span> <span class="smc-value">${s.qualification || 'N/A'}</span></div>
                     <div class="smc-row"><span class="smc-label">Balance Fee:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
-                    <div class="smc-actions">
-                        <button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="smc-btn btn-delete">Delete</button>
+                    
+                    <!-- വ്യൂ, എഡിറ്റ്, ഡിലീറ്റ് ബട്ടണുകൾ ഒരേ വരിയിൽ മൂന്ന് നിറങ്ങളിൽ -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px;">
+                        <button onclick="viewStudent('${s.id}')" style="background: #3B82F6; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">View</button>
+                        <button onclick="editStudent('${s.id}')" style="background: #F59E0B; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Edit</button>
+                        <button onclick="deleteStudent('${s.id}', '${s.register_number}')" style="background: #EF4444; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Delete</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const val = e.target.value.toLowerCase();
-            renderList(allStudents.filter(s => s.full_name?.toLowerCase().includes(val) || s.register_number?.toLowerCase().includes(val)));
-        });
+        window.viewSession = function() {} // Dummy safeguard
+
+        window.viewStudent = function(id) {
+            const s = allStudents.find(x => x.id === id);
+            if (!s) return;
+            document.getElementById('modalTitle').textContent = "Student Details";
+            document.getElementById('modalContent').innerHTML = `
+                <p><b>Name:</b> ${s.full_name}</p>
+                <p><b>Register No:</b> ${s.register_number}</p>
+                <p><b>Phone:</b> ${s.phone_number}</p>
+                <p><b>Qualification:</b> ${s.qualification || 'N/A'}</p>
+                <p><b>Gender:</b> ${s.gender}</p>
+                <p><b>Course:</b> ${s.courses?.course_name || 'N/A'}</p>
+                <p><b>Total Fee:</b> ₹ ${s.total_fee}</p>
+            `;
+            document.getElementById('studentModal').style.display = 'flex';
+        };
+
+        window.editStudent = function(id) {
+            const s = allStudents.find(x => x.id === id);
+            if (!s) return;
+            document.getElementById('modalTitle').textContent = "Edit Student Details";
+            document.getElementById('modalContent').innerHTML = `
+                <form id="editForm" onsubmit="saveEdit(event, '${s.id}')">
+                    <div style="margin-bottom:12px;"><label style="font-size:13px; font-weight:600;">Full Name</label><input type="text" id="editName" value="${s.full_name}" class="form-control" required></div>
+                    <div style="margin-bottom:12px;"><label style="font-size:13px; font-weight:600;">Phone Number</label><input type="text" id="editPhone" value="${s.phone_number}" class="form-control" required></div>
+                    <div style="margin-bottom:12px;"><label style="font-size:13px; font-weight:600;">Qualification</label><input type="text" id="editQual" value="${s.qualification || ''}" class="form-control" required></div>
+                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:600; cursor:pointer;">Update Student</button>
+                </form>
+            `;
+            document.getElementById('studentModal').style.display = 'flex';
+        };
+
+        window.saveEdit = async function(e, id) {
+            e.preventDefault();
+            const newName = document.getElementById('editName').value;
+            const newPhone = document.getElementById('editPhone').value;
+            const newQual = document.getElementById('editQual').value;
+
+            const { error } = await supabase.from('students').update({
+                full_name: newName,
+                phone_number: newPhone,
+                qualification: newQual
+            }).eq('id', id);
+
+            if (error) {
+                alert('Error updating: ' + error.message);
+            } else {
+                alert('Updated successfully!');
+                closeModal();
+                fetchStudents();
+            }
+        };
+
+        window.closeModal = function() {
+            document.getElementById('studentModal').style.display = 'none';
+        };
 
         window.deleteStudent = async function(id, regNo) {
             const inp = prompt(`⚠️ Type the register number to delete: ${regNo}`);
@@ -90,6 +161,11 @@
                 fetchStudents(); 
             } else if (inp) alert('Register number does not match.');
         };
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            renderList(allStudents.filter(s => s.full_name?.toLowerCase().includes(val) || s.register_number?.toLowerCase().includes(val)));
+        });
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
             await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
