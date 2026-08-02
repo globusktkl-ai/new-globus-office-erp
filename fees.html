@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fee Collection - Globus Office ERP</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .navbar {
+            background-color: var(--white);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar-brand { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
+        .navbar-menu a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .navbar-menu a:hover, .navbar-menu a.active { color: var(--primary-dark); }
+        
+        .main-content { padding: 32px 24px; max-width: 800px; margin: 0 auto; }
+        .page-header { margin-bottom: 24px; }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .full-width { grid-column: span 2; }
+        
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
+        
+        select.form-control {
+            background-color: var(--white);
+            cursor: pointer;
+        }
+
+        .student-card {
+            background-color: #F8FAFC;
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            display: none;
+        }
+        .student-card p { margin-bottom: 8px; font-size: 14px; }
+        .student-card span { font-weight: 600; color: var(--primary-dark); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-brand">Globus ERP</div>
+        <div class="navbar-menu">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="students.html">Students</a>
+            <a href="fees.html" class="active">Fees</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h2>Collect Fees</h2>
+            <p>Record fee payments from enrolled students.</p>
+        </div>
+
+        <div class="card">
+            <div id="alertMessage" class="alert hidden"></div>
+
+            <form id="feeForm">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label">Select Student *</label>
+                        <select id="studentId" class="form-control" required>
+                            <option value="">-- Loading Students... --</option>
+                        </select>
+                    </div>
+
+                    <!-- Student Details Card (Shows up after selecting a student) -->
+                    <div id="studentDetailsCard" class="form-group full-width student-card">
+                        <p>Name: <span id="dispName">N/A</span></p>
+                        <p>Course: <span id="dispCourse">N/A</span></p>
+                        <p>Register No: <span id="dispReg">N/A</span></p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Payment Date *</label>
+                        <input type="date" id="paymentDate" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Amount (₹) *</label>
+                        <input type="number" id="amount" class="form-control" required placeholder="0.00" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Payment Mode *</label>
+                        <select id="paymentMode" class="form-control" required>
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI / GPay</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Reference / Transaction ID</label>
+                        <input type="text" id="reference" class="form-control" placeholder="e.g. UPI Ref No">
+                    </div>
+                </div>
+
+                <div class="form-group mt-4" style="text-align: right;">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Save Payment</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+
+        const alertMessage = document.getElementById('alertMessage');
+        const submitBtn = document.getElementById('submitBtn');
+        const studentSelect = document.getElementById('studentId');
+        let allStudents = [];
+
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+            } else {
+                document.getElementById('paymentDate').valueAsDate = new Date();
+                loadStudents();
+            }
+        }
+
+        function showAlert(msg, isError = true) {
+            alertMessage.textContent = msg;
+            alertMessage.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
+            alertMessage.classList.remove('hidden');
+        }
+
+        async function loadStudents() {
+            try {
+                const { data, error } = await supabase
+                    .from('students')
+                    .select('id, full_name, register_number, courses(course_name)')
+                    .eq('status', 'active');
+                
+                if (error) throw error;
+                
+                allStudents = data || [];
+                studentSelect.innerHTML = '<option value="">-- Choose Student --</option>';
+                
+                allStudents.forEach(s => {
+                    studentSelect.add(new Option(`${s.register_number} - ${s.full_name}`, s.id));
+                });
+            } catch (err) {
+                studentSelect.innerHTML = '<option value="">-- Error Loading Data --</option>';
+                console.error(err);
+            }
+        }
+
+        // Show student details when selected
+        studentSelect.addEventListener('change', (e) => {
+            const studentId = e.target.value;
+            const detailsCard = document.getElementById('studentDetailsCard');
+            
+            if (!studentId) {
+                detailsCard.style.display = 'none';
+                return;
+            }
+
+            const student = allStudents.find(s => s.id === studentId);
+            if (student) {
+                document.getElementById('dispName').textContent = student.full_name;
+                document.getElementById('dispReg').textContent = student.register_number;
+                document.getElementById('dispCourse').textContent = student.courses ? student.courses.course_name : 'N/A';
+                detailsCard.style.display = 'block';
+            }
+        });
+
+        document.getElementById('feeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alertMessage.classList.add('hidden');
+            
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.textContent = 'Processing...';
+            submitBtn.disabled = true;
+
+            const paymentData = {
+                student_id: studentSelect.value,
+                amount: parseFloat(document.getElementById('amount').value),
+                payment_date: document.getElementById('paymentDate').value,
+                payment_mode: document.getElementById('paymentMode').value,
+                remarks: document.getElementById('reference').value || null
+            };
+
+            try {
+                const { data, error } = await supabase.from('fee_payments').insert([paymentData]);
+                if (error) throw error;
+
+                showAlert('Payment saved successfully! Redirecting...', false);
+                setTimeout(() => { window.location.reload(); }, 1500);
+            } catch (err) {
+                showAlert(err.message || 'An error occurred while saving.');
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        checkAuth();
+    </script>
+</body>
+</html>
