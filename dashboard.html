@@ -4,23 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard - Globus Technical Academy</title>
-    <!-- CSS ഫയൽ ലിങ്ക് ചെയ്തിരിക്കുന്നു -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
     
-    <!-- പുതിയ ഹെഡർ ഡിസൈൻ (Overlap ഫിക്സ് ചെയ്തത്) -->
+    <!-- അപ്ഡേറ്റ് ചെയ്ത ഹെഡർ: ലോഗോയും പേരും ഇടതുവശത്ത് -->
     <nav class="app-header">
-        <div class="header-left">
+        <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <div style="display: flex; flex-direction: column; overflow: hidden;">
+                <span class="brand-top" style="font-size: 16px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Globus</span>
+                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Technical Academy</span>
+            </div>
         </div>
         
-        <div class="header-center">
-            <span class="brand-top">Globus</span>
-            <span class="brand-bottom">Technical Academy</span>
-        </div>
-        
-        <div class="header-right">
+        <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
             <button class="btn-logout-custom" id="logoutBtn">Logout</button>
         </div>
     </nav>
@@ -47,102 +45,54 @@
             </div>
         </div>
 
-        <!-- ലിങ്കുകൾ ശരിയാക്കിയ നാവിഗേഷൻ മെനു -->
         <div class="nav-grid">
-            <a href="admission.html" class="nav-btn">
-                <span class="nav-icon">🎓</span>New Admission
-            </a>
-            
-            <a href="fees.html" class="nav-btn">
-                <span class="nav-icon">💰</span>Collect Fee
-            </a>
-            
-            <a href="students.html" class="nav-btn">
-                <span class="nav-icon">👥</span>Student Directory
-            </a>
-            
-            <a href="#" class="nav-btn" style="opacity: 0.6;">
-                <span class="nav-icon">📊</span>Reports
-            </a>
+            <a href="admission.html" class="nav-btn"><span class="nav-icon">🎓</span>New Admission</a>
+            <a href="fees.html" class="nav-btn"><span class="nav-icon">💰</span>Collect Fee</a>
+            <a href="students.html" class="nav-btn"><span class="nav-icon">👥</span>Student Directory</a>
+            <a href="#" class="nav-btn" style="opacity: 0.6;"><span class="nav-icon">📊</span>Reports</a>
         </div>
     </main>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
-        // 1. Check if user is logged in
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { 
-                window.location.href = 'login.html'; 
-                return; 
-            }
+            if (!session) { window.location.href = 'login.html'; return; }
             loadDashboardData();
         }
 
-        // 2. Load Dashboard Statistics
         async function loadDashboardData() {
             try {
-                // Get Total Students
-                const { count: studentCount } = await supabase
-                    .from('students')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('status', 'active');
+                const { count: studentCount } = await supabase.from('students').select('*', { count: 'exact', head: true }).eq('status', 'active');
                 document.getElementById('statStudents').textContent = studentCount || 0;
 
-                // Get Active Courses
-                const { count: courseCount } = await supabase
-                    .from('courses')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('status', 'active');
+                const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true }).eq('status', 'active');
                 document.getElementById('statCourses').textContent = courseCount || 0;
 
-                // Get Today's Collection
                 const todayDate = new Date().toISOString().split('T')[0];
-                const { data: collections } = await supabase
-                    .from('fee_payments')
-                    .select('amount_paid')
-                    .gte('payment_date', `${todayDate}T00:00:00Z`);
-                
+                const { data: collections } = await supabase.from('fee_payments').select('amount_paid').gte('payment_date', `${todayDate}T00:00:00Z`);
                 let todayTotal = collections ? collections.reduce((sum, record) => sum + Number(record.amount_paid), 0) : 0;
                 document.getElementById('statTodayCollection').textContent = '₹ ' + todayTotal;
 
-                // Get Pending Fees
-                const { data: studentsWithFees } = await supabase
-                    .from('students')
-                    .select('total_fee, admission_fee, fee_payments(amount_paid)')
-                    .eq('status', 'active');
-                
+                const { data: studentsWithFees } = await supabase.from('students').select('total_fee, admission_fee, fee_payments(amount_paid)').eq('status', 'active');
                 let pendingFeesSum = 0;
                 if (studentsWithFees) {
                     studentsWithFees.forEach(s => {
-                        const totalFee = Number(s.total_fee) || 0;
-                        const admissionFee = Number(s.admission_fee) || 0;
-                        const paidFees = s.fee_payments ? s.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0;
-                        
-                        const balance = totalFee - admissionFee - paidFees;
+                        const balance = (Number(s.total_fee) || 0) - (Number(s.admission_fee) || 0) - (s.fee_payments ? s.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0);
                         if (balance > 0) pendingFeesSum += balance;
                     });
                 }
                 document.getElementById('statPendingFees').textContent = '₹ ' + pendingFeesSum;
-            } catch (err) { 
-                console.error('Error loading dashboard data:', err); 
-            }
+            } catch (err) { console.error(err); }
         }
 
-        // 3. Secure Logout Function
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
             const btn = document.getElementById('logoutBtn');
-            btn.textContent = 'Logging out...';
-            btn.disabled = true;
-
+            btn.textContent = 'Logging out...'; btn.disabled = true;
             await supabase.auth.signOut(); 
-            localStorage.clear();
-            sessionStorage.clear();
-            
-            // Prevent back button from returning to dashboard after logout
-            window.history.replaceState(null, '', 'login.html');
-            window.location.replace('login.html'); 
+            localStorage.clear(); sessionStorage.clear();
+            window.history.replaceState(null, '', 'login.html'); window.location.replace('login.html'); 
         });
         
         checkAuth();
