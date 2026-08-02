@@ -3,128 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Collect Fee - Globus Technical Academy</title>
+    <title>Directory - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        .app-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; }
-        
-        .header-left-group { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-        
-        /* Floating Glass Back Button */
-        .btn-back-glass {
-            display: flex; align-items: center; justify-content: center;
-            width: 38px; height: 38px; text-decoration: none;
-            font-size: 24px; font-weight: bold; color: var(--primary-dark);
-            background: rgba(220, 226, 235, 0.4);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 50%; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            flex-shrink: 0; transition: all 0.3s ease;
-        }
-        .btn-back-glass:hover { transform: scale(1.05); background: rgba(220, 226, 235, 0.6); }
-
-        .logo-small { height: 32px; border-radius: 4px; flex-shrink: 0; }
-        
-        /* Institute Name */
-        .header-brand-title {
-            font-size: 15px; font-weight: 700; color: var(--primary-dark);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        }
-
-        /* Wider Logout Button */
-        .header-right { flex-shrink: 0; margin-left: 10px; }
-        .btn-logout-custom {
-            padding: 8px 24px; font-size: 14px; font-weight: 600; color: #fff;
-            background: #EF4444; border: none; border-radius: 8px; cursor: pointer;
-            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
-        }
-    </style>
 </head>
 <body>
-   <nav class="app-header">
-        <!-- ഇടത് വശം: ബാക്ക് ബട്ടൺ + ലോഗോ -->
-        <div class="header-left">
-            <a href="dashboard.html" class="btn-back-glass">←</a>
+    
+    <!-- അപ്ഡേറ്റ് ചെയ്ത ഹെഡർ: ബാക്ക് ബട്ടൺ ഒഴിവാക്കി -->
+    <nav class="app-header">
+        <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <div style="display: flex; flex-direction: column; overflow: hidden;">
+                <span class="brand-top" style="font-size: 16px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Globus</span>
+                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Technical Academy</span>
+            </div>
         </div>
         
-        <!-- നടുവിൽ: സ്ഥാപനത്തിന്റെ പേര് (രണ്ട് വരിയിൽ) -->
-        <div class="header-center">
-            <span class="brand-top">Globus</span>
-            <span class="brand-bottom">Technical Academy</span>
-        </div>
-        
-        <!-- വലത് വശം: ലോഗ്ഔട്ട് ബട്ടൺ -->
-        <div class="header-right">
+        <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
             <button class="btn-logout-custom" id="logoutBtn">Logout</button>
         </div>
     </nav>
 
     <main class="main-content">
-        <div class="form-card">
-            <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--primary-dark);">Collect Fee</h2>
-            <form id="feeForm">
-                <div class="form-group">
-                    <label class="form-label">Select Student</label>
-                    <select id="studentSelect" class="form-control" required><option value="">-- Select Student --</option></select>
-                </div>
-                <div id="feeDetails" style="display: none; background: #F3F4F6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="color: #6B7280; font-size: 14px;">Total Fee:</span><span id="txtTotalFee" style="font-weight: 600;">₹ 0</span></div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="color: #6B7280; font-size: 14px;">Total Paid:</span><span id="txtTotalPaid" style="font-weight: 600; color: #10B981;">₹ 0</span></div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E7EB;"><span style="color: #111827; font-size: 16px; font-weight: 700;">Pending Balance:</span><span id="txtPending" style="font-size: 18px; font-weight: 800; color: #EF4444;">₹ 0</span></div>
-                </div>
-                <div class="form-group"><label class="form-label">Amount to Pay (₹)</label><input type="number" id="amountPaid" class="form-control" required min="1"></div>
-                <div class="form-group" style="margin-bottom: 24px;"><label class="form-label">Payment Date</label><input type="date" id="paymentDate" class="form-control" required></div>
-                <button type="submit" class="btn btn-primary" id="submitBtn">Submit Payment</button>
-            </form>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="dashboard.html" style="color: var(--primary-light); text-decoration: none; font-weight: 600;">← Return to Dashboard</a>
         </div>
+        
+        <div class="filter-section">
+            <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search Name, Phone, Reg No...">
+        </div>
+        <div id="studentsList"><div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div></div>
     </main>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-        let studentsData = [];
+        let allStudents = [];
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            // Username ഒഴിവാക്കി
-            document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
             fetchStudents();
         }
 
         async function fetchStudents() {
-            const { data } = await supabase.from('students').select('id, register_number, full_name, total_fee, admission_fee, fee_payments(amount_paid)').eq('status', 'active').order('full_name');
-            studentsData = data || [];
-            const select = document.getElementById('studentSelect');
-            studentsData.forEach(s => select.add(new Option(`${s.full_name} (${s.register_number})`, s.id)));
+            const { data } = await supabase.from('students').select('id, register_number, full_name, phone_number, gender, status, total_fee, admission_fee, photo_url, courses(course_name), fee_payments(amount_paid)').order('created_at', { ascending: false });
+            allStudents = data || [];
+            renderList(allStudents);
         }
 
-        document.getElementById('studentSelect').addEventListener('change', function() {
-            const stId = this.value; const div = document.getElementById('feeDetails');
-            if (!stId) { div.style.display = 'none'; return; }
-            const s = studentsData.find(x => x.id === stId);
-            if (s) {
-                const tFee = Number(s.total_fee)||0, aFee = Number(s.admission_fee)||0;
-                const pay = s.fee_payments ? s.fee_payments.reduce((sum,p)=>sum+Number(p.amount_paid),0) : 0;
-                const bal = tFee - (aFee + pay);
-                document.getElementById('txtTotalFee').textContent = `₹ ${tFee}`;
-                document.getElementById('txtTotalPaid').textContent = `₹ ${aFee + pay}`;
-                const pEl = document.getElementById('txtPending'); pEl.textContent = `₹ ${bal}`;
-                pEl.style.color = bal <= 0 ? "#10B981" : "#EF4444";
-                if(bal <= 0) pEl.textContent = "Fully Paid";
-                div.style.display = 'block';
-            }
+        function renderList(data) {
+            const container = document.getElementById('studentsList'); container.innerHTML = '';
+            if (data.length === 0) { container.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444;">No students found.</div>'; return; }
+            
+            data.forEach(s => {
+                const bal = (Number(s.total_fee)||0) - (Number(s.admission_fee)||0) - (s.fee_payments ? s.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0);
+                const balColor = bal > 0 ? '#EF4444' : '#10B981';
+                const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
+                let avatarUrl = s.photo_url || (s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
+
+                const card = document.createElement('div');
+                card.className = 'student-mobile-card';
+                card.innerHTML = `
+                    <div class="smc-header">
+                        <div class="smc-header-left"><div class="smc-name">${s.full_name}</div><div class="smc-reg">${s.register_number}</div></div>
+                        <div class="smc-header-center"><img src="${avatarUrl}" class="student-avatar" alt="Photo"></div>
+                    </div>
+                    <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value">${s.courses?.course_name || 'N/A'}</span></div>
+                    <div class="smc-row"><span class="smc-label">Balance Fee:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
+                    <div class="smc-actions">
+                        <button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="smc-btn btn-delete">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            renderList(allStudents.filter(s => s.full_name?.toLowerCase().includes(val) || s.register_number?.toLowerCase().includes(val)));
         });
 
-        document.getElementById('feeForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); document.getElementById('submitBtn').disabled = true;
-            const { error } = await supabase.from('fee_payments').insert([{
-                student_id: document.getElementById('studentSelect').value,
-                amount_paid: document.getElementById('amountPaid').value,
-                payment_date: document.getElementById('paymentDate').value
-            }]);
-            if (error) alert('Error: ' + error.message); else { alert('Success!'); window.location.reload(); }
-        });
+        window.deleteStudent = async function(id, regNo) {
+            const inp = prompt(`⚠️ Type the register number to delete: ${regNo}`);
+            if (inp === regNo) {
+                await supabase.from('fee_payments').delete().eq('student_id', id);
+                await supabase.from('students').delete().eq('id', id);
+                fetchStudents(); 
+            } else if (inp) alert('Register number does not match.');
+        };
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
             await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
