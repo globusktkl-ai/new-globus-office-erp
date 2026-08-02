@@ -3,29 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard - Globus ERP</title>
+    <title>Dashboard - VPKTechsolutions</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-
-    <!-- App Header with Logo -->
-    <nav class="app-navbar">
-        <div class="navbar-brand">
-            <!-- LOGO: പ്രൊജക്റ്റിലെ assets/images ഫോൾഡറിൽ logo.png എന്ന പേരിൽ ചിത്രം സേവ് ചെയ്യുക -->
-            <img src="assets/images/logo.png" alt="Logo" class="app-logo" onerror="this.style.display='none'"> 
-            <span>Globus ERP</span>
+    <nav class="app-header">
+        <div class="header-left">
+            <img src="assets/images/logo.png" class="logo-small" alt="VPKTechsolutions" onerror="this.style.display='none'">
         </div>
-        <div class="navbar-user">
-            <span id="userName" style="font-size: 12px; font-weight:600;">Loading...</span>
-            <button id="logoutBtn" class="btn-logout">Logout</button>
+        <div class="header-center">VPKTechsolutions</div>
+        <div class="header-right">
+            <span class="user-name-small" id="userName">Loading...</span>
+            <button class="btn-logout-small" id="logoutBtn">Logout</button>
         </div>
     </nav>
 
     <main class="main-content">
-        <h2 class="page-title">Hello, Admin! 👋</h2>
-        <p class="page-subtitle">Here is your institute's summary.</p>
-
-        <!-- Compact Stats Grid for Mobile -->
+        <h2 style="font-size: 18px; margin-bottom: 16px;">Institute Overview</h2>
+        
         <div class="stat-grid">
             <div class="stat-box">
                 <div class="stat-label">Total Students</div>
@@ -35,42 +30,26 @@
                 <div class="stat-label">Active Courses</div>
                 <div class="stat-value" id="statCourses">0</div>
             </div>
-            <div class="stat-box" style="border-bottom: 3px solid #22c55e;">
+            <div class="stat-box" style="border-left: 4px solid #10B981;">
                 <div class="stat-label">Today's Collection</div>
-                <div class="stat-value" id="statTodayCollection" style="color: #16a34a;">₹ 0</div>
+                <div class="stat-value" id="statTodayCollection" style="color: #10B981;">₹ 0</div>
             </div>
-            <div class="stat-box" style="border-bottom: 3px solid #ef4444;">
+            <div class="stat-box" style="border-left: 4px solid #EF4444;">
                 <div class="stat-label">Pending Fees</div>
-                <div class="stat-value" id="statPendingFees" style="color: #dc2626;">₹ 0</div>
+                <div class="stat-value" id="statPendingFees" style="color: #EF4444;">₹ 0</div>
             </div>
         </div>
 
-        <!-- Beautiful Quick Links for Navigation -->
-        <h3 style="margin-top: 32px; font-size: 16px; color: var(--text-muted);">Quick Actions</h3>
         <div class="nav-grid">
-            <a href="admission.html" class="nav-btn">
-                <span class="nav-icon">🎓</span>
-                New Admission
-            </a>
-            <a href="fees.html" class="nav-btn">
-                <span class="nav-icon">💰</span>
-                Collect Fee
-            </a>
-            <a href="students.html" class="nav-btn">
-                <span class="nav-icon">👥</span>
-                Student Directory
-            </a>
-            <!-- നിങ്ങൾക്ക് ഭാവിയിൽ ചേർക്കാൻ പാകത്തിൽ ഒരു ഡമ്മി ബട്ടൺ -->
-            <a href="#" class="nav-btn" style="opacity: 0.6;">
-                <span class="nav-icon">📊</span>
-                Reports
-            </a>
+            <a href="admission.html" class="nav-btn"><span class="nav-icon">🎓</span>New Admission</a>
+            <a href="fees.html" class="nav-btn"><span class="nav-icon">💰</span>Collect Fee</a>
+            <a href="students.html" class="nav-btn"><span class="nav-icon">👥</span>Student Directory</a>
+            <a href="#" class="nav-btn" style="opacity: 0.6;"><span class="nav-icon">📊</span>Reports</a>
         </div>
     </main>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
@@ -100,16 +79,10 @@
                     });
                 }
                 document.getElementById('statPendingFees').textContent = '₹ ' + pendingFeesSum;
-            } catch (err) {
-                console.error(err);
-            }
+            } catch (err) { console.error(err); }
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabase.auth.signOut();
-            window.location.href = 'login.html';
-        });
-
+        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); window.location.href = 'login.html'; });
         checkAuth();
     </script>
 </body>
