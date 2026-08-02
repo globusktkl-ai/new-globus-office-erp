@@ -5,34 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>New Admission - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        /* അപ്ഡേറ്റ് ചെയ്ത ഹെഡർ ഡിസൈൻ */
-        .app-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; }
-        .header-left-group { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-        .btn-back-glass { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; text-decoration: none; font-size: 24px; font-weight: bold; color: var(--primary-dark); background: rgba(220, 226, 235, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 50%; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); flex-shrink: 0; transition: 0.3s; }
-        .btn-back-glass:hover { transform: scale(1.05); }
-        .logo-small { height: 32px; border-radius: 4px; flex-shrink: 0; }
-        .header-brand-title { font-size: 15px; font-weight: 700; color: var(--primary-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .header-right { flex-shrink: 0; margin-left: 10px; }
-        .btn-logout-custom { padding: 8px 24px; font-size: 14px; font-weight: 600; color: #fff; background: #EF4444; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); }
-    </style>
 </head>
 <body>
+    
+    <!-- അപ്ഡേറ്റ് ചെയ്ത ഹെഡർ: ബാക്ക് ബട്ടൺ ഒഴിവാക്കി -->
     <nav class="app-header">
-        <!-- ഇടത് വശം: ബാക്ക് ബട്ടൺ + ലോഗോ -->
-        <div class="header-left">
-            <a href="dashboard.html" class="btn-back-glass">←</a>
+        <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <div style="display: flex; flex-direction: column; overflow: hidden;">
+                <span class="brand-top" style="font-size: 16px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Globus</span>
+                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Technical Academy</span>
+            </div>
         </div>
         
-        <!-- നടുവിൽ: സ്ഥാപനത്തിന്റെ പേര് (രണ്ട് വരിയിൽ) -->
-        <div class="header-center">
-            <span class="brand-top">Globus</span>
-            <span class="brand-bottom">Technical Academy</span>
-        </div>
-        
-        <!-- വലത് വശം: ലോഗ്ഔട്ട് ബട്ടൺ -->
-        <div class="header-right">
+        <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
             <button class="btn-logout-custom" id="logoutBtn">Logout</button>
         </div>
     </nav>
@@ -84,23 +70,22 @@
                 
                 <button type="submit" class="btn btn-primary" id="submitBtn">Submit Admission</button>
             </form>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="dashboard.html" style="color: var(--primary-light); text-decoration: none; font-weight: 600;">Return to Dashboard</a>
+            </div>
         </div>
     </main>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // 1. Auth Check (Admin Name ഒഴിവാക്കി)
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { 
-                window.location.href = 'login.html'; 
-                return; 
-            }
+            if (!session) { window.location.href = 'login.html'; return; }
             fetchCourses();
         }
 
-        // 2. Fetch Courses for Dropdown
         async function fetchCourses() {
             const { data } = await supabase.from('courses').select('id, course_name').eq('status', 'active');
             if (data) {
@@ -109,7 +94,6 @@
             }
         }
 
-        // 3. Submit Form Data to Supabase
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault(); 
             const btn = document.getElementById('submitBtn');
@@ -135,13 +119,9 @@
             }
         });
 
-        // 4. Secure Logout Script
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            await supabase.auth.signOut(); 
-            localStorage.clear(); 
-            sessionStorage.clear();
-            window.history.replaceState(null, '', 'login.html'); 
-            window.location.replace('login.html'); 
+            await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
+            window.history.replaceState(null, '', 'login.html'); window.location.replace('login.html'); 
         });
 
         checkAuth();
