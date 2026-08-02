@@ -3,172 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Directory - Globus technical academy</title>
+    <title>Collect Fee - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .app-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; }
+        
+        .header-left-group { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+        
+        /* Floating Glass Back Button */
+        .btn-back-glass {
+            display: flex; align-items: center; justify-content: center;
+            width: 38px; height: 38px; text-decoration: none;
+            font-size: 24px; font-weight: bold; color: var(--primary-dark);
+            background: rgba(220, 226, 235, 0.4);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0; transition: all 0.3s ease;
+        }
+        .btn-back-glass:hover { transform: scale(1.05); background: rgba(220, 226, 235, 0.6); }
+
+        .logo-small { height: 32px; border-radius: 4px; flex-shrink: 0; }
+        
+        /* Institute Name */
+        .header-brand-title {
+            font-size: 15px; font-weight: 700; color: var(--primary-dark);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
+
+        /* Wider Logout Button */
+        .header-right { flex-shrink: 0; margin-left: 10px; }
+        .btn-logout-custom {
+            padding: 8px 24px; font-size: 14px; font-weight: 600; color: #fff;
+            background: #EF4444; border: none; border-radius: 8px; cursor: pointer;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+        }
+    </style>
 </head>
 <body>
     <nav class="app-header">
-        <div class="header-left">
-            <a href="dashboard.html" class="btn-back-icon">←</a>
+        <div class="header-left-group">
+            <a href="dashboard.html" class="btn-back-glass">←</a>
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <span class="header-brand-title">Globus Technical Academy</span>
         </div>
-        <div class="header-center">Directory</div>
         <div class="header-right">
-            <span class="user-name-small" id="userName">Loading...</span>
-            <button class="btn-logout-small" id="logoutBtn">Logout</button>
+            <button class="btn-logout-custom" id="logoutBtn">Logout</button>
         </div>
     </nav>
 
     <main class="main-content">
-        <div class="filter-section">
-            <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search Name, Phone, Reg No...">
-            <div class="form-row-2" style="margin-bottom:0;">
-                <select id="filterCourse" class="form-control"><option value="all">All Courses</option></select>
-                <select id="filterFee" class="form-control">
-                    <option value="all">All Fee Status</option>
-                    <option value="pending">Fee Pending</option>
-                    <option value="paid">Fully Paid</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="studentsList">
-            <div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div>
+        <div class="form-card">
+            <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--primary-dark);">Collect Fee</h2>
+            <form id="feeForm">
+                <div class="form-group">
+                    <label class="form-label">Select Student</label>
+                    <select id="studentSelect" class="form-control" required><option value="">-- Select Student --</option></select>
+                </div>
+                <div id="feeDetails" style="display: none; background: #F3F4F6; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="color: #6B7280; font-size: 14px;">Total Fee:</span><span id="txtTotalFee" style="font-weight: 600;">₹ 0</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span style="color: #6B7280; font-size: 14px;">Total Paid:</span><span id="txtTotalPaid" style="font-weight: 600; color: #10B981;">₹ 0</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #E5E7EB;"><span style="color: #111827; font-size: 16px; font-weight: 700;">Pending Balance:</span><span id="txtPending" style="font-size: 18px; font-weight: 800; color: #EF4444;">₹ 0</span></div>
+                </div>
+                <div class="form-group"><label class="form-label">Amount to Pay (₹)</label><input type="number" id="amountPaid" class="form-control" required min="1"></div>
+                <div class="form-group" style="margin-bottom: 24px;"><label class="form-label">Payment Date</label><input type="date" id="paymentDate" class="form-control" required></div>
+                <button type="submit" class="btn btn-primary" id="submitBtn">Submit Payment</button>
+            </form>
         </div>
     </main>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-        
-        let allStudents = [];
+        let studentsData = [];
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            document.getElementById('userName').textContent = session.user.user_metadata.full_name || session.user.email.split('@')[0];
+            // Username ഒഴിവാക്കി
+            document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
             fetchStudents();
         }
 
         async function fetchStudents() {
-            const { data } = await supabase.from('students').select('id, register_number, full_name, phone_number, gender, status, total_fee, admission_fee, photo_url, courses(course_name), fee_payments(amount_paid)').order('created_at', { ascending: false });
-            allStudents = data || [];
-            
-            const courseSelect = document.getElementById('filterCourse');
-            const uniqueCourses = new Set();
-            allStudents.forEach(s => { if(s.courses?.course_name) uniqueCourses.add(s.courses.course_name); });
-            uniqueCourses.forEach(course => courseSelect.add(new Option(course, course)));
-            
-            renderList(allStudents);
+            const { data } = await supabase.from('students').select('id, register_number, full_name, total_fee, admission_fee, fee_payments(amount_paid)').eq('status', 'active').order('full_name');
+            studentsData = data || [];
+            const select = document.getElementById('studentSelect');
+            studentsData.forEach(s => select.add(new Option(`${s.full_name} (${s.register_number})`, s.id)));
         }
 
-        function renderList(data) {
-            const container = document.getElementById('studentsList');
-            container.innerHTML = '';
-            
-            if (data.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444; background:#fff; border-radius:8px;">No students found.</div>';
-                return;
+        document.getElementById('studentSelect').addEventListener('change', function() {
+            const stId = this.value; const div = document.getElementById('feeDetails');
+            if (!stId) { div.style.display = 'none'; return; }
+            const s = studentsData.find(x => x.id === stId);
+            if (s) {
+                const tFee = Number(s.total_fee)||0, aFee = Number(s.admission_fee)||0;
+                const pay = s.fee_payments ? s.fee_payments.reduce((sum,p)=>sum+Number(p.amount_paid),0) : 0;
+                const bal = tFee - (aFee + pay);
+                document.getElementById('txtTotalFee').textContent = `₹ ${tFee}`;
+                document.getElementById('txtTotalPaid').textContent = `₹ ${aFee + pay}`;
+                const pEl = document.getElementById('txtPending'); pEl.textContent = `₹ ${bal}`;
+                pEl.style.color = bal <= 0 ? "#10B981" : "#EF4444";
+                if(bal <= 0) pEl.textContent = "Fully Paid";
+                div.style.display = 'block';
             }
-            
-            data.forEach(s => {
-                const tFee = Number(s.total_fee) || 0;
-                const aFee = Number(s.admission_fee) || 0;
-                const pFees = s.fee_payments ? s.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0;
-                const bal = tFee - aFee - pFees;
-                
-                const balColor = bal > 0 ? '#EF4444' : '#10B981';
-                const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
-                const cName = s.courses ? s.courses.course_name : 'N/A';
-
-                let avatarUrl = s.photo_url;
-                if (!avatarUrl) {
-                    avatarUrl = s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy';
-                }
-
-                const card = document.createElement('div');
-                card.className = 'student-mobile-card';
-                // ഡിലീറ്റ് ബട്ടണിൽ id-യോടൊപ്പം register_number കൂടി പാസ് ചെയ്യുന്നു
-                card.innerHTML = `
-                    <div class="smc-header">
-                        <div class="smc-header-left">
-                            <div class="smc-name">${s.full_name}</div>
-                            <div class="smc-reg">${s.register_number}</div>
-                        </div>
-                        <div class="smc-header-center">
-                            <img src="${avatarUrl}" class="student-avatar" alt="Photo">
-                        </div>
-                        <div class="smc-header-right">
-                            <div class="smc-status status-active">${(s.status || 'Active').toUpperCase()}</div>
-                        </div>
-                    </div>
-                    <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value">${cName}</span></div>
-                    <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
-                    <div class="smc-row"><span class="smc-label">Balance Fee:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
-                    
-                    <div class="smc-actions">
-                        <button onclick="alert('View details of ${s.full_name}')" class="smc-btn btn-view">View</button>
-                        <button onclick="alert('Edit details of ${s.full_name}')" class="smc-btn btn-edit">Edit</button>
-                        <button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="smc-btn btn-delete">Delete</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function applyFilters() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const course = document.getElementById('filterCourse').value;
-            const fee = document.getElementById('filterFee').value;
-
-            const filtered = allStudents.filter(s => {
-                const mSearch = (s.full_name?.toLowerCase().includes(search)) || (s.register_number?.toLowerCase().includes(search)) || (s.phone_number?.toLowerCase().includes(search));
-                const mCourse = (course === 'all') || (s.courses?.course_name === course);
-                
-                let mFee = true;
-                if (fee !== 'all') {
-                    const bal = (Number(s.total_fee) || 0) - (Number(s.admission_fee) || 0) - (s.fee_payments ? s.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0);
-                    if (fee === 'pending') mFee = (bal > 0);
-                    if (fee === 'paid') mFee = (bal <= 0);
-                }
-                return mSearch && mCourse && mFee;
-            });
-            renderList(filtered);
-        }
-
-        document.getElementById('searchInput').addEventListener('input', applyFilters);
-        document.getElementById('filterCourse').addEventListener('change', applyFilters);
-        document.getElementById('filterFee').addEventListener('change', applyFilters);
-
-        // പുതിയ ഡിലീറ്റ് ഫംഗ്ഷൻ (Verify Register Number)
-        window.deleteStudent = async function(studentId, regNo) {
-            const userInput = prompt(`⚠️ WARNING: Deletion is permanent.\nTo confirm, please type the register number: ${regNo}`);
-            
-            if (userInput !== null && userInput.trim() === regNo) {
-                // രജിസ്റ്റർ നമ്പർ ശരിയാണെങ്കിൽ മാത്രം ഡിലീറ്റ് ചെയ്യുക
-                await supabase.from('fee_payments').delete().eq('student_id', studentId);
-                await supabase.from('students').delete().eq('id', studentId);
-                alert('Student deleted successfully.');
-                fetchStudents(); 
-            } else if (userInput !== null) {
-                // തെറ്റായി ടൈപ്പ് ചെയ്താൽ മുന്നറിയിപ്പ് നൽകുക
-                alert('Register number does not match. Deletion cancelled.');
-            }
-        };
-
-      document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            // 1. Supabase-ൽ നിന്ന് ലോഗ്ഔട്ട് ചെയ്യുന്നു
-            await supabase.auth.signOut(); 
-            
-            // 2. ബ്രൗസർ ക്യാഷും സ്റ്റോറേജും ക്ലിയർ ചെയ്യുന്നു
-            localStorage.clear();
-            sessionStorage.clear();
-            
-            // 3. Back ബട്ടൺ അമർത്തിയാൽ തിരികെ വരാതിരിക്കാൻ ഹിസ്റ്ററി ക്ലിയർ ചെയ്ത് ലോഗിൻ പേജിലേക്ക് മാറ്റുന്നു
-            window.history.replaceState(null, '', 'login.html');
-            window.location.replace('login.html'); 
         });
-        
+
+        document.getElementById('feeForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); document.getElementById('submitBtn').disabled = true;
+            const { error } = await supabase.from('fee_payments').insert([{
+                student_id: document.getElementById('studentSelect').value,
+                amount_paid: document.getElementById('amountPaid').value,
+                payment_date: document.getElementById('paymentDate').value
+            }]);
+            if (error) alert('Error: ' + error.message); else { alert('Success!'); window.location.reload(); }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => { 
+            await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
+            window.history.replaceState(null, '', 'login.html'); window.location.replace('login.html'); 
+        });
         checkAuth();
     </script>
 </body>
-</html> 
+</html>
