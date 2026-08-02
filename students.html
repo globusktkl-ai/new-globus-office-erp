@@ -11,26 +11,44 @@
         .navbar-menu a { margin-right: 20px; text-decoration: none; color: var(--text-muted); font-weight: 500; }
         .navbar-menu a:hover, .navbar-menu a.active { color: var(--primary-dark); }
         
-        .main-content { padding: 32px 24px; max-width: 1000px; margin: 0 auto; }
+        .main-content { padding: 32px 24px; max-width: 1200px; margin: 0 auto; }
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
         
+        /* Filter Section Styles */
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: var(--white);
+            padding: 16px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .filter-control {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+        }
+        .filter-control:focus { border-color: var(--primary-dark); }
+
         table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: var(--radius-md); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
         th { background-color: #F8FAFC; font-weight: 600; color: var(--text-muted); }
 
-        /* Qualification Badge Styles */
         .badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-block; }
         .qual-sslc { background-color: #f59e0b; color: white; }
         .qual-plus2 { background-color: #3b82f6; color: white; }
         .qual-degree { background-color: #8b5cf6; color: white; }
         .qual-none { background-color: #9ca3af; color: white; }
 
-        /* Action Button Styles */
         .action-btns { display: flex; gap: 8px; }
         .btn-sm { padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; color: white; }
-        .btn-view { background-color: #3b82f6; } /* Blue */
-        .btn-edit { background-color: #f59e0b; } /* Orange */
-        .btn-delete { background-color: #ef4444; } /* Red */
+        .btn-view { background-color: #3b82f6; } 
+        .btn-edit { background-color: #f59e0b; } 
+        .btn-delete { background-color: #ef4444; } 
         .btn-sm:hover { opacity: 0.9; }
     </style>
 </head>
@@ -39,6 +57,7 @@
         <div class="navbar-brand">Globus ERP</div>
         <div class="navbar-menu">
             <a href="dashboard.html">Dashboard</a>
+            <a href="admission.html">New Admission</a>
             <a href="students.html" class="active">Students</a>
             <a href="fees.html">Fees</a>
         </div>
@@ -54,12 +73,31 @@
         
         <div id="alertMessage" class="alert hidden" style="margin-bottom: 16px;"></div>
 
+        <!-- Filters and Search -->
+        <div class="filter-section">
+            <input type="text" id="searchInput" class="filter-control" placeholder="Search Name, Phone, or Reg No..." style="flex: 1; min-width: 250px;">
+            
+            <select id="filterCourse" class="filter-control">
+                <option value="all">All Courses</option>
+                <!-- Courses will populate here -->
+            </select>
+
+            <select id="filterQual" class="filter-control">
+                <option value="all">All Qualifications</option>
+                <option value="SSLC">SSLC</option>
+                <option value="Plus Two">Plus Two</option>
+                <option value="Degree">Degree</option>
+                <option value="No Qualification">Others / None</option>
+            </select>
+        </div>
+
         <div style="overflow-x:auto;">
             <table>
                 <thead>
                     <tr>
                         <th>Reg. No</th>
                         <th>Name</th>
+                        <th>Phone</th>
                         <th>Course</th>
                         <th>Qualification</th>
                         <th>Status</th>
@@ -67,7 +105,7 @@
                     </tr>
                 </thead>
                 <tbody id="studentsTableBody">
-                    <tr><td colspan="6" style="text-align:center;">Loading...</td></tr>
+                    <tr><td colspan="7" style="text-align:center;">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -77,6 +115,7 @@
         import { supabase } from './assets/js/supabase-config.js';
         
         const alertMessage = document.getElementById('alertMessage');
+        let allStudents = []; // ഡാറ്റ സേവ് ചെയ്തു വെക്കാൻ
 
         function showAlert(msg, isError = false) {
             alertMessage.textContent = msg;
@@ -85,70 +124,133 @@
             setTimeout(() => alertMessage.classList.add('hidden'), 3000);
         }
 
+        // ഡാറ്റാബേസിൽ നിന്ന് കുട്ടികളുടെ വിവരങ്ങൾ എടുക്കുന്നു
         async function fetchStudents() {
             try {
                 const { data, error } = await supabase
                     .from('students')
-                    // 'id' കൂടി സെലക്ട് ചെയ്യുന്നുണ്ട്, കാരണം എഡിറ്റ്/ഡിലീറ്റ് ചെയ്യാൻ ID ആവശ്യമാണ്
-                    .select('id, register_number, full_name, status, qualification, courses(course_name)')
+                    // ഫോൺ നമ്പർ കൂടി എടുക്കുന്നു
+                    .select('id, register_number, full_name, phone_number, status, qualification, courses(course_name)')
                     .order('created_at', { ascending: false });
                     
                 if (error) throw error;
                 
-                const tbody = document.getElementById('studentsTableBody');
-                tbody.innerHTML = '';
+                allStudents = data || [];
+                populateCourseFilter(allStudents);
+                renderTable(allStudents); // ടേബിൾ വരയ്ക്കുന്നു
                 
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No students found.</td></tr>';
-                    return;
-                }
-                
-                data.forEach(s => {
-                    let qualClass = 'qual-none';
-                    let qualText = s.qualification || 'No Qualification';
-                    
-                    if (qualText === 'SSLC') qualClass = 'qual-sslc';
-                    else if (qualText === 'Plus Two') qualClass = 'qual-plus2';
-                    else if (qualText === 'Degree') qualClass = 'qual-degree';
-                    else qualText = 'No Qualification';
-                    
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${s.register_number}</td>
-                        <td style="font-weight:600;">${s.full_name}</td>
-                        <td>${s.courses ? s.courses.course_name : 'N/A'}</td>
-                        <td><span class="badge ${qualClass}">${qualText}</span></td>
-                        <td><span style="color: green; font-weight: 500;">${s.status.toUpperCase()}</span></td>
-                        <td>
-                            <div class="action-btns">
-                                <a href="view_student.html?id=${s.id}" class="btn-sm btn-view">View</a>
-                                <a href="edit_student.html?id=${s.id}" class="btn-sm btn-edit">Edit</a>
-                                <button onclick="deleteStudent('${s.id}')" class="btn-sm btn-delete">Delete</button>
-                            </div>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
             } catch (err) {
                 console.error('Error fetching students:', err);
-                document.getElementById('studentsTableBody').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Failed to load data.</td></tr>';
+                document.getElementById('studentsTableBody').innerHTML = '<tr><td colspan="7" style="text-align:center; color:red;">Failed to load data.</td></tr>';
             }
         }
 
-        // Delete Function (Making it available globally for the onclick attribute)
+        // കോഴ്സുകളുടെ പേര് ഫിൽറ്ററിലേക്ക് നൽകുന്നു
+        function populateCourseFilter(data) {
+            const courseSelect = document.getElementById('filterCourse');
+            const uniqueCourses = new Set();
+            
+            data.forEach(s => {
+                if(s.courses && s.courses.course_name) {
+                    uniqueCourses.add(s.courses.course_name);
+                }
+            });
+
+            courseSelect.innerHTML = '<option value="all">All Courses</option>';
+            uniqueCourses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course;
+                option.textContent = course;
+                courseSelect.appendChild(option);
+            });
+        }
+
+        // ടേബിൾ ഡിസ്പ്ലേ ചെയ്യാനുള്ള ഫംഗ്ഷൻ
+        function renderTable(data) {
+            const tbody = document.getElementById('studentsTableBody');
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No students found matching your criteria.</td></tr>';
+                return;
+            }
+            
+            data.forEach(s => {
+                let qualClass = 'qual-none';
+                let qualText = s.qualification || 'No Qualification';
+                
+                if (qualText === 'SSLC') qualClass = 'qual-sslc';
+                else if (qualText === 'Plus Two') qualClass = 'qual-plus2';
+                else if (qualText === 'Degree') qualClass = 'qual-degree';
+                else qualText = 'No Qualification';
+                
+                const phone = s.phone_number || 'N/A';
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${s.register_number || 'N/A'}</td>
+                    <td style="font-weight:600;">${s.full_name || 'N/A'}</td>
+                    <td>${phone}</td>
+                    <td>${s.courses ? s.courses.course_name : 'N/A'}</td>
+                    <td><span class="badge ${qualClass}">${qualText}</span></td>
+                    <td><span style="color: green; font-weight: 500;">${(s.status || 'active').toUpperCase()}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <a href="view_student.html?id=${s.id}" class="btn-sm btn-view">View</a>
+                            <a href="edit_student.html?id=${s.id}" class="btn-sm btn-edit">Edit</a>
+                            <button onclick="deleteStudent('${s.id}')" class="btn-sm btn-delete">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ഫിൽറ്ററിംഗ് ലോജിക്
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const courseFilter = document.getElementById('filterCourse').value;
+            const qualFilter = document.getElementById('filterQual').value;
+
+            const filteredData = allStudents.filter(s => {
+                // 1. Search (Name, Reg No, Phone)
+                const nameMatch = s.full_name && s.full_name.toLowerCase().includes(searchTerm);
+                const regMatch = s.register_number && s.register_number.toLowerCase().includes(searchTerm);
+                const phoneMatch = s.phone_number && s.phone_number.toLowerCase().includes(searchTerm);
+                const matchesSearch = nameMatch || regMatch || phoneMatch;
+
+                // 2. Course Filter
+                const matchesCourse = (courseFilter === 'all') || (s.courses && s.courses.course_name === courseFilter);
+
+                // 3. Qualification Filter
+                let sQual = s.qualification || 'No Qualification';
+                if (sQual !== 'SSLC' && sQual !== 'Plus Two' && sQual !== 'Degree') {
+                    sQual = 'No Qualification';
+                }
+                const matchesQual = (qualFilter === 'all') || (sQual === qualFilter);
+
+                return matchesSearch && matchesCourse && matchesQual;
+            });
+
+            renderTable(filteredData);
+        }
+
+        // Event Listeners for Filters
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('filterCourse').addEventListener('change', applyFilters);
+        document.getElementById('filterQual').addEventListener('change', applyFilters);
+
+        // Delete Function
         window.deleteStudent = async function(studentId) {
-            if (confirm("Are you sure you want to delete this student? This action cannot be undone.")) {
+            if (confirm("Are you sure you want to delete this student?")) {
                 try {
-                    // ആദ്യം ആ കുട്ടിയുടെ ഫീസ് വിവരങ്ങൾ ഡിലീറ്റ് ചെയ്യുന്നു (Foreign Key Error ഒഴിവാക്കാൻ)
                     await supabase.from('fee_payments').delete().eq('student_id', studentId);
-                    
-                    // അതിനുശേഷം കുട്ടിയുടെ വിവരങ്ങൾ ഡിലീറ്റ് ചെയ്യുന്നു
                     const { error } = await supabase.from('students').delete().eq('id', studentId);
                     
                     if (error) throw error;
                     
                     showAlert("Student deleted successfully!");
-                    fetchStudents(); // ടേബിൾ റിഫ്രഷ് ചെയ്യുന്നു
+                    fetchStudents(); 
                     
                 } catch (err) {
                     console.error("Error deleting student:", err);
@@ -157,7 +259,6 @@
             }
         };
 
-        // പേജ് ലോഡ് ആകുമ്പോൾ ഡാറ്റ എടുക്കുക
         fetchStudents();
     </script>
 </body>
