@@ -1,1 +1,182 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>New Admission - VPKTechsolutions</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <nav class="app-header">
+        <div class="header-left">
+            <a href="dashboard.html" class="btn-back-icon">←</a>
+            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+        </div>
+        <div class="header-center">New Admission</div>
+        <div class="header-right">
+            <span class="user-name-small" id="userName">Loading...</span>
+            <button class="btn-logout-small" id="logoutBtn">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="card">
+            <form id="admissionForm">
+                
+                <!-- Same length boxes -->
+                <div class="form-row-2">
+                    <div class="form-group-mobile">
+                        <label class="form-label">Joining Date <span class="req-star">*</span></label>
+                        <input type="date" id="admissionDate" class="form-control" required>
+                    </div>
+                    <div class="form-group-mobile">
+                        <label class="form-label">Qualification <span class="req-star">*</span></label>
+                        <select id="qualification" class="form-control" required>
+                            <option value="">-- Select --</option>
+                            <option value="SSLC">SSLC</option>
+                            <option value="Plus Two">Plus Two</option>
+                            <option value="Degree">Degree</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Student Full Name <span class="req-star">*</span></label>
+                    <input type="text" id="fullName" class="form-control" placeholder="Enter full name" required>
+                </div>
+
+                <!-- Photo Upload Box -->
+                <div class="form-group">
+                    <label class="form-label">Student Photo</label>
+                    <input type="file" id="studentPhoto" class="form-control" accept="image/*">
+                    <small style="font-size: 10px; color: gray;">Upload passport size photo (Optional)</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number <span class="req-star">*</span></label>
+                    <input type="tel" id="phone" class="form-control" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit number" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Select Course <span class="req-star">*</span></label>
+                    <select id="courseId" class="form-control" required><option value="">-- Loading... --</option></select>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group-mobile">
+                        <label class="form-label">Total Course Fee <span class="req-star">*</span></label>
+                        <input type="number" id="totalFee" class="form-control" placeholder="₹" required min="0">
+                    </div>
+                    <div class="form-group-mobile">
+                        <label class="form-label">Admission Fee Paid</label>
+                        <!-- Removed default zero -->
+                        <input type="number" id="admissionFee" class="form-control" placeholder="₹" min="0">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group-mobile">
+                        <label class="form-label">Batch <span class="req-star">*</span></label>
+                        <select id="batchId" class="form-control" required><option value="">-- Loading... --</option></select>
+                    </div>
+                    <div class="form-group-mobile">
+                        <label class="form-label">Gender <span class="req-star">*</span></label>
+                        <select id="gender" class="form-control" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Save Admission</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+
+        document.getElementById('admissionDate').valueAsDate = new Date();
+
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            document.getElementById('userName').textContent = session.user.user_metadata.full_name || session.user.email.split('@')[0];
+            loadDependencies();
+        }
+
+        async function loadDependencies() {
+            const { data: courses } = await supabase.from('courses').select('*');
+            window.courseList = courses;
+            const courseSelect = document.getElementById('courseId');
+            courseSelect.innerHTML = '<option value="">-- Select Course --</option>';
+            courses?.forEach(c => courseSelect.add(new Option(c.course_name, c.id)));
+
+            const { data: batches } = await supabase.from('batches').select('*');
+            const batchSelect = document.getElementById('batchId');
+            batchSelect.innerHTML = '<option value="">-- Select Batch --</option>';
+            batches?.forEach(b => batchSelect.add(new Option(b.batch_name, b.id)));
+        }
+
+        document.getElementById('courseId').addEventListener('change', (e) => {
+            const selected = window.courseList?.find(c => c.id === e.target.value);
+            document.getElementById('totalFee').value = selected ? selected.fee_amount : '';
+        });
+
+        document.getElementById('admissionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.textContent = 'Saving...'; submitBtn.disabled = true;
+
+            const totalFeeVal = parseFloat(document.getElementById('totalFee').value) || 0;
+            const admissionFeeVal = parseFloat(document.getElementById('admissionFee').value) || 0;
+            const regNo = 'REG-' + Math.floor(10000 + Math.random() * 90000);
+            
+            let photoUrl = null;
+            const photoFile = document.getElementById('studentPhoto').files[0];
+            
+            // Photo Upload Logic (Requires Storage bucket named 'student_photos')
+            if (photoFile) {
+                const fileExt = photoFile.name.split('.').pop();
+                const fileName = `${regNo}.${fileExt}`;
+                const { data: uploadData, error: uploadError } = await supabase.storage.from('student_photos').upload(fileName, photoFile);
+                
+                if (!uploadError) {
+                    const { data: publicUrlData } = supabase.storage.from('student_photos').getPublicUrl(fileName);
+                    photoUrl = publicUrlData.publicUrl;
+                }
+            }
+
+            const studentData = {
+                register_number: regNo, 
+                full_name: document.getElementById('fullName').value,
+                phone_number: document.getElementById('phone').value, 
+                course_id: document.getElementById('courseId').value,
+                batch_id: document.getElementById('batchId').value, 
+                admission_date: document.getElementById('admissionDate').value,
+                gender: document.getElementById('gender').value, 
+                qualification: document.getElementById('qualification').value,
+                total_fee: totalFeeVal, 
+                admission_fee: admissionFeeVal, 
+                status: 'active',
+                photo_url: photoUrl
+            };
+
+            const { error: stuErr } = await supabase.from('students').insert([studentData]);
+            if (!stuErr) {
+                alert('Admission Successful!');
+                window.location.href = 'students.html';
+            } else {
+                alert('Error: ' + stuErr.message);
+                submitBtn.textContent = 'Save Admission'; submitBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); window.location.href = 'login.html'; });
+        checkAuth();
+    </script>
+</body>
+</html>
