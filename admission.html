@@ -6,77 +6,34 @@
     <title>New Admission - Globus Office ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* Navbar Styles with Back, User Name & Logout */
-        .navbar { 
-            background-color: var(--white); 
-            padding: 16px 24px; 
-            border-bottom: 1px solid var(--border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+        .navbar { background-color: var(--white); padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .navbar-left { display: flex; align-items: center; gap: 15px; }
-        .btn-back {
-            text-decoration: none;
-            padding: 6px 12px;
-            background: #F1F5F9;
-            color: var(--text-dark);
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 14px;
-            border: 1px solid var(--border);
-        }
+        .btn-back { text-decoration: none; padding: 6px 12px; background: #F1F5F9; color: var(--text-dark); border-radius: 4px; font-weight: 600; font-size: 14px; border: 1px solid var(--border); }
         .btn-back:hover { background: #E2E8F0; }
         .navbar-brand { font-size: 20px; font-weight: 700; color: var(--primary-dark); }
-        
         .navbar-menu { display: flex; gap: 20px; }
-        .navbar-menu a { margin-right: 0; text-decoration: none; color: var(--text-muted); font-weight: 500; }
+        .navbar-menu a { text-decoration: none; color: var(--text-muted); font-weight: 500; }
         .navbar-menu a:hover, .navbar-menu a.active { color: var(--primary-dark); }
-        
         .navbar-user { display: flex; align-items: center; gap: 15px; }
         .user-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
-        .btn-logout {
-            background-color: transparent;
-            color: var(--error);
-            border: 1px solid var(--error);
-            padding: 6px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .btn-logout:hover { background-color: #FEF2F2; }
-
+        .btn-logout { background-color: transparent; color: var(--error); border: 1px solid var(--error); padding: 6px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; }
         .main-content { padding: 32px 24px; max-width: 800px; margin: 0 auto; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-width { grid-column: span 2; }
-        
-        @media (max-width: 768px) { 
-            .form-grid { grid-template-columns: 1fr; } 
-            .full-width { grid-column: span 1; } 
-            .navbar { flex-direction: column; align-items: flex-start; }
-            .navbar-user { width: 100%; justify-content: space-between; }
-        }
-        
-        /* Red Star for required fields */
         .req-star { color: #ef4444; font-weight: bold; margin-left: 4px; }
     </style>
 </head>
 <body>
-    <!-- Updated Navbar -->
     <nav class="navbar">
         <div class="navbar-left">
             <a href="javascript:history.back()" class="btn-back">← Back</a>
             <div class="navbar-brand">Globus ERP</div>
         </div>
-        
         <div class="navbar-menu">
             <a href="dashboard.html">Dashboard</a>
             <a href="students.html" class="active">Students</a>
             <a href="fees.html">Fees</a>
         </div>
-
         <div class="navbar-user">
             <span id="userName" class="user-name">Loading...</span>
             <button id="logoutBtn" class="btn-logout">Logout</button>
@@ -84,10 +41,7 @@
     </nav>
 
     <main class="main-content">
-        <div class="page-header" style="margin-bottom:24px;">
-            <h2>New Admission</h2>
-        </div>
-
+        <div class="page-header" style="margin-bottom:24px;"><h2>New Admission</h2></div>
         <div class="card">
             <div id="alertMessage" class="alert hidden"></div>
             <form id="admissionForm">
@@ -96,7 +50,6 @@
                         <label class="form-label">Joining Date <span class="req-star">*</span></label>
                         <input type="date" id="admissionDate" class="form-control" required>
                     </div>
-                    
                     <div class="form-group">
                         <label class="form-label">Qualification <span class="req-star">*</span></label>
                         <select id="qualification" class="form-control" required>
@@ -106,46 +59,34 @@
                             <option value="Degree">Degree</option>
                         </select>
                     </div>
-
                     <div class="form-group full-width">
                         <label class="form-label">Student Full Name <span class="req-star">*</span></label>
                         <input type="text" id="fullName" class="form-control" required>
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Phone Number (10 Digits) <span class="req-star">*</span></label>
-                        <input type="tel" id="phone" class="form-control" pattern="[0-9]{10}" maxlength="10" placeholder="1234567890" required title="Please enter a valid 10-digit mobile number">
+                        <input type="tel" id="phone" class="form-control" pattern="[0-9]{10}" maxlength="10" required>
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Email Address</label>
                         <input type="email" id="email" class="form-control">
                     </div>
-
                     <div class="form-group full-width">
                         <label class="form-label">Select Course <span class="req-star">*</span></label>
-                        <select id="courseId" class="form-control" required>
-                            <option value="">-- Loading Courses... --</option>
-                        </select>
+                        <select id="courseId" class="form-control" required><option value="">-- Loading Courses... --</option></select>
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Total Course Fee (₹) <span class="req-star">*</span></label>
                         <input type="number" id="totalFee" class="form-control" required min="0">
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Admission Fee Paid Now (₹)</label>
                         <input type="number" id="admissionFee" class="form-control" value="0" min="0">
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Select Batch <span class="req-star">*</span></label>
-                        <select id="batchId" class="form-control" required>
-                            <option value="">-- Loading Batches... --</option>
-                        </select>
+                        <select id="batchId" class="form-control" required><option value="">-- Loading Batches... --</option></select>
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Gender <span class="req-star">*</span></label>
                         <select id="gender" class="form-control" required>
@@ -168,26 +109,17 @@
         const alertMessage = document.getElementById('alertMessage');
         const submitBtn = document.getElementById('submitBtn');
         const userNameEl = document.getElementById('userName');
-        const logoutBtn = document.getElementById('logoutBtn');
 
         document.getElementById('admissionDate').valueAsDate = new Date();
 
-        // 1. Auth Check & Setup
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            const userMeta = session.user.user_metadata;
-            userNameEl.textContent = userMeta.full_name || session.user.email;
-            
+            if (!session) { window.location.href = 'login.html'; return; }
+            userNameEl.textContent = session.user.user_metadata.full_name || session.user.email;
             loadDependencies();
         }
 
-        // Logout
-        logoutBtn.addEventListener('click', async () => {
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
             await supabase.auth.signOut();
             window.location.href = 'login.html';
         });
@@ -200,27 +132,21 @@
 
         async function loadDependencies() {
             try {
-                // Load Courses
-                const { data: courses, error: cError } = await supabase.from('courses').select('id, course_name, fee_amount');
-                if (cError) throw cError;
+                const { data: courses } = await supabase.from('courses').select('id, course_name, fee_amount');
                 window.courseList = courses;
                 const courseSelect = document.getElementById('courseId');
                 courseSelect.innerHTML = '<option value="">-- Select Course --</option>';
                 courses.forEach(c => courseSelect.add(new Option(c.course_name, c.id)));
 
-                // Load Batches
-                const { data: batches, error: bError } = await supabase.from('batches').select('id, batch_name');
-                if (bError) throw bError;
+                const { data: batches } = await supabase.from('batches').select('id, batch_name');
                 const batchSelect = document.getElementById('batchId');
                 batchSelect.innerHTML = '<option value="">-- Select Batch --</option>';
                 batches.forEach(b => batchSelect.add(new Option(b.batch_name, b.id)));
             } catch (err) {
-                console.error('Error fetching dependencies:', err);
-                showAlert('Failed to load courses or batches. Please check database permissions.', true);
+                showAlert('Failed to load dependencies.', true);
             }
         }
 
-        // Auto-fill total fee when course is selected
         document.getElementById('courseId').addEventListener('change', (e) => {
             const selected = window.courseList?.find(c => c.id === e.target.value);
             document.getElementById('totalFee').value = selected ? selected.fee_amount : '';
@@ -229,13 +155,6 @@
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Validations
-            const phoneVal = document.getElementById('phone').value;
-            if (!/^\d{10}$/.test(phoneVal)) {
-                showAlert('Phone number must be exactly 10 digits.', true);
-                return;
-            }
-
             const totalFeeVal = parseFloat(document.getElementById('totalFee').value) || 0;
             const admissionFeeVal = parseFloat(document.getElementById('admissionFee').value) || 0;
 
@@ -253,7 +172,7 @@
             const studentData = {
                 register_number: regNo,
                 full_name: document.getElementById('fullName').value,
-                phone_number: phoneVal,
+                phone_number: document.getElementById('phone').value,
                 email: document.getElementById('email').value,
                 course_id: document.getElementById('courseId').value,
                 batch_id: document.getElementById('batchId').value,
@@ -261,38 +180,24 @@
                 gender: document.getElementById('gender').value,
                 qualification: document.getElementById('qualification').value,
                 total_fee: totalFeeVal,
-                admission_fee: admissionFeeVal,
+                admission_fee: admissionFeeVal, 
                 status: 'active'
             };
 
             try {
-                // 1. Save Student
-                const { data: stuData, error: stuErr } = await supabase.from('students').insert([studentData]).select();
+                // Save to students table (which now includes admission_fee column)
+                const { error: stuErr } = await supabase.from('students').insert([studentData]);
                 if (stuErr) throw stuErr;
-
-                // 2. Save Admission Fee to fee_payments if paid
-                if (admissionFeeVal > 0 && stuData && stuData.length > 0) {
-                    const payData = {
-                        student_id: stuData[0].id,
-                        amount_paid: admissionFeeVal, // Fixed Column Name
-                        payment_date: studentData.admission_date,
-                        receipt_no: 'Cash - Admission Fee Paid' // Fixed Column Name
-                    };
-                    const { error: payErr } = await supabase.from('fee_payments').insert([payData]);
-                    if (payErr) console.error("Fee payment insert error:", payErr);
-                }
 
                 showAlert('Admission Successful! Redirecting...', false);
                 setTimeout(() => window.location.href = 'students.html', 1500);
             } catch (err) {
-                console.error("Save error:", err);
-                showAlert('Error saving admission: ' + (err.message || 'Unknown error'), true);
+                showAlert('Error saving admission: ' + err.message, true);
                 submitBtn.textContent = 'Save Admission';
                 submitBtn.disabled = false;
             }
         });
 
-        // Initialize App
         checkAuth();
     </script>
 </body>
