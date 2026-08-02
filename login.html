@@ -3,22 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Login - Globus technical academy</title>
+    <title>Login - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: var(--primary-dark); }
-        .login-card { background: var(--card-bg); width: 90%; max-width: 400px; padding: 40px 24px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
-        .login-logo { height: 60px; margin-bottom: 20px; border-radius: 8px; }
-        .login-title { font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
-        .login-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 30px; }
+        body { 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; background-color: var(--primary-dark); margin: 0;
+        }
+        .login-card { 
+            background: var(--card-bg); width: 90%; max-width: 400px; 
+            padding: 40px 24px; border-radius: 24px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; 
+        }
+        /* ലോഗോയുടെ വലിപ്പം കൂട്ടിയിട്ടുണ്ട് */
+        .login-logo { 
+            height: 100px; margin-bottom: 16px; border-radius: 8px; object-fit: contain; 
+        }
+        /* സ്ഥാപനത്തിന്റെ പേര് വ്യക്തമായി കാണാൻ */
+        .login-title { 
+            font-size: 24px; font-weight: 800; color: var(--primary-dark); 
+            margin-bottom: 8px; line-height: 1.2;
+        }
+        /* പുതിയ ഉപയോക്താക്കൾക്കും യോജിച്ച വാചകം */
+        .login-subtitle { 
+            font-size: 14px; color: var(--text-muted); margin-bottom: 30px; 
+        }
     </style>
 </head>
 <body>
 
     <div class="login-card">
-        <img src="assets/images/logo.png" alt="Globus technical academy Logo" class="login-logo" onerror="this.style.display='none'">
-        <h1 class="login-title">Welcome Back</h1>
-        <p class="login-subtitle">Sign in to manage Globus technical academy</p>
+        <img src="assets/images/logo.png" alt="Globus Technical Academy Logo" class="login-logo" onerror="this.style.display='none'">
+        
+        <h1 class="login-title">Globus Technical Academy</h1>
+        <p class="login-subtitle">Sign in to access your dashboard</p>
 
         <form id="loginForm">
             <div class="form-group" style="text-align: left;">
@@ -37,7 +55,6 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // Check if already logged in
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) window.location.href = 'dashboard.html';
         });
