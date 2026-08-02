@@ -5,18 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* ഹെഡറിനുള്ളിലെ എലിമെന്റുകളുടെ അലൈൻമെന്റ് കൃത്യമാക്കാൻ */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+        }
+        .header-left-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 0; 
+        }
+        .header-brand-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; 
+        }
+    </style>
 </head>
 <body>
     <nav class="app-header">
-        <!-- ഹെഡർ ഇടത് വശം (ലോഗോയും പേരും) -->
-        <div class="header-left" style="width: 70%;">
+        <!-- ഇടത് വശം: ലോഗോ, സ്ഥാപനത്തിന്റെ പേര് -->
+        <div class="header-left-group">
             <img src="assets/images/logo.png" class="logo-small" alt="Globus Technical Academy" onerror="this.style.display='none'">
-            <span style="font-size: 16px; font-weight: 700; color: var(--primary-dark); white-space: nowrap;">Globus Technical Academy</span>
+            <span class="header-brand-title">Globus Technical Academy</span>
         </div>
         
-        <!-- ഹെഡർ വലത് വശം (ലോഗ്ഔട്ട്) -->
-        <div class="header-right" style="width: 30%;">
-            <span class="user-name-small" id="userName">Loading...</span>
+        <!-- വലത് വശം: ലോഗ്ഔട്ട് മാത്രം (Admin പേര് ഒഴിവാക്കി) -->
+        <div class="header-right" style="flex-shrink: 0; display: flex; align-items: center;">
             <button class="btn-logout-small" id="logoutBtn">Logout</button>
         </div>
     </nav>
@@ -53,10 +76,11 @@
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
+        
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            document.getElementById('userName').textContent = session.user.user_metadata.full_name || 'Admin';
+            // Admin പേര് കൊടുത്തിരുന്ന വരി ഇവിടെ നിന്നും ഒഴിവാക്കിയിട്ടുണ്ട്
             loadDashboardData();
         }
 
@@ -86,14 +110,9 @@
         }
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            // 1. Supabase-ൽ നിന്ന് ലോഗ്ഔട്ട് ചെയ്യുന്നു
             await supabase.auth.signOut(); 
-            
-            // 2. ബ്രൗസർ ക്യാഷും സ്റ്റോറേജും ക്ലിയർ ചെയ്യുന്നു
             localStorage.clear();
             sessionStorage.clear();
-            
-            // 3. Back ബട്ടൺ അമർത്തിയാൽ തിരികെ വരാതിരിക്കാൻ ഹിസ്റ്ററി ക്ലിയർ ചെയ്ത് ലോഗിൻ പേജിലേക്ക് മാറ്റുന്നു
             window.history.replaceState(null, '', 'login.html');
             window.location.replace('login.html'); 
         });
