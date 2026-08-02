@@ -1,1 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard - Globus Technical Academy</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* ഹെഡറിനുള്ളിലെ എലിമെന്റുകളുടെ അലൈൻമെന്റ് കൃത്യമാക്കാൻ */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+        }
+        .header-left-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 0; 
+        }
+        .header-brand-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; 
+        }
+    </style>
+</head>
+<body>
+    <nav class="app-header">
+        <!-- ഇടത് വശം: ലോഗോ, സ്ഥാപനത്തിന്റെ പേര് -->
+        <div class="header-left-group">
+            <img src="assets/images/logo.png" class="logo-small" alt="Globus Technical Academy" onerror="this.style.display='none'">
+            <span class="header-brand-title">Globus Technical Academy</span>
+        </div>
+        
+        <!-- വലത് വശം: ലോഗ്ഔട്ട് മാത്രം (Admin പേര് ഒഴിവാക്കി) -->
+        <div class="header-right" style="flex-shrink: 0; display: flex; align-items: center;">
+            <button class="btn-logout-small" id="logoutBtn">Logout</button>
+        </div>
+    </nav>
 
+    <main class="main-content">
+        <h2 style="font-size: 18px; margin-bottom: 16px;">Institute Overview</h2>
+        
+        <div class="stat-grid">
+            <div class="stat-box">
+                <div class="stat-label">Total Students</div>
+                <div class="stat-value" id="statStudents">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Active Courses</div>
+                <div class="stat-value" id="statCourses">0</div>
+            </div>
+            <div class="stat-box" style="border-left: 4px solid #10B981;">
+                <div class="stat-label">Today's Collection</div>
+                <div class="stat-value" id="statTodayCollection" style="color: #10B981;">₹ 0</div>
+            </div>
+            <div class="stat-box" style="border-left: 4px solid #EF4444;">
+                <div class="stat-label">Pending Fees</div>
+                <div class="stat-value" id="statPendingFees" style="color: #EF4444;">₹ 0</div>
+            </div>
+        </div>
+
+        <div class="nav-grid">
+            <a href="admission.html" class="nav-btn"><span class="nav-icon">🎓</span>New Admission</a>
+            <a href="fees.html" class="nav-btn"><span class="nav-icon">💰</span>Collect Fee</a>
+            <a href="students.html" class="nav-btn"><span class="nav-icon">👥</span>Student Directory</a>
+            <a href="#" class="nav-btn" style="opacity: 0.6;"><span class="nav-icon">📊</span>Reports</a>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+        
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            // Admin പേര് കൊടുത്തിരുന്ന വരി ഇവിടെ നിന്നും ഒഴിവാക്കിയിട്ടുണ്ട്
+            loadDashboardData();
+        }
+
+        async function loadDashboardData() {
+            try {
+                const { count: studentCount } = await supabase.from('students').select('*', { count: 'exact', head: true }).eq('status', 'active');
+                document.getElementById('statStudents').textContent = studentCount || 0;
+
+                const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true }).eq('status', 'active');
+                document.getElementById('statCourses').textContent = courseCount || 0;
+
+                const todayDate = new Date().toISOString().split('T')[0];
+                const { data: collections } = await supabase.from('fee_payments').select('amount_paid').gte('payment_date', `${todayDate}T00:00:00Z`);
+                let todayTotal = collections ? collections.reduce((sum, record) => sum + Number(record.amount_paid), 0) : 0;
+                document.getElementById('statTodayCollection').textContent = '₹ ' + todayTotal;
+
+                const { data: studentsWithFees } = await supabase.from('students').select('total_fee, admission_fee, fee_payments(amount_paid)').eq('status', 'active');
+                let pendingFeesSum = 0;
+                if (studentsWithFees) {
+                    studentsWithFees.forEach(s => {
+                        const balance = (Number(s.total_fee) || 0) - (Number(s.admission_fee) || 0) - (s.fee_payments ? s.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0);
+                        if (balance > 0) pendingFeesSum += balance;
+                    });
+                }
+                document.getElementById('statPendingFees').textContent = '₹ ' + pendingFeesSum;
+            } catch (err) { console.error(err); }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => { 
+            await supabase.auth.signOut(); 
+            localStorage.clear();
+            sessionStorage.clear();
+            window.history.replaceState(null, '', 'login.html');
+            window.location.replace('login.html'); 
+        });
+        
+        checkAuth();
+    </script>
+</body>
+</html>
