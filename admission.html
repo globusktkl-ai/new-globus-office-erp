@@ -42,7 +42,6 @@
                     <input type="tel" id="phone" class="form-control" required placeholder="10-digit mobile number" maxlength="10">
                 </div>
 
-                <!-- അഡ്രസ് ചേർക്കാനുള്ള നീളത്തിലുള്ള ബോക്സ് -->
                 <div class="form-group">
                     <label class="form-label">Address</label>
                     <textarea id="address" class="form-control" rows="3" required placeholder="Enter student residential address" style="resize: none; height: auto; padding: 10px;"></textarea>
@@ -130,6 +129,15 @@
                 return;
             }
 
+            const totalFee = Number(document.getElementById('totalFee').value);
+            const admissionFee = Number(document.getElementById('admissionFee').value);
+
+            // മൊത്തം ഫീസിനേക്കാൾ കൂടുതൽ അഡ്മിഷൻ ഫീ നൽകിയാൽ തടയുന്നു
+            if (admissionFee > totalFee) {
+                alert('❌ Error: Admission fee cannot be greater than the Total Course Fee!');
+                return;
+            }
+
             const btn = document.getElementById('submitBtn');
             btn.textContent = 'Processing...'; btn.disabled = true;
 
@@ -156,8 +164,8 @@
                     gender: document.getElementById('gender').value,
                     photo_url: photoUrl,
                     course_id: document.getElementById('courseSelect').value,
-                    total_fee: document.getElementById('totalFee').value,
-                    admission_fee: document.getElementById('admissionFee').value,
+                    total_fee: totalFee,
+                    admission_fee: admissionFee,
                     status: 'active'
                 }]);
 
