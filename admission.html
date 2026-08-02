@@ -37,15 +37,22 @@
                     <input type="text" id="regNo" class="form-control" required placeholder="e.g. GTA-001">
                 </div>
                 
+                <!-- ഫോൺ നമ്പർ 10 അക്കത്തിൽ പരിമിതപ്പെടുത്തിയിരിക്കുന്നു (maxLength: 10) -->
                 <div class="form-group">
                     <label class="form-label">Phone Number</label>
-                    <input type="tel" id="phone" class="form-control" required placeholder="10-digit mobile number">
+                    <input type="tel" id="phone" class="form-control" required placeholder="10-digit mobile number" maxlength="10">
                 </div>
 
-                <!-- വിദ്യാഭ്യാസ യോഗ്യത ചേർക്കാനുള്ള ബോക്സ് (ഒരു വരിയിൽ മുഴുവനായി) -->
+                <!-- വിദ്യാഭ്യാസ യോഗ്യതയ്ക്കുള്ള ഡ്രോപ്പ്ഡൗൺ മെനു -->
                 <div class="form-group">
                     <label class="form-label">Educational Qualification</label>
-                    <input type="text" id="qualification" class="form-control" required placeholder="e.g. Plus Two / Degree / Diploma">
+                    <select id="qualification" class="form-control" required>
+                        <option value="">-- Select Qualification --</option>
+                        <option value="SSLC">SSLC</option>
+                        <option value="Plus Two">Plus Two</option>
+                        <option value="Degree">Degree</option>
+                        <option value="Other">Other</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -56,7 +63,6 @@
                     </select>
                 </div>
 
-                <!-- ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യാനുള്ള ബോക്സ് (ഒരു വരിയിൽ മുഴുവനായി) -->
                 <div class="form-group">
                     <label class="form-label">Student Photo</label>
                     <input type="file" id="photoFile" class="form-control" accept="image/*">
@@ -105,8 +111,22 @@
             }
         }
 
+        // ഫോൺ നമ്പർ 10 അക്കത്തിൽ കൂടുതൽ അടിക്കാൻ കഴിയാത്ത രീതിയിൽ നിയന്ത്രിക്കുന്നു
+        document.getElementById('phone').addEventListener('input', function() {
+            let val = this.value.trim();
+            if (/^\d+$/.test(val) && val.length > 10) {
+                this.value = val.slice(0, 10);
+            }
+        });
+
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault(); 
+            const phoneVal = document.getElementById('phone').value.trim();
+            if (phoneVal.length !== 10) {
+                alert('Phone number must be exactly 10 digits.');
+                return;
+            }
+
             const btn = document.getElementById('submitBtn');
             btn.textContent = 'Processing...'; btn.disabled = true;
 
@@ -127,7 +147,7 @@
                 const { error } = await supabase.from('students').insert([{
                     full_name: document.getElementById('fullName').value,
                     register_number: document.getElementById('regNo').value,
-                    phone_number: document.getElementById('phone').value,
+                    phone_number: phoneVal,
                     qualification: document.getElementById('qualification').value,
                     gender: document.getElementById('gender').value,
                     photo_url: photoUrl,
