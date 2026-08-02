@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-
     <nav class="app-header">
         <div class="header-left">
             <a href="dashboard.html" class="btn-back-icon">←</a>
@@ -21,7 +20,6 @@
     </nav>
 
     <main class="main-content">
-        <!-- Search & Filter full width -->
         <div class="filter-section">
             <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search Name, Phone, Reg No...">
             <div class="form-row-2" style="margin-bottom:0;">
@@ -34,7 +32,6 @@
             </div>
         </div>
 
-        <!-- Vertical Scrolling List Container -->
         <div id="studentsList">
             <div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div>
         </div>
@@ -52,13 +49,8 @@
             fetchStudents();
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
-            await supabase.auth.signOut();
-            window.location.href = 'login.html';
-        });
-
         async function fetchStudents() {
-            const { data } = await supabase.from('students').select('id, register_number, full_name, phone_number, status, total_fee, admission_fee, courses(course_name), fee_payments(amount_paid)').order('created_at', { ascending: false });
+            const { data } = await supabase.from('students').select('id, register_number, full_name, phone_number, gender, status, total_fee, admission_fee, photo_url, courses(course_name), fee_payments(amount_paid)').order('created_at', { ascending: false });
             allStudents = data || [];
             
             const courseSelect = document.getElementById('filterCourse');
@@ -84,25 +76,39 @@
                 const pFees = s.fee_payments ? s.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0;
                 const bal = tFee - aFee - pFees;
                 
-                const balColor = bal > 0 ? '#ef4444' : '#10B981';
+                // Red color for balance
+                const balColor = bal > 0 ? '#EF4444' : '#10B981';
                 const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
                 const cName = s.courses ? s.courses.course_name : 'N/A';
+
+                // Photo Logic
+                let avatarUrl = s.photo_url;
+                if (!avatarUrl) {
+                    avatarUrl = s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy';
+                }
 
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
                 card.innerHTML = `
                     <div class="smc-header">
-                        <div>
+                        <div class="smc-header-left">
                             <div class="smc-name">${s.full_name}</div>
                             <div class="smc-reg">${s.register_number}</div>
                         </div>
-                        <div class="smc-status status-active">${(s.status || 'Active').toUpperCase()}</div>
+                        <div class="smc-header-center">
+                            <img src="${avatarUrl}" class="student-avatar" alt="Photo">
+                        </div>
+                        <div class="smc-header-right">
+                            <div class="smc-status status-active">${(s.status || 'Active').toUpperCase()}</div>
+                        </div>
                     </div>
                     <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value">${cName}</span></div>
                     <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
-                    <div class="smc-row"><span class="smc-label">Balance Fee:</span> <span class="smc-value" style="color:${balColor};">${balText}</span></div>
+                    <div class="smc-row"><span class="smc-label">Balance Fee:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
                     
                     <div class="smc-actions">
+                        <button onclick="alert('View details of ${s.full_name}')" class="smc-btn btn-view">View</button>
+                        <button onclick="alert('Edit details of ${s.full_name}')" class="smc-btn btn-edit">Edit</button>
                         <button onclick="deleteStudent('${s.id}')" class="smc-btn btn-delete">Delete</button>
                     </div>
                 `;
@@ -142,6 +148,7 @@
             }
         };
 
+        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); window.location.href = 'login.html'; });
         checkAuth();
     </script>
 </body>
