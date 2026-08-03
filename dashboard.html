@@ -1,4 +1,3 @@
-<!-- File: dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,9 +48,7 @@
             <a href="admission.html" class="nav-btn"><span class="nav-icon">🎓</span>New Admission</a>
             <a href="fees.html" class="nav-btn"><span class="nav-icon">💰</span>Collect Fee</a>
             <a href="students.html" class="nav-btn"><span class="nav-icon">👥</span>Student Directory</a>
-            <!-- പുതിയതായി ചേർത്ത കോഴ്‌സ് മാനേജ്മെന്റ് ബട്ടൺ -->
             <a href="courses.html" class="nav-btn"><span class="nav-icon">📚</span>Courses</a>
-            <!-- അപ്ഡേറ്റ് ചെയ്ത റിപ്പോർട്ട് ബട്ടൺ -->
             <a href="reports.html" class="nav-btn"><span class="nav-icon">📊</span>Reports</a>
         </div>
     </main>
@@ -67,21 +64,27 @@
 
         async function loadDashboardData() {
             try {
-                // 1. വിദ്യാർത്ഥികളുടെ എണ്ണം എടുക്കുന്നു
+                // 1. Total Students
                 const { count: studentCount } = await supabase.from('students').select('*', { count: 'exact', head: true });
                 document.getElementById('statStudents').textContent = studentCount || 0;
 
-                // 2. കോഴ്‌സുകളുടെ എണ്ണം (സ്റ്റാറ്റസ് എറർ ഒഴിവാക്കാൻ ഫിൽറ്റർ മാറ്റി എല്ലാ കോഴ്‌സുകളും എണ്ണുന്നു)
+                // 2. Active Courses
                 const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true });
                 document.getElementById('statCourses').textContent = courseCount || 0;
 
-                // 3. ഇന്നത്തെ ഫീസ് കളക്ഷൻ
+                // 3. Today's Collection (Fee Payments + Admission Fees)
                 const todayDate = new Date().toISOString().split('T')[0];
+                
                 const { data: collections } = await supabase.from('fee_payments').select('amount_paid').gte('payment_date', `${todayDate}T00:00:00Z`);
-                let todayTotal = collections ? collections.reduce((sum, record) => sum + Number(record.amount_paid), 0) : 0;
+                let paymentsToday = collections ? collections.reduce((sum, record) => sum + Number(record.amount_paid), 0) : 0;
+                
+                const { data: admissionsToday } = await supabase.from('students').select('admission_fee').gte('created_at', `${todayDate}T00:00:00Z`);
+                let admissionsTotal = admissionsToday ? admissionsToday.reduce((sum, record) => sum + Number(record.admission_fee), 0) : 0;
+
+                let todayTotal = paymentsToday + admissionsTotal;
                 document.getElementById('statTodayCollection').textContent = '₹ ' + todayTotal;
 
-                // 4. ബാക്കി കിട്ടാനുള്ള ഫീസ് (400 എറർ ഒഴിവാക്കാൻ ടേബിളുകൾ വേർതിരിച്ച് കണക്കുകൂട്ടുന്നു)
+                // 4. Pending Fees
                 const { data: studentsData } = await supabase.from('students').select('id, total_fee, admission_fee');
                 const { data: paymentsData } = await supabase.from('fee_payments').select('student_id, amount_paid');
                 
