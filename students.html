@@ -54,8 +54,19 @@
             fetchStudents();
         }
 
+        // അപ്ഡേറ്റ് ചെയ്ത ഫംഗ്ഷൻ (എറർ ഒഴിവാക്കാൻ കണക്ഷനുകൾ തൽക്കാലം മാറ്റിയിരിക്കുന്നു)
         async function fetchStudents() {
-            const { data } = await supabase.from('students').select('id, register_number, full_name, phone_number, gender, qualification, status, total_fee, admission_fee, photo_url, courses(course_name), fee_payments(amount_paid)').order('created_at', { ascending: false });
+            const { data, error } = await supabase
+                .from('students')
+                .select('id, register_number, full_name, phone_number, gender, qualification, status, total_fee, admission_fee, photo_url')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error("Fetch Error:", error);
+                alert("Database Error: " + error.message);
+                return;
+            }
+
             allStudents = data || [];
             renderList(allStudents);
         }
@@ -70,7 +81,6 @@
                 const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
                 let avatarUrl = s.photo_url || (s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
 
-                // യോഗ്യതയ്ക്ക് അനുസരിച്ച് ബാക്ക്ഗ്രൗണ്ട് കളർ സെറ്റ് ചെയ്യുന്നു
                 let qualBadge = '';
                 const q = s.qualification ? s.qualification.trim() : 'N/A';
                 if (q.toLowerCase() === 'sslc') {
