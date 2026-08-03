@@ -51,6 +51,13 @@
                     <label class="form-label">Capacity (Max Students)</label>
                     <input type="number" id="courseCapacity" class="form-control" required min="1" placeholder="Enter capacity">
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="courseStatus" class="form-control" required>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
                 <button type="submit" class="btn btn-primary" id="saveCourseBtn">Save Course</button>
             </form>
         </div>
@@ -111,6 +118,7 @@
                             <strong style="font-size: 15px; color: #111827;">${c.course_name}</strong>
                             <div style="font-size: 13px; color: #4B5563; margin-top: 2px;">Duration: ${c.duration || 'N/A'} | Fee: ₹ ${c.total_fee || 0}</div>
                             <div style="font-size: 12px; color: #6B7280; margin-top: 2px;">Instructor: ${c.instructor_name || 'N/A'} | Capacity: ${c.capacity || 'N/A'}</div>
+                            <div style="font-size: 12px; color: #6B7280; margin-top: 2px;">Status: <span style="font-weight:600; color:${c.status === 'Active' ? '#10B981' : '#EF4444'};">${c.status || 'Active'}</span></div>
                         </div>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
@@ -131,6 +139,7 @@
             const fee = Number(document.getElementById('courseFee').value);
             const instructor = document.getElementById('instructorName').value.trim();
             const capacity = Number(document.getElementById('courseCapacity').value);
+            const status = document.getElementById('courseStatus').value;
 
             const btn = document.getElementById('saveCourseBtn');
             btn.textContent = 'Saving...'; btn.disabled = true;
@@ -140,7 +149,8 @@
                 duration: duration,
                 total_fee: fee,
                 instructor_name: instructor,
-                capacity: capacity
+                capacity: capacity,
+                status: status
             }]);
 
             if (error) {
@@ -164,6 +174,7 @@
                 <p><b>Total Fee:</b> ₹ ${c.total_fee || 0}</p>
                 <p><b>Instructor:</b> ${c.instructor_name || 'N/A'}</p>
                 <p><b>Capacity:</b> ${c.capacity || 'N/A'}</p>
+                <p><b>Status:</b> ${c.status || 'Active'}</p>
                 <p><b>Created At:</b> ${c.created_at ? new Date(c.created_at).toLocaleDateString() : 'N/A'}</p>
             `;
             document.getElementById('courseModal').style.display = 'flex';
@@ -196,6 +207,13 @@
                         <label style="font-size:13px; font-weight:600;">Capacity</label>
                         <input type="number" id="editCourseCapacity" value="${c.capacity || 1}" class="form-control" required min="1">
                     </div>
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:13px; font-weight:600;">Status</label>
+                        <select id="editCourseStatus" class="form-control" required>
+                            <option value="Active" ${c.status === 'Active' ? 'selected' : ''}>Active</option>
+                            <option value="Inactive" ${c.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                        </select>
+                    </div>
                     <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:600; cursor:pointer;">Update Course</button>
                 </form>
             `;
@@ -209,13 +227,15 @@
             const fee = Number(document.getElementById('editCourseFee').value);
             const instructor = document.getElementById('editInstructorName').value.trim();
             const capacity = Number(document.getElementById('editCourseCapacity').value);
+            const status = document.getElementById('editCourseStatus').value;
 
             const { error } = await supabase.from('courses').update({
                 course_name: name,
                 duration: duration,
                 total_fee: fee,
                 instructor_name: instructor,
-                capacity: capacity
+                capacity: capacity,
+                status: status
             }).eq('id', id);
 
             if (error) {
