@@ -1,41 +1,53 @@
-// നിങ്ങളുടെ dashboard-ൽ ഉപയോഗിച്ചിരിക്കുന്ന അതേ supabase-config ഫയൽ ഇവിടെ ഇമ്പോർട്ട് ചെയ്യുന്നു
-import { supabase } from './supabase-config.js';
+// Supabase Configuration (നിങ്ങൾ നൽകിയ വിവരങ്ങൾ ഉൾപ്പെടുത്തിയിരിക്കുന്നു)
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const supabaseUrl = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
+const supabaseKey = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // DOM Elements
 const form = document.getElementById('addCourseForm');
 const courseContainer = document.getElementById('courseContainer');
 
+// പേജ് ലോഡ് ആകുമ്പോൾ കോഴ്‌സുകൾ വലിച്ചെടുക്കാൻ
 document.addEventListener('DOMContentLoaded', fetchCourses);
 
-// Form Submit
+// പുതിയ കോഴ്‌സ് ഫോം സബ്മിറ്റ് ചെയ്യുമ്പോൾ
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Saving...'; 
+    submitBtn.disabled = true;
 
     const courseData = {
         course_name: document.getElementById('courseName').value,
+        certification_type: document.getElementById('certType').value,
         duration: document.getElementById('duration').value,
+        total_hours: document.getElementById('totalHours').value,
         total_fee: document.getElementById('totalFee').value,
         instructor_name: document.getElementById('instructorName').value,
         capacity: document.getElementById('capacity').value,
-        status: document.getElementById('courseStatus').value
+        status: document.getElementById('courseStatus').value,
+        sub_modules: document.getElementById('subModules').value
     };
 
-    const { data, error } = await supabase
-        .from('courses')
-        .insert([courseData]);
+    const { error } = await supabase.from('courses').insert([courseData]);
 
     if (error) {
         alert("Error saving course: " + error.message);
     } else {
-        alert("Course added successfully!");
-        form.reset(); 
-        fetchCourses(); 
+        alert("Course curriculum added successfully!");
+        form.reset();
+        fetchCourses(); // പുതിയ ഡാറ്റ ഉൾപ്പെടെ റിഫ്രഷ് ചെയ്യാൻ
     }
+    
+    submitBtn.textContent = 'Save Course Curriculum'; 
+    submitBtn.disabled = false;
 });
 
-// Fetch Courses
+// ഡാറ്റാബേസിൽ നിന്നും കോഴ്‌സുകൾ എടുത്ത് സ്ക്രീനിൽ കാണിക്കാൻ
 async function fetchCourses() {
-    courseContainer.innerHTML = '<p style="text-align: center; color: #666;">Loading...</p>';
+    courseContainer.innerHTML = '<p style="text-align: center; color: #64748b; width: 100%;">Loading...</p>';
 
     const { data: courses, error } = await supabase
         .from('courses')
@@ -43,35 +55,57 @@ async function fetchCourses() {
         .order('created_at', { ascending: false });
 
     if (error) {
-        courseContainer.innerHTML = `<p style="color:red; text-align: center;">Failed to load courses.</p>`;
+        courseContainer.innerHTML = `<p style="color:red; text-align: center; width: 100%;">Error loading courses: ${error.message}</p>`;
         return;
     }
 
     courseContainer.innerHTML = ''; 
-
+    
     if (courses.length === 0) {
-        courseContainer.innerHTML = '<p style="text-align: center; color: #666;">No courses found. Add a new course above.</p>';
+        courseContainer.innerHTML = '<p style="text-align: center; color: #64748b; width: 100%;">No courses found. Create a new one above.</p>';
         return;
     }
 
     courses.forEach(course => {
-        const badgeColor = course.status === 'Active' ? '#10B981' : '#F59E0B';
-        
+        const statusClass = course.status === 'Active' ? 'status-active' : 'status-draft';
+        const modulesHTML = course.sub_modules ? `<div class="sub-modules-box"><strong>Modules:</strong> ${course.sub_modules}</div>` : '';
+
         const card = document.createElement('div');
-        card.style.cssText = 'background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 12px; position: relative;';
-        
+        card.className = 'course-card';
         card.innerHTML = `
-            <span style="position: absolute; top: 12px; right: 12px; background: ${badgeColor}20; color: ${badgeColor}; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold;">
-                ${course.status}
-            </span>
-            <h3 style="margin: 0 0 10px 0; font-size: 15px; color: #1e293b; padding-right: 60px;">${course.course_name}</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: #475569;">
-                <div>⏱️ ${course.duration}</div>
+            <span class="status-badge ${statusClass}">${course.status}</span>
+            <h3 class="course-title">${course.course_name}</h3>
+            
+            <div class="course-meta">
+                <div>🎓 ${course.certification_type}</div>
+                <div>⏱️ ${course.duration} (${course.total_hours} Hrs)</div>
                 <div>💰 ₹${course.total_fee}</div>
                 <div>👨‍🏫 ${course.instructor_name}</div>
                 <div>🪑 ${course.capacity} Seats</div>
             </div>
+            
+            ${modulesHTML}
+            
+            <button class="btn-delete" data-id="${course.id}">Delete</button>
         `;
         courseContainer.appendChild(card);
+    });
+
+    // Delete ബട്ടണുകൾക്ക് ആക്ഷൻ നൽകാൻ
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const courseId = e.target.getAttribute('data-id');
+            if (confirm('Are you sure you want to delete this course?')) {
+                e.target.textContent = 'Deleting...';
+                const { error } = await supabase.from('courses').delete().eq('id', courseId);
+                
+                if (error) {
+                    alert('Error deleting course: ' + error.message);
+                    e.target.textContent = 'Delete';
+                } else {
+                    fetchCourses(); // ഡിലീറ്റ് ചെയ്ത ശേഷം ലിസ്റ്റ് റിഫ്രഷ് ചെയ്യാൻ
+                }
+            }
+        });
     });
 }
