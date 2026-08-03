@@ -68,8 +68,8 @@
                 const { count: studentCount } = await supabase.from('students').select('*', { count: 'exact', head: true });
                 document.getElementById('statStudents').textContent = studentCount || 0;
 
-                // 2. Active Courses (സ്റ്റാറ്റസ് 'active' ഉള്ള കോഴ്സുകൾ മാത്രം എണ്ണുന്നു)
-                const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true }).eq('status', 'active');
+                // 2. Active Courses (ഇവിടെയാണ് സ്റ്റാറ്റസ് 'Active' എന്നത് ഫിൽട്ടർ ചെയ്തത്)
+                const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true }).eq('status', 'Active');
                 document.getElementById('statCourses').textContent = courseCount || 0;
 
                 // 3. Today's Collection (Fee Payments + Admission Fees)
