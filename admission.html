@@ -42,13 +42,11 @@
                     <input type="tel" id="phone" class="form-control" required placeholder="10-digit mobile number" maxlength="10">
                 </div>
 
-                <!-- പുതിയതായി ചേർത്ത Admission Date ഫീൽഡ് -->
                 <div class="form-group">
                     <label class="form-label">Admission Date</label>
                     <input type="date" id="admissionDate" class="form-control" required>
                 </div>
 
-                <!-- പുതിയതായി ചേർത്ത Date of Birth ഫീൽഡ് -->
                 <div class="form-group">
                     <label class="form-label">Date of Birth</label>
                     <input type="date" id="dateOfBirth" class="form-control">
@@ -95,9 +93,27 @@
                     <input type="number" id="totalFee" class="form-control" required placeholder="e.g. 15000">
                 </div>
                 
-                <div class="form-group" style="margin-bottom: 24px;">
-                    <label class="form-label">Admission Fee Paid (₹)</label>
-                    <input type="number" id="admissionFee" class="form-control" required placeholder="Amount paid during admission">
+                <div style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 15px; border-radius: 8px; margin-bottom: 24px;">
+                    <h3 style="font-size: 14px; margin-bottom: 10px; color: #166534;">Admission Fee Details</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Admission Fee Paid (₹)</label>
+                        <input type="number" id="admissionFee" class="form-control" required placeholder="Amount paid during admission" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Payment Mode</label>
+                        <select id="paymentMode" class="form-control" required>
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Receipt / Transaction ID</label>
+                        <input type="text" id="receiptNo" class="form-control" placeholder="Enter receipt number (Optional)">
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn btn-primary" id="submitBtn">Submit Admission</button>
@@ -115,14 +131,12 @@
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            
-            // ഓട്ടോമാറ്റിക്കായി ഇന്നത്തെ തീയതി Admission Date ഫീൽഡിൽ സെറ്റ് ചെയ്യുന്നു
             document.getElementById('admissionDate').value = new Date().toISOString().split('T')[0];
             fetchCourses();
         }
 
         async function fetchCourses() {
-            const { data, error } = await supabase.from('courses').select('id, course_name');
+            const { data, error } = await supabase.from('courses').select('id, course_name').eq('status', 'Active');
             
             if (error) {
                 console.error("Error fetching courses:", error.message);
@@ -176,8 +190,8 @@
                     photoUrl = publicUrlData.publicUrl;
                 }
 
-                // Supabase-ലേക്ക് പുതിയ ഡേറ്റകൾ ഉൾപ്പെടുത്തി സേവ് ചെയ്യുന്നു
-                const { error } = await supabase.from('students').insert([{
+                // 1. ആദ്യം കുട്ടിയുടെ വിവരങ്ങൾ Students ടേബിളിൽ സേവ് ചെയ്യുന്നു
+                const { data: newStudent, error: studentError } = await supabase.from('students').insert([{
                     full_name: document.getElementById('fullName').value,
                     register_number: document.getElementById('regNo').value,
                     phone_number: phoneVal,
@@ -191,11 +205,26 @@
                     total_fee: totalFee,
                     admission_fee: admissionFee,
                     status: 'active'
-                }]);
+                }]).select();
 
-                if (error) throw error;
+                if (studentError) throw studentError;
 
-                alert('Admission Successful!'); 
+                // 2. അഡ്മിഷൻ ഫീസ് നൽകിയിട്ടുണ്ടെങ്കിൽ അത് fee_payments ടേബിളിലേക്ക് സേവ് ചെയ്യുന്നു
+                if (admissionFee > 0 && newStudent && newStudent.length > 0) {
+                    const { error: feeError } = await supabase.from('fee_payments').insert([{
+                        student_id: newStudent[0].id,
+                        amount_paid: admissionFee,
+                        payment_mode: document.getElementById('paymentMode').value,
+                        receipt_no: document.getElementById('receiptNo').value || `ADM-${document.getElementById('regNo').value}`,
+                        payment_date: document.getElementById('admissionDate').value
+                    }]);
+
+                    if (feeError) {
+                        console.error("Fee saving error:", feeError);
+                    }
+                }
+
+                alert('Admission Successful & Fee Recorded!'); 
                 window.location.href = 'dashboard.html'; 
             } catch (err) {
                 alert('Error: ' + err.message);
