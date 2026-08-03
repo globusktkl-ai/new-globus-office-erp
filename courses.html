@@ -43,6 +43,10 @@
                     <label class="form-label">Course Fee (₹)</label>
                     <input type="number" id="courseFee" class="form-control" required min="0" placeholder="Enter total fee">
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Instructor Name</label>
+                    <input type="text" id="instructorName" class="form-control" required placeholder="Enter instructor name">
+                </div>
                 <button type="submit" class="btn btn-primary" id="saveCourseBtn">Save Course</button>
             </form>
         </div>
@@ -102,6 +106,7 @@
                         <div>
                             <strong style="font-size: 15px; color: #111827;">${c.course_name}</strong>
                             <div style="font-size: 13px; color: #4B5563; margin-top: 2px;">Duration: ${c.duration || 'N/A'} | Fee: ₹ ${c.total_fee || 0}</div>
+                            <div style="font-size: 12px; color: #6B7280; margin-top: 2px;">Instructor: ${c.instructor_name || 'N/A'}</div>
                         </div>
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
@@ -120,6 +125,7 @@
             const name = document.getElementById('courseName').value.trim();
             const duration = document.getElementById('courseDuration').value.trim();
             const fee = Number(document.getElementById('courseFee').value);
+            const instructor = document.getElementById('instructorName').value.trim();
 
             const btn = document.getElementById('saveCourseBtn');
             btn.textContent = 'Saving...'; btn.disabled = true;
@@ -127,7 +133,8 @@
             const { error } = await supabase.from('courses').insert([{
                 course_name: name,
                 duration: duration,
-                total_fee: fee
+                total_fee: fee,
+                instructor_name: instructor
             }]);
 
             if (error) {
@@ -149,6 +156,7 @@
                 <p><b>Course Name:</b> ${c.course_name}</p>
                 <p><b>Duration:</b> ${c.duration || 'N/A'}</p>
                 <p><b>Total Fee:</b> ₹ ${c.total_fee || 0}</p>
+                <p><b>Instructor:</b> ${c.instructor_name || 'N/A'}</p>
                 <p><b>Created At:</b> ${c.created_at ? new Date(c.created_at).toLocaleDateString() : 'N/A'}</p>
             `;
             document.getElementById('courseModal').style.display = 'flex';
@@ -173,6 +181,10 @@
                         <label style="font-size:13px; font-weight:600;">Course Fee (₹)</label>
                         <input type="number" id="editCourseFee" value="${c.total_fee || 0}" class="form-control" required min="0">
                     </div>
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:13px; font-weight:600;">Instructor Name</label>
+                        <input type="text" id="editInstructorName" value="${c.instructor_name || ''}" class="form-control" required>
+                    </div>
                     <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:600; cursor:pointer;">Update Course</button>
                 </form>
             `;
@@ -184,11 +196,13 @@
             const name = document.getElementById('editCourseName').value.trim();
             const duration = document.getElementById('editCourseDuration').value.trim();
             const fee = Number(document.getElementById('editCourseFee').value);
+            const instructor = document.getElementById('editInstructorName').value.trim();
 
             const { error } = await supabase.from('courses').update({
                 course_name: name,
                 duration: duration,
-                total_fee: fee
+                total_fee: fee,
+                instructor_name: instructor
             }).eq('id', id);
 
             if (error) {
