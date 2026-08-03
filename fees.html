@@ -197,11 +197,12 @@
 
             document.getElementById('submitBtn').disabled = true;
             
+            // ഇവിടെയാണ് transaction_id മാറ്റി receipt_no എന്നാക്കിയത് 
             const { error } = await supabase.from('fee_payments').insert([{
                 student_id: selectedStudentId,
                 amount_paid: amountPaid,
                 payment_mode: document.getElementById('paymentMode').value,
-                transaction_id: document.getElementById('txnId').value,
+                receipt_no: document.getElementById('txnId').value, 
                 payment_date: document.getElementById('paymentDate').value
             }]);
 
