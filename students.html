@@ -6,7 +6,7 @@
     <title>Directory - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* PDF ഡൗൺലോഡ് ചെയ്യുമ്പോഴും പ്രിന്റ് ചെയ്യുമ്പോഴും കാർഡ് എടിഎം കാർഡിന്റെ വലുപ്പത്തിൽ വരാനുള്ള സ്റ്റൈൽ */
+        /* PDF ഡൗൺലോഡ് ചെയ്യുമ്പോഴും പ്രിന്റ് ചെയ്യുമ്പോഴും കാർഡ് മാത്രം കാണിക്കാനുള്ള സ്റ്റൈൽ */
         @media print {
             body * {
                 visibility: hidden;
@@ -21,24 +21,14 @@
                 width: 100%;
                 background: white !important;
                 display: flex !important;
-                justify-content: flex-start;
+                justify-content: center;
                 align-items: flex-start;
-                padding: 0;
-                margin: 0;
+                padding-top: 20px;
             }
             .no-print {
                 display: none !important;
             }
-            /* ATM Card Standard Size Adjustment (Scale down to 54mm width) */
-            #smartCardContent {
-                width: 320px !important;
-                height: 510px !important;
-                transform: scale(0.65) !important; /* Resizes exactly to ATM card size on A4 paper */
-                transform-origin: top left !important;
-                box-shadow: none !important;
-                border: 1px solid #ccc !important; /* Cutting border */
-                margin: 10px;
-            }
+            /* പ്രിന്റ് ചെയ്യുമ്പോൾ ബാക്ക്ഗ്രൗണ്ട് കളർ വരാൻ */
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -77,7 +67,7 @@
     <div id="studentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:100; justify-content:center; align-items:center; padding:15px;">
         <div style="background:#fff; width:100%; max-width:400px; border-radius:16px; padding:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow-y:auto; max-height:95vh; position:relative;">
             
-            <!-- Edit Form Container -->
+            <!-- Edit Form Container (മറച്ചുവെച്ചിരിക്കുന്നു, Edit ചെയ്യുമ്പോൾ മാത്രം വരും) -->
             <div id="editFormContainer" style="display:none;">
                 <h3 id="modalTitle" style="margin-bottom:15px; font-size:18px; color:var(--primary-dark);">Edit Student</h3>
                 <div id="modalContent"></div>
@@ -86,40 +76,30 @@
                 </div>
             </div>
 
-            <!-- Smart ID Card Container -->
-            <div id="smartCardContainer" style="display:none; display:flex; justify-content:center;">
-                <!-- Card Inner Design (ATM Card Proportion) -->
-                <div id="smartCardContent" style="width: 320px; height: 510px; background: linear-gradient(145deg, #ffffff 0%, #f0f4f8 40%, #e0e7ff 100%); border: 2px solid #cbd5e1; border-radius: 14px; padding: 15px; text-align: center; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.08); box-sizing: border-box; overflow: hidden;">
-                    
-                    <!-- അക്കാദമി ഹെഡർ & ലോഗോ -->
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; border-bottom: 2px solid rgba(59, 130, 246, 0.2); padding-bottom: 10px;">
-                        <img src="assets/images/logo.png" style="width: 45px; height: 45px; object-fit: contain;" alt="Logo" onerror="this.style.display='none'">
-                        <div style="text-align: left; line-height: 1.1;">
-                            <span style="font-size: 18px; font-weight: 900; color: #1e3a8a; letter-spacing: 0.5px; display: block;">GLOBUS</span>
-                            <span style="font-size: 11px; font-weight: 700; color: #3b82f6; display: block;">TECHNICAL ACADEMY</span>
-                        </div>
+            <!-- Smart ID Card Container (View ചെയ്യുമ്പോൾ വരും) -->
+            <div id="smartCardContainer" style="display:none;">
+                <div id="smartCardContent" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border: 2px solid #3B82F6; border-radius: 12px; padding: 20px; text-align: center; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; border-bottom: 2px solid #cbd5e1; padding-bottom: 10px;">
+                        <span style="font-size: 15px; font-weight: 800; color: #1e3a8a; letter-spacing: 0.5px;">GLOBUS TECHNICAL ACADEMY</span>
                     </div>
 
                     <!-- കുട്ടിയുടെ ഫോട്ടോ / അവതാർ -->
-                    <div style="width: 90px; height: 90px; background: #3B82F6; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; margin: 0 auto 10px auto; border: 4px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); overflow:hidden; position: relative; z-index: 2;" id="cardAvatar">
+                    <div style="width: 80px; height: 80px; background: #3B82F6; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 15px auto; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow:hidden;" id="cardAvatar">
                         S
                     </div>
 
-                    <!-- കുട്ടിയുടെ പേരും കോഴ്സും -->
-                    <h3 id="cardStudentName" style="font-size: 21px; color: #111827; margin-bottom: 6px; font-weight: 800; line-height: 1.2;">Student Name</h3>
-                    <div style="margin-bottom: 16px;">
-                        <span id="cardCourseName" style="font-size: 12px; color: #1d4ed8; font-weight: 700; background: rgba(59, 130, 246, 0.15); padding: 5px 12px; border-radius: 20px; text-transform: uppercase; border: 1px solid rgba(59, 130, 246, 0.3);">Course Name</span>
-                    </div>
+                    <!-- കുട്ടിയുടെ വിവരങ്ങൾ -->
+                    <h3 id="cardStudentName" style="font-size: 20px; color: #111827; margin-bottom: 4px; font-weight: 700;">Name</h3>
+                    <p id="cardCourseName" style="font-size: 13px; color: #2563eb; font-weight: 600; margin-bottom: 18px; text-transform: uppercase;">Course</p>
 
-                    <!-- മറ്റു വിവരങ്ങൾ -->
-                    <div style="text-align: left; background: rgba(255, 255, 255, 0.8); padding: 12px 15px; border-radius: 10px; font-size: 12px; color: #374151; box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); line-height: 1.7; position: relative; z-index: 2; border: 1px solid #f1f5f9;">
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 4px;">
+                    <div style="text-align: left; background: #ffffff; padding: 15px; border-radius: 8px; font-size: 13px; color: #374151; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); line-height: 1.6;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-bottom: 5px;">
                             <strong>Reg No:</strong> <span id="cardRegNo">-</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 4px;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-bottom: 5px;">
                             <strong>Phone:</strong> <span id="cardPhone">-</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 4px;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-bottom: 5px;">
                             <strong>Gender:</strong> <span id="cardGender">-</span>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
@@ -127,27 +107,19 @@
                         </div>
                     </div>
 
-                    <!-- Digital Seal (Bottom Right) -->
-                    <div style="position: absolute; bottom: 15px; right: 15px; width: 65px; height: 65px; border: 2px solid rgba(30, 58, 138, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-20deg); z-index: 1;">
-                        <div style="width: 55px; height: 55px; border: 1px dashed rgba(30, 58, 138, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 7px; font-weight: 800; color: rgba(30, 58, 138, 0.4); padding: 2px; line-height: 1.1;">
-                            GLOBUS<br>TECHNICAL<br>ACADEMY
-                        </div>
-                    </div>
-                    
-                    <!-- Footer Note -->
-                    <div style="position: absolute; bottom: 10px; left: 0; width: 100%; font-size: 9px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; z-index: 2;">
-                        Official Student Profile
+                    <div style="margin-top: 15px; font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                        Official Student Profile Card
                     </div>
                 </div>
-            </div>
 
-            <!-- ആക്ഷൻ ബട്ടണുകൾ (Print, Share, Close) -->
-            <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="no-print">
-                <button type="button" onclick="printCard()" style="background: #2563eb; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px;">🖨️ PDF / Print</button>
-                <button type="button" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px;">🔗 Share</button>
-            </div>
-            <div style="margin-top: 10px; text-align: center;" class="no-print">
-                <button type="button" onclick="closeModal()" style="width: 100%; background: #6b7280; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">Close</button>
+                <!-- ആക്ഷൻ ബട്ടണുകൾ (Print, Share, Close) -->
+                <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="no-print">
+                    <button type="button" onclick="printCard()" style="background: #2563eb; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px;">🖨️ PDF / Print</button>
+                    <button type="button" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px;">🔗 Share</button>
+                </div>
+                <div style="margin-top: 10px; text-align: center;" class="no-print">
+                    <button type="button" onclick="closeModal()" style="width: 100%; background: #6b7280; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -155,7 +127,7 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         let allStudents = [];
-        let currentStudentData = null;
+        let currentStudentData = null; // ഷെയർ ചെയ്യാൻ നിലവിലെ കുട്ടിയുടെ ഡാറ്റ ശേഖരിക്കാൻ
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -164,10 +136,9 @@
         }
 
         async function fetchStudents() {
-            // courses ടേബിളിൽ നിന്നുള്ള കോഴ്‌സ് പേര് എടുക്കാൻ courses(course_name) നൽകിയിട്ടുണ്ട്
             const { data, error } = await supabase
                 .from('students')
-                .select('id, register_number, full_name, phone_number, gender, qualification, status, total_fee, admission_fee, photo_url, courses(course_name)')
+                .select('id, register_number, full_name, phone_number, gender, qualification, status, total_fee, admission_fee, photo_url')
                 .order('created_at', { ascending: false });
             
             if (error) {
@@ -235,7 +206,7 @@
 
             // എഡിറ്റ് ഫോം മറച്ചു വെച്ച് സ്മാർട്ട് കാർഡ് കാണിക്കുക
             document.getElementById('editFormContainer').style.display = 'none';
-            document.getElementById('smartCardContainer').style.display = 'flex';
+            document.getElementById('smartCardContainer').style.display = 'block';
 
             // ഡാറ്റ പോപ്പുലേറ്റ് ചെയ്യുക
             const name = s.full_name || 'Unknown';
@@ -244,10 +215,10 @@
             if (s.photo_url) {
                 document.getElementById('cardAvatar').innerHTML = `<img src="${s.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
             } else {
-                document.getElementById('cardAvatar').innerHTML = name.charAt(0).toUpperCase();
+                document.getElementById('cardAvatar').textContent = name.charAt(0).toUpperCase();
             }
 
-            document.getElementById('cardCourseName').textContent = s.courses?.course_name || 'Not Assigned';
+            document.getElementById('cardCourseName').textContent = s.courses?.course_name || 'N/A';
             document.getElementById('cardRegNo').textContent = s.register_number || 'N/A';
             document.getElementById('cardPhone').textContent = s.phone_number || 'N/A';
             document.getElementById('cardGender').textContent = s.gender || 'N/A';
@@ -261,6 +232,7 @@
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
             
+            // സ്മാർട്ട് കാർഡ് മറച്ചു വെച്ച് എഡിറ്റ് ഫോം കാണിക്കുക
             document.getElementById('smartCardContainer').style.display = 'none';
             document.getElementById('editFormContainer').style.display = 'block';
 
@@ -323,7 +295,7 @@
             if (navigator.share) {
                 try {
                     await navigator.share({
-                        title: 'Student Profile',
+                        title: 'Student Profile Card',
                         text: shareText,
                     });
                 } catch (err) {
