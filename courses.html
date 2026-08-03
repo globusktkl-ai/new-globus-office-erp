@@ -35,9 +35,9 @@
                     <label class="form-label">Course Name</label>
                     <input type="text" id="courseName" class="form-control" required placeholder="Enter course name">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Course Fee (₹)</label>
-                    <input type="number" id="courseFee" class="form-control" required min="0" placeholder="Enter total fee">
+                <div class="form-group" style="display:none;">
+                    <!-- ഡാറ്റാബേസ് പ്രശ്നം വരാതിരിക്കാൻ ഫീൽഡ് ഇവിടെ നിലനിർത്തിയിരിക്കുന്നു -->
+                    <input type="number" id="courseFee" class="form-control" value="0">
                 </div>
                 <button type="submit" class="btn btn-primary" id="saveCourseBtn">Save Course</button>
             </form>
@@ -91,24 +91,17 @@
             }
 
             courses.forEach(c => {
-                const statusBadge = c.status === 'active' || !c.status ? 
-                    `<span style="background: #DCFCE7; color: #15803D; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">Active</span>` : 
-                    `<span style="background: #FEE2E2; color: #B91C1C; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">Inactive</span>`;
-
                 const card = document.createElement('div');
                 card.style.cssText = "background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 12px; margin-bottom: 10px;";
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <div>
                             <strong style="font-size: 15px; color: #111827;">${c.course_name}</strong>
-                            <div style="font-size: 13px; color: #4B5563; margin-top: 2px;">Fee: ₹ ${c.course_fee || 0}</div>
                         </div>
-                        <div>${statusBadge}</div>
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 10px;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
                         <button onclick="viewCourse('${c.id}')" style="background: #3B82F6; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">View</button>
                         <button onclick="editCourse('${c.id}')" style="background: #F59E0B; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Edit</button>
-                        <button onclick="toggleStatus('${c.id}', '${c.status}')" style="background: #6366F1; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px;">${c.status === 'inactive' ? 'Activate' : 'Deactivate'}</button>
                         <button onclick="deleteCourse('${c.id}', '${c.course_name}')" style="background: #EF4444; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Delete</button>
                     </div>
                 `;
@@ -120,15 +113,12 @@
         document.getElementById('courseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('courseName').value.trim();
-            const fee = Number(document.getElementById('courseFee').value);
 
             const btn = document.getElementById('saveCourseBtn');
             btn.textContent = 'Saving...'; btn.disabled = true;
 
             const { error } = await supabase.from('courses').insert([{
-                course_name: name,
-                course_fee: fee,
-                status: 'active'
+                course_name: name
             }]);
 
             if (error) {
@@ -148,9 +138,7 @@
             document.getElementById('modalTitle').textContent = "Course Details";
             document.getElementById('modalContent').innerHTML = `
                 <p><b>Course Name:</b> ${c.course_name}</p>
-                <p><b>Course Fee:</b> ₹ ${c.course_fee || 0}</p>
-                <p><b>Status:</b> ${c.status || 'active'}</p>
-                <p><b>Created At:</b> ${new Date(c.created_at).toLocaleDateString()}</p>
+                <p><b>Created At:</b> ${c.created_at ? new Date(c.created_at).toLocaleDateString() : 'N/A'}</p>
             `;
             document.getElementById('courseModal').style.display = 'flex';
         };
@@ -166,10 +154,6 @@
                         <label style="font-size:13px; font-weight:600;">Course Name</label>
                         <input type="text" id="editCourseName" value="${c.course_name}" class="form-control" required>
                     </div>
-                    <div style="margin-bottom:12px;">
-                        <label style="font-size:13px; font-weight:600;">Course Fee (₹)</label>
-                        <input type="number" id="editCourseFee" value="${c.course_fee || 0}" class="form-control" required min="0">
-                    </div>
                     <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:600; cursor:pointer;">Update Course</button>
                 </form>
             `;
@@ -179,11 +163,9 @@
         window.saveCourseEdit = async function(e, id) {
             e.preventDefault();
             const name = document.getElementById('editCourseName').value.trim();
-            const fee = Number(document.getElementById('editCourseFee').value);
 
             const { error } = await supabase.from('courses').update({
-                course_name: name,
-                course_fee: fee
+                course_name: name
             }).eq('id', id);
 
             if (error) {
@@ -191,18 +173,6 @@
             } else {
                 alert('Course updated successfully!');
                 closeModal();
-                fetchCourses();
-            }
-        };
-
-        // ഡിആക്ടിവേറ്റ് / ആക്ടിവേറ്റ് ചെയ്യാൻ (Deactivate / Activate)
-        window.toggleStatus = async function(id, currentStatus) {
-            const newStatus = currentStatus === 'inactive' ? 'active' : 'inactive';
-            const { error } = await supabase.from('courses').update({ status: newStatus }).eq('id', id);
-            
-            if (error) {
-                alert('Error changing status: ' + error.message);
-            } else {
                 fetchCourses();
             }
         };
