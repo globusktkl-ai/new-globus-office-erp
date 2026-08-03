@@ -2,11 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- മൊബൈലിൽ സൂം ചെയ്യാനുള്ള സൗകര്യത്തിനായി viewport അപ്ഡേറ്റ് ചെയ്തു -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Directory - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* പ്രിന്റ് ചെയ്യുമ്പോൾ കാർഡ് മാത്രം എടിഎം കാർഡ് വലുപ്പത്തിൽ വരാനുള്ള സ്റ്റൈൽ */
+        /* മൊബൈൽ ഫ്രണ്ട്ലി ഡിസൈൻ & സ്ക്രോളിംഗ് ഫിക്സ് */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 100;
+            justify-content: center; 
+            align-items: flex-start; /* മുകൾ ഭാഗം കട്ട് ആവാതിരിക്കാൻ flex-start നൽകി */
+            padding: 30px 10px; /* മൊബൈലിൽ മുകളിലും താഴെയും സ്പേസ് ലഭിക്കാൻ */
+            overflow-y: auto; /* സ്മൂത്ത് സ്ക്രോളിംഗ് */
+        }
+        
+        .modal-container {
+            background: #fff; width: 100%; max-width: 780px; border-radius: 16px;
+            padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin: auto;
+            display: flex; gap: 20px; flex-wrap: wrap;
+        }
+
+        .card-preview-col {
+            flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start;
+        }
+
+        .card-edit-col {
+            flex: 1; min-width: 300px; background: #f8fafc; padding: 20px; 
+            border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;
+        }
+
+        @media (max-width: 650px) {
+            .modal-container { padding: 15px; }
+            .card-preview-col, .card-edit-col { min-width: 100%; }
+            /* മൊബൈൽ സ്ക്രീനിൽ കാർഡ് കൃത്യമായി ഒതുങ്ങാൻ ചെറിയ സ്കെയിലിംഗ് */
+            .card-preview-col { transform: scale(0.95); transform-origin: top center; margin-bottom: -15px; }
+            .card-edit-col { padding: 15px; }
+        }
+
+        /* പ്രിന്റ് ചെയ്യുമ്പോൾ കാർഡ് എടിഎം കാർഡ് വലുപ്പത്തിൽ വരാനുള്ള സ്റ്റൈൽ */
         @media print {
             body * { visibility: hidden; }
             #studentModal, #profileCardContainer, #profileCardContainer * { visibility: visible; }
@@ -52,23 +86,25 @@
         <div id="studentsList"><div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div></div>
     </main>
 
-    <!-- Master Modal Popup -->
-    <div id="studentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:100; justify-content:center; align-items:center; padding:15px; overflow-y:auto;">
+    <!-- Master Modal Popup (അപ്ഡേറ്റ് ചെയ്തത്) -->
+    <div id="studentModal" class="modal-overlay">
         
-        <!-- 1. VIEW & EDIT CONTAINER (പഴയതുപോലെ എല്ലാ വിവരങ്ങളും എഡിറ്റ് ചെയ്യാൻ) -->
-        <div id="viewEditContainer" class="no-print" style="display:none; background:#fff; width:100%; max-width:500px; border-radius:12px; padding:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="font-size:18px; color:var(--primary-dark); margin:0;">View & Edit Profile</h3>
-                <button onclick="closeModal()" style="background:#EF4444; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">X</button>
+        <!-- 1. VIEW & EDIT CONTAINER -->
+        <div id="viewEditContainer" class="modal-container no-print" style="display:none; max-width:500px;">
+            <div style="width: 100%;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="font-size:18px; color:var(--primary-dark); margin:0;">View & Edit Profile</h3>
+                    <button onclick="closeModal()" style="background:#EF4444; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">X</button>
+                </div>
+                <div id="viewEditContent"></div>
             </div>
-            <div id="viewEditContent"></div>
         </div>
 
-        <!-- 2. PROFILE & CARD CONTAINER (ഐഡി കാർഡും കാർഡ് എഡിറ്ററും) -->
-        <div id="profileCardContainer" style="display:none; width:100%; max-width:750px; background:#fff; border-radius:16px; padding:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); display:flex; gap:20px; flex-wrap:wrap;">
+        <!-- 2. PROFILE & CARD CONTAINER -->
+        <div id="profileCardContainer" class="modal-container" style="display:none;">
             
-            <!-- Left Side: Live Smart ID Card Preview (The Printable Area) -->
-            <div style="flex:1; display:flex; justify-content:center; align-items:flex-start; min-width:320px;">
+            <!-- Left Side: Live Smart ID Card Preview -->
+            <div class="card-preview-col">
                 <div id="smartCardContent" style="width: 320px; height: 510px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 15px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">
                     
                     <!-- Header (Centered Logo & Text in one color) -->
@@ -88,7 +124,7 @@
                         <img id="cardAvatarImg" src="https://avatar.iran.liara.run/public" style="width: 120px; height: 150px; object-fit: cover; border-radius: 6px; border: 3px solid #cbd5e1; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     </div>
 
-                    <!-- Details Section (Explicit Labels) -->
+                    <!-- Details Section -->
                     <div style="padding: 0 10px; text-align: center; position: relative; z-index: 2;">
                         <div style="margin-bottom: 8px;">
                             <span style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">NAME</span><br>
@@ -125,14 +161,13 @@
                 </div>
             </div>
 
-            <!-- Right Side: Live Editor & Buttons (Hidden during Print) -->
-            <div class="no-print" style="flex:1; min-width:300px; background:#f8fafc; padding:20px; border-radius:12px; border:1px solid #e2e8f0; display:flex; flex-direction:column;">
+            <!-- Right Side: Live Editor & Buttons -->
+            <div class="card-edit-col no-print">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:5px;">
                     <h3 style="font-size:16px; color:#1e40af; margin:0;">✏️ Edit & Generate Card</h3>
                     <button onclick="closeModal()" style="background:#EF4444; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">X</button>
                 </div>
 
-                <!-- Live Photo Input -->
                 <label style="font-size:12px; font-weight:600; color:#374151;">Upload Photo (Preview & Print)</label>
                 <input type="file" id="livePhotoInput" accept="image/*" class="form-control" style="margin-bottom:12px; padding:6px; font-size:12px;" onchange="updateLivePhoto(event)">
 
@@ -153,7 +188,7 @@
                     </div>
                 </div>
 
-                <!-- Print & Share (Works instantly before saving) -->
+                <!-- Print & Share -->
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
                     <button type="button" onclick="printCard()" style="background: #2563eb; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🖨️ Print Card</button>
                     <button type="button" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🔗 Share</button>
@@ -161,7 +196,7 @@
                 
                 <hr style="border:none; border-top:1px dashed #cbd5e1; margin-bottom:15px;">
                 
-                <!-- Save Button (Tries to save photo, saves text anyway) -->
+                <!-- Save Button -->
                 <button type="button" onclick="saveCardDataToDB()" style="background: #f59e0b; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-bottom:10px;">💾 Save Details to Database</button>
                 <button type="button" onclick="closeModal()" style="background: #6b7280; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel / Close</button>
             </div>
@@ -243,13 +278,13 @@
             });
         }
 
-        // 1. VIEW & EDIT BUTTON LOGIC (മുഴുവൻ വിവരങ്ങളും എഡിറ്റ് ചെയ്യാൻ)
+        // 1. VIEW & EDIT BUTTON LOGIC
         window.viewAndEditStudent = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
             
             document.getElementById('profileCardContainer').style.display = 'none';
-            document.getElementById('viewEditContainer').style.display = 'block';
+            document.getElementById('viewEditContainer').style.display = 'flex'; // Fix
 
             document.getElementById('viewEditContent').innerHTML = `
                 <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6;">
@@ -294,7 +329,7 @@
             else { alert('Profile updated successfully!'); closeModal(); fetchStudents(); }
         };
 
-        // 2. PROFILE & CARD BUTTON LOGIC (കാർഡും കാർഡ് എഡിറ്ററും)
+        // 2. PROFILE & CARD BUTTON LOGIC
         window.openProfileAndCard = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
@@ -303,14 +338,12 @@
             document.getElementById('viewEditContainer').style.display = 'none';
             document.getElementById('profileCardContainer').style.display = 'flex';
 
-            // ഫോമിലേക്ക് ഡാറ്റ മാറ്റുന്നു
             document.getElementById('liveName').value = s.full_name || '';
             document.getElementById('liveCourse').value = s.display_course_name || '';
             document.getElementById('liveReg').value = s.register_number || '';
             document.getElementById('livePhone').value = s.phone_number || '';
-            document.getElementById('livePhotoInput').value = ''; // Reset file
+            document.getElementById('livePhotoInput').value = ''; 
 
-            // കാർഡിലേക്ക് ഡാറ്റ നൽകുന്നു
             document.getElementById('cardStudentName').innerText = s.full_name || 'N/A';
             document.getElementById('cardCourseName').innerText = s.display_course_name || 'N/A';
             document.getElementById('cardRegNo').innerText = s.register_number || 'N/A';
@@ -325,7 +358,6 @@
             document.getElementById('studentModal').style.display = 'flex';
         };
 
-        // ലൈവ് ഫോട്ടോ പ്രിവ്യൂ
         window.updateLivePhoto = function(event) {
             const file = event.target.files[0];
             if (file) {
@@ -334,7 +366,6 @@
             }
         };
 
-        // കാർഡ് വിവരങ്ങൾ സേവ് ചെയ്യാനുള്ള ഫംഗ്ഷൻ (Photo Space check included)
         window.saveCardDataToDB = async function() {
             if (!currentStudentData) return;
             
@@ -345,18 +376,15 @@
 
             if (newPhone && newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
 
-            // ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യാൻ ശ്രമിക്കുന്നു (Space ഇല്ലെങ്കിൽ Reject ആകും, ബാക്കി സേവ് ആകും)
             const fileInput = document.getElementById('livePhotoInput');
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 const fileName = `student_${Date.now()}_${file.name}`;
-                
-                // നിങ്ങളുടെ Supabase bucket-ന്റെ പേര് 'student-photos' ആണെന്ന് കരുതുന്നു
                 try {
                     const { data, error } = await supabase.storage.from('student-photos').upload(fileName, file);
                     if (error) {
-                        console.warn("Storage upload rejected/failed:", error);
-                        alert("Note: Server storage is full/unavailable. Photo will not be saved online, but other details will be saved.");
+                        console.warn("Storage upload rejected:", error);
+                        alert("Note: Server storage limit reached. Photo will not be saved online, but other details will be updated.");
                     } else {
                         const { data: urlData } = supabase.storage.from('student-photos').getPublicUrl(fileName);
                         photoUrlToSave = urlData.publicUrl;
@@ -366,12 +394,8 @@
                 }
             }
 
-            // ടെക്സ്റ്റ് വിവരങ്ങളും (ഫോട്ടോ അപ്‌ലോഡ് ആയാൽ അതിന്റെ URL ഉം) സേവ് ചെയ്യുന്നു
             const { error } = await supabase.from('students').update({
-                full_name: newName,
-                phone_number: newPhone,
-                register_number: newReg,
-                photo_url: photoUrlToSave
+                full_name: newName, phone_number: newPhone, register_number: newReg, photo_url: photoUrlToSave
             }).eq('id', currentStudentData.id);
 
             if (error) {
@@ -382,10 +406,8 @@
             }
         };
 
-        // PDF ഡൗൺലോഡ് / പ്രിന്റ് ചെയ്യാൻ
         window.printCard = function() { window.print(); };
 
-        // വാട്സാപ്പിലോ മറ്റോ ഷെയർ ചെയ്യാൻ
         window.shareCard = async function() {
             const name = document.getElementById('liveName').value || 'Unknown';
             const course = document.getElementById('liveCourse').value || 'N/A';
