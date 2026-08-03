@@ -42,6 +42,18 @@
                     <input type="tel" id="phone" class="form-control" required placeholder="10-digit mobile number" maxlength="10">
                 </div>
 
+                <!-- പുതിയതായി ചേർത്ത Admission Date ഫീൽഡ് -->
+                <div class="form-group">
+                    <label class="form-label">Admission Date</label>
+                    <input type="date" id="admissionDate" class="form-control" required>
+                </div>
+
+                <!-- പുതിയതായി ചേർത്ത Date of Birth ഫീൽഡ് -->
+                <div class="form-group">
+                    <label class="form-label">Date of Birth</label>
+                    <input type="date" id="dateOfBirth" class="form-control">
+                </div>
+
                 <div class="form-group">
                     <label class="form-label">Address</label>
                     <textarea id="address" class="form-control" rows="3" required placeholder="Enter student residential address" style="resize: none; height: auto; padding: 10px;"></textarea>
@@ -103,10 +115,12 @@
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
+            
+            // ഓട്ടോമാറ്റിക്കായി ഇന്നത്തെ തീയതി Admission Date ഫീൽഡിൽ സെറ്റ് ചെയ്യുന്നു
+            document.getElementById('admissionDate').value = new Date().toISOString().split('T')[0];
             fetchCourses();
         }
 
-        // അപ്ഡേറ്റ് ചെയ്ത കോഴ്‌സ് ലോഡിംഗ് ഫംഗ്ഷൻ
         async function fetchCourses() {
             const { data, error } = await supabase.from('courses').select('id, course_name');
             
@@ -117,7 +131,7 @@
             
             if (data) {
                 const select = document.getElementById('courseSelect');
-                select.innerHTML = '<option value="">-- Select Course --</option>'; // പഴയ ഓപ്ഷനുകൾ ക്ലിയർ ചെയ്യുന്നു
+                select.innerHTML = '<option value="">-- Select Course --</option>';
                 data.forEach(c => select.add(new Option(c.course_name, c.id)));
             }
         }
@@ -162,10 +176,13 @@
                     photoUrl = publicUrlData.publicUrl;
                 }
 
+                // Supabase-ലേക്ക് പുതിയ ഡേറ്റകൾ ഉൾപ്പെടുത്തി സേവ് ചെയ്യുന്നു
                 const { error } = await supabase.from('students').insert([{
                     full_name: document.getElementById('fullName').value,
                     register_number: document.getElementById('regNo').value,
                     phone_number: phoneVal,
+                    admission_date: document.getElementById('admissionDate').value,
+                    date_of_birth: document.getElementById('dateOfBirth').value || null,
                     address: document.getElementById('address').value,
                     qualification: document.getElementById('qualification').value,
                     gender: document.getElementById('gender').value,
