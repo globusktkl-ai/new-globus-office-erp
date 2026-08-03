@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,6 +87,7 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         let studentsData = [];
+        let paymentsData = [];
         let selectedStudentId = null;
         let currentBalance = 0;
 
@@ -95,12 +95,17 @@
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
             document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
-            fetchStudents();
+            fetchData();
         }
 
-        async function fetchStudents() {
-            const { data } = await supabase.from('students').select('id, register_number, full_name, phone_number, total_fee, admission_fee, fee_payments(amount_paid)').eq('status', 'active').order('full_name');
-            studentsData = data || [];
+        async function fetchData() {
+            const [studentsRes, paymentsRes] = await Promise.all([
+                supabase.from('students').select('id, register_number, full_name, phone_number, total_fee, admission_fee').order('full_name'),
+                supabase.from('fee_payments').select('student_id, amount_paid')
+            ]);
+            
+            studentsData = studentsRes.data || [];
+            paymentsData = paymentsRes.data || [];
         }
 
         document.getElementById('studentSearchInput').addEventListener('input', function() {
@@ -155,7 +160,10 @@
 
                 const tFee = Number(s.total_fee) || 0;
                 const aFee = Number(s.admission_fee) || 0;
-                const pay = s.fee_payments ? s.fee_payments.reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0;
+                
+                const studentPayments = paymentsData.filter(p => p.student_id === s.id);
+                const pay = studentPayments.reduce((sum, p) => sum + Number(p.amount_paid), 0);
+                
                 currentBalance = tFee - (aFee + pay);
 
                 document.getElementById('txtTotalFee').textContent = `₹ ${tFee}`;
@@ -182,7 +190,6 @@
 
             const amountPaid = Number(document.getElementById('amountPaid').value);
 
-            // അടയ്ക്കുന്ന തുക ബാക്കി നിൽക്കുന്ന ബാലൻസിനേക്കാൾ കൂടുതലാണെങ്കിൽ തടയുന്നു
             if (amountPaid > currentBalance) {
                 alert(`❌ Error: Payment amount (₹ ${amountPaid}) cannot be greater than the pending balance (₹ ${currentBalance})!`);
                 return;
