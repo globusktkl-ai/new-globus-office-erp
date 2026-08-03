@@ -6,12 +6,12 @@
     <title>Directory - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* PDF ഡൗൺലോഡ് ചെയ്യുമ്പോഴും പ്രിന്റ് ചെയ്യുമ്പോഴും കാർഡ് എടിഎം കാർഡിന്റെ വലുപ്പത്തിൽ വരാനുള്ള സ്റ്റൈൽ */
+        /* പ്രിന്റ് ചെയ്യുമ്പോൾ കാർഡ് മാത്രം കാണിക്കാനും എടിഎം കാർഡ് വലുപ്പത്തിൽ വരാനുമുള്ള സ്റ്റൈൽ */
         @media print {
             body * {
                 visibility: hidden;
             }
-            #studentModal, #studentModal * {
+            #studentModal, #smartCardContainer, #smartCardContainer * {
                 visibility: visible;
             }
             #studentModal {
@@ -29,14 +29,14 @@
             .no-print {
                 display: none !important;
             }
-            /* ATM Card Standard Size Adjustment */
+            /* Scale down exactly to standard ATM/CR80 Card Size */
             #smartCardContent {
                 width: 320px !important;
                 height: 510px !important;
                 transform: scale(0.65) !important;
                 transform-origin: top left !important;
                 box-shadow: none !important;
-                border: 1px solid #ccc !important;
+                border: 1px dashed #999 !important; /* Cutting line for print */
                 margin: 10px;
             }
             * {
@@ -73,81 +73,94 @@
         <div id="studentsList"><div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div></div>
     </main>
 
-    <!-- Student Details / Smart ID Card / Edit Modal Popup -->
-    <div id="studentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:100; justify-content:center; align-items:center; padding:15px;">
-        <div style="background:#fff; width:100%; max-width:400px; border-radius:16px; padding:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow-y:auto; max-height:95vh; position:relative;">
+    <!-- Student Live Editor & Smart ID Card Modal -->
+    <div id="studentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:100; justify-content:center; align-items:center; padding:15px;">
+        <div style="background:#fff; width:100%; max-width:750px; border-radius:16px; padding:20px; display:flex; gap:20px; flex-wrap:wrap; max-height:95vh; overflow-y:auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
             
-            <!-- Edit Form Container -->
-            <div id="editFormContainer" style="display:none;">
-                <h3 id="modalTitle" style="margin-bottom:15px; font-size:18px; color:var(--primary-dark);">Edit Student</h3>
-                <div id="modalContent"></div>
-                <div style="margin-top:20px; text-align:right;">
-                    <button type="button" onclick="closeModal()" style="padding:8px 16px; background:#6B7280; color:#fff; border:none; border-radius:6px; cursor:pointer;">Close</button>
-                </div>
-            </div>
-
-            <!-- Smart ID Card Container -->
-            <div id="smartCardContainer" style="display:none; display:flex; justify-content:center;">
-                <!-- Card Inner Design (ATM Card Proportion) -->
-                <div id="smartCardContent" style="width: 320px; height: 510px; background: linear-gradient(145deg, #ffffff 0%, #f0f4f8 40%, #e0e7ff 100%); border: 2px solid #cbd5e1; border-radius: 14px; padding: 15px; text-align: center; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.08); box-sizing: border-box; overflow: hidden;">
+            <!-- Left Side: Live Smart ID Card Preview (The Printable Area) -->
+            <div id="smartCardContainer" style="flex:1; display:flex; justify-content:center; align-items:flex-start; min-width:320px;">
+                <div id="smartCardContent" style="width: 320px; height: 510px; background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%); border: 2px solid #cbd5e1; border-radius: 12px; padding: 15px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">
                     
-                    <!-- അക്കാദമി ഹെഡർ & ലോഗോ -->
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; border-bottom: 2px solid rgba(59, 130, 246, 0.2); padding-bottom: 10px;">
-                        <img src="assets/images/logo.png" style="width: 45px; height: 45px; object-fit: contain;" alt="Logo" onerror="this.style.display='none'">
-                        <div style="text-align: left; line-height: 1.1;">
-                            <span style="font-size: 18px; font-weight: 900; color: #1e3a8a; letter-spacing: 0.5px; display: block;">GLOBUS</span>
-                            <span style="font-size: 11px; font-weight: 700; color: #3b82f6; display: block;">TECHNICAL ACADEMY</span>
+                    <!-- Header (Logo Left, Text Center 2 lines) -->
+                    <div style="display: flex; align-items: center; border-bottom: 2px solid rgba(30, 58, 138, 0.2); padding-bottom: 8px; margin-bottom: 8px;">
+                        <img src="assets/images/logo.png" style="width: 60px; height: 60px; object-fit: contain; margin-right: 12px;" alt="Logo" onerror="this.style.display='none'">
+                        <div style="text-align: center; flex: 1; margin-right: 15px;">
+                            <span style="font-size: 22px; font-weight: 900; color: #1e3a8a; display: block; line-height: 1;">GLOBUS</span>
+                            <span style="font-size: 11px; font-weight: 800; color: #dc2626; display: block; margin-top: 3px; letter-spacing: 0.5px;">TECHNICAL ACADEMY</span>
                         </div>
                     </div>
 
-                    <!-- കുട്ടിയുടെ ഫോട്ടോ / അവതാർ -->
-                    <div style="width: 90px; height: 90px; background: #3B82F6; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; margin: 0 auto 10px auto; border: 4px solid #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); overflow:hidden; position: relative; z-index: 2;" id="cardAvatar">
-                        S
+                    <!-- Title -->
+                    <div style="background: #1e3a8a; color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 4px 0; border-radius: 4px; margin-bottom: 12px; letter-spacing: 1.5px;">
+                        STUDENT ID CARD
                     </div>
 
-                    <!-- കുട്ടിയുടെ പേരും കോഴ്സും -->
-                    <h3 id="cardStudentName" style="font-size: 21px; color: #111827; margin-bottom: 6px; font-weight: 800; line-height: 1.2;">Student Name</h3>
-                    <div style="margin-bottom: 16px;">
-                        <span id="cardCourseName" style="font-size: 12px; color: #1d4ed8; font-weight: 700; background: rgba(59, 130, 246, 0.15); padding: 5px 12px; border-radius: 20px; text-transform: uppercase; border: 1px solid rgba(59, 130, 246, 0.3);">Course Name</span>
+                    <!-- Large Photo -->
+                    <div style="text-align: center; margin-bottom: 12px;">
+                        <img id="cardAvatarImg" src="https://avatar.iran.liara.run/public" style="width: 110px; height: 135px; object-fit: cover; border-radius: 8px; border: 3px solid #e5e7eb; box-shadow: 0 4px 8px rgba(0,0,0,0.15);">
                     </div>
 
-                    <!-- മറ്റു വിവരങ്ങൾ -->
-                    <div style="text-align: left; background: rgba(255, 255, 255, 0.8); padding: 12px 15px; border-radius: 10px; font-size: 12px; color: #374151; box-shadow: inset 0 2px 5px rgba(0,0,0,0.03); line-height: 1.7; position: relative; z-index: 2; border: 1px solid #f1f5f9;">
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 4px;">
-                            <strong>Reg No:</strong> <span id="cardRegNo">-</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 4px;">
-                            <strong>Phone:</strong> <span id="cardPhone">-</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 4px;">
-                            <strong>Gender:</strong> <span id="cardGender">-</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <strong>Qualification:</strong> <span id="cardQual">-</span>
+                    <!-- Details Section -->
+                    <div style="text-align: center; position: relative; z-index: 2;">
+                        <h3 id="cardStudentName" style="font-size: 21px; color: #111827; margin: 0 0 4px 0; font-weight: 800; text-transform:uppercase;">Student Name</h3>
+                        <div id="cardCourseName" style="font-size: 13px; color: #047857; font-weight: 800; margin-bottom: 15px; text-transform:uppercase;">Course Name</div>
+
+                        <div style="display: flex; justify-content: center; gap: 25px; font-size: 13px; color: #111827; font-weight: 700; background: rgba(255,255,255,0.7); padding: 8px; border-radius: 8px;">
+                            <div><span style="color:#6b7280; font-size:10px; font-weight:600; display:block;">REG NO</span> <span id="cardRegNo">GLB-001</span></div>
+                            <div><span style="color:#6b7280; font-size:10px; font-weight:600; display:block;">PHONE</span> <span id="cardPhone">9876543210</span></div>
                         </div>
                     </div>
 
-                    <!-- Digital Seal (Bottom Right) -->
-                    <div style="position: absolute; bottom: 15px; right: 15px; width: 65px; height: 65px; border: 2px solid rgba(30, 58, 138, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-20deg); z-index: 1;">
-                        <div style="width: 55px; height: 55px; border: 1px dashed rgba(30, 58, 138, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 7px; font-weight: 800; color: rgba(30, 58, 138, 0.4); padding: 2px; line-height: 1.1;">
-                            GLOBUS<br>TECHNICAL<br>ACADEMY
+                    <!-- Round Digital Seal (Bottom Right) -->
+                    <div style="position: absolute; bottom: 35px; right: 12px; width: 65px; height: 65px; border: 2px solid rgba(30, 58, 138, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); z-index: 1;">
+                        <div style="width: 57px; height: 57px; border: 1px dashed rgba(30, 58, 138, 0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 6.5px; font-weight: 800; color: rgba(30, 58, 138, 0.5); padding: 2px; line-height: 1.2;">
+                            GLOBUS<br>TECHNICAL<br>ACADEMY<br>KOTTAKKAL
                         </div>
                     </div>
-                    
-                    <!-- Footer Note -->
-                    <div style="position: absolute; bottom: 10px; left: 0; width: 100%; font-size: 9px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; z-index: 2;">
-                        Official Student Profile
+
+                    <!-- Tiny Footer Note -->
+                    <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 7px; color: #9ca3af; font-weight: 600; text-align: center; z-index: 2;">
+                        If found, please return to this number: +91 9846000000
                     </div>
                 </div>
             </div>
 
-            <!-- ആക്ഷൻ ബട്ടണുകൾ (Print, Share, Close) -->
-            <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="no-print">
-                <button type="button" onclick="printCard()" style="background: #2563eb; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px;">🖨️ PDF / Print</button>
-                <button type="button" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px;">🔗 Share</button>
-            </div>
-            <div style="margin-top: 10px; text-align: center;" class="no-print">
-                <button type="button" onclick="closeModal()" style="width: 100%; background: #6b7280; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">Close</button>
+            <!-- Right Side: Live Edit Form & Action Buttons (Hidden during Print) -->
+            <div class="no-print" style="flex:1; min-width:300px; background:#f8fafc; padding:20px; border-radius:12px; border:1px solid #e2e8f0; display:flex; flex-direction:column;">
+                <h3 style="font-size:16px; color:#1e40af; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:5px;">✏️ Edit & Generate Card</h3>
+
+                <!-- Live Photo Input -->
+                <label style="font-size:12px; font-weight:600; color:#374151;">Upload Photo (For Live Preview & Print)</label>
+                <input type="file" id="livePhotoInput" accept="image/*" class="form-control" style="margin-bottom:12px; padding:6px; font-size:12px;" onchange="updateLivePhoto(event)">
+
+                <label style="font-size:12px; font-weight:600; color:#374151;">Student Name</label>
+                <input type="text" id="liveName" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardStudentName').innerText = this.value || 'N/A'">
+
+                <label style="font-size:12px; font-weight:600; color:#374151;">Course Name</label>
+                <input type="text" id="liveCourse" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardCourseName').innerText = this.value || 'N/A'">
+
+                <div style="display:flex; gap:10px; margin-bottom:20px;">
+                    <div style="flex:1;">
+                        <label style="font-size:12px; font-weight:600; color:#374151;">Reg No</label>
+                        <input type="text" id="liveReg" class="form-control" oninput="document.getElementById('cardRegNo').innerText = this.value || 'N/A'">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:12px; font-weight:600; color:#374151;">Phone</label>
+                        <input type="text" id="livePhone" class="form-control" oninput="document.getElementById('cardPhone').innerText = this.value || 'N/A'">
+                    </div>
+                </div>
+
+                <!-- Action Buttons: Share & Print (Works without saving) -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+                    <button type="button" onclick="printCard()" style="background: #2563eb; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; display:flex; justify-content:center; align-items:center; gap:5px;">🖨️ Print Card</button>
+                    <button type="button" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; display:flex; justify-content:center; align-items:center; gap:5px;">🔗 Share</button>
+                </div>
+                
+                <hr style="border:none; border-top:1px dashed #cbd5e1; margin-bottom:15px;">
+                
+                <!-- Save Button (Saves text data to DB) -->
+                <button type="button" onclick="saveTextDataToDB()" style="background: #f59e0b; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-bottom:10px;">💾 Save Details to Database</button>
+                <button type="button" onclick="closeModal()" style="background: #6b7280; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel / Close</button>
             </div>
         </div>
     </div>
@@ -165,7 +178,7 @@
 
         async function fetchStudents() {
             try {
-                // 1. സ്റ്റുഡന്റ്സ് ഡാറ്റ ഫെച്ച് ചെയ്യുന്നു (Join ഇല്ലാതെ)
+                // ജോയിൻ ഒഴിവാക്കി സ്റ്റുഡന്റ്സ് മാത്രം ഫെച്ച് ചെയ്യുന്നു
                 const { data: studentsData, error: studentError } = await supabase
                     .from('students')
                     .select('*')
@@ -173,33 +186,21 @@
                 
                 if (studentError) throw studentError;
 
-                // 2. കോഴ്‌സ് ഡാറ്റ സെപ്പറേറ്റ് ആയി ഫെച്ച് ചെയ്യുന്നു (Join എറർ ഒഴിവാക്കാൻ)
+                // കോഴ്‌സ് പേരുകൾ എടുക്കാൻ
                 const { data: coursesData } = await supabase.from('courses').select('id, course_name');
                 const courseMap = {};
                 if (coursesData) {
                     coursesData.forEach(c => courseMap[c.id] = c.course_name);
                 }
 
-                // 3. ഫീസ് ഡാറ്റ സെപ്പറേറ്റ് ആയി ഫെച്ച് ചെയ്യുന്നു
-                const { data: paymentsData } = await supabase.from('fee_payments').select('student_id, amount_paid');
-
                 allStudents = studentsData || [];
 
-                // ഡാറ്റകൾ ജാവാസ്ക്രിപ്റ്റ് വഴി യോജിപ്പിക്കുന്നു (Mapping)
                 allStudents.forEach(s => {
-                    // കോഴ്‌സ് പേര് സെറ്റ് ചെയ്യുന്നു
                     if (s.course_id && courseMap[s.course_id]) {
                         s.display_course_name = courseMap[s.course_id];
                     } else {
-                        s.display_course_name = s.course_name || s.course || 'N/A';
+                        s.display_course_name = s.course_name || s.course || 'Not Assigned';
                     }
-
-                    // ഫീസ് കണക്കുകൂട്ടുന്നു
-                    let paid = 0;
-                    if (paymentsData) {
-                        paid = paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => sum + Number(p.amount_paid || 0), 0);
-                    }
-                    s.total_paid_fees = paid;
                 });
 
                 renderList(allStudents);
@@ -214,22 +215,7 @@
             if (data.length === 0) { container.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444;">No students found.</div>'; return; }
             
             data.forEach(s => {
-                const bal = (Number(s.total_fee)||0) - (Number(s.admission_fee)||0) - s.total_paid_fees;
-                const balColor = bal > 0 ? '#EF4444' : '#10B981';
-                const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
                 let avatarUrl = s.photo_url || (s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
-
-                let qualBadge = '';
-                const q = s.qualification ? s.qualification.trim() : 'N/A';
-                if (q.toLowerCase() === 'sslc') {
-                    qualBadge = `<span style="background: #E0F2FE; color: #0369A1; padding: 3px 8px; border-radius: 4px; font-weight: 700;">SSLC</span>`;
-                } else if (q.toLowerCase() === 'plus two' || q.toLowerCase() === 'plustwo') {
-                    qualBadge = `<span style="background: #DCFCE7; color: #15803D; padding: 3px 8px; border-radius: 4px; font-weight: 700;">Plus Two</span>`;
-                } else if (q.toLowerCase() === 'degree') {
-                    qualBadge = `<span style="background: #FCE7F3; color: #BE185D; padding: 3px 8px; border-radius: 4px; font-weight: 700;">Degree</span>`;
-                } else {
-                    qualBadge = `<span style="background: #F3F4F6; color: #374151; padding: 3px 8px; border-radius: 4px; font-weight: 700;">${q}</span>`;
-                }
 
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
@@ -243,97 +229,79 @@
                     </div>
                     <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
                     <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:600;">${s.display_course_name}</span></div>
-                    <div class="smc-row"><span class="smc-label">Qualification:</span> <span class="smc-value">${qualBadge}</span></div>
-                    <div class="smc-row"><span class="smc-label">Balance Fee:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px;">
-                        <button onclick="viewStudent('${s.id}')" style="background: #3B82F6; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">View</button>
-                        <button onclick="editStudent('${s.id}')" style="background: #F59E0B; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Edit</button>
-                        <button onclick="deleteStudent('${s.id}', '${s.register_number}')" style="background: #EF4444; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Delete</button>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button onclick="openCardEditor('${s.id}')" style="flex:1; background: #3B82F6; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">View & Edit Card</button>
+                        <button onclick="deleteStudent('${s.id}', '${s.register_number}')" style="background: #EF4444; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px;">Delete</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // View Button -> Smart ID Card കാണിക്കാൻ
-        window.viewStudent = function(id) {
+        // കാർഡ് എഡിറ്റർ തുറക്കുന്നു
+        window.openCardEditor = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
             currentStudentData = s;
 
-            // എഡിറ്റ് ഫോം മറച്ചു വെച്ച് സ്മാർട്ട് കാർഡ് കാണിക്കുക
-            document.getElementById('editFormContainer').style.display = 'none';
-            document.getElementById('smartCardContainer').style.display = 'flex';
+            // ഫോമിലേക്ക് ഡാറ്റ മാറ്റുന്നു
+            document.getElementById('liveName').value = s.full_name || '';
+            document.getElementById('liveCourse').value = s.display_course_name || '';
+            document.getElementById('liveReg').value = s.register_number || '';
+            document.getElementById('livePhone').value = s.phone_number || '';
+            document.getElementById('livePhotoInput').value = ''; // Reset file input
 
-            // ഡാറ്റ പോപ്പുലേറ്റ് ചെയ്യുക
-            const name = s.full_name || 'Unknown';
-            document.getElementById('cardStudentName').textContent = name;
-            
+            // കാർഡിലേക്ക് ഡാറ്റ നൽകുന്നു
+            document.getElementById('cardStudentName').innerText = s.full_name || 'N/A';
+            document.getElementById('cardCourseName').innerText = s.display_course_name || 'N/A';
+            document.getElementById('cardRegNo').innerText = s.register_number || 'N/A';
+            document.getElementById('cardPhone').innerText = s.phone_number || 'N/A';
+
+            // ഫോട്ടോ സെറ്റ് ചെയ്യുന്നു
             if (s.photo_url) {
-                document.getElementById('cardAvatar').innerHTML = `<img src="${s.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
+                document.getElementById('cardAvatarImg').src = s.photo_url;
             } else {
-                document.getElementById('cardAvatar').innerHTML = name.charAt(0).toUpperCase();
+                document.getElementById('cardAvatarImg').src = s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy';
             }
 
-            document.getElementById('cardCourseName').textContent = s.display_course_name || 'N/A';
-            document.getElementById('cardRegNo').textContent = s.register_number || 'N/A';
-            document.getElementById('cardPhone').textContent = s.phone_number || 'N/A';
-            document.getElementById('cardGender').textContent = s.gender || 'N/A';
-            document.getElementById('cardQual').textContent = s.qualification || 'N/A';
-
             document.getElementById('studentModal').style.display = 'flex';
         };
 
-        // Edit Button -> എഡിറ്റ് ഫോം കാണിക്കാൻ
-        window.editStudent = function(id) {
-            const s = allStudents.find(x => x.id === id);
-            if (!s) return;
+        // ലോക്കൽ ഫോട്ടോ സെലക്ട് ചെയ്യുമ്പോൾ ഉടൻ തന്നെ കാർഡിൽ മാറാൻ
+        window.updateLivePhoto = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const imageUrl = URL.createObjectURL(file);
+                document.getElementById('cardAvatarImg').src = imageUrl;
+            }
+        };
+
+        // ഡാറ്റാബേസിലേക്ക് ടെക്സ്റ്റ് വിവരങ്ങൾ മാത്രം സേവ് ചെയ്യാൻ
+        window.saveTextDataToDB = async function() {
+            if (!currentStudentData) return;
             
-            document.getElementById('smartCardContainer').style.display = 'none';
-            document.getElementById('editFormContainer').style.display = 'block';
+            const newName = document.getElementById('liveName').value.trim();
+            const newPhone = document.getElementById('livePhone').value.trim();
+            const newReg = document.getElementById('liveReg').value.trim();
 
-            document.getElementById('modalContent').innerHTML = `
-                <form id="editForm" onsubmit="saveEdit(event, '${s.id}')">
-                    <div style="margin-bottom:12px;"><label style="font-size:13px; font-weight:600;">Full Name</label><input type="text" id="editName" value="${s.full_name}" class="form-control" required></div>
-                    <div style="margin-bottom:12px;"><label style="font-size:13px; font-weight:600;">Phone Number</label><input type="text" id="editPhone" value="${s.phone_number}" class="form-control" required maxlength="10"></div>
-                    <div style="margin-bottom:12px;"><label style="font-size:13px; font-weight:600;">Qualification</label>
-                        <select id="editQual" class="form-control" required>
-                            <option value="SSLC" ${s.qualification==='SSLC'?'selected':''}>SSLC</option>
-                            <option value="Plus Two" ${s.qualification==='Plus Two'?'selected':''}>Plus Two</option>
-                            <option value="Degree" ${s.qualification==='Degree'?'selected':''}>Degree</option>
-                            <option value="Other" ${s.qualification==='Other'?'selected':''}>Other</option>
-                        </select>
-                    </div>
-                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:600; cursor:pointer;">Update Student</button>
-                </form>
-            `;
-            document.getElementById('studentModal').style.display = 'flex';
-        };
-
-        window.saveEdit = async function(e, id) {
-            e.preventDefault();
-            const newName = document.getElementById('editName').value;
-            const newPhone = document.getElementById('editPhone').value;
-            const newQual = document.getElementById('editQual').value;
-
-            if(newPhone.length !== 10) {
+            if (newPhone && newPhone.length !== 10) {
                 alert('Phone number must be 10 digits.');
                 return;
             }
 
+            // ഡാറ്റാബേസിൽ അപ്ഡേറ്റ് ചെയ്യുന്നു (ഫോട്ടോ ഇതിൽ അപ്ഡേറ്റ് ചെയ്യുന്നില്ല)
             const { error } = await supabase.from('students').update({
                 full_name: newName,
                 phone_number: newPhone,
-                qualification: newQual
-            }).eq('id', id);
+                register_number: newReg
+            }).eq('id', currentStudentData.id);
 
             if (error) {
-                alert('Error updating: ' + error.message);
+                alert('Error saving data: ' + error.message);
             } else {
-                alert('Updated successfully!');
-                closeModal();
-                fetchStudents();
+                alert('Details saved successfully!\n(Note: The selected photo is kept for printing/sharing but not uploaded to the server to save space).');
+                fetchStudents(); // ലിസ്റ്റ് റിഫ്രഷ് ചെയ്യാൻ
             }
         };
 
@@ -344,15 +312,17 @@
 
         // വാട്സാപ്പിലോ മറ്റോ ഷെയർ ചെയ്യാൻ
         window.shareCard = async function() {
-            if (!currentStudentData) return;
-            const s = currentStudentData;
+            const name = document.getElementById('liveName').value || 'Unknown';
+            const course = document.getElementById('liveCourse').value || 'N/A';
+            const reg = document.getElementById('liveReg').value || 'N/A';
+            const phone = document.getElementById('livePhone').value || 'N/A';
             
-            const shareText = `🎓 *Globus Technical Academy*\n\n*Student Profile*\n👤 Name: ${s.full_name}\n🔢 Reg No: ${s.register_number}\n📚 Course: ${s.display_course_name || 'N/A'}\n📱 Phone: ${s.phone_number}\n\nJoin our technical courses today!`;
+            const shareText = `🎓 *Globus Technical Academy*\n\n*Student ID Profile*\n👤 Name: ${name}\n🔢 Reg No: ${reg}\n📚 Course: ${course}\n📱 Phone: ${phone}\n\nJoin our technical courses today!`;
             
             if (navigator.share) {
                 try {
                     await navigator.share({
-                        title: 'Student Profile',
+                        title: 'Student ID Card Details',
                         text: shareText,
                     });
                 } catch (err) {
@@ -360,7 +330,7 @@
                 }
             } else {
                 navigator.clipboard.writeText(shareText);
-                alert('Student profile details copied to clipboard. You can paste and share it anywhere!');
+                alert('Student details copied to clipboard. You can paste and share it anywhere!');
             }
         };
 
@@ -386,6 +356,7 @@
             await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
             window.history.replaceState(null, '', 'login.html'); window.location.replace('login.html'); 
         });
+        
         checkAuth();
     </script>
 </body>
