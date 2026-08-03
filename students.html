@@ -109,7 +109,7 @@
                     
                     <!-- Header (Centered Logo & Text in one color) -->
                     <div style="text-align: center; margin-bottom: 5px;">
-                        <img src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain; margin-bottom: 3px;" alt="Logo" onerror="this.style.display='none'">
+                        <img src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain; margin-bottom: 3px; mix-blend-mode: multiply;" alt="Logo" onerror="this.style.display='none'">
                         <div style="font-size: 19px; font-weight: 900; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">GLOBUS</div>
                         <div style="font-size: 13px; font-weight: 800; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
                     </div>
@@ -135,7 +135,7 @@
                             <span id="cardCourseName" style="font-size: 14px; font-weight: 800; color: #047857; text-transform:uppercase;">COURSE NAME</span>
                         </div>
                         
-                        <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.8); padding: 5px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.9); padding: 5px; border-radius: 8px; width: 85%; margin: 0 auto; position: relative; z-index: 3;">
                             <div>
                                 <span style="font-size: 10px; color: #64748b; font-weight: 800;">REG NO</span><br>
                                 <span id="cardRegNo" style="font-size: 13px; font-weight: 800; color: #111827;">-</span>
@@ -148,7 +148,7 @@
                     </div>
 
                     <!-- Round Digital Seal (Bottom Right) -->
-                    <div style="position: absolute; bottom: 30px; right: 10px; width: 60px; height: 60px; border: 2px solid rgba(30, 58, 138, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); z-index: 1;">
+                    <div style="position: absolute; bottom: 15px; right: 5px; width: 60px; height: 60px; border: 2px solid rgba(30, 58, 138, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); z-index: 1;"> opacity: 0.5;">
                         <div style="width: 52px; height: 52px; border: 1px dashed rgba(30, 58, 138, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 6px; font-weight: 800; color: rgba(30, 58, 138, 0.4); padding: 2px; line-height: 1.1;">
                             GLOBUS<br>TECHNICAL<br>ACADEMY<br>KOTTAKKAL
                         </div>
@@ -414,7 +414,15 @@
             const reg = document.getElementById('liveReg').value || 'N/A';
             const phone = document.getElementById('livePhone').value || 'N/A';
             
-            const shareText = `🎓 *Globus Technical Academy*\n\n*Student ID Profile*\n👤 Name: ${name}\n🔢 Reg No: ${reg}\n📚 Course: ${course}\n📱 Phone: ${phone}\n\nJoin our technical courses today!`;
+            const shareText = `🎓 *Globus Technical Academy*
+
+*Student ID Profile*
+👤 Name: ${name}
+🔢 Reg No: ${reg}
+📚 Course: ${course}
+📱 Phone: ${phone}
+
+Join our technical courses today!`;
             
             if (navigator.share) {
                 try { await navigator.share({ title: 'Student ID Card Details', text: shareText, }); } catch (err) {}
