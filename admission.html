@@ -106,10 +106,18 @@
             fetchCourses();
         }
 
+        // അപ്ഡേറ്റ് ചെയ്ത കോഴ്‌സ് ലോഡിംഗ് ഫംഗ്ഷൻ
         async function fetchCourses() {
-            const { data } = await supabase.from('courses').select('id, course_name').eq('status', 'active');
+            const { data, error } = await supabase.from('courses').select('id, course_name');
+            
+            if (error) {
+                console.error("Error fetching courses:", error.message);
+                return;
+            }
+            
             if (data) {
                 const select = document.getElementById('courseSelect');
+                select.innerHTML = '<option value="">-- Select Course --</option>'; // പഴയ ഓപ്ഷനുകൾ ക്ലിയർ ചെയ്യുന്നു
                 data.forEach(c => select.add(new Option(c.course_name, c.id)));
             }
         }
@@ -132,7 +140,6 @@
             const totalFee = Number(document.getElementById('totalFee').value);
             const admissionFee = Number(document.getElementById('admissionFee').value);
 
-            // മൊത്തം ഫീസിനേക്കാൾ കൂടുതൽ അഡ്മിഷൻ ഫീ നൽകിയാൽ തടയുന്നു
             if (admissionFee > totalFee) {
                 alert('❌ Error: Admission fee cannot be greater than the Total Course Fee!');
                 return;
