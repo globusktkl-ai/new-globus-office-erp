@@ -5,10 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Directory - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* PDF ഡൗൺലോഡ് ചെയ്യുമ്പോഴും പ്രിന്റ് ചെയ്യുമ്പോഴും കാർഡ് മാത്രം കാണിക്കാനുള്ള സ്റ്റൈൽ */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #studentModal, #studentModal * {
+                visibility: visible;
+            }
+            #studentModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white !important;
+                display: flex !important;
+                justify-content: center;
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+            .no-print {
+                display: none !important;
+            }
+            /* പ്രിന്റ് ചെയ്യുമ്പോൾ ബാക്ക്ഗ്രൗണ്ട് കളർ വരാൻ */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
 </head>
 <body>
     
-    <nav class="app-header">
+    <nav class="app-header no-print">
         <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <div style="display: flex; flex-direction: column; overflow: hidden;">
@@ -22,7 +52,7 @@
         </div>
     </nav>
 
-    <main class="main-content">
+    <main class="main-content no-print">
         <div style="text-align: center; margin-bottom: 20px;">
             <a href="dashboard.html" style="color: var(--primary-light); text-decoration: none; font-weight: 600;">← Return to Dashboard</a>
         </div>
@@ -33,13 +63,63 @@
         <div id="studentsList"><div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div></div>
     </main>
 
-    <!-- Student Details / Edit Modal Popup -->
-    <div id="studentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; justify-content:center; align-items:center; padding:15px;">
-        <div style="background:#fff; width:100%; max-width:450px; border-radius:12px; padding:20px; max-height:90vh; overflow-y:auto;">
-            <h3 id="modalTitle" style="margin-bottom:15px; font-size:18px; color:var(--primary-dark);">Student Details</h3>
-            <div id="modalContent"></div>
-            <div style="margin-top:20px; text-align:right;">
-                <button type="button" onclick="closeModal()" style="padding:8px 16px; background:#6B7280; color:#fff; border:none; border-radius:6px; cursor:pointer;">Close</button>
+    <!-- Student Details / Smart ID Card / Edit Modal Popup -->
+    <div id="studentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:100; justify-content:center; align-items:center; padding:15px;">
+        <div style="background:#fff; width:100%; max-width:400px; border-radius:16px; padding:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow-y:auto; max-height:95vh; position:relative;">
+            
+            <!-- Edit Form Container (മറച്ചുവെച്ചിരിക്കുന്നു, Edit ചെയ്യുമ്പോൾ മാത്രം വരും) -->
+            <div id="editFormContainer" style="display:none;">
+                <h3 id="modalTitle" style="margin-bottom:15px; font-size:18px; color:var(--primary-dark);">Edit Student</h3>
+                <div id="modalContent"></div>
+                <div style="margin-top:20px; text-align:right;">
+                    <button type="button" onclick="closeModal()" style="padding:8px 16px; background:#6B7280; color:#fff; border:none; border-radius:6px; cursor:pointer;">Close</button>
+                </div>
+            </div>
+
+            <!-- Smart ID Card Container (View ചെയ്യുമ്പോൾ വരും) -->
+            <div id="smartCardContainer" style="display:none;">
+                <div id="smartCardContent" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border: 2px solid #3B82F6; border-radius: 12px; padding: 20px; text-align: center; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; border-bottom: 2px solid #cbd5e1; padding-bottom: 10px;">
+                        <span style="font-size: 15px; font-weight: 800; color: #1e3a8a; letter-spacing: 0.5px;">GLOBUS TECHNICAL ACADEMY</span>
+                    </div>
+
+                    <!-- കുട്ടിയുടെ ഫോട്ടോ / അവതാർ -->
+                    <div style="width: 80px; height: 80px; background: #3B82F6; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 15px auto; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow:hidden;" id="cardAvatar">
+                        S
+                    </div>
+
+                    <!-- കുട്ടിയുടെ വിവരങ്ങൾ -->
+                    <h3 id="cardStudentName" style="font-size: 20px; color: #111827; margin-bottom: 4px; font-weight: 700;">Name</h3>
+                    <p id="cardCourseName" style="font-size: 13px; color: #2563eb; font-weight: 600; margin-bottom: 18px; text-transform: uppercase;">Course</p>
+
+                    <div style="text-align: left; background: #ffffff; padding: 15px; border-radius: 8px; font-size: 13px; color: #374151; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); line-height: 1.6;">
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-bottom: 5px;">
+                            <strong>Reg No:</strong> <span id="cardRegNo">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-bottom: 5px;">
+                            <strong>Phone:</strong> <span id="cardPhone">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-bottom: 5px;">
+                            <strong>Gender:</strong> <span id="cardGender">-</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>Qualification:</strong> <span id="cardQual">-</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                        Official Student Profile Card
+                    </div>
+                </div>
+
+                <!-- ആക്ഷൻ ബട്ടണുകൾ (Print, Share, Close) -->
+                <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="no-print">
+                    <button type="button" onclick="printCard()" style="background: #2563eb; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px;">🖨️ PDF / Print</button>
+                    <button type="button" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px;">🔗 Share</button>
+                </div>
+                <div style="margin-top: 10px; text-align: center;" class="no-print">
+                    <button type="button" onclick="closeModal()" style="width: 100%; background: #6b7280; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -47,6 +127,7 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         let allStudents = [];
+        let currentStudentData = null; // ഷെയർ ചെയ്യാൻ നിലവിലെ കുട്ടിയുടെ ഡാറ്റ ശേഖരിക്കാൻ
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -54,7 +135,6 @@
             fetchStudents();
         }
 
-        // അപ്ഡേറ്റ് ചെയ്ത ഫംഗ്ഷൻ (എറർ ഒഴിവാക്കാൻ കണക്ഷനുകൾ തൽക്കാലം മാറ്റിയിരിക്കുന്നു)
         async function fetchStudents() {
             const { data, error } = await supabase
                 .from('students')
@@ -118,26 +198,44 @@
             });
         }
 
+        // View Button -> Smart ID Card കാണിക്കാൻ
         window.viewStudent = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
-            document.getElementById('modalTitle').textContent = "Student Details";
-            document.getElementById('modalContent').innerHTML = `
-                <p><b>Name:</b> ${s.full_name}</p>
-                <p><b>Register No:</b> ${s.register_number}</p>
-                <p><b>Phone:</b> ${s.phone_number}</p>
-                <p><b>Qualification:</b> ${s.qualification || 'N/A'}</p>
-                <p><b>Gender:</b> ${s.gender}</p>
-                <p><b>Course:</b> ${s.courses?.course_name || 'N/A'}</p>
-                <p><b>Total Fee:</b> ₹ ${s.total_fee}</p>
-            `;
+            currentStudentData = s;
+
+            // എഡിറ്റ് ഫോം മറച്ചു വെച്ച് സ്മാർട്ട് കാർഡ് കാണിക്കുക
+            document.getElementById('editFormContainer').style.display = 'none';
+            document.getElementById('smartCardContainer').style.display = 'block';
+
+            // ഡാറ്റ പോപ്പുലേറ്റ് ചെയ്യുക
+            const name = s.full_name || 'Unknown';
+            document.getElementById('cardStudentName').textContent = name;
+            
+            if (s.photo_url) {
+                document.getElementById('cardAvatar').innerHTML = `<img src="${s.photo_url}" style="width:100%; height:100%; object-fit:cover;">`;
+            } else {
+                document.getElementById('cardAvatar').textContent = name.charAt(0).toUpperCase();
+            }
+
+            document.getElementById('cardCourseName').textContent = s.courses?.course_name || 'N/A';
+            document.getElementById('cardRegNo').textContent = s.register_number || 'N/A';
+            document.getElementById('cardPhone').textContent = s.phone_number || 'N/A';
+            document.getElementById('cardGender').textContent = s.gender || 'N/A';
+            document.getElementById('cardQual').textContent = s.qualification || 'N/A';
+
             document.getElementById('studentModal').style.display = 'flex';
         };
 
+        // Edit Button -> എഡിറ്റ് ഫോം കാണിക്കാൻ
         window.editStudent = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
-            document.getElementById('modalTitle').textContent = "Edit Student Details";
+            
+            // സ്മാർട്ട് കാർഡ് മറച്ചു വെച്ച് എഡിറ്റ് ഫോം കാണിക്കുക
+            document.getElementById('smartCardContainer').style.display = 'none';
+            document.getElementById('editFormContainer').style.display = 'block';
+
             document.getElementById('modalContent').innerHTML = `
                 <form id="editForm" onsubmit="saveEdit(event, '${s.id}')">
                     <div style="margin-bottom:12px;"><label style="font-size:13px; font-weight:600;">Full Name</label><input type="text" id="editName" value="${s.full_name}" class="form-control" required></div>
@@ -179,6 +277,33 @@
                 alert('Updated successfully!');
                 closeModal();
                 fetchStudents();
+            }
+        };
+
+        // PDF ഡൗൺലോഡ് / പ്രിന്റ് ചെയ്യാൻ
+        window.printCard = function() {
+            window.print();
+        };
+
+        // വാട്സാപ്പിലോ മറ്റോ ഷെയർ ചെയ്യാൻ
+        window.shareCard = async function() {
+            if (!currentStudentData) return;
+            const s = currentStudentData;
+            
+            const shareText = `🎓 *Globus Technical Academy*\n\n*Student Profile*\n👤 Name: ${s.full_name}\n🔢 Reg No: ${s.register_number}\n📚 Course: ${s.courses?.course_name || 'N/A'}\n📱 Phone: ${s.phone_number}\n\nJoin our technical courses today!`;
+            
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Student Profile Card',
+                        text: shareText,
+                    });
+                } catch (err) {
+                    console.log('Share cancelled:', err);
+                }
+            } else {
+                navigator.clipboard.writeText(shareText);
+                alert('Student profile details copied to clipboard. You can paste and share it anywhere!');
             }
         };
 
