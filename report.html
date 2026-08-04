@@ -5,26 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Financial Report - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <!-- PDF ഡൗൺലോഡ് ചെയ്യാൻ ആവശ്യമായ ലൈബ്രറി -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
     <style>
         body { padding: 15px; background-color: #f4f7f6; color: #333; font-family: 'Segoe UI', Tahoma, sans-serif; }
         .back-btn { display: inline-block; margin-bottom: 15px; text-decoration: none; color: #3498db; font-weight: bold; }
         h2 { color: #2c3e50; border-bottom: 2px solid #ddd; padding-bottom: 10px; font-size: 20px; }
-        
         .summary-cards { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
         .card { flex: 1; min-width: 150px; padding: 15px; border-radius: 8px; color: white; text-align: center; font-size: 18px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .income-card { background: linear-gradient(135deg, #10B981, #059669); }
         .expense-card { background: linear-gradient(135deg, #EF4444, #DC2626); }
         .balance-card { background: linear-gradient(135deg, #3B82F6, #2563EB); }
-        
         .filters { display: flex; gap: 10px; margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; flex-wrap: wrap; box-shadow: 0 2px 4px rgba(0,0,0,0.05); align-items: center; }
         .filters label { font-weight: bold; font-size: 12px; color: #555; }
         .filters input, .filters select, .filters button { padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: 100%; box-sizing: border-box; }
         .filters button { background-color: #1F2937; color: white; border: none; cursor: pointer; font-weight: bold; }
-        
-        /* Dropdown Styling for Share Button */
         .dropdown { position: relative; display: inline-block; width: 100%; }
         @media (min-width: 768px) { .dropdown { width: auto; } }
         .dropbtn { background-color: #8B5CF6 !important; width: 100%; }
@@ -32,13 +26,10 @@
         .dropdown-content button { color: black; padding: 12px 16px; text-decoration: none; display: block; background: none; border: none; text-align: left; width: 100%; cursor: pointer; border-bottom: 1px solid #eee; }
         .dropdown-content button:hover { background-color: #f1f1f1; }
         .dropdown:hover .dropdown-content { display: block; }
-        
         .table-container { overflow-x: auto; width: 100%; display: block; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
         th { background-color: #F3F4F6; color: #374151; font-weight: bold; }
-        
-        /* Print Specific CSS */
         @media print {
             body { background-color: white; padding: 0; }
             .filters, .back-btn, .action-btn, .dropdown { display: none !important; }
@@ -47,7 +38,6 @@
             table { border: 1px solid #000; }
             th, td { border: 1px solid #ddd; }
         }
-
         @media (min-width: 768px) {
             .filters > div { flex: 1; }
             .filters input, .filters select, .filters button { width: auto; }
@@ -56,18 +46,15 @@
     </style>
 </head>
 <body>
-
     <a href="dashboard.html" class="back-btn">⬅ Back to Dashboard</a>
     
     <div id="printable-area">
         <h2>📊 Financial Report Dashboard</h2>
-
         <div class="summary-cards">
             <div class="card income-card">Income<br>₹<span id="total-income">0</span></div>
             <div class="card expense-card">Expense<br>₹<span id="total-expense">0</span></div>
             <div class="card balance-card">Net Balance<br>₹<span id="net-balance">0</span></div>
         </div>
-
         <div class="table-container">
             <table id="report-table">
                 <thead>
@@ -88,14 +75,11 @@
         </div>
     </div>
 
-    <!-- Filters Section (Moved below table visually, or you can keep it above depending on preference) -->
     <div class="filters" style="margin-top: 20px;">
-        <!-- Date Toggle Checkbox -->
         <div style="display: flex; align-items: center; gap: 5px; flex-direction: row; flex: none;">
             <input type="checkbox" id="use-date" style="width: auto;" checked onchange="toggleDateInputs()">
             <label for="use-date" style="font-size: 14px;">Filter by Date</label>
         </div>
-
         <div style="display: flex; flex-direction: column;">
             <label>From:</label>
             <input type="date" id="from-date">
@@ -104,18 +88,14 @@
             <label>To:</label>
             <input type="date" id="to-date">
         </div>
-        
         <select id="report-type">
             <option value="all">Income & Expense</option>
             <option value="income">Income Only</option>
             <option value="expense">Expense Only</option>
         </select>
-
         <input type="text" id="search-query" placeholder="Search...">
-        
         <button onclick="window.fetchReports()">🔍 Search</button>
         
-        <!-- Share Dropdown -->
         <div class="dropdown">
             <button class="dropbtn">📤 Share</button>
             <div class="dropdown-content">
@@ -129,7 +109,6 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // Toggle Date inputs based on checkbox
         window.toggleDateInputs = function() {
             const useDate = document.getElementById('use-date').checked;
             document.getElementById('from-date').disabled = !useDate;
@@ -153,13 +132,10 @@
                 // --- FETCH INCOME ---
                 if (reportType === 'all' || reportType === 'income') {
                     let query = supabase.from('fee_payments').select('*, students(student_name)');
-                    
-                    // തീയതി ഫിൽറ്റർ ഓൺ ആണെങ്കിൽ മാത്രം apply ചെയ്യുക
                     if (useDate) {
                         if (fromDate) query = query.gte('payment_date', fromDate + 'T00:00:00Z');
                         if (toDate) query = query.lte('payment_date', toDate + 'T23:59:59Z');
                     }
-
                     const { data: incomeData, error: incomeError } = await query;
                     
                     if(incomeData && !incomeError) {
@@ -173,12 +149,7 @@
                                 totalIncome += amount;
                                 combinedData.push({
                                     date: item.payment_date ? item.payment_date.split('T')[0] : '-',
-                                    type: 'Income',
-                                    purpose: purpose,
-                                    category: 'Fees',
-                                    voucher: voucher,
-                                    amount: amount,
-                                    color: '#10B981'
+                                    type: 'Income', purpose: purpose, category: 'Fees', voucher: voucher, amount: amount, color: '#10B981'
                                 });
                             }
                         });
@@ -188,31 +159,25 @@
                 // --- FETCH EXPENSE ---
                 if (reportType === 'all' || reportType === 'expense') {
                     let query = supabase.from('expenses').select('*');
-                    
-                    // തീയതി ഫിൽറ്റർ ഓൺ ആണെങ്കിൽ മാത്രം apply ചെയ്യുക
                     if (useDate) {
                         if (fromDate) query = query.gte('expense_date', fromDate);
                         if (toDate) query = query.lte('expense_date', toDate);
                     }
-
                     const { data: expenseData, error: expenseError } = await query;
 
-                    if (!expenseError && expenseData) {
+                    // ERROR HANDLING FIX: If expenses table is missing, don't crash, just show alert in console
+                    if (expenseError) {
+                        console.warn("Could not fetch expenses. Make sure 'expenses' table exists.", expenseError);
+                    } else if (expenseData) {
                         expenseData.forEach(item => {
                             const purpose = item.purpose || '-';
                             const voucher = item.voucher_no || '-';
                             const amount = parseFloat(item.amount || 0);
-
                             if (searchQuery === '' || purpose.toLowerCase().includes(searchQuery) || voucher.toLowerCase().includes(searchQuery)) {
                                 totalExpense += amount;
                                 combinedData.push({
                                     date: item.expense_date ? item.expense_date.split('T')[0] : '-',
-                                    type: 'Expense',
-                                    purpose: purpose,
-                                    category: item.category || 'General',
-                                    voucher: voucher,
-                                    amount: amount,
-                                    color: '#EF4444'
+                                    type: 'Expense', purpose: purpose, category: item.category || 'General', voucher: voucher, amount: amount, color: '#EF4444'
                                 });
                             }
                         });
@@ -235,7 +200,6 @@
 
                 combinedData.forEach(row => {
                     const tr = document.createElement('tr');
-                    
                     let actionHtml = '-';
                     if (row.type === 'Expense') {
                         const eventTitle = encodeURIComponent(`Pay: ${row.purpose}`);
@@ -243,7 +207,6 @@
                         const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${dateStr}T040000Z/${dateStr}T050000Z`;
                         actionHtml = `<a href="${calendarUrl}" target="_blank" class="action-btn" style="text-decoration:none; background:#F59E0B; color:white; padding:4px 8px; border-radius:4px; font-size:11px;">📅 Alert</a>`;
                     }
-
                     tr.innerHTML = `
                         <td>${row.date}</td>
                         <td style="color: ${row.color}; font-weight: bold;">${row.type}</td>
@@ -258,35 +221,26 @@
 
             } catch (error) {
                 console.error("Report Error:", error);
-                document.getElementById('report-body').innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Error loading data.</td></tr>`;
+                document.getElementById('report-body').innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Error loading data. See console.</td></tr>`;
             }
         };
 
-        // EXPORT FUNCTIONS
-        window.printReport = function() {
-            window.print(); // ബ്രൗസറിന്റെ പ്രിന്റ് വിൻഡോ തുറക്കുന്നു
-        };
-
+        window.printReport = function() { window.print(); };
         window.downloadPDF = function() {
             const element = document.getElementById('printable-area');
-            const opt = {
-                margin:       10,
-                filename:     'Financial_Report.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            // HTML നെ PDF ആക്കി മാറ്റുന്നു
+            const opt = { margin: 10, filename: 'Financial_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
             html2pdf().set(opt).from(element).save();
         };
-
         window.exportToCSV = function() {
             let csv = [];
             let rows = document.querySelectorAll("table tr");
             for (let i = 0; i < rows.length; i++) {
                 let row = [], cols = rows[i].querySelectorAll("td, th");
-                for (let j = 0; j < cols.length - 1; j++) { // Action കോളം ഒഴിവാക്കാൻ -1
-                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/₹/g, "");
+                for (let j = 0; j < cols.length - 1; j++) { 
+                    let data = cols[j].innerText.replace(/(
+|
+|
+)/gm, "").replace(/₹/g, "");
                     row.push('"' + data + '"'); 
                 }
                 csv.push(row.join(","));
@@ -301,12 +255,10 @@
             document.body.removeChild(downloadLink);
         };
 
-        // Initialize Dates
         const date = new Date();
         document.getElementById('to-date').value = date.toISOString().split('T')[0];
         date.setDate(1); 
         document.getElementById('from-date').value = date.toISOString().split('T')[0];
-        
         window.fetchReports();
     </script>
 </body>
