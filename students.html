@@ -122,11 +122,12 @@
                     <div style="padding: 0 10px; text-align: center; position: relative; z-index: 2;">
                         <div style="margin-bottom: 8px;">
                             <div style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">NAME</div>
-                            <div id="cardStudentName" style="font-size: 18px; font-weight: 900; color: #111827; white-space: pre-wrap;">STUDENT NAME</div>
+                            <!-- Font bold ഒഴിവാക്കി, കളർ Dark Violet നൽകി -->
+                            <div id="cardStudentName" style="font-size: 18px; font-weight: normal; color: #4A0080; letter-spacing: 0.5px;">STUDENT NAME</div>
                         </div>
                         <div style="margin-bottom: 10px;">
                             <div style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">COURSE</div>
-                            <div id="cardCourseName" style="font-size: 14px; font-weight: 800; color: #047857; white-space: pre-wrap;">COURSE NAME</div>
+                            <div id="cardCourseName" style="font-size: 14px; font-weight: 800; color: #047857;">COURSE NAME</div>
                         </div>
                         
                         <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.9); padding: 5px; border-radius: 8px; width: 85%; margin: 0 auto; position: relative; z-index: 3;">
@@ -164,10 +165,11 @@
                 <input type="file" id="livePhotoInput" accept="image/*" class="form-control" style="margin-bottom:12px; padding:6px; font-size:12px;" onchange="updateLivePhoto(event)">
 
                 <label style="font-size:12px; font-weight:600; color:#374151;">Student Name</label>
-                <input type="text" id="liveName" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardStudentName').innerText = (this.value || 'N/A').toUpperCase()">
+                <!-- സ്പേസ് പ്രശ്നം പരിഹരിക്കാൻ replace(/ /g, '&nbsp;') ചേർത്തിരിക്കുന്നു -->
+                <input type="text" id="liveName" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardStudentName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
 
                 <label style="font-size:12px; font-weight:600; color:#374151;">Course Name</label>
-                <input type="text" id="liveCourse" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardCourseName').innerText = (this.value || 'N/A').toUpperCase()">
+                <input type="text" id="liveCourse" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardCourseName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
 
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
                     <div style="flex:1;">
@@ -334,9 +336,9 @@
             document.getElementById('livePhone').value = s.phone_number || '';
             document.getElementById('livePhotoInput').value = ''; 
 
-            // പേര് അപ്പർകേസ് ആക്കി മാറ്റുന്നു
-            document.getElementById('cardStudentName').innerText = (s.full_name || 'N/A').toUpperCase();
-            document.getElementById('cardCourseName').innerText = (s.display_course_name || 'N/A').toUpperCase();
+            // സ്പേസ് നഷ്ടപ്പെടാതിരിക്കാൻ innerHTML ഉപയോഗിച്ച് replace ചെയ്തു
+            document.getElementById('cardStudentName').innerHTML = (s.full_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
+            document.getElementById('cardCourseName').innerHTML = (s.display_course_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
             document.getElementById('cardRegNo').innerText = s.register_number || 'N/A';
             document.getElementById('cardPhone').innerText = s.phone_number || 'N/A';
 
