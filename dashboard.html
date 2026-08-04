@@ -1,1 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard - Globus Technical Academy</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* New Module Based Layout Styles */
+        .module-section {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+        .module-title {
+            font-size: 16px;
+            color: #374151;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+        .module-title.academic { border-bottom-color: #3b82f6; color: #1d4ed8; }
+        .module-title.finance { border-bottom-color: #10b981; color: #047857; }
+        
+        /* Modifying nav-grid to fit inside sections better */
+        .module-section .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    
+    <nav class="app-header">
+        <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
+            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <div style="display: flex; flex-direction: column; overflow: hidden;">
+                <span class="brand-top" style="font-size: 16px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Globus</span>
+                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Technical Academy</span>
+            </div>
+        </div>
+        
+        <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
+            <button class="btn-logout-custom" id="logoutBtn">Logout</button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <h2 style="font-size: 18px; margin-bottom: 16px;">Institute Overview</h2>
+        
+        <div class="stat-grid">
+            <div class="stat-box">
+                <div class="stat-label">Total Students</div>
+                <div class="stat-value" id="statStudents">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Active Courses</div>
+                <div class="stat-value" id="statCourses">0</div>
+            </div>
+            <div class="stat-box" style="border-left: 4px solid #10B981;">
+                <div class="stat-label">Today's Collection</div>
+                <div class="stat-value" id="statTodayCollection" style="color: #10B981;">₹ 0</div>
+            </div>
+            <div class="stat-box" style="border-left: 4px solid #EF4444;">
+                <div class="stat-label">Pending Fees</div>
+                <div class="stat-value" id="statPendingFees" style="color: #EF4444;">₹ 0</div>
+            </div>
+        </div>
+
+        <!-- ACADEMIC MODULE -->
+        <div class="module-section">
+            <h3 class="module-title academic"><span>🎓</span> Academic & Administration</h3>
+            <div class="nav-grid">
+                <a href="admission.html" class="nav-btn"><span class="nav-icon">📝</span>New Admission</a>
+                <a href="students.html" class="nav-btn"><span class="nav-icon">👥</span>Student Directory</a>
+                <a href="courses.html" class="nav-btn"><span class="nav-icon">📚</span>Courses</a>
+            </div>
+        </div>
+
+        <!-- FINANCE MODULE -->
+        <div class="module-section">
+            <h3 class="module-title finance"><span>💰</span> Finance & Accounts</h3>
+            <div class="nav-grid">
+                <a href="fees.html" class="nav-btn"><span class="nav-icon">💵</span>Collect Fee</a>
+                <a href="expense.html" class="nav-btn" style="background-color: #fef2f2; border-color: #fca5a5;"><span class="nav-icon">💸</span>Add Expense</a>
+                <a href="report.html" class="nav-btn" style="background-color: #f0fdf4; border-color: #86efac;"><span class="nav-icon">📊</span>Reports</a>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+        
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            loadDashboardData();
+        }
+
+        async function loadDashboardData() {
+            try {
+                // 1. Total Students
+                const { count: studentCount } = await supabase.from('students').select('*', { count: 'exact', head: true });
+                document.getElementById('statStudents').textContent = studentCount || 0;
+
+                // 2. Active Courses
+                const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true }).eq('status', 'Active');
+                document.getElementById('statCourses').textContent = courseCount || 0;
+
+                // 3. Today's Collection
+                const todayDate = new Date().toISOString().split('T')[0];
+                
+                const { data: collections } = await supabase.from('fee_payments').select('amount_paid').gte('payment_date', `${todayDate}T00:00:00Z`);
+                let paymentsToday = collections ? collections.reduce((sum, record) => sum + Number(record.amount_paid), 0) : 0;
+                
+                const { data: admissionsToday } = await supabase.from('students').select('admission_fee').gte('created_at', `${todayDate}T00:00:00Z`);
+                let admissionsTotal = admissionsToday ? admissionsToday.reduce((sum, record) => sum + Number(record.admission_fee), 0) : 0;
+
+                let todayTotal = paymentsToday + admissionsTotal;
+                document.getElementById('statTodayCollection').textContent = '₹ ' + todayTotal;
+
+                // 4. Pending Fees
+                const { data: studentsData } = await supabase.from('students').select('id, total_fee, admission_fee');
+                const { data: paymentsData } = await supabase.from('fee_payments').select('student_id, amount_paid');
+                
+                let pendingFeesSum = 0;
+                if (studentsData) {
+                    studentsData.forEach(s => {
+                        let total = Number(s.total_fee) || 0;
+                        let admission = Number(s.admission_fee) || 0;
+                        
+                        let otherPayments = 0;
+                        if (paymentsData) {
+                            const studentPayments = paymentsData.filter(p => p.student_id === s.id);
+                            otherPayments = studentPayments.reduce((sum, p) => sum + Number(p.amount_paid), 0);
+                        }
+                        
+                        const balance = total - admission - otherPayments;
+                        if (balance > 0) pendingFeesSum += balance;
+                    });
+                }
+                document.getElementById('statPendingFees').textContent = '₹ ' + pendingFeesSum;
+
+            } catch (err) { 
+                console.error("Dashboard Loading Error:", err); 
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => { 
+            const btn = document.getElementById('logoutBtn');
+            btn.textContent = 'Logging out...'; btn.disabled = true;
+            await supabase.auth.signOut(); 
+            localStorage.clear(); sessionStorage.clear();
+            window.location.replace('login.html'); 
+        });
+        
+        checkAuth();
+    </script>
+</body>
+</html>
 
