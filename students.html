@@ -6,7 +6,6 @@
     <title>Directory - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     
-    <!-- കാർഡ് ചിത്രമാക്കി മാറ്റാൻ ഉപയോഗിക്കുന്ന html2canvas ലൈബ്രറി -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -33,12 +32,98 @@
             flex: 1; min-width: 300px; background: #f8fafc; padding: 20px; 
             border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;
         }
+        
+        /* SKETCH BASED SEARCH BAR DESIGN */
+        .search-filter-container {
+            display: flex;
+            border: 2px solid #cbd5e1;
+            border-radius: 30px; /* Rounded pill shape */
+            overflow: hidden;
+            background: white;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .search-box-pill {
+            flex: 2;
+            border: none;
+            padding: 14px 20px;
+            outline: none;
+            font-size: 15px;
+            color: #333;
+        }
+        .filter-dropdown-pill {
+            flex: 1;
+            border: none;
+            border-left: 2px solid #cbd5e1;
+            padding: 12px 15px;
+            outline: none;
+            background: #f8fafc;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e3a8a;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%231e3a8a" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        /* SKETCH BASED CARD LAYOUT */
+        .student-mobile-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .smc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            border-bottom: 2px dashed #cbd5e1; /* Dashed line exactly like sketch */
+            padding-bottom: 12px;
+        }
+        .smc-header-left { flex: 1; padding-right: 10px; }
+        .smc-name { font-size: 18px; font-weight: 800; color: #1e3a8a; margin-bottom: 4px; line-height: 1.2; }
+        .smc-reg { font-size: 14px; color: #64748b; font-weight: 600; }
+        .smc-header-center img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #cbd5e1; }
+
+        .smc-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .smc-label { width: 100px; color: #64748b; font-weight: 600; flex-shrink: 0; }
+        .smc-value { flex: 1; color: #1f2937; font-weight: 500; }
+
+        .card-action-btns {
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 10px; 
+            margin-top: 15px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 15px;
+        }
+        .btn-card {
+            border: none; padding: 10px 5px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center;
+        }
+        .btn-view { background: #fff; color: #3b82f6; border: 1px solid #3b82f6; }
+        .btn-id { background: #3b82f6; color: #fff; }
+        .btn-del { background: #fff; color: #ef4444; border: 1px solid #ef4444; }
 
         @media (max-width: 650px) {
             .modal-container { padding: 15px; }
             .card-preview-col, .card-edit-col { min-width: 100%; }
             .card-preview-col { transform: scale(0.95); transform-origin: top center; margin-bottom: -15px; }
             .card-edit-col { padding: 15px; }
+            .smc-label { width: 95px; font-size: 13px; }
+            .smc-value { font-size: 13px; }
+            .search-filter-container { flex-direction: column; border-radius: 12px; }
+            .filter-dropdown-pill { border-left: none; border-top: 1px solid #cbd5e1; padding: 14px 15px; }
         }
 
         @media print {
@@ -75,13 +160,24 @@
     </nav>
 
     <main class="main-content no-print">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <a href="dashboard.html" style="color: var(--primary-light); text-decoration: none; font-weight: 600;">← Return to Dashboard</a>
+        <div style="text-align: center; margin-bottom: 10px;">
+            <a href="dashboard.html" style="color: var(--primary-light, #3b82f6); text-decoration: none; font-weight: 600;">← Return to Dashboard</a>
         </div>
         
-        <div class="filter-section">
-            <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search Name, Phone, Reg No...">
+        <h2 style="text-align: center; font-size: 22px; margin-bottom: 25px; color: #1e3a8a; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">
+            Student Directory
+        </h2>
+        
+        <!-- Search & Filter as per Sketch (Pill shape) -->
+        <div class="search-filter-container">
+            <input type="text" id="searchInput" class="search-box-pill" placeholder="🔍 Search Name, Reg No, Phone...">
+            <select id="statusFilter" class="filter-dropdown-pill">
+                <option value="all">All Students</option>
+                <option value="active" selected>Active Students</option>
+                <option value="completed">Completed Students</option>
+            </select>
         </div>
+        
         <div id="studentsList"><div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div></div>
     </main>
 
@@ -101,7 +197,6 @@
         <!-- 2. PROFILE & CARD CONTAINER -->
         <div id="profileCardContainer" class="modal-container" style="display:none;">
             
-            <!-- Left Side: Live Smart ID Card Preview -->
             <div class="card-preview-col">
                 <div id="smartCardContent" style="width: 320px; height: 510px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 15px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">
                     
@@ -122,7 +217,6 @@
                     <div style="padding: 0 10px; text-align: center; position: relative; z-index: 2;">
                         <div style="margin-bottom: 8px;">
                             <div style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">NAME</div>
-                            <!-- Font bold ഒഴിവാക്കി, കളർ Dark Violet നൽകി -->
                             <div id="cardStudentName" style="font-size: 18px; font-weight: normal; color: #4A0080; letter-spacing: 0.5px;">STUDENT NAME</div>
                         </div>
                         <div style="margin-bottom: 10px;">
@@ -154,7 +248,6 @@
                 </div>
             </div>
 
-            <!-- Right Side: Live Editor & Buttons -->
             <div class="card-edit-col no-print">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:5px;">
                     <h3 style="font-size:16px; color:#1e40af; margin:0;">✏️ Edit & Generate Card</h3>
@@ -165,7 +258,6 @@
                 <input type="file" id="livePhotoInput" accept="image/*" class="form-control" style="margin-bottom:12px; padding:6px; font-size:12px;" onchange="updateLivePhoto(event)">
 
                 <label style="font-size:12px; font-weight:600; color:#374151;">Student Name</label>
-                <!-- സ്പേസ് പ്രശ്നം പരിഹരിക്കാൻ replace(/ /g, '&nbsp;') ചേർത്തിരിക്കുന്നു -->
                 <input type="text" id="liveName" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardStudentName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
 
                 <label style="font-size:12px; font-weight:600; color:#374151;">Course Name</label>
@@ -182,7 +274,6 @@
                     </div>
                 </div>
 
-                <!-- Print & Share -->
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
                     <button type="button" onclick="printCard()" style="background: #2563eb; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🖨️ Print Card</button>
                     <button type="button" id="shareBtn" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🔗 Share Image</button>
@@ -190,7 +281,6 @@
                 
                 <hr style="border:none; border-top:1px dashed #cbd5e1; margin-bottom:15px;">
                 
-                <!-- Save Button -->
                 <button type="button" onclick="saveCardDataToDB()" style="background: #f59e0b; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-bottom:10px;">💾 Save Details to Database</button>
                 <button type="button" onclick="closeModal()" style="background: #6b7280; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel / Close</button>
             </div>
@@ -228,16 +318,42 @@
                     s.total_paid_fees = paid;
                 });
 
-                renderList(allStudents);
+                applyFilters(); 
             } catch (err) {
                 console.error("Database Error:", err);
                 alert("Database Error: " + err.message);
             }
         }
 
+        window.applyFilters = function() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusTerm = document.getElementById('statusFilter').value; 
+
+            const filtered = allStudents.filter(s => {
+                const matchesSearch = (s.full_name?.toLowerCase().includes(searchTerm) || 
+                                       s.register_number?.toLowerCase().includes(searchTerm) || 
+                                       s.phone_number?.toLowerCase().includes(searchTerm));
+                
+                let matchesStatus = true;
+                const stuStatus = (s.status || 'active').toLowerCase();
+                
+                if (statusTerm === 'active') {
+                    matchesStatus = (stuStatus === 'active');
+                } else if (statusTerm === 'completed') {
+                    matchesStatus = (stuStatus === 'completed' || stuStatus === 'inactive');
+                }
+                return matchesSearch && matchesStatus;
+            });
+            
+            renderList(filtered);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
         function renderList(data) {
             const container = document.getElementById('studentsList'); container.innerHTML = '';
-            if (data.length === 0) { container.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444;">No students found.</div>'; return; }
+            if (data.length === 0) { container.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444; font-weight:bold;">No students found.</div>'; return; }
             
             data.forEach(s => {
                 const bal = (Number(s.total_fee)||0) - (Number(s.admission_fee)||0) - s.total_paid_fees;
@@ -245,10 +361,11 @@
                 const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
                 let avatarUrl = s.photo_url || (s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
 
-                let qualBadge = `<span style="background: #F3F4F6; color: #374151; padding: 3px 8px; border-radius: 4px; font-weight: 700;">${s.qualification || 'N/A'}</span>`;
+                let qualBadge = `<span style="background: #F3F4F6; color: #374151; padding: 2px 6px; border-radius: 4px; font-weight: 700; border: 1px solid #cbd5e1;">${s.qualification || 'N/A'}</span>`;
 
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
+                
                 card.innerHTML = `
                     <div class="smc-header">
                         <div class="smc-header-left">
@@ -258,14 +375,15 @@
                         <div class="smc-header-center"><img src="${avatarUrl}" class="student-avatar" alt="Photo"></div>
                     </div>
                     <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
-                    <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:600;">${s.display_course_name}</span></div>
                     <div class="smc-row"><span class="smc-label">Qualification:</span> <span class="smc-value">${qualBadge}</span></div>
-                    <div class="smc-row"><span class="smc-label">Pending Fees:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
+                    <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:700; color:#1e3a8a;">${s.display_course_name}</span></div>
+                    <div class="smc-row"><span class="smc-label">Module:</span> <span class="smc-value">${s.module || '-'}</span></div>
+                    <div class="smc-row"><span class="smc-label">Fee Status:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px;">
-                        <button onclick="viewAndEditStudent('${s.id}')" style="background: #6366f1; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">View & Edit</button>
-                        <button onclick="openProfileAndCard('${s.id}')" style="background: #3B82F6; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">Profile & Card</button>
-                        <button onclick="deleteStudent('${s.id}', '${s.register_number}')" style="background: #EF4444; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">Delete</button>
+                    <div class="card-action-btns">
+                        <button onclick="viewAndEditStudent('${s.id}')" class="btn-card btn-view">View & Edit</button>
+                        <button onclick="openProfileAndCard('${s.id}')" class="btn-card btn-id">ID Card</button>
+                        <button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-card btn-del">Delete</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -280,11 +398,12 @@
             document.getElementById('viewEditContainer').style.display = 'flex'; 
 
             document.getElementById('viewEditContent').innerHTML = `
-                <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6;">
+                <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6; border: 1px solid #e2e8f0;">
                     <p><b>Name:</b> ${s.full_name}</p>
                     <p><b>Reg No:</b> ${s.register_number || 'N/A'}</p>
                     <p><b>Phone:</b> ${s.phone_number}</p>
                     <p><b>Course:</b> ${s.display_course_name}</p>
+                    <p><b>Module:</b> ${s.module || '-'}</p>
                     <p><b>Qualification:</b> ${s.qualification || 'N/A'}</p>
                     <p><b>Total Fee:</b> ₹ ${s.total_fee || 0}</p>
                 </div>
@@ -292,15 +411,27 @@
                 <form onsubmit="saveFullEdit(event, '${s.id}')">
                     <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Full Name</label><input type="text" id="fullEditName" value="${s.full_name}" class="form-control" required></div>
                     <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Phone Number</label><input type="text" id="fullEditPhone" value="${s.phone_number}" class="form-control" required maxlength="10"></div>
-                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Qualification</label>
-                        <select id="fullEditQual" class="form-control" required>
-                            <option value="SSLC" ${s.qualification==='SSLC'?'selected':''}>SSLC</option>
-                            <option value="Plus Two" ${s.qualification==='Plus Two'?'selected':''}>Plus Two</option>
-                            <option value="Degree" ${s.qualification==='Degree'?'selected':''}>Degree</option>
-                            <option value="Other" ${s.qualification==='Other'?'selected':''}>Other</option>
-                        </select>
+                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Module</label><input type="text" id="fullEditModule" value="${s.module || ''}" class="form-control" placeholder="e.g. Hardware"></div>
+                    
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <div style="flex:1;">
+                            <label style="font-size:12px; font-weight:600;">Course Status</label>
+                            <select id="fullEditStatus" class="form-control">
+                                <option value="active" ${(!s.status || s.status==='active')?'selected':''}>Active</option>
+                                <option value="completed" ${s.status==='completed'?'selected':''}>Completed</option>
+                            </select>
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-size:12px; font-weight:600;">Qualification</label>
+                            <select id="fullEditQual" class="form-control" required>
+                                <option value="SSLC" ${s.qualification==='SSLC'?'selected':''}>SSLC</option>
+                                <option value="Plus Two" ${s.qualification==='Plus Two'?'selected':''}>Plus Two</option>
+                                <option value="Degree" ${s.qualification==='Degree'?'selected':''}>Degree</option>
+                                <option value="Other" ${s.qualification==='Other'?'selected':''}>Other</option>
+                            </select>
+                        </div>
                     </div>
-                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:600; cursor:pointer;">Update Profile</button>
+                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">Update Profile</button>
                 </form>
             `;
             document.getElementById('studentModal').style.display = 'flex';
@@ -311,11 +442,13 @@
             const newName = document.getElementById('fullEditName').value;
             const newPhone = document.getElementById('fullEditPhone').value;
             const newQual = document.getElementById('fullEditQual').value;
+            const newStatus = document.getElementById('fullEditStatus').value;
+            const newModule = document.getElementById('fullEditModule').value;
 
             if(newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
 
             const { error } = await supabase.from('students').update({
-                full_name: newName, phone_number: newPhone, qualification: newQual
+                full_name: newName, phone_number: newPhone, qualification: newQual, status: newStatus, module: newModule
             }).eq('id', id);
 
             if (error) alert('Error updating: ' + error.message);
@@ -336,7 +469,6 @@
             document.getElementById('livePhone').value = s.phone_number || '';
             document.getElementById('livePhotoInput').value = ''; 
 
-            // സ്പേസ് നഷ്ടപ്പെടാതിരിക്കാൻ innerHTML ഉപയോഗിച്ച് replace ചെയ്തു
             document.getElementById('cardStudentName').innerHTML = (s.full_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
             document.getElementById('cardCourseName').innerHTML = (s.display_course_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
             document.getElementById('cardRegNo').innerText = s.register_number || 'N/A';
@@ -466,11 +598,6 @@
                 fetchStudents(); 
             } else if (inp) alert('Register number does not match.');
         };
-
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const val = e.target.value.toLowerCase();
-            renderList(allStudents.filter(s => s.full_name?.toLowerCase().includes(val) || s.register_number?.toLowerCase().includes(val) || s.phone_number?.toLowerCase().includes(val)));
-        });
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
             await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
