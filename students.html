@@ -2,19 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- മൊബൈലിൽ സൂം ചെയ്യാനുള്ള സൗകര്യത്തിനായി viewport അപ്ഡേറ്റ് ചെയ്തു -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Directory - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- കാർഡ് ചിത്രമാക്കി മാറ്റാൻ ഉപയോഗിക്കുന്ന html2canvas ലൈബ്രറി -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
-        /* മൊബൈൽ ഫ്രണ്ട്ലി ഡിസൈൻ & സ്ക്രോളിംഗ് ഫിക്സ് */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7); z-index: 100;
             justify-content: center; 
-            align-items: flex-start; /* മുകൾ ഭാഗം കട്ട് ആവാതിരിക്കാൻ flex-start നൽകി */
-            padding: 30px 10px; /* മൊബൈലിൽ മുകളിലും താഴെയും സ്പേസ് ലഭിക്കാൻ */
-            overflow-y: auto; /* സ്മൂത്ത് സ്ക്രോളിംഗ് */
+            align-items: flex-start; 
+            padding: 30px 10px; 
+            overflow-y: auto; 
         }
         
         .modal-container {
@@ -35,12 +37,10 @@
         @media (max-width: 650px) {
             .modal-container { padding: 15px; }
             .card-preview-col, .card-edit-col { min-width: 100%; }
-            /* മൊബൈൽ സ്ക്രീനിൽ കാർഡ് കൃത്യമായി ഒതുങ്ങാൻ ചെറിയ സ്കെയിലിംഗ് */
             .card-preview-col { transform: scale(0.95); transform-origin: top center; margin-bottom: -15px; }
             .card-edit-col { padding: 15px; }
         }
 
-        /* പ്രിന്റ് ചെയ്യുമ്പോൾ കാർഡ് എടിഎം കാർഡ് വലുപ്പത്തിൽ വരാനുള്ള സ്റ്റൈൽ */
         @media print {
             body * { visibility: hidden; }
             #studentModal, #profileCardContainer, #profileCardContainer * { visibility: visible; }
@@ -50,7 +50,6 @@
                 justify-content: flex-start; align-items: flex-start; padding: 0; margin: 0;
             }
             .no-print { display: none !important; }
-            /* ATM Card Standard Size Adjustment (CR80) */
             #smartCardContent {
                 width: 320px !important; height: 510px !important;
                 transform: scale(0.65) !important; transform-origin: top left !important;
@@ -86,7 +85,6 @@
         <div id="studentsList"><div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div></div>
     </main>
 
-    <!-- Master Modal Popup (അപ്ഡേറ്റ് ചെയ്തത്) -->
     <div id="studentModal" class="modal-overlay">
         
         <!-- 1. VIEW & EDIT CONTAINER -->
@@ -107,24 +105,20 @@
             <div class="card-preview-col">
                 <div id="smartCardContent" style="width: 320px; height: 510px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 15px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">
                     
-                    <!-- Header (Centered Logo & Text in one color) -->
                     <div style="text-align: center; margin-bottom: 5px;">
-                        <img src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain; margin-bottom: 3px;" alt="Logo" onerror="this.style.display='none'">
+                        <img src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain; margin-bottom: 3px; mix-blend-mode: multiply;" alt="Logo" onerror="this.style.display='none'">
                         <div style="font-size: 19px; font-weight: 900; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">GLOBUS</div>
                         <div style="font-size: 13px; font-weight: 800; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
                     </div>
 
-                    <!-- Title -->
                     <div style="background: #1e3a8a; color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 5px 0; margin-bottom: 15px; border-radius: 4px; letter-spacing: 1px;">
                         STUDENT ID CARD
                     </div>
 
-                    <!-- Large Photo -->
                     <div style="text-align: center; margin-bottom: 12px;">
                         <img id="cardAvatarImg" src="https://avatar.iran.liara.run/public" style="width: 120px; height: 150px; object-fit: cover; border-radius: 6px; border: 3px solid #cbd5e1; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     </div>
 
-                    <!-- Details Section -->
                     <div style="padding: 0 10px; text-align: center; position: relative; z-index: 2;">
                         <div style="margin-bottom: 8px;">
                             <span style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">NAME</span><br>
@@ -135,7 +129,7 @@
                             <span id="cardCourseName" style="font-size: 14px; font-weight: 800; color: #047857; text-transform:uppercase;">COURSE NAME</span>
                         </div>
                         
-                        <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.8); padding: 5px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.9); padding: 5px; border-radius: 8px; width: 85%; margin: 0 auto; position: relative; z-index: 3;">
                             <div>
                                 <span style="font-size: 10px; color: #64748b; font-weight: 800;">REG NO</span><br>
                                 <span id="cardRegNo" style="font-size: 13px; font-weight: 800; color: #111827;">-</span>
@@ -147,14 +141,12 @@
                         </div>
                     </div>
 
-                    <!-- Round Digital Seal (Bottom Right) -->
-                    <div style="position: absolute; bottom: 30px; right: 10px; width: 60px; height: 60px; border: 2px solid rgba(30, 58, 138, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); z-index: 1;">
+                    <div style="position: absolute; bottom: 15px; right: 5px; width: 60px; height: 60px; border: 2px solid rgba(30, 58, 138, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); z-index: 1; opacity: 0.5;">
                         <div style="width: 52px; height: 52px; border: 1px dashed rgba(30, 58, 138, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 6px; font-weight: 800; color: rgba(30, 58, 138, 0.4); padding: 2px; line-height: 1.1;">
                             GLOBUS<br>TECHNICAL<br>ACADEMY<br>KOTTAKKAL
                         </div>
                     </div>
 
-                    <!-- Tiny Footer Note -->
                     <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 6.5px; color: #94a3b8; font-weight: 600; text-align: center; z-index: 2;">
                         If found, please return to this number: +91 9846000000
                     </div>
@@ -191,7 +183,7 @@
                 <!-- Print & Share -->
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
                     <button type="button" onclick="printCard()" style="background: #2563eb; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🖨️ Print Card</button>
-                    <button type="button" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🔗 Share</button>
+                    <button type="button" id="shareBtn" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🔗 Share Image</button>
                 </div>
                 
                 <hr style="border:none; border-top:1px dashed #cbd5e1; margin-bottom:15px;">
@@ -278,13 +270,12 @@
             });
         }
 
-        // 1. VIEW & EDIT BUTTON LOGIC
         window.viewAndEditStudent = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
             
             document.getElementById('profileCardContainer').style.display = 'none';
-            document.getElementById('viewEditContainer').style.display = 'flex'; // Fix
+            document.getElementById('viewEditContainer').style.display = 'flex'; 
 
             document.getElementById('viewEditContent').innerHTML = `
                 <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6;">
@@ -329,7 +320,6 @@
             else { alert('Profile updated successfully!'); closeModal(); fetchStudents(); }
         };
 
-        // 2. PROFILE & CARD BUTTON LOGIC
         window.openProfileAndCard = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
@@ -408,19 +398,59 @@
 
         window.printCard = function() { window.print(); };
 
+        // പുതിയ Share Logic (ചിത്രമാക്കി മാറ്റി ഷെയർ ചെയ്യുന്നു)
         window.shareCard = async function() {
-            const name = document.getElementById('liveName').value || 'Unknown';
-            const course = document.getElementById('liveCourse').value || 'N/A';
-            const reg = document.getElementById('liveReg').value || 'N/A';
-            const phone = document.getElementById('livePhone').value || 'N/A';
-            
-            const shareText = `🎓 *Globus Technical Academy*\n\n*Student ID Profile*\n👤 Name: ${name}\n🔢 Reg No: ${reg}\n📚 Course: ${course}\n📱 Phone: ${phone}\n\nJoin our technical courses today!`;
-            
-            if (navigator.share) {
-                try { await navigator.share({ title: 'Student ID Card Details', text: shareText, }); } catch (err) {}
-            } else {
-                navigator.clipboard.writeText(shareText);
-                alert('Student details copied to clipboard. You can paste and share it anywhere!');
+            const btn = document.getElementById('shareBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Generating Image...';
+            btn.disabled = true;
+
+            try {
+                // കാർഡ് ഡിസൈൻ ഉള്ള HTML എലമെന്റ് എടുക്കുന്നു
+                const cardElement = document.getElementById('smartCardContent');
+                const name = document.getElementById('liveName').value || 'Student';
+
+                // html2canvas ഉപയോഗിച്ച് HTML-നെ കാൻവാസ് ആക്കി മാറ്റുന്നു
+                const canvas = await html2canvas(cardElement, {
+                    scale: 2, 
+                    useCORS: true, // പുറത്ത് നിന്നുള്ള ഫോട്ടോകൾ അനുവദിക്കാൻ
+                    backgroundColor: '#ffffff'
+                });
+
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], `ID_Card_${name}.png`, { type: 'image/png' });
+                    
+                    const shareText = `🎓 *Globus Technical Academy*\nHere is the ID Card for ${name}.`;
+
+                    // മൊബൈലിൽ ഷെയർ ചെയ്യാൻ സപ്പോർട്ട് ഉണ്ടോ എന്ന് നോക്കുന്നു
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'Student ID Card',
+                                text: shareText
+                            });
+                        } catch (err) {
+                            console.error('Share failed:', err);
+                        }
+                    } else {
+                        // കമ്പ്യൂട്ടറിലോ സപ്പോർട്ട് ഇല്ലാത്ത ബ്രൗസറിലോ ആണെങ്കിൽ ഡൗൺലോഡ് ആകാൻ
+                        alert("Your browser doesn't support direct file sharing. The ID card image will be downloaded instead.");
+                        const link = document.createElement('a');
+                        link.download = `ID_Card_${name}.png`;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    }
+                    
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 'image/png');
+
+            } catch (error) {
+                console.error("Error generating image:", error);
+                alert("Could not generate image. Please try again.");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
             }
         };
 
