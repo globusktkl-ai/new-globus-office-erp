@@ -35,13 +35,11 @@
 
         /* Date Group */
         .date-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-
-        /* Search Bar Setup */
-        .search-group { display: flex; flex-direction: row; gap: 5px; width: 100%; align-items: stretch; }
-        .search-select { width: 40%; flex-shrink: 0; }
-        .search-input-box { flex-grow: 1; display: none; }
-        .search-icon-btn { background-color: #1F2937; color: white; border: none; border-radius: 5px; padding: 0 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         
+        /* Custom Search Box */
+        .custom-search-container { display: none; flex-direction: column; gap: 5px; margin-top: 10px; width: 100%; }
+        .search-action-btn { background-color: #1F2937; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; font-weight: bold; width: 100%; }
+
         /* Share Dropdown */
         .dropdown { position: relative; display: inline-block; width: 100%; margin-top: 5px; }
         .dropbtn { background-color: #8B5CF6; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; }
@@ -63,7 +61,8 @@
             .date-group > div { width: auto; }
             .toggle-container { margin-bottom: 15px; margin-right: 15px; }
             .report-type-box { width: 200px; }
-            .search-group { width: auto; flex-grow: 1; }
+            .custom-search-container { flex-direction: row; margin-top: 0; }
+            .search-action-btn { width: auto; padding: 10px 20px; }
             .dropdown { width: auto; margin-top: 0; }
             .dropbtn { width: auto; padding: 10px 20px; }
             .dropdown-content { bottom: auto; top: 100%; margin-bottom: 0; margin-top: 5px; width: 200px; right: 0; left: auto; }
@@ -120,7 +119,7 @@
             <span class="toggle-label">Custom Date</span>
         </div>
         
-        <!-- Custom Date Pickers (Hidden by default based on toggle) -->
+        <!-- Custom Date Pickers (Disabled by default) -->
         <div class="date-group">
             <div>
                 <label>From:</label>
@@ -135,7 +134,7 @@
         <!-- Report Type -->
         <div class="report-type-box">
             <label>Type:</label>
-            <select id="report-type">
+            <select id="report-type" onchange="window.fetchReports()">
                 <option value="all">Income & Expense</option>
                 <option value="income">Income Only</option>
                 <option value="expense">Expense Only</option>
@@ -145,21 +144,16 @@
         <!-- Search Bar Redesign -->
         <div style="flex-grow: 1; display: flex; flex-direction: column;">
             <label>Filter / Search:</label>
-            <div class="search-group">
-                <select id="search-filter-type" class="search-select" onchange="handleSearchTypeChange()">
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="select">Select</option>
-                </select>
-                
-                <input type="text" id="search-query" class="search-input-box" placeholder="Type here...">
-                
-                <button class="search-icon-btn" onclick="window.fetchReports()" title="Search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                    </svg>
-                </button>
+            <select id="search-filter-type" onchange="handleSearchTypeChange()">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="other">Other</option>
+            </select>
+            
+            <div id="custom-search-box" class="custom-search-container">
+                <input type="text" id="search-query" placeholder="Type name, purpose, or voucher...">
+                <button class="search-action-btn" onclick="window.fetchReports()">🔍 Search</button>
             </div>
         </div>
         
@@ -177,26 +171,24 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // Set default dates
-        const date = new Date();
-        document.getElementById('to-date').value = date.toISOString().split('T')[0];
-        date.setDate(1); 
-        document.getElementById('from-date').value = date.toISOString().split('T')[0];
-
+        // Initialize display functions on window so HTML elements can use them
         window.toggleDateInputs = function() {
             const useDate = document.getElementById('use-date').checked;
             document.getElementById('from-date').disabled = !useDate;
             document.getElementById('to-date').disabled = !useDate;
+            window.fetchReports(); // Refresh when toggled
         };
 
         window.handleSearchTypeChange = function() {
             const type = document.getElementById('search-filter-type').value;
-            const inputBox = document.getElementById('search-query');
-            if(type === 'select') {
-                inputBox.style.display = 'block';
+            const customBox = document.getElementById('custom-search-box');
+            
+            if(type === 'other') {
+                customBox.style.display = 'flex'; // Show input & button below
             } else {
-                inputBox.style.display = 'none';
-                inputBox.value = ''; // clear when hiding
+                customBox.style.display = 'none'; // Hide input & button
+                document.getElementById('search-query').value = ''; 
+                window.fetchReports(); // Auto fetch for Daily/Weekly/Monthly
             }
         };
 
@@ -215,7 +207,7 @@
                 const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
                 return { from: startOfMonth.toISOString().split('T')[0], to: todayStr };
             }
-            return null; // For 'select' we don't force a date range here unless toggle is ON
+            return null;
         }
 
         window.fetchReports = async function() {
@@ -229,8 +221,8 @@
             const searchFilterType = document.getElementById('search-filter-type').value;
             const searchQuery = document.getElementById('search-query').value.toLowerCase();
 
-            // Override dates if a quick filter (Daily/Weekly/Monthly) is selected AND custom date is OFF
-            if (searchFilterType !== 'select') {
+            // Override dates if Custom Date toggle is OFF AND a quick filter is selected
+            if (!useDateToggle && searchFilterType !== 'other') {
                 const range = getDateRange(searchFilterType);
                 if (range) {
                     fromDate = range.from;
@@ -248,7 +240,7 @@
                     let query = supabase.from('fee_payments').select('*, students(student_name)');
                     
                     // Apply Date Filter if toggle is ON OR if using Daily/Weekly/Monthly
-                    if (useDateToggle || searchFilterType !== 'select') {
+                    if (useDateToggle || searchFilterType !== 'other') {
                         if (fromDate) query = query.gte('payment_date', fromDate + 'T00:00:00Z');
                         if (toDate) query = query.lte('payment_date', toDate + 'T23:59:59Z');
                     }
@@ -262,7 +254,7 @@
                             const voucher = item.receipt_no || '-';
                             const amount = parseFloat(item.amount_paid || item.amount || 0);
 
-                            if (searchFilterType !== 'select' || searchQuery === '' || purpose.toLowerCase().includes(searchQuery) || voucher.toLowerCase().includes(searchQuery)) {
+                            if (searchFilterType !== 'other' || searchQuery === '' || purpose.toLowerCase().includes(searchQuery) || voucher.toLowerCase().includes(searchQuery)) {
                                 totalIncome += amount;
                                 combinedData.push({
                                     date: item.payment_date ? item.payment_date.split('T')[0] : '-',
@@ -277,7 +269,7 @@
                 if (reportType === 'all' || reportType === 'expense') {
                     let query = supabase.from('expenses').select('*');
                     
-                    if (useDateToggle || searchFilterType !== 'select') {
+                    if (useDateToggle || searchFilterType !== 'other') {
                         if (fromDate) query = query.gte('expense_date', fromDate);
                         if (toDate) query = query.lte('expense_date', toDate);
                     }
@@ -292,7 +284,7 @@
                             const voucher = item.voucher_no || '-';
                             const amount = parseFloat(item.amount || 0);
                             
-                            if (searchFilterType !== 'select' || searchQuery === '' || purpose.toLowerCase().includes(searchQuery) || voucher.toLowerCase().includes(searchQuery)) {
+                            if (searchFilterType !== 'other' || searchQuery === '' || purpose.toLowerCase().includes(searchQuery) || voucher.toLowerCase().includes(searchQuery)) {
                                 totalExpense += amount;
                                 combinedData.push({
                                     date: item.expense_date ? item.expense_date.split('T')[0] : '-',
@@ -321,26 +313,24 @@
                     const tr = document.createElement('tr');
                     let actionHtml = '-';
                     if (row.type === 'Expense') {
-                        const eventTitle = encodeURIComponent(`Pay: ${row.purpose}`);
+                        const eventTitle = encodeURIComponent('Pay: ' + row.purpose);
                         const dateStr = row.date.replace(/-/g, '');
-                        const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${dateStr}T040000Z/${dateStr}T050000Z`;
-                        actionHtml = `<a href="${calendarUrl}" target="_blank" class="action-btn" style="text-decoration:none; background:#F59E0B; color:white; padding:4px 8px; border-radius:4px; font-size:11px;">📅 Alert</a>`;
+                        const calendarUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + eventTitle + '&dates=' + dateStr + 'T040000Z/' + dateStr + 'T050000Z';
+                        actionHtml = '<a href="' + calendarUrl + '" target="_blank" class="action-btn" style="text-decoration:none; background:#F59E0B; color:white; padding:4px 8px; border-radius:4px; font-size:11px;">📅 Alert</a>';
                     }
-                    tr.innerHTML = `
-                        <td>${row.date}</td>
-                        <td style="color: ${row.color}; font-weight: bold;">${row.type}</td>
-                        <td>${row.purpose}</td>
-                        <td>${row.category}</td>
-                        <td>${row.voucher}</td>
-                        <td style="color: ${row.color}; font-weight: bold;">₹${row.amount.toFixed(2)}</td>
-                        <td class="action-btn">${actionHtml}</td>
-                    `;
+                    tr.innerHTML = '<td>' + row.date + '</td>' +
+                        '<td style="color: ' + row.color + '; font-weight: bold;">' + row.type + '</td>' +
+                        '<td>' + row.purpose + '</td>' +
+                        '<td>' + row.category + '</td>' +
+                        '<td>' + row.voucher + '</td>' +
+                        '<td style="color: ' + row.color + '; font-weight: bold;">₹' + row.amount.toFixed(2) + '</td>' +
+                        '<td class="action-btn">' + actionHtml + '</td>';
                     tableBody.appendChild(tr);
                 });
 
             } catch (error) {
                 console.error("Report Error:", error);
-                document.getElementById('report-body').innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Error loading data.</td></tr>`;
+                document.getElementById('report-body').innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Error loading data.</td></tr>';
             }
         };
 
@@ -356,10 +346,7 @@
             for (let i = 0; i < rows.length; i++) {
                 let row = [], cols = rows[i].querySelectorAll("td, th");
                 for (let j = 0; j < cols.length - 1; j++) { 
-                    let data = cols[j].innerText.replace(/(
-|
-|
-)/gm, "").replace(/₹/g, "");
+                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/₹/g, "");
                     row.push('"' + data + '"'); 
                 }
                 csv.push(row.join(","));
@@ -374,9 +361,18 @@
             document.body.removeChild(downloadLink);
         };
 
-        // Initialize display and fetch data on load
-        window.handleSearchTypeChange(); // Setup correct input display
-        window.fetchReports(); // Fetch initial data
+        // --- Initialization ---
+        // Set default dates
+        const initDate = new Date();
+        document.getElementById('to-date').value = initDate.toISOString().split('T')[0];
+        initDate.setDate(1); 
+        document.getElementById('from-date').value = initDate.toISOString().split('T')[0];
+        
+        // Initial setups
+        window.handleSearchTypeChange(); 
+        
+        // Data fetch is handled automatically because default filter is "Daily"
+        // and handleSearchTypeChange() calls fetchReports().
     </script>
 </body>
 </html>
