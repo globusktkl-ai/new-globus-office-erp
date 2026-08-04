@@ -49,7 +49,8 @@
             <a href="fees.html" class="nav-btn"><span class="nav-icon">💰</span>Collect Fee</a>
             <a href="students.html" class="nav-btn"><span class="nav-icon">👥</span>Student Directory</a>
             <a href="courses.html" class="nav-btn"><span class="nav-icon">📚</span>Courses</a>
-            <a href="reports.html" class="nav-btn"><span class="nav-icon">📊</span>Reports</a>
+            <!-- ഇവിടെ reports.html എന്നതിന് പകരം report.html എന്ന് മാറ്റിയിട്ടുണ്ട് -->
+            <a href="report.html" class="nav-btn"><span class="nav-icon">📊</span>Reports</a>
         </div>
     </main>
 
@@ -68,11 +69,11 @@
                 const { count: studentCount } = await supabase.from('students').select('*', { count: 'exact', head: true });
                 document.getElementById('statStudents').textContent = studentCount || 0;
 
-                // 2. Active Courses (ഇവിടെയാണ് സ്റ്റാറ്റസ് 'Active' എന്നത് ഫിൽട്ടർ ചെയ്തത്)
+                // 2. Active Courses 
                 const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true }).eq('status', 'Active');
                 document.getElementById('statCourses').textContent = courseCount || 0;
 
-                // 3. Today's Collection (Fee Payments + Admission Fees)
+                // 3. Today's Collection
                 const todayDate = new Date().toISOString().split('T')[0];
                 
                 const { data: collections } = await supabase.from('fee_payments').select('amount_paid').gte('payment_date', `${todayDate}T00:00:00Z`);
