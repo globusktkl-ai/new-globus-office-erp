@@ -10,26 +10,65 @@
         body { padding: 15px; background-color: #f4f7f6; color: #333; font-family: 'Segoe UI', Tahoma, sans-serif; }
         .back-btn { display: inline-block; margin-bottom: 15px; text-decoration: none; color: #3498db; font-weight: bold; }
         h2 { color: #2c3e50; border-bottom: 2px solid #ddd; padding-bottom: 10px; font-size: 20px; }
+        
+        /* Summary Cards */
         .summary-cards { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
         .card { flex: 1; min-width: 150px; padding: 15px; border-radius: 8px; color: white; text-align: center; font-size: 18px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .income-card { background: linear-gradient(135deg, #10B981, #059669); }
         .expense-card { background: linear-gradient(135deg, #EF4444, #DC2626); }
         .balance-card { background: linear-gradient(135deg, #3B82F6, #2563EB); }
-        .filters { display: flex; gap: 10px; margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; flex-wrap: wrap; box-shadow: 0 2px 4px rgba(0,0,0,0.05); align-items: center; }
-        .filters label { font-weight: bold; font-size: 12px; color: #555; }
-        .filters input, .filters select, .filters button { padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: 100%; box-sizing: border-box; }
-        .filters button { background-color: #1F2937; color: white; border: none; cursor: pointer; font-weight: bold; }
-        .dropdown { position: relative; display: inline-block; width: 100%; }
-        @media (min-width: 768px) { .dropdown { width: auto; } }
-        .dropbtn { background-color: #8B5CF6 !important; width: 100%; }
-        .dropdown-content { display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 5px; right: 0; }
+        
+        /* Filter Container - Mobile First Single Row */
+        .filters { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .filters label { font-weight: bold; font-size: 12px; color: #555; margin-bottom: 5px; display: block; }
+        .filters input[type="date"], .filters select, .filters input[type="text"] { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; width: 100%; box-sizing: border-box; background: #fff; }
+        
+        /* Toggle Switch CSS */
+        .toggle-container { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #3B82F6; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .toggle-label { font-size: 14px; font-weight: bold; color: #374151; }
+
+        /* Date Group */
+        .date-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+
+        /* Search Bar Setup */
+        .search-group { display: flex; flex-direction: row; gap: 5px; width: 100%; align-items: stretch; }
+        .search-select { width: 40%; flex-shrink: 0; }
+        .search-input-box { flex-grow: 1; display: none; }
+        .search-icon-btn { background-color: #1F2937; color: white; border: none; border-radius: 5px; padding: 0 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        
+        /* Share Dropdown */
+        .dropdown { position: relative; display: inline-block; width: 100%; margin-top: 5px; }
+        .dropbtn { background-color: #8B5CF6; color: white; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; }
+        .dropdown-content { display: none; position: absolute; background-color: #f9f9f9; width: 100%; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1; border-radius: 5px; bottom: 100%; left: 0; margin-bottom: 5px; }
         .dropdown-content button { color: black; padding: 12px 16px; text-decoration: none; display: block; background: none; border: none; text-align: left; width: 100%; cursor: pointer; border-bottom: 1px solid #eee; }
         .dropdown-content button:hover { background-color: #f1f1f1; }
         .dropdown:hover .dropdown-content { display: block; }
+
+        /* Table container */
         .table-container { overflow-x: auto; width: 100%; display: block; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
         th { background-color: #F3F4F6; color: #374151; font-weight: bold; }
+
+        /* Desktop View Adjustments */
+        @media (min-width: 768px) {
+            .filters { flex-direction: row; flex-wrap: wrap; align-items: flex-end; }
+            .date-group { flex-direction: row; width: auto; align-items: flex-end; }
+            .date-group > div { width: auto; }
+            .toggle-container { margin-bottom: 15px; margin-right: 15px; }
+            .report-type-box { width: 200px; }
+            .search-group { width: auto; flex-grow: 1; }
+            .dropdown { width: auto; margin-top: 0; }
+            .dropbtn { width: auto; padding: 10px 20px; }
+            .dropdown-content { bottom: auto; top: 100%; margin-bottom: 0; margin-top: 5px; width: 200px; right: 0; left: auto; }
+        }
+
         @media print {
             body { background-color: white; padding: 0; }
             .filters, .back-btn, .action-btn, .dropdown { display: none !important; }
@@ -38,18 +77,13 @@
             table { border: 1px solid #000; }
             th, td { border: 1px solid #ddd; }
         }
-        @media (min-width: 768px) {
-            .filters > div { flex: 1; }
-            .filters input, .filters select, .filters button { width: auto; }
-            .filters input[type="text"] { flex-grow: 2; }
-        }
     </style>
 </head>
 <body>
     <a href="dashboard.html" class="back-btn">⬅ Back to Dashboard</a>
     
     <div id="printable-area">
-        <h2>📊 Financial Report Dashboard</h2>
+        <h2>📊 Financial Report</h2>
         <div class="summary-cards">
             <div class="card income-card">Income<br>₹<span id="total-income">0</span></div>
             <div class="card expense-card">Expense<br>₹<span id="total-expense">0</span></div>
@@ -75,31 +109,65 @@
         </div>
     </div>
 
-    <div class="filters" style="margin-top: 20px;">
-        <div style="display: flex; align-items: center; gap: 5px; flex-direction: row; flex: none;">
-            <input type="checkbox" id="use-date" style="width: auto;" checked onchange="toggleDateInputs()">
-            <label for="use-date" style="font-size: 14px;">Filter by Date</label>
+    <!-- Filters Section -->
+    <div class="filters">
+        <!-- Date Toggle -->
+        <div class="toggle-container">
+            <label class="switch">
+                <input type="checkbox" id="use-date" onchange="toggleDateInputs()">
+                <span class="slider"></span>
+            </label>
+            <span class="toggle-label">Custom Date</span>
         </div>
-        <div style="display: flex; flex-direction: column;">
-            <label>From:</label>
-            <input type="date" id="from-date">
-        </div>
-        <div style="display: flex; flex-direction: column;">
-            <label>To:</label>
-            <input type="date" id="to-date">
-        </div>
-        <select id="report-type">
-            <option value="all">Income & Expense</option>
-            <option value="income">Income Only</option>
-            <option value="expense">Expense Only</option>
-        </select>
-        <input type="text" id="search-query" placeholder="Search...">
-        <button onclick="window.fetchReports()">🔍 Search</button>
         
+        <!-- Custom Date Pickers (Hidden by default based on toggle) -->
+        <div class="date-group">
+            <div>
+                <label>From:</label>
+                <input type="date" id="from-date" disabled>
+            </div>
+            <div>
+                <label>To:</label>
+                <input type="date" id="to-date" disabled>
+            </div>
+        </div>
+
+        <!-- Report Type -->
+        <div class="report-type-box">
+            <label>Type:</label>
+            <select id="report-type">
+                <option value="all">Income & Expense</option>
+                <option value="income">Income Only</option>
+                <option value="expense">Expense Only</option>
+            </select>
+        </div>
+
+        <!-- Search Bar Redesign -->
+        <div style="flex-grow: 1; display: flex; flex-direction: column;">
+            <label>Filter / Search:</label>
+            <div class="search-group">
+                <select id="search-filter-type" class="search-select" onchange="handleSearchTypeChange()">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="select">Select</option>
+                </select>
+                
+                <input type="text" id="search-query" class="search-input-box" placeholder="Type here...">
+                
+                <button class="search-icon-btn" onclick="window.fetchReports()" title="Search">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Share Dropdown -->
         <div class="dropdown">
             <button class="dropbtn">📤 Share</button>
             <div class="dropdown-content">
-                <button onclick="window.printReport()">🖨️ Print Report</button>
+                <button onclick="window.printReport()">🖨️ Print</button>
                 <button onclick="window.downloadPDF()">📄 Download PDF</button>
                 <button onclick="window.exportToCSV()">📊 Download Excel</button>
             </div>
@@ -109,20 +177,66 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
+        // Set default dates
+        const date = new Date();
+        document.getElementById('to-date').value = date.toISOString().split('T')[0];
+        date.setDate(1); 
+        document.getElementById('from-date').value = date.toISOString().split('T')[0];
+
         window.toggleDateInputs = function() {
             const useDate = document.getElementById('use-date').checked;
             document.getElementById('from-date').disabled = !useDate;
             document.getElementById('to-date').disabled = !useDate;
         };
 
+        window.handleSearchTypeChange = function() {
+            const type = document.getElementById('search-filter-type').value;
+            const inputBox = document.getElementById('search-query');
+            if(type === 'select') {
+                inputBox.style.display = 'block';
+            } else {
+                inputBox.style.display = 'none';
+                inputBox.value = ''; // clear when hiding
+            }
+        };
+
+        // Utility to get date ranges based on dropdown
+        function getDateRange(type) {
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            
+            if (type === 'daily') {
+                return { from: todayStr, to: todayStr };
+            } else if (type === 'weekly') {
+                const lastWeek = new Date(today);
+                lastWeek.setDate(today.getDate() - 7);
+                return { from: lastWeek.toISOString().split('T')[0], to: todayStr };
+            } else if (type === 'monthly') {
+                const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                return { from: startOfMonth.toISOString().split('T')[0], to: todayStr };
+            }
+            return null; // For 'select' we don't force a date range here unless toggle is ON
+        }
+
         window.fetchReports = async function() {
             document.getElementById('report-body').innerHTML = '<tr><td colspan="7" style="text-align: center;">Fetching records...</td></tr>';
             
-            const useDate = document.getElementById('use-date').checked;
-            const fromDate = document.getElementById('from-date').value;
-            const toDate = document.getElementById('to-date').value;
+            const useDateToggle = document.getElementById('use-date').checked;
+            let fromDate = document.getElementById('from-date').value;
+            let toDate = document.getElementById('to-date').value;
+            
             const reportType = document.getElementById('report-type').value;
+            const searchFilterType = document.getElementById('search-filter-type').value;
             const searchQuery = document.getElementById('search-query').value.toLowerCase();
+
+            // Override dates if a quick filter (Daily/Weekly/Monthly) is selected AND custom date is OFF
+            if (searchFilterType !== 'select') {
+                const range = getDateRange(searchFilterType);
+                if (range) {
+                    fromDate = range.from;
+                    toDate = range.to;
+                }
+            }
 
             let totalIncome = 0;
             let totalExpense = 0;
@@ -132,10 +246,13 @@
                 // --- FETCH INCOME ---
                 if (reportType === 'all' || reportType === 'income') {
                     let query = supabase.from('fee_payments').select('*, students(student_name)');
-                    if (useDate) {
+                    
+                    // Apply Date Filter if toggle is ON OR if using Daily/Weekly/Monthly
+                    if (useDateToggle || searchFilterType !== 'select') {
                         if (fromDate) query = query.gte('payment_date', fromDate + 'T00:00:00Z');
                         if (toDate) query = query.lte('payment_date', toDate + 'T23:59:59Z');
                     }
+                    
                     const { data: incomeData, error: incomeError } = await query;
                     
                     if(incomeData && !incomeError) {
@@ -145,7 +262,7 @@
                             const voucher = item.receipt_no || '-';
                             const amount = parseFloat(item.amount_paid || item.amount || 0);
 
-                            if (searchQuery === '' || purpose.toLowerCase().includes(searchQuery) || voucher.toLowerCase().includes(searchQuery)) {
+                            if (searchFilterType !== 'select' || searchQuery === '' || purpose.toLowerCase().includes(searchQuery) || voucher.toLowerCase().includes(searchQuery)) {
                                 totalIncome += amount;
                                 combinedData.push({
                                     date: item.payment_date ? item.payment_date.split('T')[0] : '-',
@@ -159,21 +276,23 @@
                 // --- FETCH EXPENSE ---
                 if (reportType === 'all' || reportType === 'expense') {
                     let query = supabase.from('expenses').select('*');
-                    if (useDate) {
+                    
+                    if (useDateToggle || searchFilterType !== 'select') {
                         if (fromDate) query = query.gte('expense_date', fromDate);
                         if (toDate) query = query.lte('expense_date', toDate);
                     }
+
                     const { data: expenseData, error: expenseError } = await query;
 
-                    // ERROR HANDLING FIX: If expenses table is missing, don't crash, just show alert in console
                     if (expenseError) {
-                        console.warn("Could not fetch expenses. Make sure 'expenses' table exists.", expenseError);
+                        console.warn("Could not fetch expenses.", expenseError);
                     } else if (expenseData) {
                         expenseData.forEach(item => {
                             const purpose = item.purpose || '-';
                             const voucher = item.voucher_no || '-';
                             const amount = parseFloat(item.amount || 0);
-                            if (searchQuery === '' || purpose.toLowerCase().includes(searchQuery) || voucher.toLowerCase().includes(searchQuery)) {
+                            
+                            if (searchFilterType !== 'select' || searchQuery === '' || purpose.toLowerCase().includes(searchQuery) || voucher.toLowerCase().includes(searchQuery)) {
                                 totalExpense += amount;
                                 combinedData.push({
                                     date: item.expense_date ? item.expense_date.split('T')[0] : '-',
@@ -221,7 +340,7 @@
 
             } catch (error) {
                 console.error("Report Error:", error);
-                document.getElementById('report-body').innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Error loading data. See console.</td></tr>`;
+                document.getElementById('report-body').innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Error loading data.</td></tr>`;
             }
         };
 
@@ -255,11 +374,9 @@
             document.body.removeChild(downloadLink);
         };
 
-        const date = new Date();
-        document.getElementById('to-date').value = date.toISOString().split('T')[0];
-        date.setDate(1); 
-        document.getElementById('from-date').value = date.toISOString().split('T')[0];
-        window.fetchReports();
+        // Initialize display and fetch data on load
+        window.handleSearchTypeChange(); // Setup correct input display
+        window.fetchReports(); // Fetch initial data
     </script>
 </body>
 </html>
