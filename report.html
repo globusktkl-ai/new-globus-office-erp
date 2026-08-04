@@ -27,7 +27,6 @@
         /* FILTER SYSTEM REDESIGN */
         .filter-container { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 20px; }
         
-        /* Individual Filter Row Box */
         .filter-box { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; margin-bottom: 12px; }
         .filter-box select { border: none; background: transparent; font-size: 15px; font-weight: 600; color: #1e293b; outline: none; width: 100%; appearance: none; -webkit-appearance: none; cursor: pointer; }
         .filter-box select:disabled { color: #94a3b8; cursor: not-allowed; }
@@ -35,7 +34,6 @@
         .select-wrapper::after { content: "▼"; font-size: 10px; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #64748b; }
         .select-wrapper.disabled::after { color: #cbd5e1; }
 
-        /* Custom Date Expanding Section */
         .custom-date-box { flex-direction: column; align-items: stretch; }
         .custom-date-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .custom-date-title { font-size: 15px; font-weight: 600; color: #1e293b; }
@@ -47,7 +45,6 @@
         .date-col label { font-size: 12px; color: #64748b; font-weight: bold; }
         .date-col input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; width: 100%; box-sizing: border-box; }
 
-        /* Custom Toggle Switch */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; margin-left: 15px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
@@ -55,7 +52,6 @@
         input:checked + .slider { background-color: #8B5CF6; } 
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Action Buttons */
         .bottom-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
         .btn-action { color: white; border: none; padding: 14px 5px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%; transition: transform 0.1s; letter-spacing: 0.5px; }
         .btn-action:active { transform: scale(0.96); }
@@ -63,7 +59,6 @@
         .btn-view { background-color: #10B981; }   
         .btn-share { background-color: #8B5CF6; }  
         
-        /* Share Dropdown Box */
         .share-dropdown { position: relative; width: 100%; }
         .dropdown-content { display: none; position: absolute; background-color: #ffffff; min-width: 180px; box-shadow: 0px -4px 20px rgba(0,0,0,0.2); z-index: 100; border-radius: 12px; bottom: 110%; right: 0; overflow: hidden; border: 1px solid #e5e7eb; }
         .dropdown-content button { color: #1f2937; padding: 16px 20px; text-decoration: none; display: block; background: none; border: none; text-align: left; width: 100%; cursor: pointer; border-bottom: 1px solid #f3f4f6; font-size: 15px; font-weight: 600; }
@@ -72,7 +67,6 @@
         .share-dropdown:hover .dropdown-content { display: block; }
         .dropdown-content.show { display: block; }
 
-        /* Table */
         .table-container { overflow-x: auto; width: 100%; display: block; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
@@ -122,8 +116,6 @@
 
     <!-- FILTER SYSTEM -->
     <div class="filter-container">
-        
-        <!-- Box 1: Type Filter -->
         <div class="filter-box">
             <div class="select-wrapper disabled" id="wrap-type">
                 <select id="filter-type" disabled>
@@ -138,7 +130,6 @@
             </label>
         </div>
 
-        <!-- Box 2: Custom Date -->
         <div class="filter-box custom-date-box">
             <div class="custom-date-header">
                 <span class="custom-date-title disabled" id="title-date">Custom Date</span>
@@ -159,7 +150,6 @@
             </div>
         </div>
 
-        <!-- Box 3: Period Filter -->
         <div class="filter-box">
             <div class="select-wrapper disabled" id="wrap-period">
                 <select id="filter-period" disabled>
@@ -174,7 +164,6 @@
             </label>
         </div>
 
-        <!-- Action Buttons -->
         <div class="bottom-actions">
             <button class="btn-action btn-search" onclick="window.fetchReports('search')">Search</button>
             <button class="btn-action btn-view" onclick="document.getElementById('reportTableSection').scrollIntoView({behavior: 'smooth'})">View</button>
@@ -193,32 +182,19 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // --- UI Interactions ---
         window.toggleInput = function(field) {
             const isOn = document.getElementById('toggle-' + field).checked;
-            
             if(field === 'type') {
                 document.getElementById('filter-type').disabled = !isOn;
-                const wrap = document.getElementById('wrap-type');
-                isOn ? wrap.classList.remove('disabled') : wrap.classList.add('disabled');
+                document.getElementById('wrap-type').classList.toggle('disabled', !isOn);
             }
-            
             if(field === 'period') {
                 document.getElementById('filter-period').disabled = !isOn;
-                const wrap = document.getElementById('wrap-period');
-                isOn ? wrap.classList.remove('disabled') : wrap.classList.add('disabled');
+                document.getElementById('wrap-period').classList.toggle('disabled', !isOn);
             }
-            
             if(field === 'date') {
-                const title = document.getElementById('title-date');
-                const dateContainer = document.getElementById('date-inputs-container');
-                if(isOn) {
-                    title.classList.remove('disabled');
-                    dateContainer.classList.add('active');
-                } else {
-                    title.classList.add('disabled');
-                    dateContainer.classList.remove('active');
-                }
+                document.getElementById('title-date').classList.toggle('disabled', !isOn);
+                document.getElementById('date-inputs-container').classList.toggle('active', isOn);
             }
         };
 
@@ -230,9 +206,7 @@
             if (!event.target.matches('.btn-share')) {
                 var dropdowns = document.getElementsByClassName("dropdown-content");
                 for (var i = 0; i < dropdowns.length; i++) {
-                    if (dropdowns[i].classList.contains('show')) {
-                        dropdowns[i].classList.remove('show');
-                    }
+                    dropdowns[i].classList.remove('show');
                 }
             }
         }
@@ -244,35 +218,44 @@
         const firstDayStr = initDate.getFullYear() + "-" + String(initDate.getMonth() + 1).padStart(2, '0') + "-" + String(initDate.getDate()).padStart(2, '0');
         document.getElementById('from-date').value = firstDayStr;
 
-        // Helper Function to fix Timezone Date formatting
         function getLocalDateStr(utcString) {
             if (!utcString) return '';
             const d = new Date(utcString);
             return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
         }
 
-        // --- Data Fetching Engine ---
         window.fetchReports = async function(mode = 'search') {
             const tableBody = document.getElementById('report-body');
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Fetching records...</td></tr>';
             
             let rawIncome = [], rawExpense = [], rawAdmissions = [];
+            let studentsMap = {};
+
             try {
-                // Fetch Normal Fee Payments
-                const incRes = await supabase.from('fee_payments').select('*, students(student_name)');
+                // SAFE FETCH 1: Get all students (Avoids 400 Bad Request by fetching everything safely)
+                const stuRes = await supabase.from('students').select('*');
+                if(stuRes.error) throw stuRes.error;
+                if(stuRes.data) {
+                    rawAdmissions = stuRes.data;
+                    stuRes.data.forEach(s => {
+                        // Creates a dictionary to easily find student names later
+                        studentsMap[s.id] = s.student_name || s.name || s.full_name || `ID: ${s.id}`;
+                    });
+                }
+
+                // SAFE FETCH 2: Get all fee payments (Removed the failing Join query)
+                const incRes = await supabase.from('fee_payments').select('*');
+                if(incRes.error) throw incRes.error;
                 if(incRes.data) rawIncome = incRes.data;
                 
-                // Fetch Expenses
+                // SAFE FETCH 3: Get all expenses
                 const expRes = await supabase.from('expenses').select('*');
+                if(expRes.error) throw expRes.error;
                 if(expRes.data) rawExpense = expRes.data;
-
-                // Fetch New Admission Fees 
-                const admRes = await supabase.from('students').select('id, student_name, admission_fee, created_at');
-                if(admRes.data) rawAdmissions = admRes.data;
 
             } catch (err) {
                 console.error("DB Fetch Error:", err);
-                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Database Connection Error</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Database Connection Error: Please check console.</td></tr>';
                 return;
             }
 
@@ -317,8 +300,6 @@
                         effectiveFrom = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-01";
                     }
                     applyDateFilter = true;
-                } else {
-                    applyDateFilter = false;
                 }
             }
 
@@ -331,7 +312,7 @@
                 rawIncome.forEach(item => {
                     const rDate = getLocalDateStr(item.payment_date);
                     if (!applyDateFilter || (rDate >= effectiveFrom && rDate <= effectiveTo)) {
-                        const sName = (item.students && item.students.student_name) ? item.students.student_name : 'ID: ' + item.student_id;
+                        const sName = studentsMap[item.student_id] || `ID: ${item.student_id}`;
                         const amt = parseFloat(item.amount_paid || 0);
                         if(amt > 0) {
                             totalIncome += amt;
@@ -347,7 +328,8 @@
                         const amt = parseFloat(item.admission_fee || 0);
                         if(amt > 0) {
                             totalIncome += amt;
-                            combinedData.push({ date: rDate, type: 'Income', purpose: item.student_name + " (Admission)", category: 'Admission Fee', amount: amt, color: '#10B981' });
+                            const sName = item.student_name || item.name || item.full_name || "Student";
+                            combinedData.push({ date: rDate, type: 'Income', purpose: sName + " (Admission)", category: 'Admission Fee', amount: amt, color: '#10B981' });
                         }
                     }
                 });
@@ -407,7 +389,6 @@
             document.body.appendChild(dl); dl.click(); document.body.removeChild(dl);
         };
 
-        // --- FIXED DEFAULT LOAD WITH AUTH CHECK ---
         async function checkAuthAndLoad() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { 
@@ -415,7 +396,6 @@
                 return; 
             }
             
-            // If logged in, setup UI and fetch data
             const periodToggle = document.getElementById('toggle-period');
             periodToggle.checked = true;
             window.toggleInput('period'); 
