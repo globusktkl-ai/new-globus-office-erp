@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>New Admission - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        /* Custom Styling for the Submit Button */
+        .btn-submit-custom {
+            background-color: #3B82F6; /* Attractive Blue */
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+            margin-top: 10px;
+        }
+        .btn-submit-custom:hover {
+            background-color: #2563eb;
+        }
+        .btn-submit-custom:active {
+            transform: scale(0.98);
+        }
+        .btn-submit-custom:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
 </head>
 <body>
     
@@ -98,7 +126,8 @@
                     
                     <div class="form-group">
                         <label class="form-label">Admission Fee Paid (₹)</label>
-                        <input type="number" id="admissionFee" class="form-control" required placeholder="Amount paid during admission" value="0">
+                        <!-- Removed value="0" to fix the zero overriding issue -->
+                        <input type="number" id="admissionFee" class="form-control" required placeholder="Amount paid during admission">
                     </div>
                     
                     <div class="form-group">
@@ -116,11 +145,11 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="btn btn-primary" id="submitBtn">Submit Admission</button>
+                <button type="submit" class="btn-submit-custom" id="submitBtn">Submit Admission</button>
             </form>
             
             <div style="text-align: center; margin-top: 20px;">
-                <a href="dashboard.html" style="color: var(--primary-light); text-decoration: none; font-weight: 600;">Return to Dashboard</a>
+                <a href="dashboard.html" style="color: var(--primary-light, #3b82f6); text-decoration: none; font-weight: 600;">Return to Dashboard</a>
             </div>
         </div>
     </main>
