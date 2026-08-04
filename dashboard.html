@@ -6,43 +6,113 @@
     <title>Dashboard - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* New Module Based Layout Styles */
+        /* COMPACT & PROFESSIONAL LAYOUT OVERRIDES */
+        
+        body { background-color: #f4f7f6; }
+        
+        .main-content { padding: 10px 15px; }
+        
+        h2 { font-size: 16px !important; margin-bottom: 12px !important; color: #1e293b; }
+
+        /* Stat Grid - Compact 2x2 Layout */
+        .stat-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 10px !important;
+            margin-bottom: 20px !important;
+        }
+        .stat-box {
+            background: #ffffff;
+            padding: 12px 10px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+            border: 1px solid #e5e7eb !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .stat-label { 
+            font-size: 11px !important; 
+            color: #64748b !important; 
+            margin-bottom: 4px !important;
+            font-weight: 600 !important;
+            text-transform: uppercase;
+        }
+        .stat-value { 
+            font-size: 16px !important; 
+            font-weight: 800 !important; 
+        }
+
+        /* Module Sections - Tighter spacing */
         .module-section {
             background: #ffffff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 10px !important;
+            padding: 15px !important;
+            margin-bottom: 15px !important;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04) !important;
             border: 1px solid #e5e7eb;
         }
         
-        /* FIXED MODULE TITLE FOR SINGLE LINE */
         .module-title {
-            font-size: 14px; /* Reduced for better fit on small screens */
+            font-size: 13px !important;
             color: #374151;
             margin-top: 0;
-            margin-bottom: 15px;
+            margin-bottom: 12px !important;
             display: flex;
             align-items: center;
             gap: 6px;
             border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 8px;
+            padding-bottom: 6px !important;
             text-transform: uppercase;
             letter-spacing: 0.3px;
             font-weight: 700;
-            white-space: nowrap; /* Forces text to stay on one line */
-            overflow: hidden; /* Hides overflow */
-            text-overflow: ellipsis; /* Adds ... if it's too long */
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
         }
         .module-title.academic { border-bottom-color: #3b82f6; color: #1d4ed8; }
         .module-title.finance { border-bottom-color: #10b981; color: #047857; }
         
-        /* Modifying nav-grid to fit inside sections better */
+        /* Nav Grid - 3 Buttons per row for compact view */
         .module-section .nav-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 8px !important;
             margin-top: 0;
+        }
+        
+        /* Modern, Small, App-like Buttons */
+        .nav-btn {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px !important;
+            padding: 10px 4px !important;
+            text-decoration: none;
+            color: #334155 !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            text-align: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
+            transition: all 0.2s;
+            min-height: 65px !important;
+        }
+        .nav-btn:active { transform: scale(0.95); }
+        .nav-icon { 
+            font-size: 20px !important; 
+            margin-bottom: 4px !important; 
+        }
+
+        /* Specific Nav Button Colors */
+        .nav-btn.expense-btn { background-color: #fef2f2 !important; border-color: #fca5a5 !important; color: #991b1b !important; }
+        .nav-btn.report-btn { background-color: #f0fdf4 !important; border-color: #86efac !important; color: #166534 !important; }
+
+        /* Ensure 2 columns on extremely small screens */
+        @media (max-width: 350px) {
+            .module-section .nav-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
     </style>
 </head>
@@ -52,18 +122,18 @@
         <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <div style="display: flex; flex-direction: column; overflow: hidden;">
-                <span class="brand-top" style="font-size: 16px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Globus</span>
-                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Technical Academy</span>
+                <span class="brand-top" style="font-size: 15px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 800;">Globus</span>
+                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; color: #64748b;">Technical Academy</span>
             </div>
         </div>
         
         <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
-            <button class="btn-logout-custom" id="logoutBtn">Logout</button>
+            <button class="btn-logout-custom" id="logoutBtn" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; background: #ef4444; color: white; border: none; font-weight: bold;">Logout</button>
         </div>
     </nav>
 
     <main class="main-content">
-        <h2 style="font-size: 18px; margin-bottom: 16px;">Institute Overview</h2>
+        <h2>Institute Overview</h2>
         
         <div class="stat-grid">
             <div class="stat-box">
@@ -74,11 +144,11 @@
                 <div class="stat-label">Active Courses</div>
                 <div class="stat-value" id="statCourses">0</div>
             </div>
-            <div class="stat-box" style="border-left: 4px solid #10B981;">
+            <div class="stat-box" style="border-left: 3px solid #10B981;">
                 <div class="stat-label">Today's Collection</div>
                 <div class="stat-value" id="statTodayCollection" style="color: #10B981;">₹ 0</div>
             </div>
-            <div class="stat-box" style="border-left: 4px solid #EF4444;">
+            <div class="stat-box" style="border-left: 3px solid #EF4444;">
                 <div class="stat-label">Pending Fees</div>
                 <div class="stat-value" id="statPendingFees" style="color: #EF4444;">₹ 0</div>
             </div>
@@ -86,10 +156,10 @@
 
         <!-- ACADEMIC MODULE -->
         <div class="module-section">
-            <h3 class="module-title academic"><span>🎓</span> Academic & Administration</h3>
+            <h3 class="module-title academic"><span>🎓</span> Academic & Admin</h3>
             <div class="nav-grid">
                 <a href="admission.html" class="nav-btn"><span class="nav-icon">📝</span>New Admission</a>
-                <a href="students.html" class="nav-btn"><span class="nav-icon">👥</span>Student Directory</a>
+                <a href="students.html" class="nav-btn"><span class="nav-icon">👥</span>Directory</a>
                 <a href="courses.html" class="nav-btn"><span class="nav-icon">📚</span>Courses</a>
             </div>
         </div>
@@ -99,8 +169,8 @@
             <h3 class="module-title finance"><span>💰</span> Finance & Accounts</h3>
             <div class="nav-grid">
                 <a href="fees.html" class="nav-btn"><span class="nav-icon">💵</span>Collect Fee</a>
-                <a href="expense.html" class="nav-btn" style="background-color: #fef2f2; border-color: #fca5a5;"><span class="nav-icon">💸</span>Add Expense</a>
-                <a href="report.html" class="nav-btn" style="background-color: #f0fdf4; border-color: #86efac;"><span class="nav-icon">📊</span>Reports</a>
+                <a href="expense.html" class="nav-btn expense-btn"><span class="nav-icon">💸</span>Add Expense</a>
+                <a href="report.html" class="nav-btn report-btn"><span class="nav-icon">📊</span>Reports</a>
             </div>
         </div>
     </main>
@@ -124,7 +194,7 @@
                 const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true }).eq('status', 'Active');
                 document.getElementById('statCourses').textContent = courseCount || 0;
 
-                // 3. Today's Collection (FIXED TIMEZONE ISSUE)
+                // 3. Today's Collection
                 const today = new Date();
                 const todayDate = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
                 
@@ -166,7 +236,7 @@
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
             const btn = document.getElementById('logoutBtn');
-            btn.textContent = 'Logging out...'; btn.disabled = true;
+            btn.textContent = 'Wait...'; btn.disabled = true;
             await supabase.auth.signOut(); 
             localStorage.clear(); sessionStorage.clear();
             window.location.replace('login.html'); 
