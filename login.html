@@ -6,27 +6,71 @@
     <title>Login - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
+        /* Fixed scrolling issue */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Prevents scrolling */
+        }
         body { 
-            display: flex; justify-content: center; align-items: center; 
-            min-height: 100vh; background-color: var(--primary-dark); margin: 0;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background-color: var(--primary-dark, #1e293b); 
         }
         .login-card { 
-            background: var(--card-bg); width: 90%; max-width: 400px; 
-            padding: 40px 24px; border-radius: 24px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; 
+            background: var(--card-bg, #ffffff); 
+            width: 90%; 
+            max-width: 400px; 
+            padding: 40px 24px; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+            text-align: center; 
+            box-sizing: border-box; /* Keeps padding inside width */
+            max-height: 95vh; /* Ensures it doesn't overflow small screens */
+            overflow-y: auto; /* Adds internal scroll ONLY if screen is very tiny */
         }
-        /* ലോഗോയുടെ വലിപ്പം കൂട്ടിയിട്ടുണ്ട് */
         .login-logo { 
-            height: 100px; margin-bottom: 16px; border-radius: 8px; object-fit: contain; 
+            height: 100px; 
+            margin-bottom: 16px; 
+            border-radius: 8px; 
+            object-fit: contain; 
         }
-        /* സ്ഥാപനത്തിന്റെ പേര് വ്യക്തമായി കാണാൻ */
         .login-title { 
-            font-size: 24px; font-weight: 800; color: var(--primary-dark); 
-            margin-bottom: 8px; line-height: 1.2;
+            font-size: 24px; 
+            font-weight: 800; 
+            color: var(--primary-dark, #1e293b); 
+            margin-bottom: 8px; 
+            line-height: 1.2;
         }
-        /* പുതിയ ഉപയോക്താക്കൾക്കും യോജിച്ച വാചകം */
         .login-subtitle { 
-            font-size: 14px; color: var(--text-muted); margin-bottom: 30px; 
+            font-size: 14px; 
+            color: var(--text-muted, #64748b); 
+            margin-bottom: 30px; 
+        }
+        /* Custom Button Styling */
+        .btn-custom {
+            background-color: #3B82F6; /* Attractive Blue */
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .btn-custom:hover {
+            background-color: #2563eb;
+        }
+        .btn-custom:active {
+            transform: scale(0.98);
+        }
+        .btn-custom:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -48,7 +92,8 @@
                 <input type="password" id="password" class="form-control" required placeholder="••••••••">
             </div>
             
-            <button type="submit" class="btn btn-primary" id="loginBtn">Sign In securely</button>
+            <!-- Changed Text and Styling -->
+            <button type="submit" class="btn-custom" id="loginBtn">Sign In</button>
         </form>
     </div>
 
@@ -71,7 +116,7 @@
 
             if (error) {
                 alert('Login Failed: ' + error.message);
-                btn.textContent = 'Sign In securely'; btn.disabled = false;
+                btn.textContent = 'Sign In'; btn.disabled = false;
             } else {
                 window.location.href = 'dashboard.html';
             }
