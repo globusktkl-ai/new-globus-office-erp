@@ -2,482 +2,404 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Directory - Globus Technical Academy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Financial Report - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    
-    <!-- കാർഡ് ചിത്രമാക്കി മാറ്റാൻ ഉപയോഗിക്കുന്ന html2canvas ലൈബ്രറി -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 100;
-            justify-content: center; 
-            align-items: flex-start; 
-            padding: 30px 10px; 
-            overflow-y: auto; 
-        }
+        body { padding: 15px; background-color: #f4f7f6; color: #333; font-family: 'Segoe UI', Tahoma, sans-serif; padding-bottom: 40px; }
         
-        .modal-container {
-            background: #fff; width: 100%; max-width: 780px; border-radius: 16px;
-            padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin: auto;
-            display: flex; gap: 20px; flex-wrap: wrap;
-        }
+        /* Top Navigation */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .back-btn { text-decoration: none; color: #3498db; font-weight: bold; font-size: 15px; }
+        .btn-all-data { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-all-data:hover { filter: brightness(1.1); }
+        
+        h2 { color: #2c3e50; border-bottom: 2px solid #ddd; padding-bottom: 10px; font-size: 18px; margin-top: 0; }
+        
+        /* Summary Cards */
+        .summary-cards { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .card { flex: 1; min-width: 100px; padding: 12px 10px; border-radius: 8px; color: white; text-align: center; font-size: 16px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .income-card { background: linear-gradient(135deg, #10B981, #059669); }
+        .expense-card { background: linear-gradient(135deg, #EF4444, #DC2626); }
+        .balance-card { background: linear-gradient(135deg, #3B82F6, #2563EB); }
+        
+        /* FILTER SYSTEM REDESIGN AS PER SKETCH */
+        .filter-container { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        
+        /* Individual Filter Row Box */
+        .filter-box { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; margin-bottom: 12px; }
+        .filter-box select { border: none; background: transparent; font-size: 15px; font-weight: 600; color: #1e293b; outline: none; width: 100%; appearance: none; -webkit-appearance: none; cursor: pointer; }
+        .filter-box select:disabled { color: #94a3b8; cursor: not-allowed; }
+        .select-wrapper { flex: 1; position: relative; }
+        .select-wrapper::after { content: "▼"; font-size: 10px; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #64748b; }
+        .select-wrapper.disabled::after { color: #cbd5e1; }
 
-        .card-preview-col {
-            flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start;
-        }
+        /* Custom Date Expanding Section */
+        .custom-date-box { flex-direction: column; align-items: stretch; }
+        .custom-date-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .custom-date-title { font-size: 15px; font-weight: 600; color: #1e293b; }
+        .custom-date-title.disabled { color: #94a3b8; }
+        
+        .date-inputs-container { display: none; gap: 10px; width: 100%; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+        .date-inputs-container.active { display: flex; }
+        .date-col { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+        .date-col label { font-size: 12px; color: #64748b; font-weight: bold; }
+        .date-col input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; width: 100%; box-sizing: border-box; }
 
-        .card-edit-col {
-            flex: 1; min-width: 300px; background: #f8fafc; padding: 20px; 
-            border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column;
-        }
+        /* Custom Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; margin-left: 15px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: #8B5CF6; } /* Purple active state */
+        input:checked + .slider:before { transform: translateX(20px); }
 
-        @media (max-width: 650px) {
-            .modal-container { padding: 15px; }
-            .card-preview-col, .card-edit-col { min-width: 100%; }
-            .card-preview-col { transform: scale(0.95); transform-origin: top center; margin-bottom: -15px; }
-            .card-edit-col { padding: 15px; }
-        }
+        /* Bottom Action Buttons (Search, View, Share) - NO ICONS */
+        .bottom-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn-action { color: white; border: none; padding: 14px 5px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%; transition: transform 0.1s; letter-spacing: 0.5px; }
+        .btn-action:active { transform: scale(0.96); }
+        .btn-search { background-color: #3B82F6; } /* Blue */
+        .btn-view { background-color: #10B981; }   /* Green */
+        .btn-share { background-color: #8B5CF6; }  /* Purple */
+        
+        /* Share Dropdown - BIGGER AS REQUESTED */
+        .share-dropdown { position: relative; width: 100%; }
+        .dropdown-content { display: none; position: absolute; background-color: #ffffff; min-width: 180px; box-shadow: 0px -4px 20px rgba(0,0,0,0.2); z-index: 100; border-radius: 12px; bottom: 110%; right: 0; overflow: hidden; border: 1px solid #e5e7eb; }
+        .dropdown-content button { color: #1f2937; padding: 16px 20px; text-decoration: none; display: block; background: none; border: none; text-align: left; width: 100%; cursor: pointer; border-bottom: 1px solid #f3f4f6; font-size: 15px; font-weight: 600; }
+        .dropdown-content button:hover { background-color: #f9fafb; }
+        .dropdown-content button:last-child { border-bottom: none; }
+        .share-dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content.show { display: block; }
+
+        /* Table container */
+        .table-container { overflow-x: auto; width: 100%; display: block; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
+        th { background-color: #F3F4F6; color: #374151; font-weight: bold; }
 
         @media print {
-            body * { visibility: hidden; }
-            #studentModal, #profileCardContainer, #profileCardContainer * { visibility: visible; }
-            #studentModal {
-                position: absolute; left: 0; top: 0; width: 100%;
-                background: white !important; display: flex !important;
-                justify-content: flex-start; align-items: flex-start; padding: 0; margin: 0;
-            }
-            .no-print { display: none !important; }
-            #smartCardContent {
-                width: 320px !important; height: 510px !important;
-                transform: scale(0.65) !important; transform-origin: top left !important;
-                box-shadow: none !important; border: 1px dashed #ccc !important; margin: 10px;
-            }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body { background-color: white; padding: 0; }
+            .top-nav, .filter-container, .action-btn { display: none !important; }
+            .summary-cards { margin-bottom: 10px; }
+            .card { color: black !important; border: 1px solid #000; background: white !important; -webkit-print-color-adjust: exact; }
+            table { border: 1px solid #000; }
+            th, td { border: 1px solid #ddd; }
         }
     </style>
 </head>
 <body>
     
-    <nav class="app-header no-print">
-        <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
-            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
-            <div style="display: flex; flex-direction: column; overflow: hidden;">
-                <span class="brand-top" style="font-size: 16px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Globus</span>
-                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Technical Academy</span>
+    <div class="top-nav">
+        <a href="dashboard.html" class="back-btn">⬅ Back to Dashboard</a>
+        <button class="btn-all-data" onclick="window.fetchReports('all')">All Data</button>
+    </div>
+
+    <div id="printable-area">
+        <h2>Financial Report</h2>
+        <div class="summary-cards">
+            <div class="card income-card">Income<br>₹<span id="total-income">0</span></div>
+            <div class="card expense-card">Expense<br>₹<span id="total-expense">0</span></div>
+            <div class="card balance-card">Net Balance<br>₹<span id="net-balance">0</span></div>
+        </div>
+        <div class="table-container" id="reportTableSection">
+            <table id="report-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Purpose/Name</th>
+                        <th>Category</th>
+                        <th>Amount (₹)</th>
+                    </tr>
+                </thead>
+                <tbody id="report-body">
+                    <tr><td colspan="5" style="text-align: center;">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- NEW FILTER SYSTEM (From Sketch) -->
+    <div class="filter-container">
+        
+        <!-- Box 1: Type Filter -->
+        <div class="filter-box">
+            <div class="select-wrapper disabled" id="wrap-type">
+                <select id="filter-type" disabled>
+                    <option value="all">Income & Expense</option>
+                    <option value="income">Income Only</option>
+                    <option value="expense">Expense Only</option>
+                </select>
             </div>
+            <label class="switch">
+                <input type="checkbox" id="toggle-type" onchange="toggleInput('type')">
+                <span class="slider"></span>
+            </label>
         </div>
-        <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
-            <button class="btn-logout-custom" id="logoutBtn">Logout</button>
-        </div>
-    </nav>
 
-    <main class="main-content no-print">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <a href="dashboard.html" style="color: var(--primary-light); text-decoration: none; font-weight: 600;">← Return to Dashboard</a>
-        </div>
-        
-        <div class="filter-section">
-            <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search Name, Phone, Reg No...">
-        </div>
-        <div id="studentsList"><div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div></div>
-    </main>
-
-    <div id="studentModal" class="modal-overlay">
-        
-        <!-- 1. VIEW & EDIT CONTAINER -->
-        <div id="viewEditContainer" class="modal-container no-print" style="display:none; max-width:500px;">
-            <div style="width: 100%;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3 style="font-size:18px; color:var(--primary-dark); margin:0;">View & Edit Profile</h3>
-                    <button onclick="closeModal()" style="background:#EF4444; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">X</button>
+        <!-- Box 2: Custom Date -->
+        <div class="filter-box custom-date-box">
+            <div class="custom-date-header">
+                <span class="custom-date-title disabled" id="title-date">Custom Date</span>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-date" onchange="toggleInput('date')">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <!-- Hidden by default -->
+            <div class="date-inputs-container" id="date-inputs-container">
+                <div class="date-col">
+                    <label>From Date:</label>
+                    <input type="date" id="from-date">
                 </div>
-                <div id="viewEditContent"></div>
+                <div class="date-col">
+                    <label>To Date:</label>
+                    <input type="date" id="to-date">
+                </div>
             </div>
         </div>
 
-        <!-- 2. PROFILE & CARD CONTAINER -->
-        <div id="profileCardContainer" class="modal-container" style="display:none;">
+        <!-- Box 3: Period Filter -->
+        <div class="filter-box">
+            <div class="select-wrapper disabled" id="wrap-period">
+                <select id="filter-period" disabled>
+                    <option value="daily">Filter by: Daily</option>
+                    <option value="weekly">Filter by: Weekly</option>
+                    <option value="monthly">Filter by: Monthly</option>
+                </select>
+            </div>
+            <label class="switch">
+                <input type="checkbox" id="toggle-period" onchange="toggleInput('period')">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- Action Buttons (No Icons) -->
+        <div class="bottom-actions">
+            <button class="btn-action btn-search" onclick="window.fetchReports('search')">Search</button>
+            <button class="btn-action btn-view" onclick="document.getElementById('reportTableSection').scrollIntoView({behavior: 'smooth'})">View</button>
             
-            <!-- Left Side: Live Smart ID Card Preview -->
-            <div class="card-preview-col">
-                <div id="smartCardContent" style="width: 320px; height: 510px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 15px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">
-                    
-                    <div style="text-align: center; margin-bottom: 5px;">
-                        <img src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain; margin-bottom: 3px; mix-blend-mode: multiply;" alt="Logo" onerror="this.style.display='none'">
-                        <div style="font-size: 19px; font-weight: 900; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">GLOBUS</div>
-                        <div style="font-size: 13px; font-weight: 800; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
-                    </div>
-
-                    <div style="background: #1e3a8a; color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 5px 0; margin-bottom: 15px; border-radius: 4px; letter-spacing: 1px;">
-                        STUDENT ID CARD
-                    </div>
-
-                    <div style="text-align: center; margin-bottom: 12px;">
-                        <img id="cardAvatarImg" src="https://avatar.iran.liara.run/public" style="width: 120px; height: 150px; object-fit: cover; border-radius: 6px; border: 3px solid #cbd5e1; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                    </div>
-
-                    <div style="padding: 0 10px; text-align: center; position: relative; z-index: 2;">
-                        <div style="margin-bottom: 8px;">
-                            <div style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">NAME</div>
-                            <!-- Font bold ഒഴിവാക്കി, കളർ Dark Violet നൽകി -->
-                            <div id="cardStudentName" style="font-size: 18px; font-weight: normal; color: #4A0080; letter-spacing: 0.5px;">STUDENT NAME</div>
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                            <div style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">COURSE</div>
-                            <div id="cardCourseName" style="font-size: 14px; font-weight: 800; color: #047857;">COURSE NAME</div>
-                        </div>
-                        
-                        <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.9); padding: 5px; border-radius: 8px; width: 85%; margin: 0 auto; position: relative; z-index: 3;">
-                            <div>
-                                <span style="font-size: 10px; color: #64748b; font-weight: 800;">REG NO</span><br>
-                                <span id="cardRegNo" style="font-size: 13px; font-weight: 800; color: #111827;">-</span>
-                            </div>
-                            <div>
-                                <span style="font-size: 10px; color: #64748b; font-weight: 800;">PHONE</span><br>
-                                <span id="cardPhone" style="font-size: 13px; font-weight: 800; color: #111827;">-</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="position: absolute; bottom: 15px; right: 5px; width: 60px; height: 60px; border: 2px solid rgba(30, 58, 138, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); z-index: 1; opacity: 0.5;">
-                        <div style="width: 52px; height: 52px; border: 1px dashed rgba(30, 58, 138, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 6px; font-weight: 800; color: rgba(30, 58, 138, 0.4); padding: 2px; line-height: 1.1;">
-                            GLOBUS<br>TECHNICAL<br>ACADEMY<br>KOTTAKKAL
-                        </div>
-                    </div>
-
-                    <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 6.5px; color: #94a3b8; font-weight: 600; text-align: center; z-index: 2;">
-                        If found, please return to this number: +91 9846000000
-                    </div>
+            <div class="share-dropdown">
+                <button class="btn-action btn-share" onclick="toggleDropdown()">Share</button>
+                <div class="dropdown-content" id="shareMenu">
+                    <button onclick="window.printReport()">Print Report</button>
+                    <button onclick="window.downloadPDF()">Download PDF</button>
+                    <button onclick="window.exportToCSV()">Download Excel</button>
                 </div>
-            </div>
-
-            <!-- Right Side: Live Editor & Buttons -->
-            <div class="card-edit-col no-print">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:5px;">
-                    <h3 style="font-size:16px; color:#1e40af; margin:0;">✏️ Edit & Generate Card</h3>
-                    <button onclick="closeModal()" style="background:#EF4444; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">X</button>
-                </div>
-
-                <label style="font-size:12px; font-weight:600; color:#374151;">Upload Photo (Preview & Print)</label>
-                <input type="file" id="livePhotoInput" accept="image/*" class="form-control" style="margin-bottom:12px; padding:6px; font-size:12px;" onchange="updateLivePhoto(event)">
-
-                <label style="font-size:12px; font-weight:600; color:#374151;">Student Name</label>
-                <!-- സ്പേസ് പ്രശ്നം പരിഹരിക്കാൻ replace(/ /g, '&nbsp;') ചേർത്തിരിക്കുന്നു -->
-                <input type="text" id="liveName" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardStudentName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
-
-                <label style="font-size:12px; font-weight:600; color:#374151;">Course Name</label>
-                <input type="text" id="liveCourse" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardCourseName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
-
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <div style="flex:1;">
-                        <label style="font-size:12px; font-weight:600; color:#374151;">Reg No</label>
-                        <input type="text" id="liveReg" class="form-control" oninput="document.getElementById('cardRegNo').innerText = this.value || 'N/A'">
-                    </div>
-                    <div style="flex:1;">
-                        <label style="font-size:12px; font-weight:600; color:#374151;">Phone</label>
-                        <input type="text" id="livePhone" class="form-control" oninput="document.getElementById('cardPhone').innerText = this.value || 'N/A'">
-                    </div>
-                </div>
-
-                <!-- Print & Share -->
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-                    <button type="button" onclick="printCard()" style="background: #2563eb; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🖨️ Print Card</button>
-                    <button type="button" id="shareBtn" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🔗 Share Image</button>
-                </div>
-                
-                <hr style="border:none; border-top:1px dashed #cbd5e1; margin-bottom:15px;">
-                
-                <!-- Save Button -->
-                <button type="button" onclick="saveCardDataToDB()" style="background: #f59e0b; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-bottom:10px;">💾 Save Details to Database</button>
-                <button type="button" onclick="closeModal()" style="background: #6b7280; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel / Close</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-        let allStudents = [];
-        let currentStudentData = null;
 
-        async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
-            fetchStudents();
-        }
-
-        async function fetchStudents() {
-            try {
-                const { data: studentsData, error: studentError } = await supabase
-                    .from('students').select('*').order('created_at', { ascending: false });
-                if (studentError) throw studentError;
-
-                const { data: coursesData } = await supabase.from('courses').select('id, course_name');
-                const courseMap = {};
-                if (coursesData) { coursesData.forEach(c => courseMap[c.id] = c.course_name); }
-
-                const { data: paymentsData } = await supabase.from('fee_payments').select('student_id, amount_paid');
-
-                allStudents = studentsData || [];
-                allStudents.forEach(s => {
-                    s.display_course_name = (s.course_id && courseMap[s.course_id]) ? courseMap[s.course_id] : (s.course_name || s.course || 'N/A');
-                    let paid = 0;
-                    if (paymentsData) paid = paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => sum + Number(p.amount_paid || 0), 0);
-                    s.total_paid_fees = paid;
-                });
-
-                renderList(allStudents);
-            } catch (err) {
-                console.error("Database Error:", err);
-                alert("Database Error: " + err.message);
-            }
-        }
-
-        function renderList(data) {
-            const container = document.getElementById('studentsList'); container.innerHTML = '';
-            if (data.length === 0) { container.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444;">No students found.</div>'; return; }
+        // --- UI Interactions ---
+        window.toggleInput = function(field) {
+            const isOn = document.getElementById('toggle-' + field).checked;
             
-            data.forEach(s => {
-                const bal = (Number(s.total_fee)||0) - (Number(s.admission_fee)||0) - s.total_paid_fees;
-                const balColor = bal > 0 ? '#EF4444' : '#10B981';
-                const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
-                let avatarUrl = s.photo_url || (s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
-
-                let qualBadge = `<span style="background: #F3F4F6; color: #374151; padding: 3px 8px; border-radius: 4px; font-weight: 700;">${s.qualification || 'N/A'}</span>`;
-
-                const card = document.createElement('div');
-                card.className = 'student-mobile-card';
-                card.innerHTML = `
-                    <div class="smc-header">
-                        <div class="smc-header-left">
-                            <div class="smc-name">${s.full_name || 'N/A'}</div>
-                            <div class="smc-reg">Reg No: ${s.register_number || 'N/A'}</div>
-                        </div>
-                        <div class="smc-header-center"><img src="${avatarUrl}" class="student-avatar" alt="Photo"></div>
-                    </div>
-                    <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
-                    <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:600;">${s.display_course_name}</span></div>
-                    <div class="smc-row"><span class="smc-label">Qualification:</span> <span class="smc-value">${qualBadge}</span></div>
-                    <div class="smc-row"><span class="smc-label">Pending Fees:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px;">
-                        <button onclick="viewAndEditStudent('${s.id}')" style="background: #6366f1; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">View & Edit</button>
-                        <button onclick="openProfileAndCard('${s.id}')" style="background: #3B82F6; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">Profile & Card</button>
-                        <button onclick="deleteStudent('${s.id}', '${s.register_number}')" style="background: #EF4444; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px;">Delete</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        window.viewAndEditStudent = function(id) {
-            const s = allStudents.find(x => x.id === id);
-            if (!s) return;
-            
-            document.getElementById('profileCardContainer').style.display = 'none';
-            document.getElementById('viewEditContainer').style.display = 'flex'; 
-
-            document.getElementById('viewEditContent').innerHTML = `
-                <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6;">
-                    <p><b>Name:</b> ${s.full_name}</p>
-                    <p><b>Reg No:</b> ${s.register_number || 'N/A'}</p>
-                    <p><b>Phone:</b> ${s.phone_number}</p>
-                    <p><b>Course:</b> ${s.display_course_name}</p>
-                    <p><b>Qualification:</b> ${s.qualification || 'N/A'}</p>
-                    <p><b>Total Fee:</b> ₹ ${s.total_fee || 0}</p>
-                </div>
-                <hr style="border:0; border-top:1px solid #e5e7eb; margin-bottom:15px;">
-                <form onsubmit="saveFullEdit(event, '${s.id}')">
-                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Full Name</label><input type="text" id="fullEditName" value="${s.full_name}" class="form-control" required></div>
-                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Phone Number</label><input type="text" id="fullEditPhone" value="${s.phone_number}" class="form-control" required maxlength="10"></div>
-                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Qualification</label>
-                        <select id="fullEditQual" class="form-control" required>
-                            <option value="SSLC" ${s.qualification==='SSLC'?'selected':''}>SSLC</option>
-                            <option value="Plus Two" ${s.qualification==='Plus Two'?'selected':''}>Plus Two</option>
-                            <option value="Degree" ${s.qualification==='Degree'?'selected':''}>Degree</option>
-                            <option value="Other" ${s.qualification==='Other'?'selected':''}>Other</option>
-                        </select>
-                    </div>
-                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:10px; border-radius:6px; font-weight:600; cursor:pointer;">Update Profile</button>
-                </form>
-            `;
-            document.getElementById('studentModal').style.display = 'flex';
-        };
-
-        window.saveFullEdit = async function(e, id) {
-            e.preventDefault();
-            const newName = document.getElementById('fullEditName').value;
-            const newPhone = document.getElementById('fullEditPhone').value;
-            const newQual = document.getElementById('fullEditQual').value;
-
-            if(newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
-
-            const { error } = await supabase.from('students').update({
-                full_name: newName, phone_number: newPhone, qualification: newQual
-            }).eq('id', id);
-
-            if (error) alert('Error updating: ' + error.message);
-            else { alert('Profile updated successfully!'); closeModal(); fetchStudents(); }
-        };
-
-        window.openProfileAndCard = function(id) {
-            const s = allStudents.find(x => x.id === id);
-            if (!s) return;
-            currentStudentData = s;
-
-            document.getElementById('viewEditContainer').style.display = 'none';
-            document.getElementById('profileCardContainer').style.display = 'flex';
-
-            document.getElementById('liveName').value = s.full_name || '';
-            document.getElementById('liveCourse').value = s.display_course_name || '';
-            document.getElementById('liveReg').value = s.register_number || '';
-            document.getElementById('livePhone').value = s.phone_number || '';
-            document.getElementById('livePhotoInput').value = ''; 
-
-            // സ്പേസ് നഷ്ടപ്പെടാതിരിക്കാൻ innerHTML ഉപയോഗിച്ച് replace ചെയ്തു
-            document.getElementById('cardStudentName').innerHTML = (s.full_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
-            document.getElementById('cardCourseName').innerHTML = (s.display_course_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
-            document.getElementById('cardRegNo').innerText = s.register_number || 'N/A';
-            document.getElementById('cardPhone').innerText = s.phone_number || 'N/A';
-
-            if (s.photo_url) {
-                document.getElementById('cardAvatarImg').src = s.photo_url;
-            } else {
-                document.getElementById('cardAvatarImg').src = s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy';
+            if(field === 'type') {
+                document.getElementById('filter-type').disabled = !isOn;
+                const wrap = document.getElementById('wrap-type');
+                isOn ? wrap.classList.remove('disabled') : wrap.classList.add('disabled');
             }
-
-            document.getElementById('studentModal').style.display = 'flex';
-        };
-
-        window.updateLivePhoto = function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const imageUrl = URL.createObjectURL(file);
-                document.getElementById('cardAvatarImg').src = imageUrl;
+            
+            if(field === 'period') {
+                document.getElementById('filter-period').disabled = !isOn;
+                const wrap = document.getElementById('wrap-period');
+                isOn ? wrap.classList.remove('disabled') : wrap.classList.add('disabled');
+            }
+            
+            if(field === 'date') {
+                const title = document.getElementById('title-date');
+                const dateContainer = document.getElementById('date-inputs-container');
+                if(isOn) {
+                    title.classList.remove('disabled');
+                    dateContainer.classList.add('active');
+                } else {
+                    title.classList.add('disabled');
+                    dateContainer.classList.remove('active');
+                }
             }
         };
 
-        window.saveCardDataToDB = async function() {
-            if (!currentStudentData) return;
-            
-            const newName = document.getElementById('liveName').value.trim();
-            const newPhone = document.getElementById('livePhone').value.trim();
-            const newReg = document.getElementById('liveReg').value.trim();
-            let photoUrlToSave = currentStudentData.photo_url;
-
-            if (newPhone && newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
-
-            const fileInput = document.getElementById('livePhotoInput');
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const fileName = `student_${Date.now()}_${file.name}`;
-                try {
-                    const { data, error } = await supabase.storage.from('student-photos').upload(fileName, file);
-                    if (error) {
-                        console.warn("Storage upload rejected:", error);
-                        alert("Note: Server storage limit reached. Photo will not be saved online, but other details will be updated.");
-                    } else {
-                        const { data: urlData } = supabase.storage.from('student-photos').getPublicUrl(fileName);
-                        photoUrlToSave = urlData.publicUrl;
+        window.toggleDropdown = function() {
+            document.getElementById('shareMenu').classList.toggle('show');
+        };
+        
+        window.onclick = function(event) {
+            if (!event.target.matches('.btn-share')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    if (dropdowns[i].classList.contains('show')) {
+                        dropdowns[i].classList.remove('show');
                     }
-                } catch (e) {
-                    console.warn("Storage exception:", e);
+                }
+            }
+        }
+
+        // Setup Initial Dates for Pickers
+        const initDate = new Date();
+        const localDateStr = initDate.getFullYear() + "-" + String(initDate.getMonth() + 1).padStart(2, '0') + "-" + String(initDate.getDate()).padStart(2, '0');
+        document.getElementById('to-date').value = localDateStr;
+        initDate.setDate(1); 
+        const firstDayStr = initDate.getFullYear() + "-" + String(initDate.getMonth() + 1).padStart(2, '0') + "-" + String(initDate.getDate()).padStart(2, '0');
+        document.getElementById('from-date').value = firstDayStr;
+
+        // --- Data Fetching Engine ---
+        window.fetchReports = async function(mode = 'search') {
+            const tableBody = document.getElementById('report-body');
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Fetching records...</td></tr>';
+            
+            let rawIncome = [], rawExpense = [];
+            try {
+                const incRes = await supabase.from('fee_payments').select('*, students(student_name)');
+                if(incRes.data) rawIncome = incRes.data;
+                const expRes = await supabase.from('expenses').select('*');
+                if(expRes.data) rawExpense = expRes.data;
+            } catch (err) {
+                console.error("DB Fetch Error:", err);
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Database Connection Error</td></tr>';
+                return;
+            }
+
+            // Read Toggles
+            const isTypeOn = document.getElementById('toggle-type').checked;
+            const isDateOn = document.getElementById('toggle-date').checked;
+            const isPeriodOn = document.getElementById('toggle-period').checked;
+
+            const typeVal = document.getElementById('filter-type').value;
+            const fromDate = document.getElementById('from-date').value;
+            const toDate = document.getElementById('to-date').value;
+            const periodVal = document.getElementById('filter-period').value;
+
+            // Base Filters
+            let effectiveFrom = '1970-01-01';
+            let effectiveTo = '2100-01-01';
+            let applyDateFilter = false;
+            let showIncome = true;
+            let showExpense = true;
+
+            if (mode === 'all') {
+                // Fetch everything, no filters apply
+                showIncome = true; showExpense = true; applyDateFilter = false;
+            } else {
+                // Check Type
+                if (isTypeOn) {
+                    if (typeVal === 'income') showExpense = false;
+                    if (typeVal === 'expense') showIncome = false;
+                }
+
+                // Check Dates (Custom Date overrides Period if both are somehow ON)
+                if (isDateOn) {
+                    effectiveFrom = fromDate;
+                    effectiveTo = toDate;
+                    applyDateFilter = true;
+                } else if (isPeriodOn) {
+                    const today = new Date();
+                    const todayLocal = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
+                    effectiveTo = todayLocal;
+                    
+                    if (periodVal === 'daily') {
+                        effectiveFrom = todayLocal;
+                    } else if (periodVal === 'weekly') {
+                        let lw = new Date(); lw.setDate(lw.getDate() - 7);
+                        effectiveFrom = lw.getFullYear() + "-" + String(lw.getMonth() + 1).padStart(2, '0') + "-" + String(lw.getDate()).padStart(2, '0');
+                    } else if (periodVal === 'monthly') {
+                        effectiveFrom = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-01";
+                    }
+                    applyDateFilter = true;
+                } else {
+                    // No toggles are ON, but search is clicked. Default to fetching all.
+                    applyDateFilter = false;
                 }
             }
 
-            const { error } = await supabase.from('students').update({
-                full_name: newName, phone_number: newPhone, register_number: newReg, photo_url: photoUrlToSave
-            }).eq('id', currentStudentData.id);
+            // Process Data
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let combinedData = [];
 
-            if (error) {
-                alert('Error saving data: ' + error.message);
-            } else {
-                alert('Card Details Saved Successfully!');
-                fetchStudents(); 
-            }
-        };
-
-        window.printCard = function() { window.print(); };
-
-        window.shareCard = async function() {
-            const btn = document.getElementById('shareBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ Generating Image...';
-            btn.disabled = true;
-
-            try {
-                const cardElement = document.getElementById('smartCardContent');
-                const name = document.getElementById('liveName').value || 'Student';
-
-                const canvas = await html2canvas(cardElement, {
-                    scale: 2, 
-                    useCORS: true, 
-                    backgroundColor: '#ffffff'
-                });
-
-                canvas.toBlob(async (blob) => {
-                    const file = new File([blob], `ID_Card_${name}.png`, { type: 'image/png' });
-                    
-                    const shareText = `🎓 *Globus Technical Academy*\nHere is the ID Card for ${name}.`;
-
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                files: [file],
-                                title: 'Student ID Card',
-                                text: shareText
-                            });
-                        } catch (err) {
-                            console.error('Share failed:', err);
-                        }
-                    } else {
-                        alert("Your browser doesn't support direct file sharing. The ID card image will be downloaded instead.");
-                        const link = document.createElement('a');
-                        link.download = `ID_Card_${name}.png`;
-                        link.href = canvas.toDataURL('image/png');
-                        link.click();
+            if (showIncome) {
+                rawIncome.forEach(item => {
+                    const rDate = item.payment_date ? item.payment_date.split('T')[0] : '';
+                    if (!applyDateFilter || (rDate >= effectiveFrom && rDate <= effectiveTo)) {
+                        const sName = (item.students && item.students.student_name) ? item.students.student_name : 'ID: ' + item.student_id;
+                        const amt = parseFloat(item.amount_paid || 0);
+                        totalIncome += amt;
+                        combinedData.push({ date: rDate, type: 'Income', purpose: sName + " (Fee)", category: 'Fees', amount: amt, color: '#10B981' });
                     }
-                    
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }, 'image/png');
-
-            } catch (error) {
-                console.error("Error generating image:", error);
-                alert("Could not generate image. Please try again.");
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                });
             }
+
+            if (showExpense) {
+                rawExpense.forEach(item => {
+                    const rDate = item.expense_date ? item.expense_date.split('T')[0] : '';
+                    if (!applyDateFilter || (rDate >= effectiveFrom && rDate <= effectiveTo)) {
+                        const amt = parseFloat(item.amount || 0);
+                        totalExpense += amt;
+                        combinedData.push({ date: rDate, type: 'Expense', purpose: item.purpose || '-', category: item.category || 'General', amount: amt, color: '#EF4444' });
+                    }
+                });
+            }
+
+            // Render Results
+            combinedData.sort((a, b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('total-income').innerText = totalIncome.toFixed(2);
+            document.getElementById('total-expense').innerText = totalExpense.toFixed(2);
+            document.getElementById('net-balance').innerText = (totalIncome - totalExpense).toFixed(2);
+
+            tableBody.innerHTML = ''; 
+            if (combinedData.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No records found for the selected filters.</td></tr>';
+                return;
+            }
+            combinedData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${row.date}</td>
+                                <td style="color: ${row.color}; font-weight: bold;">${row.type}</td>
+                                <td>${row.purpose}</td>
+                                <td>${row.category}</td>
+                                <td style="color: ${row.color}; font-weight: bold;">₹${row.amount.toFixed(2)}</td>`;
+                tableBody.appendChild(tr);
+            });
         };
 
-        window.closeModal = function() {
-            document.getElementById('studentModal').style.display = 'none';
-            document.getElementById('viewEditContainer').style.display = 'none';
-            document.getElementById('profileCardContainer').style.display = 'none';
+        // Sharing Functions
+        window.printReport = function() { window.print(); };
+        window.downloadPDF = function() {
+            const element = document.getElementById('printable-area');
+            const opt = { margin: 10, filename: 'Financial_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+            html2pdf().set(opt).from(element).save();
+        };
+        window.exportToCSV = function() {
+            let csv = []; let rows = document.querySelectorAll("table tr");
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) { 
+                    row.push('"' + cols[j].innerText.replace(/(
+|
+|)/gm, "").replace(/₹/g, "") + '"'); 
+                }
+                csv.push(row.join(","));
+            }
+            let csvFile = new Blob([csv.join("
+")], {type: "text/csv"});
+            let dl = document.createElement("a"); dl.download = "Report.csv"; dl.href = window.URL.createObjectURL(csvFile); dl.style.display = "none";
+            document.body.appendChild(dl); dl.click(); document.body.removeChild(dl);
         };
 
-        window.deleteStudent = async function(id, regNo) {
-            const inp = prompt(`⚠️ Type the register number to delete: ${regNo}`);
-            if (inp === regNo) {
-                await supabase.from('fee_payments').delete().eq('student_id', id);
-                await supabase.from('students').delete().eq('id', id);
-                fetchStudents(); 
-            } else if (inp) alert('Register number does not match.');
-        };
-
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const val = e.target.value.toLowerCase();
-            renderList(allStudents.filter(s => s.full_name?.toLowerCase().includes(val) || s.register_number?.toLowerCase().includes(val) || s.phone_number?.toLowerCase().includes(val)));
+        // --- INITIAL LOAD: MATCH DASHBOARD ---
+        // Programmatically turn ON the "Period" toggle and select "Daily" on page load.
+        document.addEventListener('DOMContentLoaded', () => {
+            const periodToggle = document.getElementById('toggle-period');
+            periodToggle.checked = true;
+            window.toggleInput('period'); // activate visuals
+            document.getElementById('filter-period').value = 'daily';
+            
+            // Fetch initial data based on this daily filter
+            window.fetchReports('search');
         });
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
-            window.history.replaceState(null, '', 'login.html'); window.location.replace('login.html'); 
-        });
-        
-        checkAuth();
     </script>
 </body>
 </html>
