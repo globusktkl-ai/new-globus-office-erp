@@ -15,19 +15,24 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border: 1px solid #e5e7eb;
         }
+        
+        /* FIXED MODULE TITLE FOR SINGLE LINE */
         .module-title {
-            font-size: 16px;
+            font-size: 14px; /* Reduced for better fit on small screens */
             color: #374151;
             margin-top: 0;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             font-weight: 700;
+            white-space: nowrap; /* Forces text to stay on one line */
+            overflow: hidden; /* Hides overflow */
+            text-overflow: ellipsis; /* Adds ... if it's too long */
         }
         .module-title.academic { border-bottom-color: #3b82f6; color: #1d4ed8; }
         .module-title.finance { border-bottom-color: #10b981; color: #047857; }
@@ -119,8 +124,9 @@
                 const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true }).eq('status', 'Active');
                 document.getElementById('statCourses').textContent = courseCount || 0;
 
-                // 3. Today's Collection
-                const todayDate = new Date().toISOString().split('T')[0];
+                // 3. Today's Collection (FIXED TIMEZONE ISSUE)
+                const today = new Date();
+                const todayDate = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
                 
                 const { data: collections } = await supabase.from('fee_payments').select('amount_paid').gte('payment_date', `${todayDate}T00:00:00Z`);
                 let paymentsToday = collections ? collections.reduce((sum, record) => sum + Number(record.amount_paid), 0) : 0;
@@ -170,4 +176,3 @@
     </script>
 </body>
 </html>
-
