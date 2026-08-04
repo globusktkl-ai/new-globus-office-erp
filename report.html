@@ -24,7 +24,7 @@
         .expense-card { background: linear-gradient(135deg, #EF4444, #DC2626); }
         .balance-card { background: linear-gradient(135deg, #3B82F6, #2563EB); }
         
-        /* FILTER SYSTEM REDESIGN AS PER SKETCH */
+        /* FILTER SYSTEM REDESIGN */
         .filter-container { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 20px; }
         
         /* Individual Filter Row Box */
@@ -52,18 +52,18 @@
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-        input:checked + .slider { background-color: #8B5CF6; } /* Purple active state */
+        input:checked + .slider { background-color: #8B5CF6; } 
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Bottom Action Buttons (Search, View, Share) - NO ICONS */
+        /* Action Buttons */
         .bottom-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
         .btn-action { color: white; border: none; padding: 14px 5px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%; transition: transform 0.1s; letter-spacing: 0.5px; }
         .btn-action:active { transform: scale(0.96); }
-        .btn-search { background-color: #3B82F6; } /* Blue */
-        .btn-view { background-color: #10B981; }   /* Green */
-        .btn-share { background-color: #8B5CF6; }  /* Purple */
+        .btn-search { background-color: #3B82F6; } 
+        .btn-view { background-color: #10B981; }   
+        .btn-share { background-color: #8B5CF6; }  
         
-        /* Share Dropdown - BIGGER AS REQUESTED */
+        /* Share Dropdown Box */
         .share-dropdown { position: relative; width: 100%; }
         .dropdown-content { display: none; position: absolute; background-color: #ffffff; min-width: 180px; box-shadow: 0px -4px 20px rgba(0,0,0,0.2); z-index: 100; border-radius: 12px; bottom: 110%; right: 0; overflow: hidden; border: 1px solid #e5e7eb; }
         .dropdown-content button { color: #1f2937; padding: 16px 20px; text-decoration: none; display: block; background: none; border: none; text-align: left; width: 100%; cursor: pointer; border-bottom: 1px solid #f3f4f6; font-size: 15px; font-weight: 600; }
@@ -72,7 +72,7 @@
         .share-dropdown:hover .dropdown-content { display: block; }
         .dropdown-content.show { display: block; }
 
-        /* Table container */
+        /* Table */
         .table-container { overflow-x: auto; width: 100%; display: block; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
@@ -120,7 +120,7 @@
         </div>
     </div>
 
-    <!-- NEW FILTER SYSTEM (From Sketch) -->
+    <!-- FILTER SYSTEM -->
     <div class="filter-container">
         
         <!-- Box 1: Type Filter -->
@@ -147,7 +147,6 @@
                     <span class="slider"></span>
                 </label>
             </div>
-            <!-- Hidden by default -->
             <div class="date-inputs-container" id="date-inputs-container">
                 <div class="date-col">
                     <label>From Date:</label>
@@ -175,7 +174,7 @@
             </label>
         </div>
 
-        <!-- Action Buttons (No Icons) -->
+        <!-- Action Buttons -->
         <div class="bottom-actions">
             <button class="btn-action btn-search" onclick="window.fetchReports('search')">Search</button>
             <button class="btn-action btn-view" onclick="document.getElementById('reportTableSection').scrollIntoView({behavior: 'smooth'})">View</button>
@@ -238,7 +237,6 @@
             }
         }
 
-        // Setup Initial Dates for Pickers
         const initDate = new Date();
         const localDateStr = initDate.getFullYear() + "-" + String(initDate.getMonth() + 1).padStart(2, '0') + "-" + String(initDate.getDate()).padStart(2, '0');
         document.getElementById('to-date').value = localDateStr;
@@ -246,24 +244,38 @@
         const firstDayStr = initDate.getFullYear() + "-" + String(initDate.getMonth() + 1).padStart(2, '0') + "-" + String(initDate.getDate()).padStart(2, '0');
         document.getElementById('from-date').value = firstDayStr;
 
+        // Helper Function to fix Timezone Date formatting
+        function getLocalDateStr(utcString) {
+            if (!utcString) return '';
+            const d = new Date(utcString);
+            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
+        }
+
         // --- Data Fetching Engine ---
         window.fetchReports = async function(mode = 'search') {
             const tableBody = document.getElementById('report-body');
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Fetching records...</td></tr>';
             
-            let rawIncome = [], rawExpense = [];
+            let rawIncome = [], rawExpense = [], rawAdmissions = [];
             try {
+                // Fetch Normal Fee Payments
                 const incRes = await supabase.from('fee_payments').select('*, students(student_name)');
                 if(incRes.data) rawIncome = incRes.data;
+                
+                // Fetch Expenses
                 const expRes = await supabase.from('expenses').select('*');
                 if(expRes.data) rawExpense = expRes.data;
+
+                // Fetch New Admission Fees 
+                const admRes = await supabase.from('students').select('id, student_name, admission_fee, created_at');
+                if(admRes.data) rawAdmissions = admRes.data;
+
             } catch (err) {
                 console.error("DB Fetch Error:", err);
                 tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Database Connection Error</td></tr>';
                 return;
             }
 
-            // Read Toggles
             const isTypeOn = document.getElementById('toggle-type').checked;
             const isDateOn = document.getElementById('toggle-date').checked;
             const isPeriodOn = document.getElementById('toggle-period').checked;
@@ -273,7 +285,6 @@
             const toDate = document.getElementById('to-date').value;
             const periodVal = document.getElementById('filter-period').value;
 
-            // Base Filters
             let effectiveFrom = '1970-01-01';
             let effectiveTo = '2100-01-01';
             let applyDateFilter = false;
@@ -281,16 +292,13 @@
             let showExpense = true;
 
             if (mode === 'all') {
-                // Fetch everything, no filters apply
                 showIncome = true; showExpense = true; applyDateFilter = false;
             } else {
-                // Check Type
                 if (isTypeOn) {
                     if (typeVal === 'income') showExpense = false;
                     if (typeVal === 'expense') showIncome = false;
                 }
 
-                // Check Dates (Custom Date overrides Period if both are somehow ON)
                 if (isDateOn) {
                     effectiveFrom = fromDate;
                     effectiveTo = toDate;
@@ -310,40 +318,54 @@
                     }
                     applyDateFilter = true;
                 } else {
-                    // No toggles are ON, but search is clicked. Default to fetching all.
                     applyDateFilter = false;
                 }
             }
 
-            // Process Data
             let totalIncome = 0;
             let totalExpense = 0;
             let combinedData = [];
 
             if (showIncome) {
+                // Add Fee Payments
                 rawIncome.forEach(item => {
-                    const rDate = item.payment_date ? item.payment_date.split('T')[0] : '';
+                    const rDate = getLocalDateStr(item.payment_date);
                     if (!applyDateFilter || (rDate >= effectiveFrom && rDate <= effectiveTo)) {
                         const sName = (item.students && item.students.student_name) ? item.students.student_name : 'ID: ' + item.student_id;
                         const amt = parseFloat(item.amount_paid || 0);
-                        totalIncome += amt;
-                        combinedData.push({ date: rDate, type: 'Income', purpose: sName + " (Fee)", category: 'Fees', amount: amt, color: '#10B981' });
+                        if(amt > 0) {
+                            totalIncome += amt;
+                            combinedData.push({ date: rDate, type: 'Income', purpose: sName + " (Fee)", category: 'Fees', amount: amt, color: '#10B981' });
+                        }
+                    }
+                });
+
+                // Add Admission Fees
+                rawAdmissions.forEach(item => {
+                    const rDate = getLocalDateStr(item.created_at);
+                    if (!applyDateFilter || (rDate >= effectiveFrom && rDate <= effectiveTo)) {
+                        const amt = parseFloat(item.admission_fee || 0);
+                        if(amt > 0) {
+                            totalIncome += amt;
+                            combinedData.push({ date: rDate, type: 'Income', purpose: item.student_name + " (Admission)", category: 'Admission Fee', amount: amt, color: '#10B981' });
+                        }
                     }
                 });
             }
 
             if (showExpense) {
                 rawExpense.forEach(item => {
-                    const rDate = item.expense_date ? item.expense_date.split('T')[0] : '';
+                    const rDate = getLocalDateStr(item.expense_date);
                     if (!applyDateFilter || (rDate >= effectiveFrom && rDate <= effectiveTo)) {
                         const amt = parseFloat(item.amount || 0);
-                        totalExpense += amt;
-                        combinedData.push({ date: rDate, type: 'Expense', purpose: item.purpose || '-', category: item.category || 'General', amount: amt, color: '#EF4444' });
+                        if(amt > 0) {
+                            totalExpense += amt;
+                            combinedData.push({ date: rDate, type: 'Expense', purpose: item.purpose || '-', category: item.category || 'General', amount: amt, color: '#EF4444' });
+                        }
                     }
                 });
             }
 
-            // Render Results
             combinedData.sort((a, b) => new Date(b.date) - new Date(a.date));
             document.getElementById('total-income').innerText = totalIncome.toFixed(2);
             document.getElementById('total-expense').innerText = totalExpense.toFixed(2);
@@ -365,7 +387,6 @@
             });
         };
 
-        // Sharing Functions
         window.printReport = function() { window.print(); };
         window.downloadPDF = function() {
             const element = document.getElementById('printable-area');
@@ -377,28 +398,34 @@
             for (let i = 0; i < rows.length; i++) {
                 let row = [], cols = rows[i].querySelectorAll("td, th");
                 for (let j = 0; j < cols.length; j++) { 
-                    row.push('"' + cols[j].innerText.replace(/(
-|
-|)/gm, "").replace(/₹/g, "") + '"'); 
+                    row.push('"' + cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/₹/g, "") + '"'); 
                 }
                 csv.push(row.join(","));
             }
-            let csvFile = new Blob([csv.join("
-")], {type: "text/csv"});
+            let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
             let dl = document.createElement("a"); dl.download = "Report.csv"; dl.href = window.URL.createObjectURL(csvFile); dl.style.display = "none";
             document.body.appendChild(dl); dl.click(); document.body.removeChild(dl);
         };
 
-        // --- INITIAL LOAD: MATCH DASHBOARD ---
-        // Programmatically turn ON the "Period" toggle and select "Daily" on page load.
-        document.addEventListener('DOMContentLoaded', () => {
+        // --- FIXED DEFAULT LOAD WITH AUTH CHECK ---
+        async function checkAuthAndLoad() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { 
+                window.location.href = 'login.html'; 
+                return; 
+            }
+            
+            // If logged in, setup UI and fetch data
             const periodToggle = document.getElementById('toggle-period');
             periodToggle.checked = true;
-            window.toggleInput('period'); // activate visuals
+            window.toggleInput('period'); 
             document.getElementById('filter-period').value = 'daily';
             
-            // Fetch initial data based on this daily filter
             window.fetchReports('search');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthAndLoad();
         });
     </script>
 </body>
