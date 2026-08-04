@@ -168,7 +168,6 @@
             Student Directory
         </h2>
         
-        <!-- Search & Filter as per Sketch (Pill shape) -->
         <div class="search-filter-container">
             <input type="text" id="searchInput" class="search-box-pill" placeholder="🔍 Search Name, Reg No, Phone...">
             <select id="statusFilter" class="filter-dropdown-pill">
@@ -290,6 +289,7 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         let allStudents = [];
+        let globalCourses = []; // New variable to store courses globally
         let currentStudentData = null;
 
         async function checkAuth() {
@@ -304,9 +304,11 @@
                     .from('students').select('*').order('created_at', { ascending: false });
                 if (studentError) throw studentError;
 
-                const { data: coursesData } = await supabase.from('courses').select('id, course_name');
+                // Fetch courses with modules
+                const { data: coursesData } = await supabase.from('courses').select('id, course_name, modules');
+                globalCourses = coursesData || [];
                 const courseMap = {};
-                if (coursesData) { coursesData.forEach(c => courseMap[c.id] = c.course_name); }
+                globalCourses.forEach(c => courseMap[c.id] = c.course_name);
 
                 const { data: paymentsData } = await supabase.from('fee_payments').select('student_id, amount_paid');
 
@@ -397,6 +399,25 @@
             document.getElementById('profileCardContainer').style.display = 'none';
             document.getElementById('viewEditContainer').style.display = 'flex'; 
 
+            // Build Course Options
+            let courseOptions = '<option value="">-- Select Course --</option>';
+            globalCourses.forEach(c => {
+                let selected = (c.id == s.course_id) ? 'selected' : '';
+                courseOptions += `<option value="${c.id}" ${selected}>${c.course_name}</option>`;
+            });
+
+            // Build Initial Module Options based on student's current course
+            let moduleOptions = '<option value="">-- Select Module --</option>';
+            if (s.course_id) {
+                const currentCourse = globalCourses.find(c => c.id == s.course_id);
+                if (currentCourse && currentCourse.modules && Array.isArray(currentCourse.modules)) {
+                    currentCourse.modules.forEach(mod => {
+                        let selected = (mod === s.module) ? 'selected' : '';
+                        moduleOptions += `<option value="${mod}" ${selected}>${mod}</option>`;
+                    });
+                }
+            }
+
             document.getElementById('viewEditContent').innerHTML = `
                 <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6; border: 1px solid #e2e8f0;">
                     <p><b>Name:</b> ${s.full_name}</p>
@@ -411,8 +432,22 @@
                 <form onsubmit="saveFullEdit(event, '${s.id}')">
                     <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Full Name</label><input type="text" id="fullEditName" value="${s.full_name}" class="form-control" required></div>
                     <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Phone Number</label><input type="text" id="fullEditPhone" value="${s.phone_number}" class="form-control" required maxlength="10"></div>
-                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Module</label><input type="text" id="fullEditModule" value="${s.module || ''}" class="form-control" placeholder="e.g. Hardware"></div>
                     
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:1;">
+                            <label style="font-size:12px; font-weight:600;">Course</label>
+                            <select id="fullEditCourse" class="form-control" required onchange="updateEditModules(this.value)">
+                                ${courseOptions}
+                            </select>
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-size:12px; font-weight:600;">Module</label>
+                            <select id="fullEditModule" class="form-control">
+                                ${moduleOptions}
+                            </select>
+                        </div>
+                    </div>
+
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
                         <div style="flex:1;">
                             <label style="font-size:12px; font-weight:600;">Course Status</label>
@@ -437,18 +472,39 @@
             document.getElementById('studentModal').style.display = 'flex';
         };
 
+        // Function to dynamically load modules when course changes in the Edit form
+        window.updateEditModules = function(courseId) {
+            const moduleSelect = document.getElementById('fullEditModule');
+            moduleSelect.innerHTML = '<option value="">-- Select Module --</option>';
+
+            if (courseId) {
+                const courseInfo = globalCourses.find(c => c.id == courseId);
+                if (courseInfo && courseInfo.modules && Array.isArray(courseInfo.modules)) {
+                    courseInfo.modules.forEach(mod => {
+                        moduleSelect.add(new Option(mod, mod));
+                    });
+                }
+            }
+        };
+
         window.saveFullEdit = async function(e, id) {
             e.preventDefault();
             const newName = document.getElementById('fullEditName').value;
             const newPhone = document.getElementById('fullEditPhone').value;
             const newQual = document.getElementById('fullEditQual').value;
             const newStatus = document.getElementById('fullEditStatus').value;
+            const newCourseId = document.getElementById('fullEditCourse').value;
             const newModule = document.getElementById('fullEditModule').value;
 
             if(newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
 
             const { error } = await supabase.from('students').update({
-                full_name: newName, phone_number: newPhone, qualification: newQual, status: newStatus, module: newModule
+                full_name: newName, 
+                phone_number: newPhone, 
+                qualification: newQual, 
+                status: newStatus, 
+                course_id: newCourseId, 
+                module: newModule || null
             }).eq('id', id);
 
             if (error) alert('Error updating: ' + error.message);
