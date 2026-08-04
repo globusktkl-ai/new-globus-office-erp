@@ -121,12 +121,12 @@
 
                     <div style="padding: 0 10px; text-align: center; position: relative; z-index: 2;">
                         <div style="margin-bottom: 8px;">
-                            <span style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">NAME</span><br>
-                            <span id="cardStudentName" style="font-size: 18px; font-weight: 900; color: #111827; text-transform:uppercase;">STUDENT NAME</span>
+                            <div style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">NAME</div>
+                            <div id="cardStudentName" style="font-size: 18px; font-weight: 900; color: #111827; white-space: pre-wrap;">STUDENT NAME</div>
                         </div>
                         <div style="margin-bottom: 10px;">
-                            <span style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">COURSE</span><br>
-                            <span id="cardCourseName" style="font-size: 14px; font-weight: 800; color: #047857; text-transform:uppercase;">COURSE NAME</span>
+                            <div style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">COURSE</div>
+                            <div id="cardCourseName" style="font-size: 14px; font-weight: 800; color: #047857; white-space: pre-wrap;">COURSE NAME</div>
                         </div>
                         
                         <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.9); padding: 5px; border-radius: 8px; width: 85%; margin: 0 auto; position: relative; z-index: 3;">
@@ -164,10 +164,10 @@
                 <input type="file" id="livePhotoInput" accept="image/*" class="form-control" style="margin-bottom:12px; padding:6px; font-size:12px;" onchange="updateLivePhoto(event)">
 
                 <label style="font-size:12px; font-weight:600; color:#374151;">Student Name</label>
-                <input type="text" id="liveName" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardStudentName').innerText = this.value || 'N/A'">
+                <input type="text" id="liveName" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardStudentName').innerText = (this.value || 'N/A').toUpperCase()">
 
                 <label style="font-size:12px; font-weight:600; color:#374151;">Course Name</label>
-                <input type="text" id="liveCourse" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardCourseName').innerText = this.value || 'N/A'">
+                <input type="text" id="liveCourse" class="form-control" style="margin-bottom:12px;" oninput="document.getElementById('cardCourseName').innerText = (this.value || 'N/A').toUpperCase()">
 
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
                     <div style="flex:1;">
@@ -334,8 +334,9 @@
             document.getElementById('livePhone').value = s.phone_number || '';
             document.getElementById('livePhotoInput').value = ''; 
 
-            document.getElementById('cardStudentName').innerText = s.full_name || 'N/A';
-            document.getElementById('cardCourseName').innerText = s.display_course_name || 'N/A';
+            // പേര് അപ്പർകേസ് ആക്കി മാറ്റുന്നു
+            document.getElementById('cardStudentName').innerText = (s.full_name || 'N/A').toUpperCase();
+            document.getElementById('cardCourseName').innerText = (s.display_course_name || 'N/A').toUpperCase();
             document.getElementById('cardRegNo').innerText = s.register_number || 'N/A';
             document.getElementById('cardPhone').innerText = s.phone_number || 'N/A';
 
@@ -398,7 +399,6 @@
 
         window.printCard = function() { window.print(); };
 
-        // പുതിയ Share Logic (ചിത്രമാക്കി മാറ്റി ഷെയർ ചെയ്യുന്നു)
         window.shareCard = async function() {
             const btn = document.getElementById('shareBtn');
             const originalText = btn.innerHTML;
@@ -406,14 +406,12 @@
             btn.disabled = true;
 
             try {
-                // കാർഡ് ഡിസൈൻ ഉള്ള HTML എലമെന്റ് എടുക്കുന്നു
                 const cardElement = document.getElementById('smartCardContent');
                 const name = document.getElementById('liveName').value || 'Student';
 
-                // html2canvas ഉപയോഗിച്ച് HTML-നെ കാൻവാസ് ആക്കി മാറ്റുന്നു
                 const canvas = await html2canvas(cardElement, {
                     scale: 2, 
-                    useCORS: true, // പുറത്ത് നിന്നുള്ള ഫോട്ടോകൾ അനുവദിക്കാൻ
+                    useCORS: true, 
                     backgroundColor: '#ffffff'
                 });
 
@@ -422,7 +420,6 @@
                     
                     const shareText = `🎓 *Globus Technical Academy*\nHere is the ID Card for ${name}.`;
 
-                    // മൊബൈലിൽ ഷെയർ ചെയ്യാൻ സപ്പോർട്ട് ഉണ്ടോ എന്ന് നോക്കുന്നു
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         try {
                             await navigator.share({
@@ -434,7 +431,6 @@
                             console.error('Share failed:', err);
                         }
                     } else {
-                        // കമ്പ്യൂട്ടറിലോ സപ്പോർട്ട് ഇല്ലാത്ത ബ്രൗസറിലോ ആണെങ്കിൽ ഡൗൺലോഡ് ആകാൻ
                         alert("Your browser doesn't support direct file sharing. The ID card image will be downloaded instead.");
                         const link = document.createElement('a');
                         link.download = `ID_Card_${name}.png`;
