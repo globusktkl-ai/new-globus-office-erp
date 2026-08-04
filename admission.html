@@ -115,6 +115,14 @@
                         <option value="">-- Select Course --</option>
                     </select>
                 </div>
+
+                <!-- NEW FIELD: Select Module (Optional) -->
+                <div class="form-group">
+                    <label class="form-label">Select Module <span style="font-size: 11px; color: #64748b; font-weight: normal;">(Optional)</span></label>
+                    <select id="moduleSelect" class="form-control">
+                        <option value="">-- Select Module --</option>
+                    </select>
+                </div>
                 
                 <div class="form-group">
                     <label class="form-label">Total Course Fee (₹)</label>
@@ -126,7 +134,6 @@
                     
                     <div class="form-group">
                         <label class="form-label">Admission Fee Paid (₹)</label>
-                        <!-- Removed value="0" to fix the zero overriding issue -->
                         <input type="number" id="admissionFee" class="form-control" required placeholder="Amount paid during admission">
                     </div>
                     
@@ -157,6 +164,8 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
+        let globalCourses = []; // To store fetched courses and their modules
+
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
@@ -165,7 +174,8 @@
         }
 
         async function fetchCourses() {
-            const { data, error } = await supabase.from('courses').select('id, course_name').eq('status', 'Active');
+            // Updated query to fetch the 'modules' column as well
+            const { data, error } = await supabase.from('courses').select('id, course_name, modules').eq('status', 'Active');
             
             if (error) {
                 console.error("Error fetching courses:", error.message);
@@ -173,11 +183,31 @@
             }
             
             if (data) {
+                globalCourses = data;
                 const select = document.getElementById('courseSelect');
                 select.innerHTML = '<option value="">-- Select Course --</option>';
                 data.forEach(c => select.add(new Option(c.course_name, c.id)));
             }
         }
+
+        // When a course is selected, populate the modules dropdown
+        document.getElementById('courseSelect').addEventListener('change', function() {
+            const selectedCourseId = this.value;
+            const moduleSelect = document.getElementById('moduleSelect');
+            moduleSelect.innerHTML = '<option value="">-- Select Module --</option>'; // Reset modules
+
+            if (selectedCourseId) {
+                // Find the selected course object from our global array
+                const courseInfo = globalCourses.find(c => c.id == selectedCourseId);
+                
+                // Check if modules exist and is an array (JSONB structure)
+                if (courseInfo && courseInfo.modules && Array.isArray(courseInfo.modules)) {
+                    courseInfo.modules.forEach(mod => {
+                        moduleSelect.add(new Option(mod, mod));
+                    });
+                }
+            }
+        });
 
         document.getElementById('phone').addEventListener('input', function() {
             let val = this.value.trim();
@@ -219,7 +249,7 @@
                     photoUrl = publicUrlData.publicUrl;
                 }
 
-                // 1. ആദ്യം കുട്ടിയുടെ വിവരങ്ങൾ Students ടേബിളിൽ സേവ് ചെയ്യുന്നു
+                // 1. സേവ് ചെയ്യുമ്പോൾ 'module' കോളവും കൂടി ഉൾപ്പെടുത്തിയിരിക്കുന്നു
                 const { data: newStudent, error: studentError } = await supabase.from('students').insert([{
                     full_name: document.getElementById('fullName').value,
                     register_number: document.getElementById('regNo').value,
@@ -231,6 +261,7 @@
                     gender: document.getElementById('gender').value,
                     photo_url: photoUrl,
                     course_id: document.getElementById('courseSelect').value,
+                    module: document.getElementById('moduleSelect').value || null, // New module data
                     total_fee: totalFee,
                     admission_fee: admissionFee,
                     status: 'active'
