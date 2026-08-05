@@ -26,13 +26,15 @@
         .smc-label { width: 100px; color: #64748b; font-weight: 600; flex-shrink: 0; }
         .smc-value { flex: 1; color: #1f2937; font-weight: 500; }
 
-        .card-action-btns { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
-        .btn-card { border: none; padding: 10px 5px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center; }
+        /* BUTTON LAYOUT FIX */
+        .card-action-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+        .btn-card { border: none; padding: 8px 2px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .btn-view { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
         .btn-id { background: #3b82f6; color: #fff; }
         .btn-cert-mini { background: #f59e0b; color: #fff; }
         .btn-del { background: #fff; color: #ef4444; border: 1px solid #ef4444; transition: 0.2s; }
-        .btn-del:active { transform: scale(0.98); }
+        .btn-del-full { background: #fef2f2; color: #ef4444; border: 1px solid #ef4444; width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center; transition: 0.2s; }
+        .btn-del:active, .btn-del-full:active { transform: scale(0.98); }
 
         /* ID Card Modal Specific Styles */
         .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; }
@@ -47,19 +49,8 @@
         .cert-scroll-area { width: 100%; height: 500px; overflow: auto; background: #cbd5e1; border-radius: 6px; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }
         
         /* EXACT HTML/CSS CERTIFICATE TEMPLATE */
-        .cert-wrapper {
-            position: relative; width: 750px; height: 1060px; flex-shrink: 0;
-            background: #ffffff; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 20px 20px;
-            padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            font-family: 'Georgia', serif; color: #1e293b; box-sizing: border-box;
-            transform-origin: top center; transition: transform 0.2s ease;
-        }
-        .cert-inner-border {
-            border: 10px solid #1e3a8a; outline: 3px solid #eab308; outline-offset: -16px;
-            height: 100%; padding: 40px; box-sizing: border-box;
-            display: flex; flex-direction: column; justify-content: flex-start;
-            position: relative; background: rgba(255,255,255,0.9);
-        }
+        .cert-wrapper { position: relative; width: 750px; height: 1060px; flex-shrink: 0; background: #ffffff; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 20px 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Georgia', serif; color: #1e293b; box-sizing: border-box; transform-origin: top center; transition: transform 0.2s ease; }
+        .cert-inner-border { border: 10px solid #1e3a8a; outline: 3px solid #eab308; outline-offset: -16px; height: 100%; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; position: relative; background: rgba(255,255,255,0.9); }
         .cert-corner { position: absolute; width: 50px; height: 50px; border: 4px solid #eab308; }
         .cc-tl { top: -12px; left: -12px; border-right: none; border-bottom: none; }
         .cc-tr { top: -12px; right: -12px; border-left: none; border-bottom: none; }
@@ -86,13 +77,13 @@
         .cert-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center; margin: 30px auto 0; width: 90%; font-size: 16px; font-family: 'Arial', sans-serif; color: #1e293b; }
         .cert-detail-box { background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; }
 
-        /* ABSOLUTE FOOTER POSITIONING */
+        /* ABSOLUTE FOOTER POSITIONING & FIXED SEAL */
         .cert-footer-section { position: absolute; bottom: 40px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
         .cert-sign-box { text-align: center; width: 160px; }
         .cert-sign-line { border-bottom: 1px solid #1e293b; height: 50px; margin-bottom: 8px; }
         .cert-sign-label { font-size: 15px; font-family: 'Arial', sans-serif; font-weight: bold; color: #475569; }
         
-        .cert-seal { width: 110px; height: 110px; border: 4px double #eab308; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; font-weight: bold; color: #b45309; transform: rotate(-10deg); background: #fef3c7; box-shadow: inset 0 0 15px rgba(180,83,9,0.3); font-family: 'Arial', sans-serif; line-height: 1.2; margin-bottom: -15px;}
+        .cert-seal { width: 110px; height: 110px; border: 4px double #eab308; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 11px; font-weight: bold; color: #b45309; transform: rotate(-10deg); background: #fef3c7; box-shadow: inset 0 0 15px rgba(180,83,9,0.3); font-family: 'Arial', sans-serif; line-height: 1.3; margin-bottom: -15px;}
 
         .form-control-cert { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; margin-bottom: 10px; outline: none; }
 
@@ -383,19 +374,19 @@
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
                 
-                // === NEW BUTTON LOGIC === 
+                // === NEW BUTTON LOGIC FOR MOBILE VIEW === 
                 let actionBtnsHTML = `
                     <div class="card-action-btns">
-                        <button onclick="viewAndEditStudent('${s.id}')" class="btn-card btn-view">View & Edit</button>
+                        <button onclick="viewAndEditStudent('${s.id}')" class="btn-card btn-view">View/Edit</button>
                         <button onclick="openProfileAndCard('${s.id}')" class="btn-card btn-id">ID Card</button>
                 `;
 
                 if(stuStatus === 'completed') {
-                    // Completed Students get the Certificate button inline, and Delete button below
-                    actionBtnsHTML += `<button onclick="openCertModal('${s.id}', '${s.course_id}')" class="btn-card btn-cert-mini">🎓 Certificate</button></div>`;
-                    actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-card btn-del" style="width: 100%; margin-top: 10px; padding: 12px; background: #fef2f2; border: 1px solid #ef4444;">🗑️ Delete Student</button>`;
+                    // Completed: Certificate inline, Delete below
+                    actionBtnsHTML += `<button onclick="openCertModal('${s.id}', '${s.course_id}')" class="btn-card btn-cert-mini">Certificate</button></div>`;
+                    actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-del-full">🗑️ Delete Student</button>`;
                 } else {
-                    // Active Students just get Delete button inline
+                    // Active: Delete inline
                     actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-card btn-del">Delete</button></div>`;
                 }
 
