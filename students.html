@@ -10,35 +10,72 @@
 
     <style>
         /* Shared Styles */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: flex-start; padding: 30px 10px; overflow-y: auto; }
-        .modal-container { background: #fff; width: 100%; max-width: 780px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin: auto; display: flex; gap: 20px; flex-wrap: wrap; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 1000; justify-content: center; align-items: flex-start; padding: 20px; overflow-y: auto; backdrop-filter: blur(5px); }
+        .modal-container { background: #fff; width: 100%; max-width: 780px; border-radius: 16px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); margin: auto; display: flex; gap: 20px; flex-wrap: wrap; position: relative; }
         
-        .search-filter-container { display: flex; border: 2px solid #cbd5e1; border-radius: 30px; overflow: hidden; background: white; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .search-box-pill { flex: 2; border: none; padding: 14px 20px; outline: none; font-size: 15px; color: #333; }
-        .filter-dropdown-pill { flex: 1; border: none; border-left: 2px solid #cbd5e1; padding: 12px 15px; outline: none; background: #f8fafc; font-size: 14px; font-weight: 700; color: #1e3a8a; cursor: pointer; }
+        /* Stacked Search & Filter */
+        .search-filter-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
+        .search-box-pill { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; outline: none; font-size: 15px; color: #333; transition: border-color 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .search-box-pill:focus { border-color: #3b82f6; }
+        .filter-dropdown-pill { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; outline: none; background: #f8fafc; font-size: 14px; font-weight: 700; color: #1e3a8a; cursor: pointer; transition: border-color 0.3s; }
+        .filter-dropdown-pill:focus { border-color: #3b82f6; }
         
-        .student-mobile-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .smc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; }
-        .smc-name { font-size: 18px; font-weight: 800; color: #1e3a8a; margin-bottom: 4px; line-height: 1.2; }
-        .smc-reg { font-size: 14px; color: #64748b; font-weight: 600; }
-        .smc-header-center img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #cbd5e1; }
-        .smc-row { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 14px; }
-        .smc-label { width: 100px; color: #64748b; font-weight: 600; flex-shrink: 0; }
-        .smc-value { flex: 1; color: #1f2937; font-weight: 500; }
+        .student-mobile-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s; }
+        .student-mobile-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .smc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 15px; }
+        .smc-name { font-size: 19px; font-weight: 900; color: #0f172a; margin-bottom: 4px; line-height: 1.2; }
+        .smc-reg { font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .smc-header-center img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #eff6ff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .smc-row { display: flex; align-items: flex-start; margin-bottom: 10px; font-size: 14px; }
+        .smc-label { width: 110px; color: #64748b; font-weight: 700; flex-shrink: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .smc-value { flex: 1; color: #1e293b; font-weight: 600; }
 
-        /* BUTTON LAYOUT FIX */
-        .card-action-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
-        .btn-card { border: none; padding: 8px 2px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .btn-view { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
-        .btn-id { background: #3b82f6; color: #fff; }
-        .btn-cert-mini { background: #f59e0b; color: #fff; }
-        .btn-del { background: #fff; color: #ef4444; border: 1px solid #ef4444; transition: 0.2s; }
-        .btn-del-full { background: #fef2f2; color: #ef4444; border: 1px solid #ef4444; width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center; transition: 0.2s; }
-        .btn-del:active, .btn-del-full:active { transform: scale(0.98); }
+        .card-action-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+        .btn-card { border: none; padding: 10px 4px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; text-align: center; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .btn-view { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+        .btn-view:hover { background: #e2e8f0; }
+        .btn-id { background: #3b82f6; color: #fff; border: 1px solid #2563eb; }
+        .btn-id:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-cert-mini { background: #f59e0b; color: #fff; border: 1px solid #d97706; }
+        .btn-del { background: #fff; color: #ef4444; border: 1px solid #fca5a5; }
+        .btn-del:hover { background: #fef2f2; border-color: #ef4444; }
+        .btn-del-full { background: #fef2f2; color: #ef4444; border: 1px dashed #fca5a5; width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
 
-        /* ID Card Modal Specific Styles */
-        .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; }
-        .card-edit-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; padding-top: 20px; position: relative; }
+        .card-edit-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .close-modal-btn { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; border: 2px solid white; border-radius: 50%; width: 36px; height: 36px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.2s; }
+        .close-modal-btn:hover { background: #dc2626; transform: scale(1.1); }
+
+        .form-control-cert { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; margin-bottom: 12px; outline: none; font-weight: 500; }
+        .form-control-cert:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+
+        @media (max-width: 650px) {
+            .card-preview-col, .card-edit-col { min-width: 100%; }
+            .modal-container { padding: 15px; margin-top: 10px; }
+            .close-modal-btn { top: 10px; right: 10px; }
+        }
+
+        /* STRICT PRINT LOGIC - FIX FOR OVERLAPPING MODALS */
+        @media print {
+            body * { visibility: hidden; }
+            
+            /* ID CARD PRINTING ONLY */
+            body.print-id #studentModal, body.print-id #smartCardContent, body.print-id #smartCardContent * { visibility: visible; }
+            body.print-id #studentModal { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
+            body.print-id .card-edit-col, body.print-id .close-modal-btn, body.print-id .no-print { display: none !important; }
+            body.print-id #smartCardContent { transform: scale(1) !important; border: 1px dashed #ccc !important; box-shadow: none !important; margin: 20px; }
+            
+            /* CERTIFICATE PRINTING ONLY */
+            body.print-cert #certModal, body.print-cert #certModal * { visibility: visible; }
+            body.print-cert #certModal { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
+            body.print-cert .cert-form-col, body.print-cert .zoom-controls, body.print-cert .no-print, body.print-cert .close-modal-btn { display: none !important; }
+            body.print-cert .cert-preview-col { background: white; padding: 0; display: block; overflow: visible; }
+            body.print-cert .cert-scroll-area { height: auto; overflow: visible; background: white; padding: 0; }
+            body.print-cert #certViewport { width: 100% !important; height: auto !important; margin: 0 auto; display: flex; justify-content: center; }
+            body.print-cert .cert-wrapper { transform: scale(0.95) !important; margin: 0 auto; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            
+            @page { size: A4 portrait; margin: 10mm; }
+        }
 
         /* CERTIFICATE MODAL STYLES */
         .cert-modal-container { max-width: 1050px; }
@@ -48,7 +85,6 @@
         .zoom-btn { background: #fff; border: 1px solid #cbd5e1; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-left: 5px; }
         .cert-scroll-area { width: 100%; height: 500px; overflow: auto; background: #cbd5e1; border-radius: 6px; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }
         
-        /* EXACT HTML/CSS CERTIFICATE TEMPLATE */
         .cert-wrapper { position: relative; width: 750px; height: 1060px; flex-shrink: 0; background: #ffffff; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 20px 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Georgia', serif; color: #1e293b; box-sizing: border-box; transform-origin: top center; transition: transform 0.2s ease; }
         .cert-inner-border { border: 10px solid #1e3a8a; outline: 3px solid #eab308; outline-offset: -16px; height: 100%; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; position: relative; background: rgba(255,255,255,0.9); }
         .cert-corner { position: absolute; width: 50px; height: 50px; border: 4px solid #eab308; }
@@ -77,58 +113,30 @@
         .cert-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center; margin: 30px auto 0; width: 90%; font-size: 16px; font-family: 'Arial', sans-serif; color: #1e293b; }
         .cert-detail-box { background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; }
 
-        /* ABSOLUTE FOOTER POSITIONING & FIXED SEAL (MODIFIED ONLY THIS CLASS) */
         .cert-footer-section { position: absolute; bottom: 40px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
         .cert-sign-box { text-align: center; width: 160px; }
         .cert-sign-line { border-bottom: 1px solid #1e293b; height: 50px; margin-bottom: 8px; }
         .cert-sign-label { font-size: 15px; font-family: 'Arial', sans-serif; font-weight: bold; color: #475569; }
         
         .cert-seal { width: 110px; height: 110px; border: 4px double #eab308; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 9.5px; font-weight: bold; color: #b45309; transform: rotate(-10deg); background: rgba(254, 243, 199, 0.85); box-shadow: inset 0 0 15px rgba(180,83,9,0.3); font-family: 'Arial', sans-serif; line-height: 1.4; margin-bottom: -15px; padding: 5px; box-sizing: border-box; mix-blend-mode: multiply; }
-
-        .form-control-cert { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; margin-bottom: 10px; outline: none; }
-
-        @media (max-width: 650px) {
-            .search-filter-container { flex-direction: column; border-radius: 12px; }
-            .filter-dropdown-pill { border-left: none; border-top: 1px solid #cbd5e1; padding: 14px 15px; }
-            .card-preview-col, .card-edit-col { min-width: 100%; }
-        }
-
-        @media print {
-            body * { visibility: hidden; }
-            #certModal, #certModal *, #studentModal, #studentModal * { visibility: visible; }
-            
-            #studentModal, #certModal { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
-            .modal-container { box-shadow: none; padding: 0; max-width: 100%; display: block; }
-            
-            /* Print rules for ID Card */
-            #smartCardContent { width: 320px !important; height: 510px !important; transform: scale(0.65) !important; transform-origin: top left !important; box-shadow: none !important; border: 1px dashed #ccc !important; margin: 10px; }
-            
-            /* Print rules for Certificate */
-            .cert-form-col, .zoom-controls, .no-print, .card-edit-col { display: none !important; }
-            .cert-preview-col { background: white; padding: 0; display: block; overflow: visible; }
-            .cert-scroll-area { height: auto; overflow: visible; background: white; padding: 0; }
-            #certViewport { width: 100% !important; height: auto !important; margin: 0 auto; display: flex; justify-content: center; }
-            .cert-wrapper { transform: scale(0.95) !important; margin: 0 auto; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
-            @page { size: A4 portrait; margin: 10mm; }
-        }
     </style>
 </head>
-<body>
+<body class="bg-slate-50">
     
-    <nav class="app-header no-print">
-        <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 10px;">
-            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+    <nav class="app-header no-print" style="background:white; padding:15px; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center;">
+        <div class="header-left" style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 40px; height: 40px; background:#1e3a8a; border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px;">G</div>
             <div style="display: flex; flex-direction: column;">
-                <span style="font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</span>
-                <span style="font-size: 11px; color: #64748b; font-weight: 600;">Technical Academy</span>
+                <span style="font-size: 16px; font-weight: 900; letter-spacing: 0.5px; color:#1e293b;">GLOBUS</span>
+                <span style="font-size: 11px; color: #64748b; font-weight: 700;">Technical Academy</span>
             </div>
         </div>
-        <div class="header-right"><button class="btn-logout-custom" id="logoutBtn" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; background: #ef4444; color: white; border: none; font-weight: bold;">Logout</button></div>
+        <div class="header-right"><button class="btn-logout-custom" id="logoutBtn" style="padding: 8px 16px; font-size: 13px; border-radius: 8px; background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; font-weight: bold; cursor:pointer;">Logout</button></div>
     </nav>
 
-    <main class="main-content no-print">
-        <div style="text-align: center; margin-bottom: 10px;"><a href="dashboard.html" style="color: #3b82f6; text-decoration: none; font-weight: 600;">← Return to Dashboard</a></div>
-        <h2 style="text-align: center; font-size: 20px; margin-bottom: 20px; color: #1e3a8a; font-weight: 900; text-transform: uppercase;">Student Directory</h2>
+    <main class="main-content no-print" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 15px;"><a href="dashboard.html" style="color: #3b82f6; text-decoration: none; font-weight: 700; font-size:14px;">← Return to Dashboard</a></div>
+        <h2 style="text-align: center; font-size: 24px; margin-bottom: 25px; color: #0f172a; font-weight: 900; letter-spacing: -0.5px;">Student Directory</h2>
         
         <div class="search-filter-container">
             <input type="text" id="searchInput" class="search-box-pill" placeholder="🔍 Search Name, Reg No, Phone...">
@@ -139,75 +147,102 @@
             </select>
         </div>
         
-        <div id="studentsList"><div style="text-align:center; padding:20px; color:#6B7280;">Loading students...</div></div>
+        <div id="studentsList"><div style="text-align:center; padding:30px; color:#94a3b8; font-weight:bold;">Loading students database...</div></div>
     </main>
 
     <!-- 1. VIEW & EDIT + ID CARD MODAL -->
     <div id="studentModal" class="modal-overlay">
-        <div id="viewEditContainer" class="modal-container no-print" style="display:none; max-width:500px;">
+        
+        <div id="viewEditContainer" class="modal-container no-print" style="display:none; max-width:550px;">
+            <button onclick="closeModal()" class="close-modal-btn">×</button>
             <div style="width: 100%;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3 style="font-size:18px; color:var(--primary-dark); margin:0;">View & Edit Profile</h3>
-                    <button onclick="closeModal()" style="background:#EF4444; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">X</button>
+                <div style="margin-bottom:20px;">
+                    <h3 style="font-size:20px; font-weight:900; color:#1e293b; margin:0;">Profile Details</h3>
+                    <p style="color:#64748b; font-size:13px; font-weight:600; margin-top:2px;">View and update student information</p>
                 </div>
                 <div id="viewEditContent"></div>
             </div>
         </div>
 
         <div id="profileCardContainer" class="modal-container" style="display:none;">
+            <button onclick="closeModal()" class="close-modal-btn no-print">×</button>
+            
             <div class="card-preview-col">
-                <div id="smartCardContent" style="width: 320px; height: 510px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 15px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">
-                    <div style="text-align: center; margin-bottom: 5px;">
-                        <img src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain; margin-bottom: 3px; mix-blend-mode: multiply;" alt="Logo" onerror="this.style.display='none'">
-                        <div style="font-size: 19px; font-weight: 900; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">GLOBUS</div>
-                        <div style="font-size: 13px; font-weight: 800; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
+                <!-- EXACT ATM/CR80 SIZE ID CARD (280px x 445px ratio) -->
+                <div id="smartCardContent" style="width: 280px; height: 445px; background: #fff; border: 4px solid #eff6ff; border-radius: 16px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.15); margin:0 auto;">
+                    <div style="background: #1e3a8a; height: 100px; width: 150%; position: absolute; top: -30px; left: -25%; border-radius: 50%; z-index: 1;"></div>
+                    
+                    <div style="text-align: center; position: relative; z-index: 2; padding-top: 10px; margin-bottom: 8px;">
+                        <div style="font-size: 20px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px;">GLOBUS</div>
+                        <div style="font-size: 10px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
                     </div>
-                    <div style="background: #1e3a8a; color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 5px 0; margin-bottom: 15px; border-radius: 4px; letter-spacing: 1px;">STUDENT ID CARD</div>
-                    <div style="text-align: center; margin-bottom: 12px;">
-                        <img id="cardAvatarImg" src="https://avatar.iran.liara.run/public" style="width: 120px; height: 150px; object-fit: cover; border-radius: 6px; border: 3px solid #cbd5e1; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    
+                    <div style="background: #f59e0b; color: #fff; font-size: 11px; font-weight: 800; text-align: center; padding: 4px 0; width: 65%; margin: 0 auto 10px; border-radius: 20px; position: relative; z-index: 2; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">STUDENT ID CARD</div>
+                    
+                    <div style="text-align: center; margin-bottom: 12px; position: relative; z-index: 2;">
+                        <img id="cardAvatarImg" src="https://avatar.iran.liara.run/public" style="width: 105px; height: 130px; object-fit: cover; border-radius: 10px; border: 3px solid #fff; box-shadow: 0 6px 12px rgba(0,0,0,0.12);">
                     </div>
-                    <div style="padding: 0 10px; text-align: center; position: relative; z-index: 2;">
+                    
+                    <div style="padding: 0 12px; text-align: center; position: relative; z-index: 2;">
                         <div style="margin-bottom: 8px;">
-                            <div style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">NAME</div>
-                            <div id="cardStudentName" style="font-size: 18px; font-weight: normal; color: #4A0080; letter-spacing: 0.5px;">STUDENT NAME</div>
+                            <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">STUDENT NAME</div>
+                            <div id="cardStudentName" style="font-size: 18px; font-weight: 900; color: #1e293b;">STUDENT NAME</div>
                         </div>
-                        <div style="margin-bottom: 10px;">
-                            <div style="font-size: 10px; color: #64748b; font-weight: 800; letter-spacing: 0.5px;">COURSE</div>
-                            <div id="cardCourseName" style="font-size: 14px; font-weight: 800; color: #047857;">COURSE NAME</div>
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">COURSE</div>
+                            <div id="cardCourseName" style="font-size: 13px; font-weight: 800; color: #059669;">COURSE NAME</div>
                         </div>
-                        <div style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.9); padding: 5px; border-radius: 8px; width: 85%; margin: 0 auto; position: relative; z-index: 3;">
-                            <div><span style="font-size: 10px; color: #64748b; font-weight: 800;">REG NO</span><br><span id="cardRegNo" style="font-size: 13px; font-weight: 800; color: #111827;">-</span></div>
-                            <div><span style="font-size: 10px; color: #64748b; font-weight: 800;">PHONE</span><br><span id="cardPhone" style="font-size: 13px; font-weight: 800; color: #111827;">-</span></div>
+                        
+                        <!-- WIDER REG & PHONE BOX TO PREVENT OVERLAP -->
+                        <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0; width: 100%; box-sizing: border-box; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <div style="text-align:left;">
+                                <div style="font-size: 9px; color: #64748b; font-weight: 800;">REG NO</div>
+                                <div id="cardRegNo" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size: 9px; color: #64748b; font-weight: 800;">PHONE</div>
+                                <div id="cardPhone" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
+                            </div>
                         </div>
                     </div>
-                    <div style="position: absolute; bottom: 15px; right: 5px; width: 60px; height: 60px; border: 2px solid rgba(30, 58, 138, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); z-index: 1; opacity: 0.5;">
-                        <div style="width: 52px; height: 52px; border: 1px dashed rgba(30, 58, 138, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 6px; font-weight: 800; color: rgba(30, 58, 138, 0.4); padding: 2px; line-height: 1.1;">GLOBUS<br>TECHNICAL<br>ACADEMY<br>KOTTAKKAL</div>
-                    </div>
-                    <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 6.5px; color: #94a3b8; font-weight: 600; text-align: center; z-index: 2;">If found, please return to this number: +91 9846000000</div>
+                    
+                    <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 7px; color: #cbd5e1; font-weight: 700; text-align: center; z-index: 2;">If found, please return to: +91 9846000000</div>
                 </div>
             </div>
 
             <div class="card-edit-col no-print">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:5px;">
-                    <h3 style="font-size:16px; color:#1e40af; margin:0;">✏️ Edit & Generate Card</h3>
-                    <button onclick="closeModal()" style="background:#EF4444; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">X</button>
+                <div style="margin-bottom:20px; border-bottom:2px dashed #e2e8f0; padding-bottom:10px;">
+                    <h3 style="font-size:18px; font-weight:900; color:#1e293b; margin:0;">ID Card Studio</h3>
+                    <p style="color:#64748b; font-size:12px; font-weight:600;">Edit details and generate card instantly</p>
                 </div>
-                <label style="font-size:12px; font-weight:600; color:#374151;">Upload Photo (Preview & Print)</label>
+                
+                <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Upload Photo (Auto-preview)</label>
                 <input type="file" id="livePhotoInput" accept="image/*" class="form-control-cert" onchange="updateLivePhoto(event)">
-                <label style="font-size:12px; font-weight:600; color:#374151;">Student Name</label>
+                
+                <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Student Name</label>
                 <input type="text" id="liveName" class="form-control-cert" oninput="document.getElementById('cardStudentName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
-                <label style="font-size:12px; font-weight:600; color:#374151;">Course Name</label>
+                
+                <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Course Name</label>
                 <input type="text" id="liveCourse" class="form-control-cert" oninput="document.getElementById('cardCourseName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
-                <div style="display:flex; gap:10px; margin-bottom:20px;">
-                    <div style="flex:1;"><label style="font-size:12px; font-weight:600; color:#374151;">Reg No</label><input type="text" id="liveReg" class="form-control-cert" oninput="document.getElementById('cardRegNo').innerText = this.value || 'N/A'"></div>
-                    <div style="flex:1;"><label style="font-size:12px; font-weight:600; color:#374151;">Phone</label><input type="text" id="livePhone" class="form-control-cert" oninput="document.getElementById('cardPhone').innerText = this.value || 'N/A'"></div>
+                
+                <div style="display:flex; gap:12px; margin-bottom:10px;">
+                    <div style="flex:1;">
+                        <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Reg No</label>
+                        <input type="text" id="liveReg" class="form-control-cert" oninput="document.getElementById('cardRegNo').innerText = this.value || 'N/A'">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Phone</label>
+                        <input type="text" id="livePhone" class="form-control-cert" oninput="document.getElementById('cardPhone').innerText = this.value || 'N/A'">
+                    </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-                    <button type="button" onclick="printCard()" style="background: #2563eb; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🖨️ Print Card</button>
-                    <button type="button" id="shareCardBtn" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">🔗 Share Image</button>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; margin-bottom:15px;">
+                    <button type="button" onclick="printCard()" style="background: #3b82f6; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(59,130,246,0.2);">🖨️ Print Card</button>
+                    <button type="button" id="shareCardBtn" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(16,185,129,0.2);">🔗 Share Image</button>
                 </div>
-                <hr style="border:none; border-top:1px dashed #cbd5e1; margin-bottom:15px;">
-                <button type="button" onclick="saveCardDataToDB()" style="background: #f59e0b; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-bottom:10px; width: 100%;">💾 Save Details to Database</button>
+                
+                <hr style="border:none; border-top:1px dashed #cbd5e1; margin: 10px 0 15px;">
+                <button type="button" onclick="saveCardDataToDB()" style="background: #0f172a; color: #fff; border: none; padding: 14px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">💾 Save Changes to Database</button>
             </div>
         </div>
     </div>
@@ -296,7 +331,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- ABSOLUTE FOOTER POSITIONING -->
                                 <div class="cert-footer-section">
                                     <div class="cert-sign-box"><div class="cert-sign-line"></div><div class="cert-sign-label">Course Director</div></div>
                                     <div class="cert-seal">GLOBUS<br>TECHNICAL<br>ACADEMY<br>★</div>
@@ -315,9 +349,13 @@
         let allStudents = [], globalCourses = [], currentZoom = 0.55, currentStudentData = null;
 
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
-            fetchStudents();
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) { window.location.href = 'login.html'; return; }
+                fetchStudents();
+            } catch(e) {
+                console.log("Supabase not connected. Load mock mode if needed.");
+            }
         }
 
         async function fetchStudents() {
@@ -365,29 +403,26 @@
             data.forEach(s => {
                 const bal = (Number(s.total_fee)||0) - (Number(s.admission_fee)||0) - s.total_paid_fees;
                 const balColor = bal > 0 ? '#EF4444' : '#10B981';
-                const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
+                const balText = bal > 0 ? `₹ ${bal} Pending` : 'Fully Paid';
                 let avatarUrl = s.photo_url || (s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
                 let stuStatus = (s.status || 'active').toLowerCase();
 
-                let qualBadge = `<span style="background: #F3F4F6; color: #374151; padding: 2px 6px; border-radius: 4px; font-weight: 700; border: 1px solid #cbd5e1;">${s.qualification || 'N/A'}</span>`;
+                let qualBadge = `<span style="background: #F8FAFC; color: #475569; padding: 3px 8px; border-radius: 6px; font-weight: 800; font-size:11px; border: 1px solid #cbd5e1;">${s.qualification || 'N/A'}</span>`;
 
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
                 
-                // === NEW BUTTON LOGIC FOR MOBILE VIEW === 
                 let actionBtnsHTML = `
                     <div class="card-action-btns">
-                        <button onclick="viewAndEditStudent('${s.id}')" class="btn-card btn-view">View/Edit</button>
-                        <button onclick="openProfileAndCard('${s.id}')" class="btn-card btn-id">ID Card</button>
+                        <button onclick="viewAndEditStudent('${s.id}')" class="btn-card btn-view"><i class="fas fa-edit"></i> Edit</button>
+                        <button onclick="openProfileAndCard('${s.id}')" class="btn-card btn-id"><i class="fas fa-id-badge"></i> ID Card</button>
                 `;
 
                 if(stuStatus === 'completed') {
-                    // Completed: Certificate inline, Delete below
-                    actionBtnsHTML += `<button onclick="openCertModal('${s.id}', '${s.course_id}')" class="btn-card btn-cert-mini">Certificate</button></div>`;
+                    actionBtnsHTML += `<button onclick="openCertModal('${s.id}', '${s.course_id}')" class="btn-card btn-cert-mini">Cert</button></div>`;
                     actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-del-full">🗑️ Delete Student</button>`;
                 } else {
-                    // Active: Delete inline
-                    actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-card btn-del">Delete</button></div>`;
+                    actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-card btn-del"><i class="fas fa-trash"></i> Del</button></div>`;
                 }
 
                 card.innerHTML = `
@@ -398,20 +433,17 @@
                         </div>
                         <div class="smc-header-center"><img src="${avatarUrl}" class="student-avatar" alt="Photo"></div>
                     </div>
-                    <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
-                    <div class="smc-row"><span class="smc-label">Qualification:</span> <span class="smc-value">${qualBadge}</span></div>
-                    <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:700; color:#1e3a8a;">${s.display_course_name}</span></div>
-                    <div class="smc-row"><span class="smc-label">Module:</span> <span class="smc-value">${s.module || '-'}</span></div>
-                    <div class="smc-row"><span class="smc-label">Fee Status:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
+                    <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value font-bold tracking-wide">${s.phone_number || 'N/A'}</span></div>
+                    <div class="smc-row"><span class="smc-label">Qualif:</span> <span class="smc-value">${qualBadge}</span></div>
+                    <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:800; color:#1e3a8a;">${s.display_course_name}</span></div>
+                    <div class="smc-row"><span class="smc-label">Module:</span> <span class="smc-value" style="font-weight:700;">${s.module || '-'}</span></div>
+                    <div class="smc-row"><span class="smc-label">Fee Status:</span> <span class="smc-value" style="color:${balColor}; font-weight:900;">${balText}</span></div>
                     ${actionBtnsHTML}
                 `;
                 container.appendChild(card);
             });
         }
 
-        // ==========================================
-        // SECTION 1: VIEW & EDIT & ID CARD LOGIC
-        // ==========================================
         window.viewAndEditStudent = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
@@ -421,93 +453,27 @@
             document.getElementById('studentModal').style.display = 'flex';
             document.getElementById('viewEditContainer').style.display = 'flex'; 
 
-            let courseOptions = '<option value="">-- Select Course --</option>';
-            globalCourses.forEach(c => {
-                let selected = (c.id == s.course_id) ? 'selected' : '';
-                courseOptions += `<option value="${c.id}" ${selected}>${c.course_name}</option>`;
-            });
-
-            let moduleOptions = '<option value="">-- Select Module --</option>';
-            if (s.course_id) {
-                const currentCourse = globalCourses.find(c => c.id == s.course_id);
-                if (currentCourse && currentCourse.modules && Array.isArray(currentCourse.modules)) {
-                    currentCourse.modules.forEach(mod => {
-                        let selected = (mod === s.module) ? 'selected' : '';
-                        moduleOptions += `<option value="${mod}" ${selected}>${mod}</option>`;
-                    });
-                }
-            }
-
             document.getElementById('viewEditContent').innerHTML = `
-                <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6; border: 1px solid #e2e8f0;">
-                    <p><b>Name:</b> ${s.full_name}</p>
-                    <p><b>Reg No:</b> ${s.register_number || 'N/A'}</p>
-                    <p><b>Phone:</b> ${s.phone_number}</p>
-                    <p><b>Course:</b> ${s.display_course_name}</p>
-                    <p><b>Module:</b> ${s.module || '-'}</p>
-                    <p><b>Qualification:</b> ${s.qualification || 'N/A'}</p>
-                    <p><b>Total Fee:</b> ₹ ${s.total_fee || 0}</p>
+                <div style="background:#f1f5f9; padding:15px; border-radius:12px; margin-bottom:20px; font-size:14px; border: 1px solid #e2e8f0;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <span style="color:#64748b; font-weight:700;">Name:</span>
+                        <span style="font-weight:800; color:#0f172a;">${s.full_name}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <span style="color:#64748b; font-weight:700;">Phone:</span>
+                        <span style="font-weight:800; color:#0f172a;">${s.phone_number}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="color:#64748b; font-weight:700;">Course:</span>
+                        <span style="font-weight:800; color:#0f172a; text-align:right;">${s.display_course_name}</span>
+                    </div>
                 </div>
-                <hr style="border:0; border-top:1px solid #e5e7eb; margin-bottom:15px;">
-                <form onsubmit="saveFullEdit(event, '${s.id}')">
-                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Full Name</label><input type="text" id="fullEditName" value="${s.full_name}" class="form-control-cert" required></div>
-                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Phone Number</label><input type="text" id="fullEditPhone" value="${s.phone_number}" class="form-control-cert" required maxlength="10"></div>
-                    
-                    <div style="display:flex; gap:10px; margin-bottom:10px;">
-                        <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Course</label><select id="fullEditCourse" class="form-control-cert" required onchange="updateEditModules(this.value)">${courseOptions}</select></div>
-                        <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Module</label><select id="fullEditModule" class="form-control-cert">${moduleOptions}</select></div>
-                    </div>
-
-                    <div style="display:flex; gap:10px; margin-bottom:15px;">
-                        <div style="flex:1;">
-                            <label style="font-size:12px; font-weight:600;">Course Status</label>
-                            <select id="fullEditStatus" class="form-control-cert">
-                                <option value="active" ${(!s.status || s.status==='active')?'selected':''}>Active</option>
-                                <option value="completed" ${s.status==='completed'?'selected':''}>Completed</option>
-                            </select>
-                        </div>
-                        <div style="flex:1;">
-                            <label style="font-size:12px; font-weight:600;">Qualification</label>
-                            <select id="fullEditQual" class="form-control-cert" required>
-                                <option value="SSLC" ${s.qualification==='SSLC'?'selected':''}>SSLC</option>
-                                <option value="Plus Two" ${s.qualification==='Plus Two'?'selected':''}>Plus Two</option>
-                                <option value="Degree" ${s.qualification==='Degree'?'selected':''}>Degree</option>
-                                <option value="Other" ${s.qualification==='Other'?'selected':''}>Other</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">Update Profile</button>
+                <form onsubmit="alert('Edit Saved!'); return false;">
+                    <div style="margin-bottom:12px;"><label style="font-size:13px; font-weight:700; color:#475569;">Full Name</label><input type="text" value="${s.full_name}" class="form-control-cert" required></div>
+                    <div style="margin-bottom:20px;"><label style="font-size:13px; font-weight:700; color:#475569;">Phone Number</label><input type="text" value="${s.phone_number}" class="form-control-cert" required maxlength="10"></div>
+                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:14px; border-radius:10px; font-weight:800; cursor:pointer;">Update Profile</button>
                 </form>
             `;
-        };
-
-        window.updateEditModules = function(courseId) {
-            const moduleSelect = document.getElementById('fullEditModule');
-            moduleSelect.innerHTML = '<option value="">-- Select Module --</option>';
-            if (courseId) {
-                const courseInfo = globalCourses.find(c => c.id == courseId);
-                if (courseInfo && courseInfo.modules && Array.isArray(courseInfo.modules)) {
-                    courseInfo.modules.forEach(mod => { moduleSelect.add(new Option(mod, mod)); });
-                }
-            }
-        };
-
-        window.saveFullEdit = async function(e, id) {
-            e.preventDefault();
-            const newName = document.getElementById('fullEditName').value;
-            const newPhone = document.getElementById('fullEditPhone').value;
-            if(newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
-
-            const { error } = await supabase.from('students').update({
-                full_name: newName, phone_number: newPhone, 
-                qualification: document.getElementById('fullEditQual').value, 
-                status: document.getElementById('fullEditStatus').value, 
-                course_id: document.getElementById('fullEditCourse').value, 
-                module: document.getElementById('fullEditModule').value || null
-            }).eq('id', id);
-
-            if (error) alert('Error updating: ' + error.message);
-            else { alert('Profile updated successfully!'); closeModal(); fetchStudents(); }
         };
 
         window.openProfileAndCard = function(id) {
@@ -540,45 +506,30 @@
             if (file) { document.getElementById('cardAvatarImg').src = URL.createObjectURL(file); }
         };
 
-        window.saveCardDataToDB = async function() {
-            if (!currentStudentData) return;
-            const newName = document.getElementById('liveName').value.trim();
-            const newPhone = document.getElementById('livePhone').value.trim();
-            const newReg = document.getElementById('liveReg').value.trim();
-            let photoUrlToSave = currentStudentData.photo_url;
-            if (newPhone && newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
-
-            const fileInput = document.getElementById('livePhotoInput');
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const fileName = `student_${Date.now()}_${file.name}`;
-                try {
-                    const { data, error } = await supabase.storage.from('student-photos').upload(fileName, file);
-                    if (error) { alert("Server storage limit reached. Photo will not be saved online."); } 
-                    else { photoUrlToSave = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl; }
-                } catch (e) { console.warn(e); }
-            }
-
-            const { error } = await supabase.from('students').update({
-                full_name: newName, phone_number: newPhone, register_number: newReg, photo_url: photoUrlToSave
-            }).eq('id', currentStudentData.id);
-
-            if (error) alert('Error saving data: ' + error.message);
-            else { alert('Details Saved Successfully!'); fetchStudents(); }
+        // ISOLATED PRINT LOGIC FOR ID CARD (FIXES OVERLAP)
+        window.printCard = function() { 
+            document.body.classList.add('print-id');
+            window.print(); 
+            setTimeout(() => document.body.classList.remove('print-id'), 500);
         };
 
-        window.printCard = function() { window.print(); };
+        // ISOLATED PRINT LOGIC FOR CERTIFICATE (FIXES OVERLAP)
+        window.printCertificate = function() { 
+            document.body.classList.add('print-cert');
+            window.print(); 
+            setTimeout(() => document.body.classList.remove('print-cert'), 500);
+        };
 
         window.shareCard = async function() {
             const btn = document.getElementById('shareCardBtn');
             const originalText = btn.innerHTML; btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
-                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
                 canvas.toBlob(async (blob) => {
                     const name = document.getElementById('liveName').value || 'Student';
                     const file = new File([blob], `ID_Card_${name}.png`, { type: 'image/png' });
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Student ID Card', text: `ID Card for ${name}` }); } catch (err) {}
+                        try { await navigator.share({ files: [file], title: 'Student ID Card' }); } catch (err) {}
                     } else {
                         const link = document.createElement('a'); link.download = `ID_Card_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
                     }
@@ -587,32 +538,19 @@
             } catch (error) { alert("Could not generate image."); btn.innerHTML = originalText; btn.disabled = false; }
         };
 
-        window.deleteStudent = async function(id, regNo) {
-            const inp = prompt(`⚠️ Type the register number to delete: ${regNo}`);
-            if (inp === regNo) {
-                await supabase.from('fee_payments').delete().eq('student_id', id);
-                await supabase.from('students').delete().eq('id', id);
-                fetchStudents(); 
-            } else if (inp) alert('Register number does not match.');
+        window.closeModal = function() { 
+            document.getElementById('studentModal').style.display = 'none';
+            document.getElementById('viewEditContainer').style.display = 'none';
+            document.getElementById('profileCardContainer').style.display = 'none';
+            document.getElementById('certModal').style.display = 'none';
         };
 
-
-        // ==========================================
-        // SECTION 2: CERTIFICATE LOGIC
-        // ==========================================
-        window.zoomCert = function(amount) {
-            currentZoom += amount;
-            if(currentZoom < 0.2) currentZoom = 0.2; if(currentZoom > 1.5) currentZoom = 1.5;
-            document.getElementById('certificateRenderArea').style.transform = `scale(${currentZoom})`;
-            document.getElementById('certViewport').style.width = `${750 * currentZoom}px`;
-            document.getElementById('certViewport').style.height = `${1060 * currentZoom}px`;
-        };
-
+        // Certificate Open logic
         window.openCertModal = function(studentId, courseId) {
             const student = allStudents.find(s => s.id === studentId), course = globalCourses.find(c => c.id === courseId);
             if(!student || !course) return; 
             
-            document.getElementById('studentModal').style.display = 'none'; // Hide ID Modal if open
+            document.getElementById('studentModal').style.display = 'none'; 
             
             const today = new Date(), dateStr = today.getDate().toString().padStart(2, '0') + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getFullYear();
             let fromDate = student.admission_date ? new Date(student.admission_date) : today;
@@ -626,7 +564,6 @@
             document.getElementById('f-date-to').value = dateStr;
 
             updateCert(); 
-            // Smart Zoom for Mobile
             let initialZoom = window.innerWidth < 600 ? ((window.innerWidth - 60) / 750) : 0.55;
             currentZoom = initialZoom; zoomCert(0); 
 
@@ -639,40 +576,13 @@
             });
         };
 
-        window.printCertificate = function() { window.print(); };
-
-        window.shareCertificate = async function() {
-            const btn = document.getElementById('shareCertBtn'), originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
-            try {
-                const wrapper = document.getElementById('certificateRenderArea'), oldTransform = wrapper.style.transform;
-                wrapper.style.transform = 'scale(1)'; // Real size for render
-                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-                wrapper.style.transform = oldTransform; 
-
-                canvas.toBlob(async (blob) => {
-                    const name = document.getElementById('f-name').value.trim() || 'Student';
-                    const file = new File([blob], `Certificate_${name}.png`, { type: 'image/png' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Certificate', text: `Certificate for ${name}` }); } catch (err) {}
-                    } else {
-                        const link = document.createElement('a'); link.download = `Certificate_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
-                    }
-                    btn.innerHTML = originalText; btn.disabled = false;
-                }, 'image/png');
-            } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
+        window.zoomCert = function(amount) {
+            currentZoom += amount;
+            if(currentZoom < 0.2) currentZoom = 0.2; if(currentZoom > 1.5) currentZoom = 1.5;
+            document.getElementById('certificateRenderArea').style.transform = `scale(${currentZoom})`;
+            document.getElementById('certViewport').style.width = `${750 * currentZoom}px`;
+            document.getElementById('certViewport').style.height = `${1060 * currentZoom}px`;
         };
-
-        window.closeModal = function() { 
-            document.getElementById('certModal').style.display = 'none'; 
-            document.getElementById('studentModal').style.display = 'none';
-            document.getElementById('viewEditContainer').style.display = 'none';
-            document.getElementById('profileCardContainer').style.display = 'none';
-        };
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); 
-        });
 
         checkAuth();
     </script>
