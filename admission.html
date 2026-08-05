@@ -6,46 +6,27 @@
     <title>New Admission - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* Custom Styling for the Submit Button */
         .btn-submit-custom {
-            background-color: #3B82F6; /* Attractive Blue */
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
-            margin-top: 10px;
+            background-color: #3B82F6; color: white; border: none; padding: 14px 20px;
+            border-radius: 8px; font-size: 16px; font-weight: bold; width: 100%;
+            cursor: pointer; transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); margin-top: 10px;
         }
-        .btn-submit-custom:hover {
-            background-color: #2563eb;
-        }
-        .btn-submit-custom:active {
-            transform: scale(0.98);
-        }
-        .btn-submit-custom:disabled {
-            background-color: #94a3b8;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+        .btn-submit-custom:hover { background-color: #2563eb; }
+        .btn-submit-custom:active { transform: scale(0.98); }
+        .btn-submit-custom:disabled { background-color: #94a3b8; cursor: not-allowed; box-shadow: none; }
     </style>
 </head>
 <body>
-    
     <nav class="app-header">
         <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <div style="display: flex; flex-direction: column; overflow: hidden;">
-                <span class="brand-top" style="font-size: 16px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Globus</span>
-                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Technical Academy</span>
+                <span class="brand-top" style="font-size: 16px; font-weight: bold;">Globus</span>
+                <span class="brand-bottom" style="font-size: 11px; color: #64748b;">Technical Academy</span>
             </div>
         </div>
-        
-        <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
+        <div class="header-right">
             <button class="btn-logout-custom" id="logoutBtn">Logout</button>
         </div>
     </nav>
@@ -55,114 +36,52 @@
             <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--primary-dark);">New Student Admission</h2>
             
             <form id="admissionForm">
-                <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" id="fullName" class="form-control" required placeholder="Enter student name">
-                </div>
+                <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="fullName" class="form-control" required></div>
+                <div class="form-group"><label class="form-label">Register Number</label><input type="text" id="regNo" class="form-control" required></div>
+                <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" id="phone" class="form-control" required maxlength="10"></div>
+                <div class="form-group"><label class="form-label">Admission Date</label><input type="date" id="admissionDate" class="form-control" required></div>
+                <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="dateOfBirth" class="form-control"></div>
+                <div class="form-group"><label class="form-label">Address</label><textarea id="address" class="form-control" rows="3" required style="resize: none;"></textarea></div>
                 
                 <div class="form-group">
-                    <label class="form-label">Register Number</label>
-                    <input type="text" id="regNo" class="form-control" required placeholder="e.g. GTA-001">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Phone Number</label>
-                    <input type="tel" id="phone" class="form-control" required placeholder="10-digit mobile number" maxlength="10">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Admission Date</label>
-                    <input type="date" id="admissionDate" class="form-control" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Date of Birth</label>
-                    <input type="date" id="dateOfBirth" class="form-control">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Address</label>
-                    <textarea id="address" class="form-control" rows="3" required placeholder="Enter student residential address" style="resize: none; height: auto; padding: 10px;"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Educational Qualification</label>
+                    <label class="form-label">Qualification</label>
                     <select id="qualification" class="form-control" required>
-                        <option value="">-- Select Qualification --</option>
-                        <option value="SSLC">SSLC</option>
-                        <option value="Plus Two">Plus Two</option>
-                        <option value="Degree">Degree</option>
-                        <option value="Other">Other</option>
+                        <option value="">-- Select --</option><option value="SSLC">SSLC</option><option value="Plus Two">Plus Two</option><option value="Degree">Degree</option><option value="Other">Other</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Gender</label>
                     <select id="gender" class="form-control" required>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
+                        <option value="Male">Male</option><option value="Female">Female</option>
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Student Photo</label>
-                    <input type="file" id="photoFile" class="form-control" accept="image/*">
-                </div>
+                <div class="form-group"><label class="form-label">Student Photo</label><input type="file" id="photoFile" class="form-control" accept="image/*"></div>
                 
-                <div class="form-group">
-                    <label class="form-label">Select Course</label>
-                    <select id="courseSelect" class="form-control" required>
-                        <option value="">-- Select Course --</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Select Module <span style="font-size: 11px; color: #64748b; font-weight: normal;">(Optional)</span></label>
-                    <select id="moduleSelect" class="form-control">
-                        <option value="">-- Select Module --</option>
-                    </select>
-                </div>
+                <div class="form-group"><label class="form-label">Select Course</label><select id="courseSelect" class="form-control" required><option value="">-- Select Course --</option></select></div>
+                <div class="form-group"><label class="form-label">Select Module (Optional)</label><select id="moduleSelect" class="form-control"><option value="">-- Select Module --</option></select></div>
                 
-                <div class="form-group">
-                    <label class="form-label">Total Course Fee (₹)</label>
-                    <input type="number" id="totalFee" class="form-control" required placeholder="e.g. 15000">
-                </div>
+                <div class="form-group"><label class="form-label">Total Course Fee (₹)</label><input type="number" id="totalFee" class="form-control" required></div>
                 
                 <div style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 15px; border-radius: 8px; margin-bottom: 24px;">
                     <h3 style="font-size: 14px; margin-bottom: 10px; color: #166534;">Admission Fee Details</h3>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Admission Fee Paid (₹)</label>
-                        <input type="number" id="admissionFee" class="form-control" required placeholder="Amount paid during admission">
-                    </div>
-                    
+                    <div class="form-group"><label class="form-label">Admission Fee Paid (₹)</label><input type="number" id="admissionFee" class="form-control" required></div>
                     <div class="form-group">
                         <label class="form-label">Payment Mode</label>
-                        <select id="paymentMode" class="form-control" required>
-                            <option value="Cash">Cash</option>
-                            <option value="UPI">UPI</option>
-                            <option value="Bank Transfer">Bank Transfer</option>
-                        </select>
+                        <select id="paymentMode" class="form-control" required><option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Bank Transfer">Bank Transfer</option></select>
                     </div>
-
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="form-label">Receipt / Transaction ID</label>
-                        <input type="text" id="receiptNo" class="form-control" placeholder="Enter receipt number (Optional)">
-                    </div>
+                    <div class="form-group" style="margin-bottom: 0;"><label class="form-label">Receipt / Transaction ID</label><input type="text" id="receiptNo" class="form-control"></div>
                 </div>
                 
                 <button type="submit" class="btn-submit-custom" id="submitBtn">Submit Admission</button>
             </form>
-            
-            <div style="text-align: center; margin-top: 20px;">
-                <a href="dashboard.html" style="color: var(--primary-light, #3b82f6); text-decoration: none; font-weight: 600;">Return to Dashboard</a>
-            </div>
+            <div style="text-align: center; margin-top: 20px;"><a href="dashboard.html" style="color: #3b82f6; font-weight: 600;">Return to Dashboard</a></div>
         </div>
     </main>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-
         let globalCourses = [];
 
         async function checkAuth() {
@@ -173,59 +92,37 @@
         }
 
         async function fetchCourses() {
-            const { data, error } = await supabase.from('courses').select('id, course_name, modules').eq('status', 'Active');
-            
-            if (error) {
-                console.error("Error fetching courses:", error.message);
-                return;
-            }
-            
+            const { data } = await supabase.from('courses').select('id, course_name, modules').eq('status', 'Active');
             if (data) {
                 globalCourses = data;
                 const select = document.getElementById('courseSelect');
-                select.innerHTML = '<option value="">-- Select Course --</option>';
                 data.forEach(c => select.add(new Option(c.course_name, c.id)));
             }
         }
 
         document.getElementById('courseSelect').addEventListener('change', function() {
-            const selectedCourseId = this.value;
             const moduleSelect = document.getElementById('moduleSelect');
             moduleSelect.innerHTML = '<option value="">-- Select Module --</option>';
-
-            if (selectedCourseId) {
-                const courseInfo = globalCourses.find(c => c.id == selectedCourseId);
-                
-                if (courseInfo && courseInfo.modules && Array.isArray(courseInfo.modules)) {
-                    courseInfo.modules.forEach(mod => {
-                        moduleSelect.add(new Option(mod, mod));
-                    });
-                }
+            const courseInfo = globalCourses.find(c => c.id == this.value);
+            if (courseInfo && courseInfo.modules) {
+                courseInfo.modules.forEach(mod => moduleSelect.add(new Option(mod, mod)));
             }
         });
 
         document.getElementById('phone').addEventListener('input', function() {
             let val = this.value.trim();
-            if (/^\d+$/.test(val) && val.length > 10) {
-                this.value = val.slice(0, 10);
-            }
+            if (/^\d+$/.test(val) && val.length > 10) this.value = val.slice(0, 10);
         });
 
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault(); 
             const phoneVal = document.getElementById('phone').value.trim();
-            if (phoneVal.length !== 10) {
-                alert('Phone number must be exactly 10 digits.');
-                return;
-            }
+            if (phoneVal.length !== 10) { alert('Phone number must be exactly 10 digits.'); return; }
 
             const totalFee = Number(document.getElementById('totalFee').value);
             const admissionFee = Number(document.getElementById('admissionFee').value);
 
-            if (admissionFee > totalFee) {
-                alert('❌ Error: Admission fee cannot be greater than the Total Course Fee!');
-                return;
-            }
+            if (admissionFee > totalFee) { alert('❌ Error: Admission fee cannot be greater than Total Course Fee!'); return; }
 
             const btn = document.getElementById('submitBtn');
             btn.textContent = 'Processing...'; btn.disabled = true;
@@ -237,15 +134,12 @@
                 if (fileInput.files.length > 0) {
                     const file = fileInput.files[0];
                     const fileName = `${Date.now()}_${file.name}`;
-                    const { data: uploadData, error: uploadError } = await supabase.storage.from('student-photos').upload(fileName, file);
-                    if (uploadError) throw uploadError;
-                    
-                    const { data: publicUrlData } = supabase.storage.from('student-photos').getPublicUrl(fileName);
-                    photoUrl = publicUrlData.publicUrl;
+                    await supabase.storage.from('student-photos').upload(fileName, file);
+                    photoUrl = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl;
                 }
 
-                // അഡ്മിഷൻ വിവരങ്ങൾ students ടേബിളിൽ മാത്രം സേവ് ചെയ്യുന്നു.
-                const { error: studentError } = await supabase.from('students').insert([{
+                // FIX: Only saving to students table. The duplicate fee_payments insert is removed.
+                const { error } = await supabase.from('students').insert([{
                     full_name: document.getElementById('fullName').value,
                     register_number: document.getElementById('regNo').value,
                     phone_number: phoneVal,
@@ -262,20 +156,17 @@
                     status: 'active'
                 }]);
 
-                if (studentError) throw studentError;
-
-                alert('Admission Successful & Fee Recorded!'); 
+                if (error) throw error;
+                alert('Admission Successful!'); 
                 window.location.href = 'dashboard.html'; 
             } catch (err) {
                 alert('Error: ' + err.message);
-                btn.textContent = 'Submit Admission'; 
-                btn.disabled = false;
+                btn.textContent = 'Submit Admission'; btn.disabled = false;
             }
         });
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
-            window.history.replaceState(null, '', 'login.html'); window.location.replace('login.html'); 
+            await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); 
         });
 
         checkAuth();
