@@ -3,23 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Collect Fee - Globus Technical Academy</title>
+    <title>Collect Fee - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    
     <nav class="app-header">
-        <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
-            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
-            <div style="display: flex; flex-direction: column; overflow: hidden;">
-                <span class="brand-top" style="font-size: 16px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Globus</span>
-                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Technical Academy</span>
+        <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 10px;">
+            <img src="assets/images/logo.png" class="logo-small" alt="Logo">
+            <div style="display: flex; flex-direction: column;">
+                <span style="font-size: 16px; font-weight: bold;">Globus</span>
+                <span style="font-size: 11px; color: #64748b;">Technical Academy</span>
             </div>
         </div>
-        
-        <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
-            <button class="btn-logout-custom" id="logoutBtn">Logout</button>
-        </div>
+        <div class="header-right"><button class="btn-logout-custom" id="logoutBtn">Logout</button></div>
     </nav>
 
     <main class="main-content">
@@ -28,12 +24,9 @@
             
             <form id="feeForm">
                 <div class="form-group">
-                    <label class="form-label">Search Student (Name / Reg No / Phone)</label>
-                    <input type="text" id="studentSearchInput" class="form-control" placeholder="Type name, reg no, or 10-digit phone..." autocomplete="off" maxlength="10">
-                    
-                    <select id="studentSelect" class="form-control" size="4" style="margin-top: 8px; display: none; height: auto;" required>
-                        <option value="">-- Select Student from search results --</option>
-                    </select>
+                    <label class="form-label">Search Student</label>
+                    <input type="text" id="studentSearchInput" class="form-control" placeholder="Name, reg no, or 10-digit phone..." autocomplete="off">
+                    <select id="studentSelect" class="form-control" size="4" style="margin-top: 8px; display: none; height: auto;" required></select>
                 </div>
 
                 <div id="feeDetails" style="display: none; background: #FEF2F2; border: 1px solid #FCA5A5; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
@@ -53,21 +46,20 @@
                 
                 <div class="form-group">
                     <label class="form-label">Amount to Pay (₹)</label>
+                    <!-- FIX: Set min to 1, max will be dynamically set by JS to prevent overpayment -->
                     <input type="number" id="amountPaid" class="form-control" required min="1" placeholder="Enter amount">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Payment Mode</label>
                     <select id="paymentMode" class="form-control" required>
-                        <option value="Cash">Cash</option>
-                        <option value="UPI">UPI</option>
-                        <option value="Bank Transfer">Bank Transfer</option>
+                        <option value="Cash">Cash</option><option value="UPI">UPI</option><option value="Bank Transfer">Bank Transfer</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Receipt / Transaction ID</label>
-                    <input type="text" id="txnId" class="form-control" placeholder="Enter receipt or transaction ID (optional)">
+                    <input type="text" id="txnId" class="form-control" placeholder="Enter receipt id (optional)">
                 </div>
 
                 <div class="form-group" style="margin-bottom: 24px;">
@@ -77,10 +69,7 @@
 
                 <button type="submit" class="btn btn-primary" id="submitBtn">Submit Payment</button>
             </form>
-            
-            <div style="text-align: center; margin-top: 20px;">
-                <a href="dashboard.html" style="color: var(--primary-light); text-decoration: none; font-weight: 600;">Return to Dashboard</a>
-            </div>
+            <div style="text-align: center; margin-top: 20px;"><a href="dashboard.html" style="color: #3b82f6; font-weight: 600;">Return to Dashboard</a></div>
         </div>
     </main>
 
@@ -103,32 +92,21 @@
                 supabase.from('students').select('id, register_number, full_name, phone_number, total_fee, admission_fee').order('full_name'),
                 supabase.from('fee_payments').select('student_id, amount_paid')
             ]);
-            
             studentsData = studentsRes.data || [];
             paymentsData = paymentsRes.data || [];
         }
 
         document.getElementById('studentSearchInput').addEventListener('input', function() {
-            let query = this.value.trim();
-
-            if (/^\d+$/.test(query) && query.length > 10) {
-                query = query.slice(0, 10);
-                this.value = query;
-            }
-
-            const lowerQuery = query.toLowerCase();
+            let query = this.value.trim().toLowerCase();
             const select = document.getElementById('studentSelect');
             select.innerHTML = '';
             
-            if (lowerQuery.length === 0) {
-                select.style.display = 'none';
-                return;
-            }
+            if (query.length === 0) { select.style.display = 'none'; return; }
 
             const filtered = studentsData.filter(s => 
-                s.full_name?.toLowerCase().includes(lowerQuery) || 
-                s.register_number?.toLowerCase().includes(lowerQuery) || 
-                s.phone_number?.toLowerCase().includes(lowerQuery)
+                s.full_name?.toLowerCase().includes(query) || 
+                s.register_number?.toLowerCase().includes(query) || 
+                s.phone_number?.toLowerCase().includes(query)
             );
 
             if (filtered.length > 0) {
@@ -148,10 +126,7 @@
             selectedStudentId = this.value;
             const div = document.getElementById('feeDetails');
             
-            if (!selectedStudentId) { 
-                div.style.display = 'none'; 
-                return; 
-            }
+            if (!selectedStudentId) { div.style.display = 'none'; return; }
 
             const s = studentsData.find(x => x.id === selectedStudentId);
             if (s) {
@@ -160,22 +135,27 @@
 
                 const tFee = Number(s.total_fee) || 0;
                 const aFee = Number(s.admission_fee) || 0;
-                
-                const studentPayments = paymentsData.filter(p => p.student_id === s.id);
-                const pay = studentPayments.reduce((sum, p) => sum + Number(p.amount_paid), 0);
+                const pay = paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => sum + Number(p.amount_paid), 0);
                 
                 currentBalance = tFee - (aFee + pay);
 
                 document.getElementById('txtTotalFee').textContent = `₹ ${tFee}`;
                 document.getElementById('txtTotalPaid').textContent = `₹ ${aFee + pay}`;
                 
+                // SMART VALIDATION: Max amount possible to type is now limited to the balance
+                document.getElementById('amountPaid').max = currentBalance;
+                
                 const pEl = document.getElementById('txtPending');
                 if (currentBalance <= 0) {
                     pEl.textContent = "Fully Paid (₹ 0)";
                     pEl.style.color = "#10B981";
+                    document.getElementById('amountPaid').disabled = true;
+                    document.getElementById('submitBtn').disabled = true;
                 } else {
                     pEl.textContent = `₹ ${currentBalance}`;
                     pEl.style.color = "#EF4444";
+                    document.getElementById('amountPaid').disabled = false;
+                    document.getElementById('submitBtn').disabled = false;
                 }
                 div.style.display = 'block';
             }
@@ -183,21 +163,17 @@
 
         document.getElementById('feeForm').addEventListener('submit', async (e) => {
             e.preventDefault(); 
-            if (!selectedStudentId) {
-                alert('Please select a student from search results.');
-                return;
-            }
+            if (!selectedStudentId) { alert('Please select a student.'); return; }
 
             const amountPaid = Number(document.getElementById('amountPaid').value);
-
             if (amountPaid > currentBalance) {
                 alert(`❌ Error: Payment amount (₹ ${amountPaid}) cannot be greater than the pending balance (₹ ${currentBalance})!`);
                 return;
             }
 
             document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = 'Processing...';
             
-            // ഇവിടെയാണ് transaction_id മാറ്റി receipt_no എന്നാക്കിയത് 
             const { error } = await supabase.from('fee_payments').insert([{
                 student_id: selectedStudentId,
                 amount_paid: amountPaid,
@@ -209,6 +185,7 @@
             if (error) {
                 alert('Error: ' + error.message);
                 document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').textContent = 'Submit Payment';
             } else { 
                 alert('Payment Recorded Successfully!'); 
                 window.location.href = 'dashboard.html'; 
@@ -216,8 +193,7 @@
         });
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            await supabase.auth.signOut(); localStorage.clear(); sessionStorage.clear();
-            window.history.replaceState(null, '', 'login.html'); window.location.replace('login.html'); 
+            await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); 
         });
 
         checkAuth();
