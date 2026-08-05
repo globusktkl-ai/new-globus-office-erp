@@ -6,114 +6,136 @@
     <title>Dashboard - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        /* COMPACT & PROFESSIONAL LAYOUT OVERRIDES */
+        /* COMPACT & PREMIUM LAYOUT OVERRIDES */
         
-        body { background-color: #f4f7f6; }
+        body { background-color: #f8fafc; } /* Lighter, premium background */
         
-        .main-content { padding: 10px 15px; }
+        .main-content { padding: 15px; }
         
-        h2 { font-size: 16px !important; margin-bottom: 12px !important; color: #1e293b; }
+        h2 { 
+            font-size: 18px !important; 
+            font-weight: 800 !important; 
+            margin-bottom: 15px !important; 
+            color: #0f172a; 
+            letter-spacing: -0.5px;
+        }
 
         /* Stat Grid - Compact 2x2 Layout */
         .stat-grid {
             display: grid !important;
             grid-template-columns: repeat(2, 1fr) !important;
-            gap: 10px !important;
-            margin-bottom: 20px !important;
+            gap: 12px !important;
+            margin-bottom: 25px !important;
         }
         .stat-box {
             background: #ffffff;
-            padding: 12px 10px !important;
-            border-radius: 8px !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-            border: 1px solid #e5e7eb !important;
+            padding: 15px 12px !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03) !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            transition: transform 0.2s ease;
         }
+        .stat-box:active { transform: scale(0.98); }
         .stat-label { 
             font-size: 11px !important; 
             color: #64748b !important; 
-            margin-bottom: 4px !important;
-            font-weight: 600 !important;
+            margin-bottom: 6px !important;
+            font-weight: 700 !important;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .stat-value { 
-            font-size: 16px !important; 
-            font-weight: 800 !important; 
+            font-size: 18px !important; 
+            font-weight: 900 !important; 
+            color: #1e293b;
         }
 
-        /* Module Sections - Tighter spacing */
+        /* Module Sections - Premium styling */
         .module-section {
             background: #ffffff;
-            border-radius: 10px !important;
-            padding: 15px !important;
-            margin-bottom: 15px !important;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04) !important;
-            border: 1px solid #e5e7eb;
+            border-radius: 14px !important;
+            padding: 20px 15px !important;
+            margin-bottom: 20px !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
+            border: 1px solid #f1f5f9;
         }
         
+        /* SMART & PREMIUM TITLES */
         .module-title {
-            font-size: 13px !important;
-            color: #374151;
+            font-size: 14px !important;
+            color: #1e293b;
             margin-top: 0;
-            margin-bottom: 12px !important;
+            margin-bottom: 20px !important;
             display: flex;
             align-items: center;
-            gap: 6px;
-            border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 6px !important;
+            gap: 8px;
+            position: relative;
+            padding-bottom: 10px !important;
+            border-bottom: none !important; /* Removed old full-width border */
             text-transform: uppercase;
-            letter-spacing: 0.3px;
-            font-weight: 700;
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
+            letter-spacing: 0.5px;
+            font-weight: 900;
         }
-        .module-title.academic { border-bottom-color: #3b82f6; color: #1d4ed8; }
-        .module-title.finance { border-bottom-color: #10b981; color: #047857; }
         
-        /* Nav Grid - 3 Buttons per row for compact view */
+        /* Modern Gradient Underlines */
+        .module-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            border-radius: 4px;
+            width: 45px; /* Short, elegant pill shape */
+        }
+        .module-title.academic { color: #1e3a8a; }
+        .module-title.academic::after { background: linear-gradient(90deg, #3b82f6, #93c5fd); }
+        
+        .module-title.finance { color: #064e3b; }
+        .module-title.finance::after { background: linear-gradient(90deg, #10b981, #6ee7b7); }
+        
+        /* Nav Grid - Changed to 2 columns for a more symmetrical premium look */
         .module-section .nav-grid {
             display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important;
-            gap: 8px !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
             margin-top: 0;
         }
         
-        /* Modern, Small, App-like Buttons */
+        /* Modern, App-like Buttons */
         .nav-btn {
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
             justify-content: center !important;
-            background: #f8fafc;
+            background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 8px !important;
-            padding: 10px 4px !important;
+            border-radius: 12px !important;
+            padding: 15px 5px !important;
             text-decoration: none;
-            color: #334155 !important;
-            font-size: 11px !important;
-            font-weight: 600 !important;
+            color: #475569 !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
             text-align: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02) !important;
             transition: all 0.2s;
-            min-height: 65px !important;
+            min-height: 75px !important;
         }
-        .nav-btn:active { transform: scale(0.95); }
+        .nav-btn:active { 
+            transform: scale(0.95); 
+            background: #f8fafc;
+        }
         .nav-icon { 
-            font-size: 20px !important; 
-            margin-bottom: 4px !important; 
+            font-size: 24px !important; 
+            margin-bottom: 8px !important; 
         }
 
-        /* Specific Nav Button Colors */
-        .nav-btn.expense-btn { background-color: #fef2f2 !important; border-color: #fca5a5 !important; color: #991b1b !important; }
-        .nav-btn.report-btn { background-color: #f0fdf4 !important; border-color: #86efac !important; color: #166534 !important; }
+        /* Specific Nav Button Highlights (Subtle) */
+        .nav-btn.expense-btn { background-color: #fef2f2 !important; border-color: #fecaca !important; color: #b91c1c !important; }
+        .nav-btn.report-btn { background-color: #f0fdf4 !important; border-color: #bbf7d0 !important; color: #15803d !important; }
 
-        /* Ensure 2 columns on extremely small screens */
-        @media (max-width: 350px) {
-            .module-section .nav-grid { grid-template-columns: repeat(2, 1fr) !important; }
-        }
     </style>
 </head>
 <body>
@@ -122,13 +144,13 @@
         <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <div style="display: flex; flex-direction: column; overflow: hidden;">
-                <span class="brand-top" style="font-size: 15px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 800;">Globus</span>
-                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; color: #64748b;">Technical Academy</span>
+                <span class="brand-top" style="font-size: 15px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</span>
+                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; color: #64748b; font-weight: 600;">Technical Academy</span>
             </div>
         </div>
         
         <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
-            <button class="btn-logout-custom" id="logoutBtn" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; background: #ef4444; color: white; border: none; font-weight: bold;">Logout</button>
+            <button class="btn-logout-custom" id="logoutBtn" style="padding: 6px 14px; font-size: 12px; border-radius: 8px; background: #ef4444; color: white; border: none; font-weight: bold; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);">Logout</button>
         </div>
     </nav>
 
@@ -144,11 +166,11 @@
                 <div class="stat-label">Active Courses</div>
                 <div class="stat-value" id="statCourses">0</div>
             </div>
-            <div class="stat-box" style="border-left: 3px solid #10B981;">
+            <div class="stat-box" style="border-left: 4px solid #10B981 !important;">
                 <div class="stat-label">Today's Collection</div>
                 <div class="stat-value" id="statTodayCollection" style="color: #10B981;">₹ 0</div>
             </div>
-            <div class="stat-box" style="border-left: 3px solid #EF4444;">
+            <div class="stat-box" style="border-left: 4px solid #EF4444 !important;">
                 <div class="stat-label">Pending Fees</div>
                 <div class="stat-value" id="statPendingFees" style="color: #EF4444;">₹ 0</div>
             </div>
@@ -161,6 +183,7 @@
                 <a href="admission.html" class="nav-btn"><span class="nav-icon">📝</span>New Admission</a>
                 <a href="students.html" class="nav-btn"><span class="nav-icon">👥</span>Directory</a>
                 <a href="courses.html" class="nav-btn"><span class="nav-icon">📚</span>Courses</a>
+                <a href="exams.html" class="nav-btn"><span class="nav-icon">🏆</span>Exams & Certs</a>
             </div>
         </div>
 
@@ -169,7 +192,7 @@
             <h3 class="module-title finance"><span>💰</span> Finance & Accounts</h3>
             <div class="nav-grid">
                 <a href="fees.html" class="nav-btn"><span class="nav-icon">💵</span>Collect Fee</a>
-                <a href="expense.html" class="nav-btn expense-btn"><span class="nav-icon">💸</span>Add Expense</a>
+                <a href="expense.html" class="nav-btn expense-btn"><span class="nav-icon">📓</span>Day Book</a>
                 <a href="report.html" class="nav-btn report-btn"><span class="nav-icon">📊</span>Reports</a>
             </div>
         </div>
