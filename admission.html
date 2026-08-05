@@ -116,7 +116,6 @@
                     </select>
                 </div>
 
-                <!-- NEW FIELD: Select Module (Optional) -->
                 <div class="form-group">
                     <label class="form-label">Select Module <span style="font-size: 11px; color: #64748b; font-weight: normal;">(Optional)</span></label>
                     <select id="moduleSelect" class="form-control">
@@ -164,7 +163,7 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        let globalCourses = []; // To store fetched courses and their modules
+        let globalCourses = [];
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -174,7 +173,6 @@
         }
 
         async function fetchCourses() {
-            // Updated query to fetch the 'modules' column as well
             const { data, error } = await supabase.from('courses').select('id, course_name, modules').eq('status', 'Active');
             
             if (error) {
@@ -190,17 +188,14 @@
             }
         }
 
-        // When a course is selected, populate the modules dropdown
         document.getElementById('courseSelect').addEventListener('change', function() {
             const selectedCourseId = this.value;
             const moduleSelect = document.getElementById('moduleSelect');
-            moduleSelect.innerHTML = '<option value="">-- Select Module --</option>'; // Reset modules
+            moduleSelect.innerHTML = '<option value="">-- Select Module --</option>';
 
             if (selectedCourseId) {
-                // Find the selected course object from our global array
                 const courseInfo = globalCourses.find(c => c.id == selectedCourseId);
                 
-                // Check if modules exist and is an array (JSONB structure)
                 if (courseInfo && courseInfo.modules && Array.isArray(courseInfo.modules)) {
                     courseInfo.modules.forEach(mod => {
                         moduleSelect.add(new Option(mod, mod));
@@ -249,8 +244,8 @@
                     photoUrl = publicUrlData.publicUrl;
                 }
 
-                // 1. സേവ് ചെയ്യുമ്പോൾ 'module' കോളവും കൂടി ഉൾപ്പെടുത്തിയിരിക്കുന്നു
-                const { data: newStudent, error: studentError } = await supabase.from('students').insert([{
+                // അഡ്മിഷൻ വിവരങ്ങൾ students ടേബിളിൽ മാത്രം സേവ് ചെയ്യുന്നു.
+                const { error: studentError } = await supabase.from('students').insert([{
                     full_name: document.getElementById('fullName').value,
                     register_number: document.getElementById('regNo').value,
                     phone_number: phoneVal,
@@ -261,28 +256,13 @@
                     gender: document.getElementById('gender').value,
                     photo_url: photoUrl,
                     course_id: document.getElementById('courseSelect').value,
-                    module: document.getElementById('moduleSelect').value || null, // New module data
+                    module: document.getElementById('moduleSelect').value || null, 
                     total_fee: totalFee,
                     admission_fee: admissionFee,
                     status: 'active'
-                }]).select();
+                }]);
 
                 if (studentError) throw studentError;
-
-                // 2. അഡ്മിഷൻ ഫീസ് നൽകിയിട്ടുണ്ടെങ്കിൽ അത് fee_payments ടേബിളിലേക്ക് സേവ് ചെയ്യുന്നു
-                if (admissionFee > 0 && newStudent && newStudent.length > 0) {
-                    const { error: feeError } = await supabase.from('fee_payments').insert([{
-                        student_id: newStudent[0].id,
-                        amount_paid: admissionFee,
-                        payment_mode: document.getElementById('paymentMode').value,
-                        receipt_no: document.getElementById('receiptNo').value || `ADM-${document.getElementById('regNo').value}`,
-                        payment_date: document.getElementById('admissionDate').value
-                    }]);
-
-                    if (feeError) {
-                        console.error("Fee saving error:", feeError);
-                    }
-                }
 
                 alert('Admission Successful & Fee Recorded!'); 
                 window.location.href = 'dashboard.html'; 
