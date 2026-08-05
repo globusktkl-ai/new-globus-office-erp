@@ -51,7 +51,7 @@
         .cert-inner-border {
             border: 10px solid #1e3a8a; outline: 3px solid #eab308; outline-offset: -16px;
             height: 100%; padding: 40px; box-sizing: border-box;
-            display: flex; flex-direction: column; justify-content: space-between;
+            display: flex; flex-direction: column; justify-content: flex-start;
             position: relative; background: rgba(255,255,255,0.9);
         }
         .cert-corner { position: absolute; width: 50px; height: 50px; border: 4px solid #eab308; }
@@ -60,9 +60,9 @@
         .cc-bl { bottom: -12px; left: -12px; border-right: none; border-top: none; }
         .cc-br { bottom: -12px; right: -12px; border-left: none; border-top: none; }
 
-        .cert-top-row { display: flex; justify-content: space-between; font-weight: bold; color: #dc2626; font-size: 15px; font-family: 'Arial', sans-serif; }
+        .cert-top-row { display: flex; justify-content: space-between; font-weight: bold; color: #dc2626; font-size: 15px; font-family: 'Arial', sans-serif; margin-bottom: 20px; }
         
-        .cert-logo-section { text-align: center; margin-top: 15px; }
+        .cert-logo-section { text-align: center; }
         .cert-logo-section img { width: 90px; height: 90px; object-fit: contain; margin-bottom: 10px; }
         .cert-brand { font-size: 30px; color: #1e3a8a; margin: 0 0 5px; font-weight: 900; letter-spacing: 1px; font-family: 'Arial', sans-serif; text-transform: uppercase; }
         .cert-sub-brand { font-size: 14px; color: #475569; margin: 0; font-family: 'Arial', sans-serif; font-weight: 600; letter-spacing: 0.5px; }
@@ -74,19 +74,20 @@
         .cert-body-section { text-align: center; line-height: 1.8; }
         .cert-body-text { font-size: 20px; color: #334155; font-style: italic; margin-bottom: 15px; }
         .cert-student-name { font-size: 34px; color: #0f172a; margin: 15px 0; font-weight: bold; border-bottom: 2px solid #cbd5e1; display: inline-block; padding: 0 20px 5px; }
-        .cert-course-name { font-size: 24px; color: #1d4ed8; margin: 15px 0; font-weight: bold; text-transform: uppercase; font-family: 'Arial', sans-serif; }
+        .cert-course-name { font-size: 22px; color: #1d4ed8; margin: 15px 0; font-weight: bold; text-transform: uppercase; font-family: 'Arial', sans-serif; padding: 0 20px; }
         .cert-grade-text { font-size: 20px; margin-top: 15px; }
         .cert-grade-value { font-size: 26px; font-weight: bold; color: #dc2626; text-decoration: underline; }
 
-        .cert-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center; margin: 40px auto; width: 85%; font-size: 16px; font-family: 'Arial', sans-serif; color: #1e293b; }
+        .cert-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center; margin: 30px auto 0; width: 90%; font-size: 16px; font-family: 'Arial', sans-serif; color: #1e293b; }
         .cert-detail-box { background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; }
 
-        .cert-footer-section { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; padding: 0 10px; }
+        /* FIXED FOOTER POSITIONING - Prevents overlap */
+        .cert-footer-section { position: absolute; bottom: 40px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
         .cert-sign-box { text-align: center; width: 160px; }
         .cert-sign-line { border-bottom: 1px solid #1e293b; height: 50px; margin-bottom: 8px; }
         .cert-sign-label { font-size: 15px; font-family: 'Arial', sans-serif; font-weight: bold; color: #475569; }
         
-        .cert-seal { width: 110px; height: 110px; border: 4px double #eab308; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; font-weight: bold; color: #b45309; transform: rotate(-10deg); background: #fef3c7; box-shadow: inset 0 0 15px rgba(180,83,9,0.3); font-family: 'Arial', sans-serif; line-height: 1.2; }
+        .cert-seal { width: 110px; height: 110px; border: 4px double #eab308; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; font-weight: bold; color: #b45309; transform: rotate(-10deg); background: #fef3c7; box-shadow: inset 0 0 15px rgba(180,83,9,0.3); font-family: 'Arial', sans-serif; line-height: 1.2; margin-bottom: -15px; }
 
         .modal-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
 
@@ -205,6 +206,7 @@
                                     </div>
                                 </div>
                                 
+                                <!-- ABSOLUTE POSITIONED FOOTER -->
                                 <div class="cert-footer-section">
                                     <div class="cert-sign-box">
                                         <div class="cert-sign-line"></div>
@@ -343,7 +345,11 @@
             document.getElementById('f-date-from').value = fromDate.getDate().toString().padStart(2, '0') + '-' + (fromDate.getMonth()+1).toString().padStart(2, '0') + '-' + fromDate.getFullYear();
             document.getElementById('f-date-to').value = dateStr;
 
-            updateCert(); zoomCert(0); // Set initial zoom
+            updateCert(); 
+            // Smart Zoom for Mobile
+            let initialZoom = window.innerWidth < 600 ? ((window.innerWidth - 60) / 750) : 0.55;
+            currentZoom = initialZoom; zoomCert(0); 
+
             document.getElementById('certModal').style.display = 'flex';
         };
 
