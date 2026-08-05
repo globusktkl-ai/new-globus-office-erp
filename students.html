@@ -26,6 +26,7 @@
         .smc-label { width: 100px; color: #64748b; font-weight: 600; flex-shrink: 0; }
         .smc-value { flex: 1; color: #1f2937; font-weight: 500; }
 
+        /* BUTTON LAYOUT FIX */
         .card-action-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
         .btn-card { border: none; padding: 8px 2px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .btn-view { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
@@ -33,10 +34,13 @@
         .btn-cert-mini { background: #f59e0b; color: #fff; }
         .btn-del { background: #fff; color: #ef4444; border: 1px solid #ef4444; transition: 0.2s; }
         .btn-del-full { background: #fef2f2; color: #ef4444; border: 1px solid #ef4444; width: 100%; padding: 10px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; text-align: center; transition: 0.2s; }
-        
+        .btn-del:active, .btn-del-full:active { transform: scale(0.98); }
+
+        /* ID Card Modal Specific Styles */
         .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; }
         .card-edit-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
 
+        /* CERTIFICATE MODAL STYLES */
         .cert-modal-container { max-width: 1050px; }
         .cert-form-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .cert-preview-col { flex: 1.8; min-width: 350px; display: flex; flex-direction: column; background: #e2e8f0; padding: 15px; border-radius: 8px; }
@@ -44,6 +48,7 @@
         .zoom-btn { background: #fff; border: 1px solid #cbd5e1; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-left: 5px; }
         .cert-scroll-area { width: 100%; height: 500px; overflow: auto; background: #cbd5e1; border-radius: 6px; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }
         
+        /* EXACT HTML/CSS CERTIFICATE TEMPLATE */
         .cert-wrapper { position: relative; width: 750px; height: 1060px; flex-shrink: 0; background: #ffffff; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 20px 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Georgia', serif; color: #1e293b; box-sizing: border-box; transform-origin: top center; transition: transform 0.2s ease; }
         .cert-inner-border { border: 10px solid #1e3a8a; outline: 3px solid #eab308; outline-offset: -16px; height: 100%; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; position: relative; background: rgba(255,255,255,0.9); }
         .cert-corner { position: absolute; width: 50px; height: 50px; border: 4px solid #eab308; }
@@ -56,7 +61,7 @@
         .cert-logo-section { text-align: center; }
         .cert-logo-section img { width: 90px; height: 90px; object-fit: contain; margin-bottom: 10px; }
         .cert-brand { font-size: 30px; color: #1e3a8a; margin: 0 0 5px; font-weight: 900; letter-spacing: 1px; font-family: 'Arial', sans-serif; text-transform: uppercase; }
-        .cert-sub-brand { font-size: 14px; color: #475569; margin: 0; font-family: 'Arial', sans-serif; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+        .cert-sub-brand { font-size: 14px; color: #475569; margin: 0; font-family: 'Arial', sans-serif; font-weight: 600; letter-spacing: 0.5px; }
         
         .cert-title-section { text-align: center; margin: 30px 0; }
         .cert-title-main { font-size: 48px; color: #b45309; margin: 0; font-style: italic; font-weight: bold; letter-spacing: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
@@ -72,21 +77,33 @@
         .cert-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center; margin: 30px auto 0; width: 90%; font-size: 16px; font-family: 'Arial', sans-serif; color: #1e293b; }
         .cert-detail-box { background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; }
 
+        /* ABSOLUTE FOOTER POSITIONING & FIXED SEAL (MODIFIED ONLY THIS CLASS) */
         .cert-footer-section { position: absolute; bottom: 40px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
         .cert-sign-box { text-align: center; width: 160px; }
         .cert-sign-line { border-bottom: 1px solid #1e293b; height: 50px; margin-bottom: 8px; }
         .cert-sign-label { font-size: 15px; font-family: 'Arial', sans-serif; font-weight: bold; color: #475569; }
         
-        .cert-seal { width: 110px; height: 110px; border: 4px double #eab308; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 9.5px; font-weight: bold; color: #b45309; transform: rotate(-10deg); background: rgba(254, 243, 199, 0.85); box-shadow: inset 0 0 15px rgba(180,83,9,0.3); font-family: 'Arial', sans-serif; line-height: 1.4; margin-bottom: -15px; padding: 5px; box-sizing: border-box; mix-blend-mode: multiply; overflow: hidden; word-wrap: break-word;}
+        .cert-seal { width: 110px; height: 110px; border: 4px double #eab308; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 9.5px; font-weight: bold; color: #b45309; transform: rotate(-10deg); background: rgba(254, 243, 199, 0.85); box-shadow: inset 0 0 15px rgba(180,83,9,0.3); font-family: 'Arial', sans-serif; line-height: 1.4; margin-bottom: -15px; padding: 5px; box-sizing: border-box; mix-blend-mode: multiply; }
 
         .form-control-cert { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; margin-bottom: 10px; outline: none; }
+
+        @media (max-width: 650px) {
+            .search-filter-container { flex-direction: column; border-radius: 12px; }
+            .filter-dropdown-pill { border-left: none; border-top: 1px solid #cbd5e1; padding: 14px 15px; }
+            .card-preview-col, .card-edit-col { min-width: 100%; }
+        }
 
         @media print {
             body * { visibility: hidden; }
             #certModal, #certModal *, #studentModal, #studentModal * { visibility: visible; }
+            
             #studentModal, #certModal { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
             .modal-container { box-shadow: none; padding: 0; max-width: 100%; display: block; }
+            
+            /* Print rules for ID Card */
             #smartCardContent { width: 320px !important; height: 510px !important; transform: scale(0.65) !important; transform-origin: top left !important; box-shadow: none !important; border: 1px dashed #ccc !important; margin: 10px; }
+            
+            /* Print rules for Certificate */
             .cert-form-col, .zoom-controls, .no-print, .card-edit-col { display: none !important; }
             .cert-preview-col { background: white; padding: 0; display: block; overflow: visible; }
             .cert-scroll-area { height: auto; overflow: visible; background: white; padding: 0; }
@@ -100,10 +117,10 @@
     
     <nav class="app-header no-print">
         <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 10px;">
-            <img src="assets/images/logo.png" id="navLogo" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <div style="display: flex; flex-direction: column;">
-                <span id="navInstName" style="font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</span>
-                <span id="navSubName" style="font-size: 11px; color: #64748b; font-weight: 600;">Technical Academy</span>
+                <span style="font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</span>
+                <span style="font-size: 11px; color: #64748b; font-weight: 600;">Technical Academy</span>
             </div>
         </div>
         <div class="header-right"><button class="btn-logout-custom" id="logoutBtn" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; background: #ef4444; color: white; border: none; font-weight: bold;">Logout</button></div>
@@ -130,7 +147,7 @@
         <div id="viewEditContainer" class="modal-container no-print" style="display:none; max-width:500px;">
             <div style="width: 100%;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3 style="font-size:18px; color:#1e3a8a; margin:0;">View & Edit Profile</h3>
+                    <h3 style="font-size:18px; color:var(--primary-dark); margin:0;">View & Edit Profile</h3>
                     <button onclick="closeModal()" style="background:#EF4444; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">X</button>
                 </div>
                 <div id="viewEditContent"></div>
@@ -141,9 +158,9 @@
             <div class="card-preview-col">
                 <div id="smartCardContent" style="width: 320px; height: 510px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 15px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">
                     <div style="text-align: center; margin-bottom: 5px;">
-                        <img id="idCardLogo" src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain; margin-bottom: 3px; mix-blend-mode: multiply;" alt="Logo" onerror="this.style.display='none'">
-                        <div id="idCardBrandName" style="font-size: 19px; font-weight: 900; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px; text-transform: uppercase;">GLOBUS</div>
-                        <div id="idCardSubName" style="font-size: 13px; font-weight: 800; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px; text-transform: uppercase;">TECHNICAL ACADEMY</div>
+                        <img src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain; margin-bottom: 3px; mix-blend-mode: multiply;" alt="Logo" onerror="this.style.display='none'">
+                        <div style="font-size: 19px; font-weight: 900; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">GLOBUS</div>
+                        <div style="font-size: 13px; font-weight: 800; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
                     </div>
                     <div style="background: #1e3a8a; color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 5px 0; margin-bottom: 15px; border-radius: 4px; letter-spacing: 1px;">STUDENT ID CARD</div>
                     <div style="text-align: center; margin-bottom: 12px;">
@@ -163,11 +180,10 @@
                             <div><span style="font-size: 10px; color: #64748b; font-weight: 800;">PHONE</span><br><span id="cardPhone" style="font-size: 13px; font-weight: 800; color: #111827;">-</span></div>
                         </div>
                     </div>
-                    <!-- DYNAMIC SEAL FOR ID CARD -->
                     <div style="position: absolute; bottom: 15px; right: 5px; width: 60px; height: 60px; border: 2px solid rgba(30, 58, 138, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); z-index: 1; opacity: 0.5;">
-                        <div id="idCardSeal" style="width: 52px; height: 52px; border: 1px dashed rgba(30, 58, 138, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 6px; font-weight: 800; color: rgba(30, 58, 138, 0.4); padding: 2px; line-height: 1.1; overflow:hidden; word-wrap:break-word;">GLOBUS<br>TECHNICAL<br>ACADEMY</div>
+                        <div style="width: 52px; height: 52px; border: 1px dashed rgba(30, 58, 138, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 6px; font-weight: 800; color: rgba(30, 58, 138, 0.4); padding: 2px; line-height: 1.1;">GLOBUS<br>TECHNICAL<br>ACADEMY<br>KOTTAKKAL</div>
                     </div>
-                    <div id="idCardFooterContact" style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 6.5px; color: #94a3b8; font-weight: 600; text-align: center; z-index: 2;">If found, please return to this number</div>
+                    <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 6.5px; color: #94a3b8; font-weight: 600; text-align: center; z-index: 2;">If found, please return to this number: +91 9846000000</div>
                 </div>
             </div>
 
@@ -176,7 +192,7 @@
                     <h3 style="font-size:16px; color:#1e40af; margin:0;">✏️ Edit & Generate Card</h3>
                     <button onclick="closeModal()" style="background:#EF4444; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">X</button>
                 </div>
-                <label style="font-size:12px; font-weight:600; color:#374151;">Upload Photo</label>
+                <label style="font-size:12px; font-weight:600; color:#374151;">Upload Photo (Preview & Print)</label>
                 <input type="file" id="livePhotoInput" accept="image/*" class="form-control-cert" onchange="updateLivePhoto(event)">
                 <label style="font-size:12px; font-weight:600; color:#374151;">Student Name</label>
                 <input type="text" id="liveName" class="form-control-cert" oninput="document.getElementById('cardStudentName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
@@ -251,9 +267,9 @@
                                 <div class="cert-top-row"><span>Serial # <span id="c-serial">GM 0000000</span></span><span>Reg # <span id="c-reg">MP 000000</span></span></div>
                                 
                                 <div class="cert-logo-section">
-                                    <img id="certMainLogo" src="assets/images/logo.png" alt="Logo" onerror="this.style.display='none'">
-                                    <h1 class="cert-brand" id="certBrandName">Globus Technical Academy</h1>
-                                    <p class="cert-sub-brand" id="certSubBrandName">COUNCIL FOR TECHNICAL DEVELOPMENT CONTINUING<br>ACADEMIC EDUCATIONAL AND SCIENTIFIC STUDIES</p>
+                                    <img src="assets/images/logo.png" alt="Logo" onerror="this.style.display='none'">
+                                    <h1 class="cert-brand">Globus Technical Academy</h1>
+                                    <p class="cert-sub-brand">COUNCIL FOR TECHNICAL DEVELOPMENT CONTINUING<br>ACADEMIC EDUCATIONAL AND SCIENTIFIC STUDIES</p>
                                 </div>
                                 
                                 <div class="cert-title-section">
@@ -280,10 +296,10 @@
                                     </div>
                                 </div>
                                 
+                                <!-- ABSOLUTE FOOTER POSITIONING -->
                                 <div class="cert-footer-section">
                                     <div class="cert-sign-box"><div class="cert-sign-line"></div><div class="cert-sign-label">Course Director</div></div>
-                                    <!-- DYNAMIC CERT SEAL -->
-                                    <div class="cert-seal" id="certDynamicSeal">GLOBUS<br>TECHNICAL<br>ACADEMY<br>★</div>
+                                    <div class="cert-seal">GLOBUS<br>TECHNICAL<br>ACADEMY<br>★</div>
                                     <div class="cert-sign-box"><div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px;">Date: <span id="c-issue-date">DD-MM-YYYY</span></div><div class="cert-sign-line"></div><div class="cert-sign-label">Board of Examinations</div></div>
                                 </div>
                             </div>
@@ -297,39 +313,11 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         let allStudents = [], globalCourses = [], currentZoom = 0.55, currentStudentData = null;
-        let instSettings = { institute_name: 'GLOBUS', sub_name: 'TECHNICAL ACADEMY', phone: '', logo_url: 'assets/images/logo.png', address: '' };
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            await fetchSettings();
             fetchStudents();
-        }
-
-        async function fetchSettings() {
-            try {
-                const { data } = await supabase.from('institute_settings').select('*').limit(1).single();
-                if(data) {
-                    instSettings = { ...instSettings, ...data };
-                    // Navbar
-                    document.getElementById('navInstName').innerText = instSettings.institute_name;
-                    document.getElementById('navSubName').innerText = instSettings.sub_name;
-                    if(instSettings.logo_url) { document.getElementById('navLogo').src = instSettings.logo_url; }
-                    
-                    // ID Card Base Setup
-                    document.getElementById('idCardBrandName').innerText = instSettings.institute_name;
-                    document.getElementById('idCardSubName').innerText = instSettings.sub_name;
-                    if(instSettings.logo_url) { document.getElementById('idCardLogo').src = instSettings.logo_url; }
-                    document.getElementById('idCardSeal').innerHTML = `${instSettings.institute_name}<br>${instSettings.sub_name}`;
-                    document.getElementById('idCardFooterContact').innerText = `If found, please return to: ${instSettings.phone || instSettings.institute_name}`;
-
-                    // Cert Base Setup
-                    document.getElementById('certBrandName').innerText = instSettings.institute_name;
-                    document.getElementById('certSubBrandName').innerText = instSettings.sub_name;
-                    if(instSettings.logo_url) { document.getElementById('certMainLogo').src = instSettings.logo_url; }
-                    document.getElementById('certDynamicSeal').innerHTML = `${instSettings.institute_name}<br>${instSettings.sub_name}<br>★`;
-                }
-            } catch(e) { console.warn("Settings not found, using defaults"); }
         }
 
         async function fetchStudents() {
@@ -355,6 +343,7 @@
         window.applyFilters = function() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const statusTerm = document.getElementById('statusFilter').value; 
+
             let filtered = allStudents.filter(s => {
                 const matchesSearch = (s.full_name?.toLowerCase().includes(searchTerm) || s.register_number?.toLowerCase().includes(searchTerm) || s.phone_number?.toLowerCase().includes(searchTerm));
                 let matchesStatus = true;
@@ -379,11 +368,13 @@
                 const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
                 let avatarUrl = s.photo_url || (s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
                 let stuStatus = (s.status || 'active').toLowerCase();
+
                 let qualBadge = `<span style="background: #F3F4F6; color: #374151; padding: 2px 6px; border-radius: 4px; font-weight: 700; border: 1px solid #cbd5e1;">${s.qualification || 'N/A'}</span>`;
 
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
                 
+                // === NEW BUTTON LOGIC FOR MOBILE VIEW === 
                 let actionBtnsHTML = `
                     <div class="card-action-btns">
                         <button onclick="viewAndEditStudent('${s.id}')" class="btn-card btn-view">View/Edit</button>
@@ -391,9 +382,11 @@
                 `;
 
                 if(stuStatus === 'completed') {
+                    // Completed: Certificate inline, Delete below
                     actionBtnsHTML += `<button onclick="openCertModal('${s.id}', '${s.course_id}')" class="btn-card btn-cert-mini">Certificate</button></div>`;
                     actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-del-full">🗑️ Delete Student</button>`;
                 } else {
+                    // Active: Delete inline
                     actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-card btn-del">Delete</button></div>`;
                 }
 
@@ -416,9 +409,13 @@
             });
         }
 
+        // ==========================================
+        // SECTION 1: VIEW & EDIT & ID CARD LOGIC
+        // ==========================================
         window.viewAndEditStudent = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
+            
             document.getElementById('profileCardContainer').style.display = 'none';
             document.getElementById('certModal').style.display = 'none';
             document.getElementById('studentModal').style.display = 'flex';
@@ -448,16 +445,19 @@
                     <p><b>Phone:</b> ${s.phone_number}</p>
                     <p><b>Course:</b> ${s.display_course_name}</p>
                     <p><b>Module:</b> ${s.module || '-'}</p>
+                    <p><b>Qualification:</b> ${s.qualification || 'N/A'}</p>
                     <p><b>Total Fee:</b> ₹ ${s.total_fee || 0}</p>
                 </div>
                 <hr style="border:0; border-top:1px solid #e5e7eb; margin-bottom:15px;">
                 <form onsubmit="saveFullEdit(event, '${s.id}')">
                     <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Full Name</label><input type="text" id="fullEditName" value="${s.full_name}" class="form-control-cert" required></div>
                     <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Phone Number</label><input type="text" id="fullEditPhone" value="${s.phone_number}" class="form-control-cert" required maxlength="10"></div>
+                    
                     <div style="display:flex; gap:10px; margin-bottom:10px;">
                         <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Course</label><select id="fullEditCourse" class="form-control-cert" required onchange="updateEditModules(this.value)">${courseOptions}</select></div>
                         <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Module</label><select id="fullEditModule" class="form-control-cert">${moduleOptions}</select></div>
                     </div>
+
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
                         <div style="flex:1;">
                             <label style="font-size:12px; font-weight:600;">Course Status</label>
@@ -497,6 +497,7 @@
             const newName = document.getElementById('fullEditName').value;
             const newPhone = document.getElementById('fullEditPhone').value;
             if(newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
+
             const { error } = await supabase.from('students').update({
                 full_name: newName, phone_number: newPhone, 
                 qualification: document.getElementById('fullEditQual').value, 
@@ -504,6 +505,7 @@
                 course_id: document.getElementById('fullEditCourse').value, 
                 module: document.getElementById('fullEditModule').value || null
             }).eq('id', id);
+
             if (error) alert('Error updating: ' + error.message);
             else { alert('Profile updated successfully!'); closeModal(); fetchStudents(); }
         };
@@ -512,6 +514,7 @@
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
             currentStudentData = s;
+
             document.getElementById('viewEditContainer').style.display = 'none';
             document.getElementById('certModal').style.display = 'none';
             document.getElementById('studentModal').style.display = 'flex';
@@ -522,11 +525,12 @@
             document.getElementById('liveReg').value = s.register_number || '';
             document.getElementById('livePhone').value = s.phone_number || '';
             document.getElementById('livePhotoInput').value = ''; 
-            
+
             document.getElementById('cardStudentName').innerHTML = (s.full_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
             document.getElementById('cardCourseName').innerHTML = (s.display_course_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
             document.getElementById('cardRegNo').innerText = s.register_number || 'N/A';
             document.getElementById('cardPhone').innerText = s.phone_number || 'N/A';
+
             if (s.photo_url) document.getElementById('cardAvatarImg').src = s.photo_url;
             else document.getElementById('cardAvatarImg').src = s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy';
         };
@@ -550,11 +554,15 @@
                 const fileName = `student_${Date.now()}_${file.name}`;
                 try {
                     const { data, error } = await supabase.storage.from('student-photos').upload(fileName, file);
-                    if (error) { alert("Storage issue. Photo will not be saved online."); } 
+                    if (error) { alert("Server storage limit reached. Photo will not be saved online."); } 
                     else { photoUrlToSave = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl; }
                 } catch (e) { console.warn(e); }
             }
-            const { error } = await supabase.from('students').update({ full_name: newName, phone_number: newPhone, register_number: newReg, photo_url: photoUrlToSave }).eq('id', currentStudentData.id);
+
+            const { error } = await supabase.from('students').update({
+                full_name: newName, phone_number: newPhone, register_number: newReg, photo_url: photoUrlToSave
+            }).eq('id', currentStudentData.id);
+
             if (error) alert('Error saving data: ' + error.message);
             else { alert('Details Saved Successfully!'); fetchStudents(); }
         };
@@ -583,12 +591,15 @@
             const inp = prompt(`⚠️ Type the register number to delete: ${regNo}`);
             if (inp === regNo) {
                 await supabase.from('fee_payments').delete().eq('student_id', id);
-                await supabase.from('exam_results').delete().eq('student_id', id); // added exam cleanup
                 await supabase.from('students').delete().eq('id', id);
                 fetchStudents(); 
             } else if (inp) alert('Register number does not match.');
         };
 
+
+        // ==========================================
+        // SECTION 2: CERTIFICATE LOGIC
+        // ==========================================
         window.zoomCert = function(amount) {
             currentZoom += amount;
             if(currentZoom < 0.2) currentZoom = 0.2; if(currentZoom > 1.5) currentZoom = 1.5;
@@ -600,9 +611,12 @@
         window.openCertModal = function(studentId, courseId) {
             const student = allStudents.find(s => s.id === studentId), course = globalCourses.find(c => c.id === courseId);
             if(!student || !course) return; 
-            document.getElementById('studentModal').style.display = 'none';
+            
+            document.getElementById('studentModal').style.display = 'none'; // Hide ID Modal if open
+            
             const today = new Date(), dateStr = today.getDate().toString().padStart(2, '0') + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getFullYear();
             let fromDate = student.admission_date ? new Date(student.admission_date) : today;
+
             document.getElementById('f-serial').value = 'GM ' + Date.now().toString().slice(-7);
             document.getElementById('f-reg').value = student.register_number || 'REG N/A';
             document.getElementById('f-name').value = (student.full_name || '').toUpperCase();
@@ -610,9 +624,12 @@
             document.getElementById('f-issue-date').value = dateStr; document.getElementById('f-exam-date').value = dateStr;
             document.getElementById('f-date-from').value = fromDate.getDate().toString().padStart(2, '0') + '-' + (fromDate.getMonth()+1).toString().padStart(2, '0') + '-' + fromDate.getFullYear();
             document.getElementById('f-date-to').value = dateStr;
+
             updateCert(); 
+            // Smart Zoom for Mobile
             let initialZoom = window.innerWidth < 600 ? ((window.innerWidth - 60) / 750) : 0.55;
             currentZoom = initialZoom; zoomCert(0); 
+
             document.getElementById('certModal').style.display = 'flex';
         };
 
@@ -629,9 +646,10 @@
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
                 const wrapper = document.getElementById('certificateRenderArea'), oldTransform = wrapper.style.transform;
-                wrapper.style.transform = 'scale(1)';
+                wrapper.style.transform = 'scale(1)'; // Real size for render
                 const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
                 wrapper.style.transform = oldTransform; 
+
                 canvas.toBlob(async (blob) => {
                     const name = document.getElementById('f-name').value.trim() || 'Student';
                     const file = new File([blob], `Certificate_${name}.png`, { type: 'image/png' });
