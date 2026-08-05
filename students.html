@@ -55,7 +55,7 @@
             .close-modal-btn { top: 10px; right: 10px; }
         }
 
-        /* STRICT PRINT LOGIC - FIX FOR OVERLAPPING MODALS & BACKGROUND GRAPHICS */
+        /* STRICT PRINT LOGIC */
         @media print {
             body * { visibility: hidden; }
             
@@ -64,7 +64,6 @@
             body.print-id #studentModal { position: absolute; left: 0; top: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
             body.print-id .card-edit-col, body.print-id .close-modal-btn, body.print-id .no-print { display: none !important; }
             
-            /* Forces background colors and circles to print correctly regardless of page size */
             body.print-id #smartCardContent { 
                 position: absolute !important;
                 top: 15mm !important;
@@ -135,15 +134,16 @@
 </head>
 <body class="bg-slate-50">
     
-    <nav class="app-header no-print" style="background:white; padding:15px; box-shadow:0 1px 3px rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center;">
-        <div class="header-left" style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 40px; height: 40px; background:#1e3a8a; border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px;">G</div>
+    <!-- ORIGINAL HEADER RESTORED -->
+    <nav class="app-header no-print">
+        <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 10px;">
+            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <div style="display: flex; flex-direction: column;">
-                <span style="font-size: 16px; font-weight: 900; letter-spacing: 0.5px; color:#1e293b;">GLOBUS</span>
-                <span style="font-size: 11px; color: #64748b; font-weight: 700;">Technical Academy</span>
+                <span style="font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</span>
+                <span style="font-size: 11px; color: #64748b; font-weight: 600;">Technical Academy</span>
             </div>
         </div>
-        <div class="header-right"><button class="btn-logout-custom" id="logoutBtn" style="padding: 8px 16px; font-size: 13px; border-radius: 8px; background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; font-weight: bold; cursor:pointer;">Logout</button></div>
+        <div class="header-right"><button class="btn-logout-custom" id="logoutBtn" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; background: #ef4444; color: white; border: none; font-weight: bold;">Logout</button></div>
     </nav>
 
     <main class="main-content no-print" style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -186,12 +186,16 @@
                     <!-- Blue Curved Background -->
                     <div style="background: #1e3a8a; height: 110px; width: 150%; position: absolute; top: -25px; left: -25%; border-radius: 50%; z-index: 1;"></div>
                     
-                    <!-- Header with Logo on Left -->
-                    <div style="display: flex; align-items: center; justify-content: center; padding-top: 12px; margin-bottom: 8px; position: relative; z-index: 2; padding-left: 15px; padding-right: 15px;">
-                        <img src="assets/images/logo.png" style="width: 35px; height: 35px; object-fit: contain; margin-right: 10px; background: white; border-radius: 5px; padding: 2px;" alt="Logo" onerror="this.style.display='none'">
-                        <div style="text-align: left;">
-                            <div style="font-size: 18px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px;">GLOBUS</div>
-                            <div style="font-size: 8px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
+                    <!-- Header Container -->
+                    <div style="position: relative; width: 100%; height: 50px; margin-top: 10px; margin-bottom: 15px; z-index: 2;">
+                        
+                        <!-- Logo (Left, circular, thin border, transparent bg, slightly larger, separated from text) -->
+                        <img src="assets/images/logo.png" style="position: absolute; left: 15px; top: -2px; width: 46px; height: 46px; object-fit: contain; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.8); padding: 1px; background: transparent;" alt="Logo" onerror="this.style.display='none'">
+                        
+                        <!-- Title Perfectly Centered -->
+                        <div style="position: absolute; left: 0; right: 0; top: 6px; text-align: center;">
+                            <div style="font-size: 20px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px;">GLOBUS</div>
+                            <div style="font-size: 9px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
                         </div>
                     </div>
                     
@@ -431,26 +435,27 @@
             data.forEach(s => {
                 const bal = (Number(s.total_fee)||0) - (Number(s.admission_fee)||0) - s.total_paid_fees;
                 const balColor = bal > 0 ? '#EF4444' : '#10B981';
-                const balText = bal > 0 ? `₹ ${bal} Pending` : 'Fully Paid';
+                const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
                 let avatarUrl = s.photo_url || (s.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
                 let stuStatus = (s.status || 'active').toLowerCase();
 
-                let qualBadge = `<span style="background: #F8FAFC; color: #475569; padding: 3px 8px; border-radius: 6px; font-weight: 800; font-size:11px; border: 1px solid #cbd5e1;">${s.qualification || 'N/A'}</span>`;
+                let qualBadge = `<span style="background: #F3F4F6; color: #374151; padding: 2px 6px; border-radius: 4px; font-weight: 700; border: 1px solid #cbd5e1;">${s.qualification || 'N/A'}</span>`;
 
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
                 
+                // ORIGINAL BUTTONS RESTORED EXACTLY AS USER PROVIDED
                 let actionBtnsHTML = `
                     <div class="card-action-btns">
-                        <button onclick="viewAndEditStudent('${s.id}')" class="btn-card btn-view"><i class="fas fa-edit"></i> Edit</button>
-                        <button onclick="openProfileAndCard('${s.id}')" class="btn-card btn-id"><i class="fas fa-id-badge"></i> ID Card</button>
+                        <button onclick="viewAndEditStudent('${s.id}')" class="btn-card btn-view">View/Edit</button>
+                        <button onclick="openProfileAndCard('${s.id}')" class="btn-card btn-id">ID Card</button>
                 `;
 
                 if(stuStatus === 'completed') {
-                    actionBtnsHTML += `<button onclick="openCertModal('${s.id}', '${s.course_id}')" class="btn-card btn-cert-mini">Cert</button></div>`;
+                    actionBtnsHTML += `<button onclick="openCertModal('${s.id}', '${s.course_id}')" class="btn-card btn-cert-mini">Certificate</button></div>`;
                     actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-del-full">🗑️ Delete Student</button>`;
                 } else {
-                    actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-card btn-del"><i class="fas fa-trash"></i> Del</button></div>`;
+                    actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-card btn-del">Delete</button></div>`;
                 }
 
                 card.innerHTML = `
@@ -461,11 +466,11 @@
                         </div>
                         <div class="smc-header-center"><img src="${avatarUrl}" class="student-avatar" alt="Photo"></div>
                     </div>
-                    <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value font-bold tracking-wide">${s.phone_number || 'N/A'}</span></div>
-                    <div class="smc-row"><span class="smc-label">Qualif:</span> <span class="smc-value">${qualBadge}</span></div>
-                    <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:800; color:#1e3a8a;">${s.display_course_name}</span></div>
-                    <div class="smc-row"><span class="smc-label">Module:</span> <span class="smc-value" style="font-weight:700;">${s.module || '-'}</span></div>
-                    <div class="smc-row"><span class="smc-label">Fee Status:</span> <span class="smc-value" style="color:${balColor}; font-weight:900;">${balText}</span></div>
+                    <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
+                    <div class="smc-row"><span class="smc-label">Qualification:</span> <span class="smc-value">${qualBadge}</span></div>
+                    <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:700; color:#1e3a8a;">${s.display_course_name}</span></div>
+                    <div class="smc-row"><span class="smc-label">Module:</span> <span class="smc-value">${s.module || '-'}</span></div>
+                    <div class="smc-row"><span class="smc-label">Fee Status:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
                     ${actionBtnsHTML}
                 `;
                 container.appendChild(card);
@@ -481,27 +486,93 @@
             document.getElementById('studentModal').style.display = 'flex';
             document.getElementById('viewEditContainer').style.display = 'flex'; 
 
+            let courseOptions = '<option value="">-- Select Course --</option>';
+            globalCourses.forEach(c => {
+                let selected = (c.id == s.course_id) ? 'selected' : '';
+                courseOptions += `<option value="${c.id}" ${selected}>${c.course_name}</option>`;
+            });
+
+            let moduleOptions = '<option value="">-- Select Module --</option>';
+            if (s.course_id) {
+                const currentCourse = globalCourses.find(c => c.id == s.course_id);
+                if (currentCourse && currentCourse.modules && Array.isArray(currentCourse.modules)) {
+                    currentCourse.modules.forEach(mod => {
+                        let selected = (mod === s.module) ? 'selected' : '';
+                        moduleOptions += `<option value="${mod}" ${selected}>${mod}</option>`;
+                    });
+                }
+            }
+
             document.getElementById('viewEditContent').innerHTML = `
-                <div style="background:#f1f5f9; padding:15px; border-radius:12px; margin-bottom:20px; font-size:14px; border: 1px solid #e2e8f0;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                        <span style="color:#64748b; font-weight:700;">Name:</span>
-                        <span style="font-weight:800; color:#0f172a;">${s.full_name}</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                        <span style="color:#64748b; font-weight:700;">Phone:</span>
-                        <span style="font-weight:800; color:#0f172a;">${s.phone_number}</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="color:#64748b; font-weight:700;">Course:</span>
-                        <span style="font-weight:800; color:#0f172a; text-align:right;">${s.display_course_name}</span>
-                    </div>
+                <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6; border: 1px solid #e2e8f0;">
+                    <p><b>Name:</b> ${s.full_name}</p>
+                    <p><b>Reg No:</b> ${s.register_number || 'N/A'}</p>
+                    <p><b>Phone:</b> ${s.phone_number}</p>
+                    <p><b>Course:</b> ${s.display_course_name}</p>
+                    <p><b>Module:</b> ${s.module || '-'}</p>
+                    <p><b>Qualification:</b> ${s.qualification || 'N/A'}</p>
+                    <p><b>Total Fee:</b> ₹ ${s.total_fee || 0}</p>
                 </div>
-                <form onsubmit="alert('Edit Saved!'); return false;">
-                    <div style="margin-bottom:12px;"><label style="font-size:13px; font-weight:700; color:#475569;">Full Name</label><input type="text" value="${s.full_name}" class="form-control-cert" required></div>
-                    <div style="margin-bottom:20px;"><label style="font-size:13px; font-weight:700; color:#475569;">Phone Number</label><input type="text" value="${s.phone_number}" class="form-control-cert" required maxlength="10"></div>
-                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:14px; border-radius:10px; font-weight:800; cursor:pointer;">Update Profile</button>
+                <hr style="border:0; border-top:1px solid #e5e7eb; margin-bottom:15px;">
+                <form onsubmit="saveFullEdit(event, '${s.id}')">
+                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Full Name</label><input type="text" id="fullEditName" value="${s.full_name}" class="form-control-cert" required></div>
+                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Phone Number</label><input type="text" id="fullEditPhone" value="${s.phone_number}" class="form-control-cert" required maxlength="10"></div>
+                    
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Course</label><select id="fullEditCourse" class="form-control-cert" required onchange="updateEditModules(this.value)">${courseOptions}</select></div>
+                        <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Module</label><select id="fullEditModule" class="form-control-cert">${moduleOptions}</select></div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <div style="flex:1;">
+                            <label style="font-size:12px; font-weight:600;">Course Status</label>
+                            <select id="fullEditStatus" class="form-control-cert">
+                                <option value="active" ${(!s.status || s.status==='active')?'selected':''}>Active</option>
+                                <option value="completed" ${s.status==='completed'?'selected':''}>Completed</option>
+                            </select>
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-size:12px; font-weight:600;">Qualification</label>
+                            <select id="fullEditQual" class="form-control-cert" required>
+                                <option value="SSLC" ${s.qualification==='SSLC'?'selected':''}>SSLC</option>
+                                <option value="Plus Two" ${s.qualification==='Plus Two'?'selected':''}>Plus Two</option>
+                                <option value="Degree" ${s.qualification==='Degree'?'selected':''}>Degree</option>
+                                <option value="Other" ${s.qualification==='Other'?'selected':''}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">Update Profile</button>
                 </form>
             `;
+        };
+
+        window.updateEditModules = function(courseId) {
+            const moduleSelect = document.getElementById('fullEditModule');
+            moduleSelect.innerHTML = '<option value="">-- Select Module --</option>';
+            if (courseId) {
+                const courseInfo = globalCourses.find(c => c.id == courseId);
+                if (courseInfo && courseInfo.modules && Array.isArray(courseInfo.modules)) {
+                    courseInfo.modules.forEach(mod => { moduleSelect.add(new Option(mod, mod)); });
+                }
+            }
+        };
+
+        window.saveFullEdit = async function(e, id) {
+            e.preventDefault();
+            const newName = document.getElementById('fullEditName').value;
+            const newPhone = document.getElementById('fullEditPhone').value;
+            if(newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
+
+            const { error } = await supabase.from('students').update({
+                full_name: newName, phone_number: newPhone, 
+                qualification: document.getElementById('fullEditQual').value, 
+                status: document.getElementById('fullEditStatus').value, 
+                course_id: document.getElementById('fullEditCourse').value, 
+                module: document.getElementById('fullEditModule').value || null
+            }).eq('id', id);
+
+            if (error) alert('Error updating: ' + error.message);
+            else { alert('Profile updated successfully!'); closeModal(); fetchStudents(); }
         };
 
         window.openProfileAndCard = function(id) {
@@ -534,30 +605,49 @@
             if (file) { document.getElementById('cardAvatarImg').src = URL.createObjectURL(file); }
         };
 
-        // NEW ISOLATED PRINT LOGIC FOR ID CARD
+        window.saveCardDataToDB = async function() {
+            if (!currentStudentData) return;
+            const newName = document.getElementById('liveName').value.trim();
+            const newPhone = document.getElementById('livePhone').value.trim();
+            const newReg = document.getElementById('liveReg').value.trim();
+            let photoUrlToSave = currentStudentData.photo_url;
+            if (newPhone && newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
+
+            const fileInput = document.getElementById('livePhotoInput');
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const fileName = `student_${Date.now()}_${file.name}`;
+                try {
+                    const { data, error } = await supabase.storage.from('student-photos').upload(fileName, file);
+                    if (error) { alert("Server storage limit reached. Photo will not be saved online."); } 
+                    else { photoUrlToSave = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl; }
+                } catch (e) { console.warn(e); }
+            }
+
+            const { error } = await supabase.from('students').update({
+                full_name: newName, phone_number: newPhone, register_number: newReg, photo_url: photoUrlToSave
+            }).eq('id', currentStudentData.id);
+
+            if (error) alert('Error saving data: ' + error.message);
+            else { alert('Details Saved Successfully!'); fetchStudents(); }
+        };
+
         window.printCard = function() { 
             document.body.classList.add('print-id');
             window.print(); 
             setTimeout(() => document.body.classList.remove('print-id'), 500);
         };
 
-        // NEW ISOLATED PRINT LOGIC FOR CERTIFICATE
-        window.printCertificate = function() { 
-            document.body.classList.add('print-cert');
-            window.print(); 
-            setTimeout(() => document.body.classList.remove('print-cert'), 500);
-        };
-
         window.shareCard = async function() {
             const btn = document.getElementById('shareCardBtn');
             const originalText = btn.innerHTML; btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
-                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
                 canvas.toBlob(async (blob) => {
                     const name = document.getElementById('liveName').value || 'Student';
                     const file = new File([blob], `ID_Card_${name}.png`, { type: 'image/png' });
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Student ID Card' }); } catch (err) {}
+                        try { await navigator.share({ files: [file], title: 'Student ID Card', text: `ID Card for ${name}` }); } catch (err) {}
                     } else {
                         const link = document.createElement('a'); link.download = `ID_Card_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
                     }
@@ -566,14 +656,27 @@
             } catch (error) { alert("Could not generate image."); btn.innerHTML = originalText; btn.disabled = false; }
         };
 
-        window.closeModal = function() { 
-            document.getElementById('studentModal').style.display = 'none';
-            document.getElementById('viewEditContainer').style.display = 'none';
-            document.getElementById('profileCardContainer').style.display = 'none';
-            document.getElementById('certModal').style.display = 'none'; 
+        window.deleteStudent = async function(id, regNo) {
+            const inp = prompt(`⚠️ Type the register number to delete: ${regNo}`);
+            if (inp === regNo) {
+                await supabase.from('fee_payments').delete().eq('student_id', id);
+                await supabase.from('students').delete().eq('id', id);
+                fetchStudents(); 
+            } else if (inp) alert('Register number does not match.');
         };
 
-        // Certificate Open logic
+
+        // ==========================================
+        // SECTION 2: CERTIFICATE LOGIC
+        // ==========================================
+        window.zoomCert = function(amount) {
+            currentZoom += amount;
+            if(currentZoom < 0.2) currentZoom = 0.2; if(currentZoom > 1.5) currentZoom = 1.5;
+            document.getElementById('certificateRenderArea').style.transform = `scale(${currentZoom})`;
+            document.getElementById('certViewport').style.width = `${750 * currentZoom}px`;
+            document.getElementById('certViewport').style.height = `${1060 * currentZoom}px`;
+        };
+
         window.openCertModal = function(studentId, courseId) {
             const student = allStudents.find(s => s.id === studentId), course = globalCourses.find(c => c.id === courseId);
             if(!student || !course) return; 
@@ -605,13 +708,44 @@
             });
         };
 
-        window.zoomCert = function(amount) {
-            currentZoom += amount;
-            if(currentZoom < 0.2) currentZoom = 0.2; if(currentZoom > 1.5) currentZoom = 1.5;
-            document.getElementById('certificateRenderArea').style.transform = `scale(${currentZoom})`;
-            document.getElementById('certViewport').style.width = `${750 * currentZoom}px`;
-            document.getElementById('certViewport').style.height = `${1060 * currentZoom}px`;
+        window.printCertificate = function() { 
+            document.body.classList.add('print-cert');
+            window.print(); 
+            setTimeout(() => document.body.classList.remove('print-cert'), 500);
         };
+
+        window.shareCertificate = async function() {
+            const btn = document.getElementById('shareCertBtn'), originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
+            try {
+                const wrapper = document.getElementById('certificateRenderArea'), oldTransform = wrapper.style.transform;
+                wrapper.style.transform = 'scale(1)'; // Real size for render
+                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                wrapper.style.transform = oldTransform; 
+
+                canvas.toBlob(async (blob) => {
+                    const name = document.getElementById('f-name').value.trim() || 'Student';
+                    const file = new File([blob], `Certificate_${name}.png`, { type: 'image/png' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try { await navigator.share({ files: [file], title: 'Certificate', text: `Certificate for ${name}` }); } catch (err) {}
+                    } else {
+                        const link = document.createElement('a'); link.download = `Certificate_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+                    }
+                    btn.innerHTML = originalText; btn.disabled = false;
+                }, 'image/png');
+            } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
+        };
+
+        window.closeModal = function() { 
+            document.getElementById('certModal').style.display = 'none'; 
+            document.getElementById('studentModal').style.display = 'none';
+            document.getElementById('viewEditContainer').style.display = 'none';
+            document.getElementById('profileCardContainer').style.display = 'none';
+        };
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => { 
+            await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); 
+        });
 
         checkAuth();
     </script>
