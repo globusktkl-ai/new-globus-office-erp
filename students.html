@@ -11,11 +11,12 @@
     <style>
         /* Shared Styles */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: flex-start; padding: 30px 10px; overflow-y: auto; }
-        .modal-container { background: #fff; width: 100%; max-width: 780px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin: auto; display: flex; gap: 20px; flex-wrap: wrap; }
+        .modal-container { background: #fff; width: 100%; max-width: 780px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin: auto; display: flex; gap: 20px; flex-wrap: wrap; position: relative;}
         
-        .search-filter-container { display: flex; border: 2px solid #cbd5e1; border-radius: 30px; overflow: hidden; background: white; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .search-box-pill { flex: 2; border: none; padding: 14px 20px; outline: none; font-size: 15px; color: #333; }
-        .filter-dropdown-pill { flex: 1; border: none; border-left: 2px solid #cbd5e1; padding: 12px 15px; outline: none; background: #f8fafc; font-size: 14px; font-weight: 700; color: #1e3a8a; cursor: pointer; }
+        /* FIX: Stacked Search & Filter */
+        .search-filter-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+        .search-box-pill { width: 100%; border: 2px solid #cbd5e1; border-radius: 12px; padding: 14px 20px; outline: none; font-size: 15px; color: #333; }
+        .filter-dropdown-pill { width: 100%; border: 2px solid #cbd5e1; border-radius: 12px; padding: 14px 20px; outline: none; background: #f8fafc; font-size: 14px; font-weight: 700; color: #1e3a8a; cursor: pointer; }
         
         .student-mobile-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .smc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; }
@@ -37,7 +38,7 @@
         .btn-del:active, .btn-del-full:active { transform: scale(0.98); }
 
         /* ID Card Modal Specific Styles */
-        .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; }
+        .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; padding-top: 20px; }
         .card-edit-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
 
         /* CERTIFICATE MODAL STYLES */
@@ -88,8 +89,6 @@
         .form-control-cert { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; margin-bottom: 10px; outline: none; }
 
         @media (max-width: 650px) {
-            .search-filter-container { flex-direction: column; border-radius: 12px; }
-            .filter-dropdown-pill { border-left: none; border-top: 1px solid #cbd5e1; padding: 14px 15px; }
             .card-preview-col, .card-edit-col { min-width: 100%; }
         }
 
@@ -154,9 +153,11 @@
             </div>
         </div>
 
-        <div id="profileCardContainer" class="modal-container" style="display:none;">
+        <div id="profileCardContainer" class="modal-container" style="display:none; padding-top:40px;">
+            <button onclick="closeModal()" class="no-print" style="position:absolute; top:15px; right:15px; background:#EF4444; color:white; border:none; padding:6px 12px; border-radius:6px; font-weight:bold; cursor:pointer; z-index:100;">X Close</button>
+            
             <div class="card-preview-col">
-                <div id="smartCardContent" style="width: 320px; height: 510px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 15px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">
+                <div id="smartCardContent" style="width: 320px; height: 510px; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 15px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1); margin:0 auto;">
                     <div style="text-align: center; margin-bottom: 5px;">
                         <img src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain; margin-bottom: 3px; mix-blend-mode: multiply;" alt="Logo" onerror="this.style.display='none'">
                         <div style="font-size: 19px; font-weight: 900; color: #1e3a8a; line-height: 1.1; letter-spacing: 0.5px;">GLOBUS</div>
@@ -190,7 +191,6 @@
             <div class="card-edit-col no-print">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid #e2e8f0; padding-bottom:5px;">
                     <h3 style="font-size:16px; color:#1e40af; margin:0;">✏️ Edit & Generate Card</h3>
-                    <button onclick="closeModal()" style="background:#EF4444; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">X</button>
                 </div>
                 <label style="font-size:12px; font-weight:600; color:#374151;">Upload Photo (Preview & Print)</label>
                 <input type="file" id="livePhotoInput" accept="image/*" class="form-control-cert" onchange="updateLivePhoto(event)">
@@ -374,7 +374,6 @@
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
                 
-                // === NEW BUTTON LOGIC FOR MOBILE VIEW === 
                 let actionBtnsHTML = `
                     <div class="card-action-btns">
                         <button onclick="viewAndEditStudent('${s.id}')" class="btn-card btn-view">View/Edit</button>
@@ -382,11 +381,9 @@
                 `;
 
                 if(stuStatus === 'completed') {
-                    // Completed: Certificate inline, Delete below
                     actionBtnsHTML += `<button onclick="openCertModal('${s.id}', '${s.course_id}')" class="btn-card btn-cert-mini">Certificate</button></div>`;
                     actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-del-full">🗑️ Delete Student</button>`;
                 } else {
-                    // Active: Delete inline
                     actionBtnsHTML += `<button onclick="deleteStudent('${s.id}', '${s.register_number}')" class="btn-card btn-del">Delete</button></div>`;
                 }
 
@@ -409,9 +406,6 @@
             });
         }
 
-        // ==========================================
-        // SECTION 1: VIEW & EDIT & ID CARD LOGIC
-        // ==========================================
         window.viewAndEditStudent = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
