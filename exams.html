@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exams & Certification - Globus</title>
+    <title>Exams & Progression - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
     <style>
         body { background-color: #f8fafc; }
         .main-content { padding: 15px; max-width: 900px; margin: 0 auto; }
@@ -20,27 +18,27 @@
         .exam-info h4 { margin: 0; font-size: 16px; color: #0f172a; font-weight: 800; }
         .exam-info p { margin: 2px 0 0; font-size: 12px; color: #64748b; font-weight: 600; }
         .current-status { background: #f0f9ff; border: 1px solid #bae6fd; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 13px; color: #0369a1; font-weight: 700; }
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; }
-        .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
-        .action-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.2s; color: white; margin-top: 10px; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 5px; }
+        .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; outline: none; }
+        .action-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; color: white; margin-top: 5px; }
         .btn-promote { background: #3b82f6; } .btn-complete { background: #10b981; } .btn-cert { background: #f59e0b; color: #fff; }
+        .btn-marklist { background: #8b5cf6; color: #fff; }
         .action-btn:active { transform: scale(0.98); }
         .empty-state { text-align: center; padding: 30px; color: #64748b; font-weight: 600; }
 
-        /* CERTIFICATE MODAL & ZOOM STYLES */
+        /* Shared Modal */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: flex-start; padding: 20px 10px; overflow-y: auto; }
-        .modal-container { background: #fff; width: 100%; max-width: 1050px; border-radius: 12px; display: flex; gap: 20px; padding: 20px; margin: auto; flex-wrap: wrap; }
-        .cert-form-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
-        .cert-preview-col { flex: 1.8; min-width: 350px; display: flex; flex-direction: column; background: #e2e8f0; padding: 15px; border-radius: 8px; }
-        
+        .modal-container { background: #fff; width: 100%; border-radius: 12px; display: flex; gap: 20px; padding: 20px; margin: auto; flex-wrap: wrap; }
+        .modal-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .zoom-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; color: #1e3a8a; }
         .zoom-btn { background: #fff; border: 1px solid #cbd5e1; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-left: 5px; }
-        .zoom-btn:active { background: #e2e8f0; }
-        
+
+        /* CERTIFICATE LAYOUT */
+        .cert-modal-container { max-width: 1050px; }
+        .cert-form-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .cert-preview-col { flex: 1.8; min-width: 350px; display: flex; flex-direction: column; background: #e2e8f0; padding: 15px; border-radius: 8px; }
         .cert-scroll-area { width: 100%; height: 550px; overflow: auto; background: #cbd5e1; border-radius: 6px; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }
-        
-        /* EXACT HTML/CSS CERTIFICATE TEMPLATE */
         .cert-wrapper { position: relative; width: 750px; height: 1060px; flex-shrink: 0; background: #ffffff; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 20px 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Georgia', serif; color: #1e293b; box-sizing: border-box; transform-origin: top center; transition: transform 0.2s ease; }
         .cert-inner-border { border: 10px solid #1e3a8a; outline: 3px solid #eab308; outline-offset: -16px; height: 100%; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; position: relative; background: rgba(255,255,255,0.9); }
         .cert-corner { position: absolute; width: 50px; height: 50px; border: 4px solid #eab308; }
@@ -53,7 +51,7 @@
         .cert-logo-section { text-align: center; }
         .cert-logo-section img { width: 90px; height: 90px; object-fit: contain; margin-bottom: 10px; }
         .cert-brand { font-size: 30px; color: #1e3a8a; margin: 0 0 5px; font-weight: 900; letter-spacing: 1px; font-family: 'Arial', sans-serif; text-transform: uppercase; }
-        .cert-sub-brand { font-size: 14px; color: #475569; margin: 0; font-family: 'Arial', sans-serif; font-weight: 600; letter-spacing: 0.5px; }
+        .cert-sub-brand { font-size: 14px; color: #475569; margin: 0; font-family: 'Arial', sans-serif; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;}
         
         .cert-title-section { text-align: center; margin: 30px 0; }
         .cert-title-main { font-size: 48px; color: #b45309; margin: 0; font-style: italic; font-weight: bold; letter-spacing: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
@@ -69,26 +67,40 @@
         .cert-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center; margin: 30px auto 0; width: 90%; font-size: 16px; font-family: 'Arial', sans-serif; color: #1e293b; }
         .cert-detail-box { background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; }
 
-        /* ABSOLUTE FOOTER POSITIONING & FIXED SEAL (MODIFIED ONLY THIS CLASS) */
         .cert-footer-section { position: absolute; bottom: 40px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
         .cert-sign-box { text-align: center; width: 160px; }
         .cert-sign-line { border-bottom: 1px solid #1e293b; height: 50px; margin-bottom: 8px; }
         .cert-sign-label { font-size: 15px; font-family: 'Arial', sans-serif; font-weight: bold; color: #475569; }
-        
         .cert-seal { width: 110px; height: 110px; border: 4px double #eab308; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 9.5px; font-weight: bold; color: #b45309; transform: rotate(-10deg); background: rgba(254, 243, 199, 0.85); box-shadow: inset 0 0 15px rgba(180,83,9,0.3); font-family: 'Arial', sans-serif; line-height: 1.4; margin-bottom: -15px; padding: 5px; box-sizing: border-box; mix-blend-mode: multiply; }
 
-        .modal-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        /* MARKLIST LAYOUT */
+        .marklist-wrapper { position: relative; width: 794px; height: 1123px; flex-shrink: 0; background: #ffffff; padding: 40px; font-family: 'Arial', sans-serif; color: #0f172a; box-sizing: border-box; transform-origin: top center; transition: transform 0.2s ease; border: 1px solid #ccc; }
+        .ml-header { text-align: center; border-bottom: 3px double #1e3a8a; padding-bottom: 15px; margin-bottom: 20px; position: relative; }
+        .ml-logo { width: 80px; height: 80px; object-fit: contain; position: absolute; left: 0; top: 0; }
+        .ml-brand { font-size: 26px; color: #1e3a8a; font-weight: 900; margin: 0 0 5px; text-transform: uppercase; }
+        .ml-sub { font-size: 12px; color: #475569; font-weight: 600; text-transform: uppercase; margin: 0 0 5px; }
+        .ml-address { font-size: 11px; color: #64748b; }
+        .ml-title { text-align: center; font-size: 20px; font-weight: 800; text-decoration: underline; margin-bottom: 25px; color: #111827; }
+        .ml-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; margin-bottom: 25px; }
+        .ml-info-box p { margin: 5px 0; }
+        .ml-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        .ml-table th, .ml-table td { border: 1px solid #cbd5e1; padding: 12px 10px; text-align: center; font-size: 14px; }
+        .ml-table th { background: #f1f5f9; color: #1e293b; font-weight: bold; text-transform: uppercase; font-size: 13px; }
+        .ml-table td.text-left { text-align: left; font-weight: bold; color: #334155; }
+        .ml-summary { display: flex; justify-content: flex-end; }
+        .ml-summary-box { border: 2px solid #1e3a8a; padding: 15px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; background: #f8fafc; text-align: center; }
+        .ml-footer { position: absolute; bottom: 50px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 14px; font-weight: bold; }
 
         @media print {
             body * { visibility: hidden; }
-            #certModal, #certModal * { visibility: visible; }
-            #certModal { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white; }
+            #certModal, #certModal *, #marklistModal, #marklistModal * { visibility: visible; }
+            #certModal, #marklistModal { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white; }
             .modal-container { box-shadow: none; padding: 0; max-width: 100%; display: block; }
             .cert-form-col, .zoom-controls, .no-print { display: none !important; }
             .cert-preview-col { background: white; padding: 0; display: block; overflow: visible; }
             .cert-scroll-area { height: auto; overflow: visible; background: white; padding: 0; }
-            #certViewport { width: 100% !important; height: auto !important; margin: 0 auto; display: flex; justify-content: center; }
-            .cert-wrapper { transform: scale(0.95) !important; margin: 0 auto; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            #certViewport, #mlViewport { width: 100% !important; height: auto !important; margin: 0 auto; display: flex; justify-content: center; }
+            .cert-wrapper, .marklist-wrapper { transform: scale(1) !important; margin: 0 auto; box-shadow: none; border: none; page-break-inside: avoid; }
             @page { size: A4 portrait; margin: 10mm; }
         }
     </style>
@@ -96,9 +108,9 @@
 <body>
     <nav class="app-header no-print">
         <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 10px;">
-            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <img src="assets/images/logo.png" id="navLogo" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <div style="display: flex; flex-direction: column;">
-                <span style="font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</span>
+                <span id="navInstName" style="font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</span>
             </div>
         </div>
         <div class="header-right"><a href="dashboard.html" style="color: #3b82f6; text-decoration: none; font-weight: 700;">← Back</a></div>
@@ -110,25 +122,103 @@
         <div id="studentsList"><div class="empty-state">Loading active students...</div></div>
     </main>
 
+    <!-- MARKLIST MODAL -->
+    <div id="marklistModal" class="modal-overlay">
+        <div class="modal-container cert-modal-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="margin:0; color:#1e3a8a; font-size: 18px;">📊 Print Mark List</h3>
+                <button onclick="closeModal()" class="no-print" style="background:#ef4444; color:#fff; border:none; padding:5px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">X Close</button>
+            </div>
+            
+            <div class="cert-preview-col" style="background:#f1f5f9;">
+                <div class="zoom-controls no-print">
+                    <span>🔍 A4 Preview</span>
+                    <div>
+                        <button class="zoom-btn" onclick="zoomML(0.1)">+</button>
+                        <button class="zoom-btn" onclick="zoomML(-0.1)">-</button>
+                    </div>
+                </div>
+                <div class="cert-scroll-area">
+                    <div id="mlViewport">
+                        <div class="marklist-wrapper" id="mlRenderArea">
+                            <div class="ml-header">
+                                <img id="mlLogo" src="assets/images/logo.png" class="ml-logo" onerror="this.style.display='none'">
+                                <h1 class="ml-brand" id="mlBrandName">GLOBUS TECHNICAL ACADEMY</h1>
+                                <p class="ml-sub" id="mlSubName">An ISO Certified Institution</p>
+                                <p class="ml-address" id="mlAddress">Address line, City, State - Email: admin@globus.com | Phone: 9876543210</p>
+                            </div>
+                            
+                            <div class="ml-title">STATEMENT OF MARKS</div>
+                            
+                            <div class="ml-info-grid">
+                                <div class="ml-info-box">
+                                    <p><b>Name of Student:</b> <span id="ml-student-name">STUDENT NAME</span></p>
+                                    <p><b>Register Number:</b> <span id="ml-student-reg">REG N/A</span></p>
+                                </div>
+                                <div class="ml-info-box" style="text-align: right;">
+                                    <p><b>Course Name:</b> <span id="ml-course">COURSE NAME</span></p>
+                                    <p><b>Report Date:</b> <span id="ml-date">DD-MM-YYYY</span></p>
+                                </div>
+                            </div>
+                            
+                            <table class="ml-table">
+                                <thead>
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th class="text-left">Subject / Module</th>
+                                        <th>Max Marks</th>
+                                        <th>Marks Obtained</th>
+                                        <th>%</th>
+                                        <th>Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ml-table-body">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                            
+                            <div class="ml-summary">
+                                <div class="ml-summary-box">
+                                    Total Marks: <span id="ml-tot-obtained">0</span> / <span id="ml-tot-max">0</span><br>
+                                    <span style="font-size:24px; color:#b45309;">Overall Grade: <span id="ml-final-grade">A+</span></span>
+                                </div>
+                            </div>
+                            
+                            <div class="ml-footer">
+                                <div><div style="border-bottom:1px solid #000; width:150px; margin-bottom:5px;"></div>Prepared By</div>
+                                <div><div style="border-bottom:1px solid #000; width:150px; margin-bottom:5px;"></div>Principal / Director</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-action-btns no-print">
+                    <button class="action-btn btn-marklist" onclick="printMarklist()">🖨️ Print Marklist (PDF)</button>
+                    <button class="action-btn" style="background:#059669;" onclick="shareMarklist()">📲 Share (PNG)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CERTIFICATE MODAL -->
     <div id="certModal" class="modal-overlay">
-        <div class="modal-container">
+        <div class="modal-container cert-modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
                 <h3 style="margin:0; color:#1e3a8a; font-size: 18px;">🎓 Generate Certificate</h3>
                 <button onclick="closeModal()" class="no-print" style="background:#ef4444; color:#fff; border:none; padding:5px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">X Close</button>
             </div>
             
             <div class="cert-form-col no-print">
-                <div class="input-grid">
+                <div class="input-grid" style="grid-template-columns: 1fr 1fr;">
                     <div class="input-group"><label>Serial #</label><input type="text" id="f-serial" oninput="updateCert()"></div>
                     <div class="input-group"><label>Reg #</label><input type="text" id="f-reg" oninput="updateCert()"></div>
                 </div>
                 <div class="input-group" style="margin-bottom:15px;"><label>Student Name</label><input type="text" id="f-name" oninput="updateCert()"></div>
                 <div class="input-group" style="margin-bottom:15px;"><label>Course Name</label><input type="text" id="f-course" oninput="updateCert()"></div>
-                <div class="input-grid">
+                <div class="input-grid" style="grid-template-columns: 1fr 1fr;">
                     <div class="input-group"><label>Grade (e.g. A+)</label><input type="text" id="f-grade" value="A+" oninput="updateCert()"></div>
                     <div class="input-group"><label>Issue Date</label><input type="text" id="f-issue-date" oninput="updateCert()"></div>
                 </div>
-                <div class="input-grid">
+                <div class="input-grid" style="grid-template-columns: 1fr 1fr;">
                     <div class="input-group"><label>Duration From</label><input type="text" id="f-date-from" oninput="updateCert()"></div>
                     <div class="input-group"><label>Duration To</label><input type="text" id="f-date-to" oninput="updateCert()"></div>
                 </div>
@@ -140,7 +230,7 @@
                     <button class="action-btn btn-promote" onclick="printCertificate()" style="margin:0; background: #4f46e5;">🖨️ Print / PDF</button>
                     <button class="action-btn btn-complete" id="shareBtn" onclick="shareCertificate()" style="margin:0; background: #059669;">📲 Send (PNG)</button>
                 </div>
-                <button class="action-btn" onclick="saveDataAndClose()" style="background: #1e293b; margin-top: 10px;">💾 Save Details & Close</button>
+                <button class="action-btn" onclick="saveDataAndClose()" style="background: #1e293b; margin-top: 10px;">💾 Mark Completed & Close</button>
             </div>
             
             <div class="cert-preview-col">
@@ -153,7 +243,6 @@
                 </div>
                 <div class="cert-scroll-area">
                     <div id="certViewport">
-                        <!-- HTML/CSS CERTIFICATE TEMPLATE -->
                         <div class="cert-wrapper" id="certificateRenderArea">
                             <div class="cert-inner-border">
                                 <div class="cert-corner cc-tl"></div><div class="cert-corner cc-tr"></div>
@@ -165,9 +254,9 @@
                                 </div>
                                 
                                 <div class="cert-logo-section">
-                                    <img src="assets/images/logo.png" alt="Logo" onerror="this.style.display='none'">
-                                    <h1 class="cert-brand">Globus Technical Academy</h1>
-                                    <p class="cert-sub-brand">COUNCIL FOR TECHNICAL DEVELOPMENT CONTINUING<br>ACADEMIC EDUCATIONAL AND SCIENTIFIC STUDIES</p>
+                                    <img id="certLogo" src="assets/images/logo.png" alt="Logo" onerror="this.style.display='none'">
+                                    <h1 class="cert-brand" id="certBrand">Globus Technical Academy</h1>
+                                    <p class="cert-sub-brand" id="certSub">COUNCIL FOR TECHNICAL DEVELOPMENT CONTINUING<br>ACADEMIC EDUCATIONAL AND SCIENTIFIC STUDIES</p>
                                 </div>
                                 
                                 <div class="cert-title-section">
@@ -194,25 +283,18 @@
                                     </div>
                                 </div>
                                 
-                                <!-- ABSOLUTE POSITIONED FOOTER -->
                                 <div class="cert-footer-section">
                                     <div class="cert-sign-box">
                                         <div class="cert-sign-line"></div>
                                         <div class="cert-sign-label">Course Director</div>
                                     </div>
-                                    <div class="cert-seal">
-                                        <span>GLOBUS</span>
-                                        <span>TECHNICAL</span>
-                                        <span>ACADEMY</span>
-                                        <span>★</span>
-                                    </div>
+                                    <div class="cert-seal" id="certSeal">GLOBUS<br>TECHNICAL<br>ACADEMY<br>★</div>
                                     <div class="cert-sign-box">
                                         <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px;">Date: <span id="c-issue-date">DD-MM-YYYY</span></div>
                                         <div class="cert-sign-line"></div>
                                         <div class="cert-sign-label">Board of Examinations</div>
                                     </div>
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
@@ -223,21 +305,60 @@
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-        let allStudents = [], allCourses = [], activeStudentData = null, currentZoom = 0.55;
+        let allStudents = [], allCourses = [], allResults = [], activeStudentData = null;
+        let currentZoom = 0.55, mlZoom = 0.55;
+        let instSettings = { institute_name: 'GLOBUS', sub_name: 'TECHNICAL ACADEMY', phone: '', logo_url: 'assets/images/logo.png', address: '', email: '' };
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
+            await fetchSettings();
             fetchData();
+        }
+
+        async function fetchSettings() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('*').limit(1).single();
+                if(data) {
+                    instSettings = { ...instSettings, ...data };
+                    document.getElementById('navInstName').innerText = instSettings.institute_name;
+                    if(instSettings.logo_url) document.getElementById('navLogo').src = instSettings.logo_url;
+                    
+                    // Cert Init
+                    document.getElementById('certBrand').innerText = instSettings.institute_name;
+                    document.getElementById('certSub').innerText = instSettings.sub_name;
+                    document.getElementById('certSeal').innerHTML = `${instSettings.institute_name}<br>${instSettings.sub_name}<br>★`;
+                    if(instSettings.logo_url) document.getElementById('certLogo').src = instSettings.logo_url;
+
+                    // Marklist Init
+                    document.getElementById('mlBrandName').innerText = instSettings.institute_name;
+                    document.getElementById('mlSubName').innerText = instSettings.sub_name;
+                    document.getElementById('mlAddress').innerText = `${instSettings.address || ''} | Email: ${instSettings.email || 'N/A'} | Phone: ${instSettings.phone || 'N/A'}`;
+                    if(instSettings.logo_url) document.getElementById('mlLogo').src = instSettings.logo_url;
+                }
+            } catch(e) {}
         }
 
         async function fetchData() {
             try {
                 const { data: students } = await supabase.from('students').select('*').eq('status', 'active').order('created_at', { ascending: false });
                 const { data: courses } = await supabase.from('courses').select('*');
-                allStudents = students || []; allCourses = courses || [];
+                const { data: results } = await supabase.from('exam_results').select('*');
+                
+                allStudents = students || []; allCourses = courses || []; allResults = results || [];
                 renderStudents(allStudents);
             } catch (err) { console.error(err); alert("Error loading data!"); }
+        }
+
+        function calculateGrade(obtained, max) {
+            let p = (obtained / max) * 100;
+            if (p >= 90) return 'A+';
+            if (p >= 80) return 'A';
+            if (p >= 70) return 'B+';
+            if (p >= 60) return 'B';
+            if (p >= 50) return 'C+';
+            if (p >= 40) return 'C';
+            return 'Failed';
         }
 
         function renderStudents(studentsToRender) {
@@ -252,6 +373,10 @@
                 let moduleIndex = course.modules.indexOf(currentModule);
                 if(moduleIndex === -1) { moduleIndex = 0; currentModule = course.modules[0]; }
                 
+                // Check if mark already exists for current module
+                const existingMark = allResults.find(r => r.student_id === student.id && r.module_name === currentModule);
+                let btnText = existingMark ? "🔄 Update Marks" : "💾 Save & Update Status";
+
                 const avatar = student.photo_url || (student.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
 
                 let actionOptions = `<option value="">-- Select Next Step --</option>`;
@@ -269,16 +394,20 @@
                     </div>
                     <div class="current-status">📖 Current Module: <b>${currentModule}</b> (Module ${moduleIndex + 1} of ${course.modules.length})</div>
                     <div class="input-grid">
-                        <div class="input-group"><label>Marks Obtained</label><input type="number" id="marks_${student.id}"></div>
-                        <div class="input-group"><label>Attendance (%)</label><input type="number" id="att_${student.id}"></div>
+                        <div class="input-group"><label>Max Marks</label><input type="number" id="max_${student.id}" value="${existingMark ? existingMark.max_marks || 100 : 100}"></div>
+                        <div class="input-group"><label>Marks Obtained</label><input type="number" id="marks_${student.id}" value="${existingMark ? existingMark.marks : ''}"></div>
+                        <div class="input-group"><label>Attendance (%)</label><input type="number" id="att_${student.id}" value="${existingMark ? existingMark.attendance : ''}"></div>
                     </div>
                     <div class="input-group" style="margin-bottom: 10px;">
                         <label>Next Step / Action</label>
                         <select id="action_${student.id}" onchange="handleActionChange('${student.id}')">${actionOptions}</select>
                     </div>
-                    <div id="btn_area_${student.id}">
-                        <button class="action-btn btn-promote" onclick="saveAction('${student.id}', '${course.id}', '${currentModule}')">💾 Save & Update Status</button>
+                    
+                    <div style="display:flex; gap:10px;">
+                        <button class="action-btn btn-promote" style="flex:2;" onclick="saveAction('${student.id}', '${course.id}', '${currentModule}')">${btnText}</button>
+                        <button class="action-btn btn-marklist" style="flex:1;" onclick="openMarklist('${student.id}', '${course.id}')">📊 Marklist</button>
                     </div>
+                    
                     <button id="cert_btn_${student.id}" class="action-btn btn-cert" style="display:none;" onclick="openCertModal('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
                 `;
                 container.appendChild(card);
@@ -296,23 +425,113 @@
         };
 
         window.saveAction = async function(studentId, courseId, currentModule) {
-            const marks = document.getElementById(`marks_${studentId}`).value, att = document.getElementById(`att_${studentId}`).value, actionVal = document.getElementById(`action_${studentId}`).value;
-            if(!marks || !att) { alert("Enter Marks and Attendance."); return; }
+            const maxM = document.getElementById(`max_${studentId}`).value;
+            const marks = document.getElementById(`marks_${studentId}`).value;
+            const att = document.getElementById(`att_${studentId}`).value;
+            const actionVal = document.getElementById(`action_${studentId}`).value;
+            
+            if(!marks || !att || !maxM) { alert("Enter Max Marks, Obtained Marks and Attendance."); return; }
             if(!actionVal) { alert("Select a Next Step."); return; }
 
-            if(confirm(`Update this student's status?`)) {
-                await supabase.from('exam_results').insert([{ student_id: studentId, course_id: courseId, module_name: currentModule, marks: Number(marks), attendance: Number(att) }]);
+            const existingMark = allResults.find(r => r.student_id === studentId && r.module_name === currentModule);
+
+            if(confirm(`Update this student's data?`)) {
+                if (existingMark) {
+                    await supabase.from('exam_results').update({ marks: Number(marks), max_marks: Number(maxM), attendance: Number(att) }).eq('id', existingMark.id);
+                } else {
+                    await supabase.from('exam_results').insert([{ student_id: studentId, course_id: courseId, module_name: currentModule, marks: Number(marks), max_marks: Number(maxM), attendance: Number(att) }]);
+                }
+
                 if (actionVal === 'COMPLETED') {
-                    await supabase.from('students').update({ status: 'completed' }).eq('id', studentId);
-                    alert("Course Completed! Move to Directory to view.");
+                    // Do not change status yet, let them generate certificate first. The Save & Close btn in cert will mark completed.
+                    alert("Marks Saved! Please generate certificate to mark as Completed.");
                 } else {
                     await supabase.from('students').update({ module: actionVal }).eq('id', studentId);
-                    alert("Promoted!");
+                    alert("Marks saved and student Promoted!");
                 }
                 fetchData();
             }
         };
 
+        // --- MARKLIST LOGIC ---
+        window.zoomML = function(amount) {
+            mlZoom += amount;
+            if(mlZoom < 0.3) mlZoom = 0.3; if(mlZoom > 1.5) mlZoom = 1.5;
+            document.getElementById('mlRenderArea').style.transform = `scale(${mlZoom})`;
+            document.getElementById('mlViewport').style.width = `${794 * mlZoom}px`;
+            document.getElementById('mlViewport').style.height = `${1123 * mlZoom}px`;
+        };
+
+        window.openMarklist = function(studentId, courseId) {
+            const student = allStudents.find(s => s.id === studentId), course = allCourses.find(c => c.id === courseId);
+            if(!student || !course) return;
+
+            const stResults = allResults.filter(r => r.student_id === studentId && r.course_id === courseId);
+            if (stResults.length === 0) { alert("No marks entered for this student yet."); return; }
+
+            document.getElementById('ml-student-name').innerText = student.full_name.toUpperCase();
+            document.getElementById('ml-student-reg').innerText = student.register_number || 'N/A';
+            document.getElementById('ml-course').innerText = course.course_name.toUpperCase();
+            
+            const today = new Date();
+            document.getElementById('ml-date').innerText = today.getDate().toString().padStart(2, '0') + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getFullYear();
+
+            const tbody = document.getElementById('ml-table-body');
+            tbody.innerHTML = '';
+            
+            let tMax = 0, tObt = 0;
+            stResults.forEach((r, i) => {
+                let max = Number(r.max_marks) || 100;
+                let obt = Number(r.marks) || 0;
+                tMax += max; tObt += obt;
+                
+                let pct = ((obt/max)*100).toFixed(1);
+                let grd = calculateGrade(obt, max);
+
+                tbody.innerHTML += `<tr>
+                    <td>${i+1}</td>
+                    <td class="text-left">${r.module_name}</td>
+                    <td>${max}</td>
+                    <td>${obt}</td>
+                    <td>${pct}%</td>
+                    <td><b>${grd}</b></td>
+                </tr>`;
+            });
+
+            document.getElementById('ml-tot-max').innerText = tMax;
+            document.getElementById('ml-tot-obtained').innerText = tObt;
+            document.getElementById('ml-final-grade').innerText = calculateGrade(tObt, tMax);
+
+            let initialZoom = window.innerWidth < 800 ? ((window.innerWidth - 60) / 794) : 0.6;
+            mlZoom = initialZoom; zoomML(0); 
+
+            document.getElementById('marklistModal').style.display = 'flex';
+        };
+
+        window.printMarklist = function() { window.print(); }
+        window.shareMarklist = async function() {
+            const btn = document.querySelector('.btn-marklist').nextElementSibling;
+            const originalText = btn.innerHTML; btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
+            try {
+                const wrapper = document.getElementById('mlRenderArea'), oldTransform = wrapper.style.transform;
+                wrapper.style.transform = 'scale(1)'; 
+                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                wrapper.style.transform = oldTransform; 
+
+                canvas.toBlob(async (blob) => {
+                    const name = document.getElementById('ml-student-name').innerText.trim() || 'Student';
+                    const file = new File([blob], `Marklist_${name}.png`, { type: 'image/png' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try { await navigator.share({ files: [file], title: 'Marklist', text: `Marklist for ${name}` }); } catch (err) {}
+                    } else {
+                        const link = document.createElement('a'); link.download = `Marklist_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+                    }
+                    btn.innerHTML = originalText; btn.disabled = false;
+                }, 'image/png');
+            } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
+        }
+
+        // --- CERTIFICATE LOGIC ---
         window.zoomCert = function(amount) {
             currentZoom += amount;
             if(currentZoom < 0.2) currentZoom = 0.2; if(currentZoom > 1.5) currentZoom = 1.5;
@@ -328,10 +547,20 @@
             const today = new Date(), dateStr = today.getDate().toString().padStart(2, '0') + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getFullYear();
             let fromDate = student.admission_date ? new Date(student.admission_date) : today;
 
+            // Auto calculate final grade for cert if marks exist
+            const stResults = allResults.filter(r => r.student_id === studentId && r.course_id === courseId);
+            let finalG = "A+";
+            if(stResults.length > 0) {
+                let tM = 0, tO = 0;
+                stResults.forEach(r => { tM += (r.max_marks||100); tO += (r.marks||0); });
+                finalG = calculateGrade(tO, tM);
+            }
+
             document.getElementById('f-serial').value = 'GM ' + Date.now().toString().slice(-7);
             document.getElementById('f-reg').value = student.register_number || 'REG N/A';
             document.getElementById('f-name').value = (student.full_name || '').toUpperCase();
             document.getElementById('f-course').value = (course.course_name || '').toUpperCase();
+            document.getElementById('f-grade').value = finalG;
             document.getElementById('f-issue-date').value = dateStr; document.getElementById('f-exam-date').value = dateStr;
             document.getElementById('f-date-from').value = fromDate.getDate().toString().padStart(2, '0') + '-' + (fromDate.getMonth()+1).toString().padStart(2, '0') + '-' + fromDate.getFullYear();
             document.getElementById('f-date-to').value = dateStr;
@@ -349,7 +578,7 @@
             });
         };
 
-        window.closeModal = function() { document.getElementById('certModal').style.display = 'none'; };
+        window.closeModal = function() { document.getElementById('certModal').style.display = 'none'; document.getElementById('marklistModal').style.display = 'none'; };
         window.printCertificate = function() { window.print(); };
 
         window.shareCertificate = async function() {
@@ -357,7 +586,7 @@
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
                 const wrapper = document.getElementById('certificateRenderArea'), oldTransform = wrapper.style.transform;
-                wrapper.style.transform = 'scale(1)'; // Fix scale for render
+                wrapper.style.transform = 'scale(1)'; 
                 const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
                 wrapper.style.transform = oldTransform; 
 
@@ -376,10 +605,9 @@
 
         window.saveDataAndClose = async function() {
             if(!activeStudentData) return;
-            const marks = document.getElementById(`marks_${activeStudentData.studentId}`).value, att = document.getElementById(`att_${activeStudentData.studentId}`).value;
-            if(marks && att) { await supabase.from('exam_results').insert([{ student_id: activeStudentData.studentId, course_id: activeStudentData.courseId, module_name: 'FINAL EXAM', marks: Number(marks), attendance: Number(att) }]); }
             await supabase.from('students').update({ status: 'completed' }).eq('id', activeStudentData.studentId);
-            alert("Certificate Generated & Student Completed!"); closeModal(); fetchData();
+            alert("Student marked as Completed! They are now moved to the Directory."); 
+            closeModal(); fetchData();
         };
 
         checkAuth();
