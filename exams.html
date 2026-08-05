@@ -121,7 +121,7 @@
     <main class="main-content no-print">
         <h2 class="page-title">🏆 Exams & Progression</h2>
         <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search active students...">
-        <div id="studentsList"><div class="empty-state">Loading active students...</div></div>
+        <div id="studentsList"><div class="empty-state" style="font-weight:bold;">Loading active students...</div></div>
     </main>
 
     <div id="certModal" class="modal-overlay">
@@ -167,6 +167,7 @@
                 </div>
                 <div class="cert-scroll-area">
                     <div id="certViewport">
+                        <!-- HTML/CSS CERTIFICATE TEMPLATE -->
                         <div class="cert-wrapper" id="certificateRenderArea">
                             <div class="cert-inner-border">
                                 <div class="cert-corner cc-tl"></div><div class="cert-corner cc-tr"></div>
@@ -207,6 +208,7 @@
                                     </div>
                                 </div>
                                 
+                                <!-- ABSOLUTE POSITIONED FOOTER -->
                                 <div class="cert-footer-section">
                                     <div class="cert-sign-box">
                                         <div class="cert-sign-line"></div>
@@ -237,31 +239,33 @@
         import { supabase } from './assets/js/supabase-config.js';
         let allStudents = [], allCourses = [], activeStudentData = null, currentZoom = 0.55;
 
+        window.addEventListener('error', function(e) {
+            const list = document.getElementById('studentsList');
+            if(list) list.innerHTML = `<div style="color:red; padding: 20px; font-weight:bold;">System Error: ${e.message}</div>`;
+        });
+
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
-            fetchData();
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) throw error;
+                if (!session) { window.location.href = 'login.html'; return; }
+                fetchData();
+            } catch (err) {
+                document.getElementById('studentsList').innerHTML = `<div style="color:red; padding:20px;">Auth Error: ${err.message}</div>`;
+            }
         }
 
         async function fetchData() {
             try {
-                const { data: students } = await supabase.from('students').select('*').eq('status', 'active').order('created_at', { ascending: false });
-                const { data: courses } = await supabase.from('courses').select('*');
-                allStudents = students || []; allCourses = courses || [];
-                renderStudents(allStudents);
-            } catch (err) { console.error(err); alert("Error loading data!"); }
-        }
-
-        function renderStudents(studentsToRender) {
-            const container = document.getElementById('studentsList'); container.innerHTML = '';
-            if (studentsToRender.length === 0) { container.innerHTML = '<div class="empty-state">No active students found.</div>'; return; }
-
-            studentsToRender.forEach(student => {
-                const course = allCourses.find(c => c.id === student.course_id);
-                if (!course || !course.modules) return; 
-
-                let currentModule = student.module || course.modules[0];
-                let moduleIndex = course.modules.indexOf(currentModule);
-                if(moduleIndex === -1) { moduleIndex = 0; currentModule = course.modules[0]; }
+                const { data: students, error: sError } = await supabase.from('students').select('*').eq('status', 'active').order('created_at', { ascending: false });
+                if (sError) throw sError;
                 
-                const avatar = student.photo_url || (student.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.ir
+                const { data: courses, error: cError } = await supabase.from('courses').select('*');
+                if (cError) throw cError;
+                
+                allStudents = students || []; 
+                allCourses = courses || [];
+                renderStudents(allStudents);
+            } catch (err) { 
+                console.error(err); 
+                document.getElementById('studentsList').innerH
