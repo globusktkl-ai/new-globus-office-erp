@@ -83,19 +83,31 @@
                 <button onclick="document.getElementById('settingsModal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
             </div>
             <form id="settingsForm" onsubmit="saveSettings(event)">
+                <!-- Placeholders removed for Main Name and Sub Name -->
                 <label>Institute Main Name (Brand)</label>
-                <input type="text" id="set_name" class="form-control" placeholder="e.g. GLOBUS" required>
+                <input type="text" id="set_name" class="form-control" required>
+                
                 <label>Sub Name / Tagline</label>
-                <input type="text" id="set_sub" class="form-control" placeholder="e.g. Technical Academy">
+                <input type="text" id="set_sub" class="form-control">
+                
+                <!-- Address placeholder kept -->
                 <label>Full Address</label>
                 <input type="text" id="set_address" class="form-control" placeholder="City, State, PIN">
+                
                 <div style="display: flex; gap: 10px;">
-                    <div style="flex:1;"><label>Phone</label><input type="text" id="set_phone" class="form-control"></div>
+                    <!-- Phone set to strictly type number, slicing to 10 chars max -->
+                    <div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10);"></div>
                     <div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div>
                 </div>
+                
                 <label>Logo URL (Leave blank to use default)</label>
                 <input type="text" id="set_logo" class="form-control" placeholder="https://example.com/logo.png">
-                <button type="submit" style="width: 100%; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
+                
+                <!-- Buttons Side by Side (Save and Reset) -->
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
+                    <button type="button" onclick="confirmReset()" style="flex:1; background: #ef4444; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">🗑️ Reset</button>
+                </div>
             </form>
         </div>
     </div>
@@ -130,12 +142,20 @@
 
         window.saveSettings = async function(e) {
             e.preventDefault();
+
+            // STRICT 10 DIGIT PHONE NUMBER CHECK
+            let phoneVal = document.getElementById('set_phone').value;
+            if (phoneVal && phoneVal.length !== 10) {
+                alert('Error: Phone number must strictly be 10 digits!');
+                return; // Stop execution if less or more than 10
+            }
+
             const payload = {
                 id: 1,
                 institute_name: document.getElementById('set_name').value,
                 sub_name: document.getElementById('set_sub').value,
                 address: document.getElementById('set_address').value,
-                phone: document.getElementById('set_phone').value,
+                phone: phoneVal,
                 email: document.getElementById('set_email').value,
                 logo_url: document.getElementById('set_logo').value
             };
@@ -143,6 +163,24 @@
             if(error) alert('Error saving: ' + error.message);
             else { alert('Settings Saved! Will reflect across all print formats.'); document.getElementById('settingsModal').style.display='none'; loadSettings(); }
         }
+
+        // CAPTCHA LOGIC FOR RESET BUTTON
+        window.confirmReset = function() {
+            let num1 = Math.floor(Math.random() * 10) + 1;
+            let num2 = Math.floor(Math.random() * 10) + 1;
+            let answer = num1 + num2;
+            
+            let userInput = prompt(`Security Verification\nTo clear settings data, please solve this math question:\n${num1} + ${num2} = ?`);
+            
+            if (userInput !== null) {
+                if (parseInt(userInput) === answer) {
+                    document.getElementById('settingsForm').reset();
+                    alert('Reset Complete! All form fields have been cleared.');
+                } else {
+                    alert('Incorrect answer! Reset cancelled.');
+                }
+            }
+        };
 
         async function loadDashboardData() {
             try {
