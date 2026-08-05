@@ -20,20 +20,26 @@
         .module-title.academic { color: #1e3a8a; } .module-title.academic::after { background: linear-gradient(90deg, #3b82f6, #93c5fd); }
         .module-title.finance { color: #064e3b; } .module-title.finance::after { background: linear-gradient(90deg, #10b981, #6ee7b7); }
         .module-section .nav-grid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; margin-top: 0; }
-        .nav-btn { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px !important; padding: 15px 5px !important; text-decoration: none; color: #475569 !important; font-size: 12px !important; font-weight: 700 !important; box-shadow: 0 2px 6px rgba(0,0,0,0.02) !important; min-height: 75px !important; }
+        .nav-btn { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px !important; padding: 15px 5px !important; text-decoration: none; color: #475569 !important; font-size: 12px !important; font-weight: 700 !important; box-shadow: 0 2px 6px rgba(0,0,0,0.02) !important; min-height: 75px !important; text-align: center;}
         .nav-btn:active { transform: scale(0.95); background: #f8fafc; }
         .nav-icon { font-size: 24px !important; margin-bottom: 8px !important; }
         .nav-btn.expense-btn { background-color: #fef2f2 !important; border-color: #fecaca !important; color: #b91c1c !important; }
         .nav-btn.report-btn { background-color: #f0fdf4 !important; border-color: #bbf7d0 !important; color: #15803d !important; }
+        
+        /* Modal Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; padding: 15px; }
+        .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
+        label { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block; }
     </style>
 </head>
 <body>
     <nav class="app-header">
         <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 10px;">
-            <img src="assets/images/logo.png" class="logo-small" alt="Logo">
+            <img src="assets/images/logo.png" id="navLogo" class="logo-small" alt="Logo">
             <div style="display: flex; flex-direction: column;">
-                <span style="font-size: 15px; font-weight: 900;">GLOBUS</span>
-                <span style="font-size: 11px; color: #64748b; font-weight: 600;">Technical Academy</span>
+                <span id="navInstName" style="font-size: 15px; font-weight: 900; text-transform: uppercase;">GLOBUS</span>
+                <span id="navSubName" style="font-size: 11px; color: #64748b; font-weight: 600;">Technical Academy</span>
             </div>
         </div>
         <div class="header-right"><button class="btn-logout-custom" id="logoutBtn" style="padding: 6px 14px; border-radius: 8px; background: #ef4444; color: white; border: none; font-weight: bold;">Logout</button></div>
@@ -54,7 +60,8 @@
                 <a href="admission.html" class="nav-btn"><span class="nav-icon">📝</span>New Admission</a>
                 <a href="students.html" class="nav-btn"><span class="nav-icon">👥</span>Directory</a>
                 <a href="courses.html" class="nav-btn"><span class="nav-icon">📚</span>Courses</a>
-                <a href="exams.html" class="nav-btn"><span class="nav-icon">🏆</span>Exams & Certs</a>
+                <a href="exams.html" class="nav-btn"><span class="nav-icon">🏆</span>Exams & Marks</a>
+                <a href="#" onclick="document.getElementById('settingsModal').style.display='flex'" class="nav-btn"><span class="nav-icon">⚙️</span>Institute Settings</a>
             </div>
         </div>
 
@@ -68,13 +75,73 @@
         </div>
     </main>
 
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
+                <button onclick="document.getElementById('settingsModal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
+            </div>
+            <form id="settingsForm" onsubmit="saveSettings(event)">
+                <label>Institute Main Name (Brand)</label>
+                <input type="text" id="set_name" class="form-control" placeholder="e.g. GLOBUS" required>
+                <label>Sub Name / Tagline</label>
+                <input type="text" id="set_sub" class="form-control" placeholder="e.g. Technical Academy">
+                <label>Full Address</label>
+                <input type="text" id="set_address" class="form-control" placeholder="City, State, PIN">
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex:1;"><label>Phone</label><input type="text" id="set_phone" class="form-control"></div>
+                    <div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div>
+                </div>
+                <label>Logo URL (Leave blank to use default)</label>
+                <input type="text" id="set_logo" class="form-control" placeholder="https://example.com/logo.png">
+                <button type="submit" style="width: 100%; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
+            </form>
+        </div>
+    </div>
+
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
+            loadSettings();
             loadDashboardData();
+        }
+
+        async function loadSettings() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                if (data) {
+                    document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
+                    document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
+                    if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
+                    
+                    document.getElementById('set_name').value = data.institute_name || '';
+                    document.getElementById('set_sub').value = data.sub_name || '';
+                    document.getElementById('set_address').value = data.address || '';
+                    document.getElementById('set_phone').value = data.phone || '';
+                    document.getElementById('set_email').value = data.email || '';
+                    document.getElementById('set_logo').value = data.logo_url || '';
+                }
+            } catch (e) { console.log("No settings found yet."); }
+        }
+
+        window.saveSettings = async function(e) {
+            e.preventDefault();
+            const payload = {
+                id: 1,
+                institute_name: document.getElementById('set_name').value,
+                sub_name: document.getElementById('set_sub').value,
+                address: document.getElementById('set_address').value,
+                phone: document.getElementById('set_phone').value,
+                email: document.getElementById('set_email').value,
+                logo_url: document.getElementById('set_logo').value
+            };
+            const { error } = await supabase.from('institute_settings').upsert([payload]);
+            if(error) alert('Error saving: ' + error.message);
+            else { alert('Settings Saved! Will reflect across all print formats.'); document.getElementById('settingsModal').style.display='none'; loadSettings(); }
         }
 
         async function loadDashboardData() {
@@ -85,7 +152,6 @@
                 const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true }).eq('status', 'Active');
                 document.getElementById('statCourses').textContent = courseCount || 0;
 
-                // FIX: Accurate Date string matching for Today's Collection (Avoids timezone issues)
                 const todayDate = new Date().toISOString().split('T')[0];
                 
                 const { data: collections } = await supabase.from('fee_payments').select('amount_paid').eq('payment_date', todayDate);
@@ -105,7 +171,6 @@
                         let total = Number(s.total_fee) || 0;
                         let admission = Number(s.admission_fee) || 0;
                         let otherPayments = paymentsData ? paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0;
-                        
                         const balance = total - admission - otherPayments;
                         if (balance > 0) pendingFeesSum += balance;
                     });
