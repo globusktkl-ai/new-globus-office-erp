@@ -55,15 +55,27 @@
             .close-modal-btn { top: 10px; right: 10px; }
         }
 
-        /* STRICT PRINT LOGIC - FIX FOR OVERLAPPING MODALS */
+        /* STRICT PRINT LOGIC - FIX FOR OVERLAPPING MODALS & BACKGROUND GRAPHICS */
         @media print {
             body * { visibility: hidden; }
             
             /* ID CARD PRINTING ONLY */
             body.print-id #studentModal, body.print-id #smartCardContent, body.print-id #smartCardContent * { visibility: visible; }
-            body.print-id #studentModal { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
+            body.print-id #studentModal { position: absolute; left: 0; top: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
             body.print-id .card-edit-col, body.print-id .close-modal-btn, body.print-id .no-print { display: none !important; }
-            body.print-id #smartCardContent { transform: scale(1) !important; border: 1px dashed #ccc !important; box-shadow: none !important; margin: 20px; }
+            
+            /* Forces background colors and circles to print correctly regardless of page size */
+            body.print-id #smartCardContent { 
+                position: absolute !important;
+                top: 15mm !important;
+                left: 15mm !important;
+                transform: none !important; 
+                border: 1px dashed #ccc !important; 
+                box-shadow: none !important; 
+                margin: 0 !important;
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important;
+            }
             
             /* CERTIFICATE PRINTING ONLY */
             body.print-cert #certModal, body.print-cert #certModal * { visibility: visible; }
@@ -72,9 +84,9 @@
             body.print-cert .cert-preview-col { background: white; padding: 0; display: block; overflow: visible; }
             body.print-cert .cert-scroll-area { height: auto; overflow: visible; background: white; padding: 0; }
             body.print-cert #certViewport { width: 100% !important; height: auto !important; margin: 0 auto; display: flex; justify-content: center; }
-            body.print-cert .cert-wrapper { transform: scale(0.95) !important; margin: 0 auto; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            body.print-cert .cert-wrapper { transform: scale(0.95) !important; margin: 0 auto; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;}
             
-            @page { size: A4 portrait; margin: 10mm; }
+            @page { size: auto; margin: 10mm; }
         }
 
         /* CERTIFICATE MODAL STYLES */
@@ -168,39 +180,46 @@
             <button onclick="closeModal()" class="close-modal-btn no-print">×</button>
             
             <div class="card-preview-col">
-                <!-- EXACT ATM/CR80 SIZE ID CARD (280px x 445px ratio) -->
-                <div id="smartCardContent" style="width: 280px; height: 445px; background: #fff; border: 4px solid #eff6ff; border-radius: 16px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.15); margin:0 auto;">
-                    <div style="background: #1e3a8a; height: 100px; width: 150%; position: absolute; top: -30px; left: -25%; border-radius: 50%; z-index: 1;"></div>
+                <!-- EXACT ATM/CR80 SIZE ID CARD (280px x 445px) with proper background forcing for print -->
+                <div id="smartCardContent" style="width: 280px; height: 445px; background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin:0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
                     
-                    <div style="text-align: center; position: relative; z-index: 2; padding-top: 10px; margin-bottom: 8px;">
-                        <div style="font-size: 20px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px;">GLOBUS</div>
-                        <div style="font-size: 10px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
+                    <!-- Blue Curved Background -->
+                    <div style="background: #1e3a8a; height: 110px; width: 150%; position: absolute; top: -25px; left: -25%; border-radius: 50%; z-index: 1;"></div>
+                    
+                    <!-- Header with Logo on Left -->
+                    <div style="display: flex; align-items: center; justify-content: center; padding-top: 12px; margin-bottom: 8px; position: relative; z-index: 2; padding-left: 15px; padding-right: 15px;">
+                        <img src="assets/images/logo.png" style="width: 35px; height: 35px; object-fit: contain; margin-right: 10px; background: white; border-radius: 5px; padding: 2px;" alt="Logo" onerror="this.style.display='none'">
+                        <div style="text-align: left;">
+                            <div style="font-size: 18px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px;">GLOBUS</div>
+                            <div style="font-size: 8px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
+                        </div>
                     </div>
                     
-                    <div style="background: #f59e0b; color: #fff; font-size: 11px; font-weight: 800; text-align: center; padding: 4px 0; width: 65%; margin: 0 auto 10px; border-radius: 20px; position: relative; z-index: 2; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">STUDENT ID CARD</div>
+                    <div style="background: #f59e0b; color: #fff; font-size: 11px; font-weight: 800; text-align: center; padding: 4px 0; width: 65%; margin: 0 auto 10px; border-radius: 20px; position: relative; z-index: 2;">STUDENT ID CARD</div>
                     
                     <div style="text-align: center; margin-bottom: 12px; position: relative; z-index: 2;">
-                        <img id="cardAvatarImg" src="https://avatar.iran.liara.run/public" style="width: 105px; height: 130px; object-fit: cover; border-radius: 10px; border: 3px solid #fff; box-shadow: 0 6px 12px rgba(0,0,0,0.12);">
+                        <img id="cardAvatarImg" src="https://avatar.iran.liara.run/public" style="width: 100px; height: 125px; object-fit: cover; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
                     </div>
                     
                     <div style="padding: 0 12px; text-align: center; position: relative; z-index: 2;">
                         <div style="margin-bottom: 8px;">
                             <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">STUDENT NAME</div>
-                            <div id="cardStudentName" style="font-size: 18px; font-weight: 900; color: #1e293b;">STUDENT NAME</div>
+                            <!-- NAME BOLD REDUCED TO NORMAL/SEMIBOLD -->
+                            <div id="cardStudentName" style="font-size: 17px; font-weight: 600; color: #1e293b;">STUDENT NAME</div>
                         </div>
                         <div style="margin-bottom: 12px;">
                             <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">COURSE</div>
-                            <div id="cardCourseName" style="font-size: 13px; font-weight: 800; color: #059669;">COURSE NAME</div>
+                            <div id="cardCourseName" style="font-size: 12px; font-weight: 800; color: #059669;">COURSE NAME</div>
                         </div>
                         
-                        <!-- WIDER REG & PHONE BOX TO PREVENT OVERLAP -->
-                        <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0; width: 100%; box-sizing: border-box; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <!-- REG & PHONE BOX STRETCHED TO PREVENT OVERLAP -->
+                        <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0; width: 100%; box-sizing: border-box;">
                             <div style="text-align:left;">
-                                <div style="font-size: 9px; color: #64748b; font-weight: 800;">REG NO</div>
+                                <div style="font-size: 8px; color: #64748b; font-weight: 800;">REG NO</div>
                                 <div id="cardRegNo" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
                             </div>
                             <div style="text-align:right;">
-                                <div style="font-size: 9px; color: #64748b; font-weight: 800;">PHONE</div>
+                                <div style="font-size: 8px; color: #64748b; font-weight: 800;">PHONE</div>
                                 <div id="cardPhone" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
                             </div>
                         </div>
@@ -331,6 +350,7 @@
                                     </div>
                                 </div>
                                 
+                                <!-- ABSOLUTE FOOTER POSITIONING -->
                                 <div class="cert-footer-section">
                                     <div class="cert-sign-box"><div class="cert-sign-line"></div><div class="cert-sign-label">Course Director</div></div>
                                     <div class="cert-seal">GLOBUS<br>TECHNICAL<br>ACADEMY<br>★</div>
@@ -348,13 +368,21 @@
         import { supabase } from './assets/js/supabase-config.js';
         let allStudents = [], globalCourses = [], currentZoom = 0.55, currentStudentData = null;
 
+        // Note: For demonstration of the UI fixes, we bypass auth if not configured.
         async function checkAuth() {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session) { window.location.href = 'login.html'; return; }
                 fetchStudents();
             } catch(e) {
-                console.log("Supabase not connected. Load mock mode if needed.");
+                // Mock data for preview without DB connection
+                console.log("Supabase not connected. Loading mock data.");
+                allStudents = [
+                    { id: '1', full_name: 'Jabir', register_number: 'Yyt7765', phone_number: '3326653320', gender: 'Male', qualification: 'SSLC', course_name: 'Mobile Phone Technician', module: 'Mobile Phone Theory', total_fee: 2000, total_paid_fees: 0, status: 'active' }
+                ];
+                globalCourses = [{id:'c1', course_name: 'Mobile Phone Technician', modules: ['Module 1', 'Mobile Phone Theory']}];
+                allStudents[0].display_course_name = allStudents[0].course_name;
+                applyFilters();
             }
         }
 
@@ -506,14 +534,14 @@
             if (file) { document.getElementById('cardAvatarImg').src = URL.createObjectURL(file); }
         };
 
-        // ISOLATED PRINT LOGIC FOR ID CARD (FIXES OVERLAP)
+        // NEW ISOLATED PRINT LOGIC FOR ID CARD
         window.printCard = function() { 
             document.body.classList.add('print-id');
             window.print(); 
             setTimeout(() => document.body.classList.remove('print-id'), 500);
         };
 
-        // ISOLATED PRINT LOGIC FOR CERTIFICATE (FIXES OVERLAP)
+        // NEW ISOLATED PRINT LOGIC FOR CERTIFICATE
         window.printCertificate = function() { 
             document.body.classList.add('print-cert');
             window.print(); 
@@ -542,7 +570,7 @@
             document.getElementById('studentModal').style.display = 'none';
             document.getElementById('viewEditContainer').style.display = 'none';
             document.getElementById('profileCardContainer').style.display = 'none';
-            document.getElementById('certModal').style.display = 'none';
+            document.getElementById('certModal').style.display = 'none'; 
         };
 
         // Certificate Open logic
@@ -550,7 +578,7 @@
             const student = allStudents.find(s => s.id === studentId), course = globalCourses.find(c => c.id === courseId);
             if(!student || !course) return; 
             
-            document.getElementById('studentModal').style.display = 'none'; 
+            document.getElementById('studentModal').style.display = 'none'; // Hide ID Modal if open
             
             const today = new Date(), dateStr = today.getDate().toString().padStart(2, '0') + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getFullYear();
             let fromDate = student.admission_date ? new Date(student.admission_date) : today;
@@ -564,6 +592,7 @@
             document.getElementById('f-date-to').value = dateStr;
 
             updateCert(); 
+            // Smart Zoom for Mobile
             let initialZoom = window.innerWidth < 600 ? ((window.innerWidth - 60) / 750) : 0.55;
             currentZoom = initialZoom; zoomCert(0); 
 
