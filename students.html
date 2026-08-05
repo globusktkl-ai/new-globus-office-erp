@@ -137,7 +137,7 @@
     <!-- ORIGINAL HEADER RESTORED -->
     <nav class="app-header no-print">
         <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 10px;">
-            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <img id="navLogo" src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <div style="display: flex; flex-direction: column;">
                 <span style="font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</span>
                 <span style="font-size: 11px; color: #64748b; font-weight: 600;">Technical Academy</span>
@@ -190,12 +190,12 @@
                     <div style="position: relative; width: 100%; height: 50px; margin-top: 10px; margin-bottom: 15px; z-index: 2;">
                         
                         <!-- Logo (Left, circular, thin border, transparent bg, slightly larger, separated from text) -->
-                        <img src="assets/images/logo.png" style="position: absolute; left: 15px; top: -4px; width: 50px; height: 50px; object-fit: contain; border: none; padding: 0; background: transparent;" alt="Logo" onerror="this.style.display='none'">
+                        <img id="cardInstLogo" src="assets/images/logo.png" style="position: absolute; left: 15px; top: -4px; width: 50px; height: 50px; object-fit: contain; border: none; padding: 0; background: transparent;" alt="Logo" onerror="this.style.display='none'">
                         
                         <!-- Title Perfectly Centered -->
                         <div style="position: absolute; left: 0; right: 0; top: 6px; text-align: center;">
-                            <div style="font-size: 20px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px;">GLOBUS</div>
-                            <div style="font-size: 9px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
+                            <div id="cardInstName" style="font-size: 20px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px;">GLOBUS</div>
+                            <div id="cardSubName" style="font-size: 9px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
                         </div>
                     </div>
                     
@@ -325,8 +325,8 @@
                                 <div class="cert-top-row"><span>Serial # <span id="c-serial">GM 0000000</span></span><span>Reg # <span id="c-reg">MP 000000</span></span></div>
                                 
                                 <div class="cert-logo-section">
-                                    <img src="assets/images/logo.png" alt="Logo" onerror="this.style.display='none'">
-                                    <h1 class="cert-brand">Globus Technical Academy</h1>
+                                    <img id="certInstLogo" src="assets/images/logo.png" alt="Logo" onerror="this.style.display='none'">
+                                    <h1 id="certInstName" class="cert-brand">Globus Technical Academy</h1>
                                     <p class="cert-sub-brand">COUNCIL FOR TECHNICAL DEVELOPMENT CONTINUING<br>ACADEMIC EDUCATIONAL AND SCIENTIFIC STUDIES</p>
                                 </div>
                                 
@@ -377,6 +377,7 @@
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session) { window.location.href = 'login.html'; return; }
+                loadSettings();
                 fetchStudents();
             } catch(e) {
                 // Mock data for preview without DB connection
@@ -390,7 +391,30 @@
             }
         }
 
+        
+        async function loadSettings() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                if (data) {
+                    // Update Nav
+                    if(document.getElementById('navInstName')) document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
+                    if(document.getElementById('navSubName')) document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
+                    if(data.logo_url && document.getElementById('navLogo')) document.getElementById('navLogo').src = data.logo_url;
+                    
+                    // Update ID Card
+                    if(document.getElementById('cardInstName')) document.getElementById('cardInstName').innerText = data.institute_name || 'GLOBUS';
+                    if(document.getElementById('cardSubName')) document.getElementById('cardSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
+                    if(data.logo_url && document.getElementById('cardInstLogo')) document.getElementById('cardInstLogo').src = data.logo_url;
+
+                    // Update Certificate
+                    if(document.getElementById('certInstName')) document.getElementById('certInstName').innerText = (data.institute_name + ' ' + (data.sub_name || '')).trim() || 'Globus Technical Academy';
+                    if(data.logo_url && document.getElementById('certInstLogo')) document.getElementById('certInstLogo').src = data.logo_url;
+                }
+            } catch (e) { console.log("No settings found yet."); }
+        }
+
         async function fetchStudents() {
+
             try {
                 const { data: studentsData } = await supabase.from('students').select('*').order('created_at', { ascending: false });
                 const { data: coursesData } = await supabase.from('courses').select('id, course_name, modules');
