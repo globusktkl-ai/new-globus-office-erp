@@ -124,7 +124,7 @@
         </div>
     </div>
 
-    <!-- CERTIFICATE MODAL (Remains Unchanged) -->
+    <!-- CERTIFICATE MODAL (Remains Unchanged for Phase 1) -->
     <div id="certModal" class="modal-overlay">
         <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
@@ -253,9 +253,17 @@
             } catch (err) { console.error(err); alert("Error loading data!"); }
         }
 
+        // PHASE 1: Max Mark Validation Added
         window.calcGrade = function(sid) {
             let max = parseFloat(document.getElementById(`max_${sid}`).value) || 0;
-            let obs = parseFloat(document.getElementById(`marks_${sid}`).value);
+            let markInput = document.getElementById(`marks_${sid}`);
+            let obs = parseFloat(markInput.value);
+
+            if (obs > max) {
+                alert("Obtained mark cannot be greater than Maximum mark!");
+                markInput.value = '';
+                obs = NaN;
+            }
             
             if(max > 0 && !isNaN(obs) && obs >= 0) {
                 let p = (obs / max) * 100;
@@ -325,6 +333,8 @@
 
                 const card = document.createElement('div');
                 card.className = 'exam-card';
+                
+                // PHASE 1: Button UI Changes (3 in one row, Generate Cert below)
                 card.innerHTML = `
                     <div class="exam-header">
                         <img src="${avatar}" class="exam-avatar">
@@ -351,11 +361,12 @@
                         <div class="input-group" style="margin:0;"><label style="color:#7c3aed;">Grade</label><input type="text" id="grade_${student.id}" readonly style="border:none; background:transparent; font-weight:bold; font-size:16px; color:#7c3aed; padding:0; outline:none;"></div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
-                        <button class="action-btn" style="background:#3b82f6; margin:0;" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
-                        <button class="action-btn" id="prom_${student.id}" style="background:#10b981; margin:0; opacity:0.5;" disabled onclick="execPromote('${student.id}', '${course.id}')">2. Execute Promotion</button>
-                        <button class="action-btn" style="background:#8b5cf6; margin:0;" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                        <button class="action-btn" style="background:#3b82f6; margin:0; font-size:11px; padding:10px 2px;" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
+                        <button class="action-btn" id="prom_${student.id}" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px;" disabled onclick="execPromote('${student.id}', '${course.id}')">2. Promotion</button>
+                        <button class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px;" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
                     </div>
+                    <button class="action-btn" style="background:#f59e0b; margin-top:8px; width:100%; font-size:13px;" onclick="alert('Generate Certificate action will be activated in Phase 2')">🎓 Generate Certificate</button>
                 `;
                 container.appendChild(card);
             });
@@ -423,7 +434,14 @@
             
             let html = '';
             if(pastResults && pastResults.length > 0) {
+                // PHASE 1: Remove Duplicate Entries - Keep only the latest entry per module
+                const latestResultsMap = {};
                 pastResults.forEach(res => {
+                    latestResultsMap[res.module_name] = res; // Overwrites older entries due to ascending order
+                });
+                const uniqueResults = Object.values(latestResultsMap);
+
+                uniqueResults.forEach(res => {
                     let p = (res.marks / 100) * 100;
                     let g = p>=90?'A+':p>=80?'A':p>=70?'B+':p>=60?'B':p>=50?'C+':p>=40?'C':'Failed';
                     html += `
