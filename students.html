@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         /* Shared Styles */
@@ -229,7 +230,17 @@
                         </div>
                     </div>
                     
+                    
                     <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 7px; color: #cbd5e1; font-weight: 700; text-align: center; z-index: 2;">If found, please return to: +91 9846000000</div>
+                    
+                    <!-- Dynamic Violet Round Seal -->
+                    <div style="position: absolute; bottom: 15px; right: 10px; width: 68px; height: 68px; border: 2px solid rgba(139, 92, 246, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; transform: rotate(-15deg); z-index: 10; box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.15); mix-blend-mode: multiply;">
+                        <div style="width: 60px; height: 60px; border: 1px dashed rgba(139, 92, 246, 0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2px; box-sizing: border-box;">
+                            <div id="sealMainName" style="font-size: 6.5px; font-weight: 900; color: rgba(139, 92, 246, 0.9); line-height: 1.1; text-transform: uppercase; word-wrap: break-word; overflow: hidden; max-height: 15px;">GLOBUS</div>
+                            <div id="sealSubName" style="font-size: 4px; font-weight: 800; color: rgba(139, 92, 246, 0.8); line-height: 1.1; text-transform: uppercase; margin-bottom: 2px; word-wrap: break-word; overflow: hidden; max-height: 10px;">TECHNICAL ACADEMY</div>
+                            <div id="sealAddress" style="font-size: 3.5px; font-weight: 600; color: rgba(139, 92, 246, 0.6); line-height: 1.1; text-transform: uppercase; word-wrap: break-word; overflow: hidden; max-height: 12px;">ADDRESS</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -260,7 +271,7 @@
                 </div>
                 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; margin-bottom:15px;">
-                    <button type="button" onclick="printCard()" style="background: #3b82f6; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(59,130,246,0.2);">🖨️ Print Card</button>
+                    <button type="button" id="sharePdfBtn" onclick="sharePDF()" style="background: #ef4444; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);">📄 Share PDF</button>
                     <button type="button" id="shareCardBtn" onclick="shareCard()" style="background: #10b981; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(16,185,129,0.2);">🔗 Share Image</button>
                 </div>
                 
@@ -405,6 +416,11 @@
                     if(document.getElementById('cardInstName')) document.getElementById('cardInstName').innerText = data.institute_name || 'GLOBUS';
                     if(document.getElementById('cardSubName')) document.getElementById('cardSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
                     if(data.logo_url && document.getElementById('cardInstLogo')) document.getElementById('cardInstLogo').src = data.logo_url;
+                    
+                    // Update ID Card Seal
+                    if(document.getElementById('sealMainName')) document.getElementById('sealMainName').innerText = data.institute_name || 'GLOBUS';
+                    if(document.getElementById('sealSubName')) document.getElementById('sealSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
+                    if(document.getElementById('sealAddress')) document.getElementById('sealAddress').innerText = data.address || '';
 
                     // Update Certificate
                     if(document.getElementById('certInstName')) document.getElementById('certInstName').innerText = (data.institute_name + ' ' + (data.sub_name || '')).trim() || 'Globus Technical Academy';
@@ -656,10 +672,44 @@
             else { alert('Details Saved Successfully!'); fetchStudents(); }
         };
 
-        window.printCard = function() { 
-            document.body.classList.add('print-id');
-            window.print(); 
-            setTimeout(() => document.body.classList.remove('print-id'), 500);
+        window.sharePDF = async function() {
+            const btn = document.getElementById('sharePdfBtn');
+            const originalText = btn.innerHTML; 
+            btn.innerHTML = '⏳ Generating PDF...'; btn.disabled = true;
+            try {
+                const { jsPDF } = window.jspdf;
+                // High quality canvas rendering
+                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                const imgData = canvas.toDataURL('image/png');
+                
+                // CR80 ID Card standard dimensions in mm: 54 x 86 (portrait)
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: [54, 86]
+                });
+                
+                // Fit perfectly onto the PDF without margins
+                pdf.addImage(imgData, 'PNG', 0, 0, 54, 86);
+                
+                const name = document.getElementById('liveName').value || 'Student';
+                const filename = `ID_Card_${name}.pdf`;
+                
+                const pdfBlob = pdf.output('blob');
+                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+                
+                // Directly share if possible (mobile), otherwise trigger download (PC)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try { await navigator.share({ files: [file], title: 'Student ID Card' }); } 
+                    catch (err) { pdf.save(filename); }
+                } else {
+                    pdf.save(filename);
+                }
+            } catch (error) { 
+                alert("Could not generate PDF. Please try again."); 
+            } finally {
+                btn.innerHTML = originalText; btn.disabled = false; 
+            }
         };
 
         window.shareCard = async function() {
