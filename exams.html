@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="assets/css/style.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- PHASE 2: Added jsPDF for Certificate generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         body { background-color: #f8fafc; }
@@ -124,43 +126,46 @@
         </div>
     </div>
 
-    <!-- CERTIFICATE MODAL (Remains Unchanged for Phase 1) -->
+    <!-- PHASE 2: IMPORTED CERTIFICATE MODAL FROM STUDENTS.HTML -->
     <div id="certModal" class="modal-overlay">
-        <div class="modal-container">
+        <div class="modal-container cert-modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
-                <h3 style="margin:0; color:#1e3a8a; font-size: 18px;">🎓 Generate Certificate</h3>
+                <h3 style="margin:0; color:#1e3a8a; font-size: 18px;">🎓 Print / View Certificate</h3>
                 <button onclick="closeModal()" class="no-print" style="background:#ef4444; color:#fff; border:none; padding:5px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">X Close</button>
             </div>
             
             <div class="cert-form-col no-print">
-                <div class="input-grid">
-                    <div class="input-group"><label>Serial #</label><input type="text" id="f-serial" oninput="updateCert()"></div>
-                    <div class="input-group"><label>Reg #</label><input type="text" id="f-reg" oninput="updateCert()"></div>
+                <label style="font-size:11px; font-weight:600; color:#475569;">Serial # & Reg #</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="f-serial" class="form-control-cert" oninput="updateCert()">
+                    <input type="text" id="f-reg" class="form-control-cert" oninput="updateCert()">
                 </div>
-                <div class="input-group" style="margin-bottom:15px;"><label>Student Name</label><input type="text" id="f-name" oninput="updateCert()"></div>
-                <div class="input-group" style="margin-bottom:15px;"><label>Course Name</label><input type="text" id="f-course" oninput="updateCert()"></div>
-                <div class="input-grid">
-                    <div class="input-group"><label>Grade (e.g. A+)</label><input type="text" id="f-grade" value="A+" oninput="updateCert()"></div>
-                    <div class="input-group"><label>Issue Date</label><input type="text" id="f-issue-date" oninput="updateCert()"></div>
+                <label style="font-size:11px; font-weight:600; color:#475569;">Student & Course</label>
+                <input type="text" id="f-name" class="form-control-cert" oninput="updateCert()">
+                <input type="text" id="f-course" class="form-control-cert" oninput="updateCert()">
+                <label style="font-size:11px; font-weight:600; color:#475569;">Grade & Issue Date</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="f-grade" class="form-control-cert" oninput="updateCert()">
+                    <input type="text" id="f-issue-date" class="form-control-cert" oninput="updateCert()">
                 </div>
-                <div class="input-grid">
-                    <div class="input-group"><label>Duration From</label><input type="text" id="f-date-from" oninput="updateCert()"></div>
-                    <div class="input-group"><label>Duration To</label><input type="text" id="f-date-to" oninput="updateCert()"></div>
+                <label style="font-size:11px; font-weight:600; color:#475569;">Duration (From - To)</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="f-date-from" class="form-control-cert" oninput="updateCert()">
+                    <input type="text" id="f-date-to" class="form-control-cert" oninput="updateCert()">
                 </div>
-                <div class="input-group" style="margin-bottom:15px;"><label>Exam Conducted On</label><input type="text" id="f-exam-date" oninput="updateCert()"></div>
+                <label style="font-size:11px; font-weight:600; color:#475569;">Exam Conducted On</label>
+                <input type="text" id="f-exam-date" class="form-control-cert" oninput="updateCert()">
                 
-                <hr style="border:1px dashed #cbd5e1; margin: 20px 0;">
-                
-                <div class="modal-action-btns">
-                    <button class="action-btn" onclick="printCertificate()" style="margin:0; background: #4f46e5;">🖨️ Print / PDF</button>
-                    <button class="action-btn" id="shareBtn" onclick="shareCertificate()" style="margin:0; background: #059669;">📲 Send (PNG)</button>
+                <hr style="border:1px dashed #cbd5e1; margin: 15px 0;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button id="certPdfBtn" onclick="sendCertPDF()" style="padding:10px; background:#4f46e5; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">📄 Send PDF</button>
+                    <button id="shareCertBtn" onclick="shareCertificate()" style="padding:10px; background:#059669; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">📲 Send PNG</button>
                 </div>
-                <button class="action-btn" onclick="saveDataAndClose()" style="background: #1e293b; margin-top: 10px;">💾 Save Details & Close</button>
             </div>
             
             <div class="cert-preview-col">
                 <div class="zoom-controls no-print">
-                    <span>🔍 Live Preview</span>
+                    <span>🔍 Preview</span>
                     <div>
                         <button class="zoom-btn" onclick="zoomCert(0.1)">+</button>
                         <button class="zoom-btn" onclick="zoomCert(-0.1)">-</button>
@@ -173,14 +178,11 @@
                                 <div class="cert-corner cc-tl"></div><div class="cert-corner cc-tr"></div>
                                 <div class="cert-corner cc-bl"></div><div class="cert-corner cc-br"></div>
                                 
-                                <div class="cert-top-row">
-                                    <span>Serial # <span id="c-serial">GM 0000000</span></span>
-                                    <span>Reg # <span id="c-reg">MP 000000</span></span>
-                                </div>
+                                <div class="cert-top-row"><span>Serial # <span id="c-serial">GM 0000000</span></span><span>Reg # <span id="c-reg">MP 000000</span></span></div>
                                 
                                 <div class="cert-logo-section">
-                                    <img src="assets/images/logo.png" alt="Logo" onerror="this.style.display='none'">
-                                    <h1 class="cert-brand">Globus Technical Academy</h1>
+                                    <img id="certInstLogo" src="assets/images/logo.png" alt="Logo" onerror="this.style.display='none'">
+                                    <h1 id="certInstName" class="cert-brand">Globus Technical Academy</h1>
                                     <p class="cert-sub-brand">COUNCIL FOR TECHNICAL DEVELOPMENT CONTINUING<br>ACADEMIC EDUCATIONAL AND SCIENTIFIC STUDIES</p>
                                 </div>
                                 
@@ -208,24 +210,12 @@
                                     </div>
                                 </div>
                                 
+                                <!-- ABSOLUTE FOOTER POSITIONING -->
                                 <div class="cert-footer-section">
-                                    <div class="cert-sign-box">
-                                        <div class="cert-sign-line"></div>
-                                        <div class="cert-sign-label">Course Director</div>
-                                    </div>
-                                    <div class="cert-seal">
-                                        <span>GLOBUS</span>
-                                        <span>TECHNICAL</span>
-                                        <span>ACADEMY</span>
-                                        <span>★</span>
-                                    </div>
-                                    <div class="cert-sign-box">
-                                        <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px;">Date: <span id="c-issue-date">DD-MM-YYYY</span></div>
-                                        <div class="cert-sign-line"></div>
-                                        <div class="cert-sign-label">Board of Examinations</div>
-                                    </div>
+                                    <div class="cert-sign-box"><div class="cert-sign-line"></div><div class="cert-sign-label">Course Director</div></div>
+                                    <div class="cert-seal">GLOBUS<br>TECHNICAL<br>ACADEMY<br>★</div>
+                                    <div class="cert-sign-box"><div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px;">Date: <span id="c-issue-date">DD-MM-YYYY</span></div><div class="cert-sign-line"></div><div class="cert-sign-label">Board of Examinations</div></div>
                                 </div>
-                                
                             </div>
                         </div>
                     </div>
@@ -241,7 +231,19 @@
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
+            loadSettings(); // Added in Phase 2 for syncing Institute Details
             fetchData();
+        }
+
+        // Added in Phase 2 to populate Institute Details in Certificate
+        async function loadSettings() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                if (data) {
+                    if(document.getElementById('certInstName')) document.getElementById('certInstName').innerText = (data.institute_name + ' ' + (data.sub_name || '')).trim() || 'Globus Technical Academy';
+                    if(data.logo_url && document.getElementById('certInstLogo')) document.getElementById('certInstLogo').src = data.logo_url;
+                }
+            } catch (e) { console.log("No settings found yet."); }
         }
 
         async function fetchData() {
@@ -253,7 +255,7 @@
             } catch (err) { console.error(err); alert("Error loading data!"); }
         }
 
-        // PHASE 1: Max Mark Validation Added
+        // Max Mark Validation
         window.calcGrade = function(sid) {
             let max = parseFloat(document.getElementById(`max_${sid}`).value) || 0;
             let markInput = document.getElementById(`marks_${sid}`);
@@ -334,7 +336,7 @@
                 const card = document.createElement('div');
                 card.className = 'exam-card';
                 
-                // PHASE 1: Button UI Changes (3 in one row, Generate Cert below)
+                // PHASE 2: Generate Certificate Validation Hook Added
                 card.innerHTML = `
                     <div class="exam-header">
                         <img src="${avatar}" class="exam-avatar">
@@ -366,7 +368,7 @@
                         <button class="action-btn" id="prom_${student.id}" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px;" disabled onclick="execPromote('${student.id}', '${course.id}')">2. Promotion</button>
                         <button class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px;" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
                     </div>
-                    <button class="action-btn" style="background:#f59e0b; margin-top:8px; width:100%; font-size:13px;" onclick="alert('Generate Certificate action will be activated in Phase 2')">🎓 Generate Certificate</button>
+                    <button class="action-btn" style="background:#f59e0b; margin-top:8px; width:100%; font-size:13px;" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
                 `;
                 container.appendChild(card);
             });
@@ -434,7 +436,7 @@
             
             let html = '';
             if(pastResults && pastResults.length > 0) {
-                // PHASE 1: Remove Duplicate Entries - Keep only the latest entry per module
+                // Remove Duplicate Entries - Keep only the latest entry per module
                 const latestResultsMap = {};
                 pastResults.forEach(res => {
                     latestResultsMap[res.module_name] = res; // Overwrites older entries due to ascending order
@@ -490,13 +492,147 @@
             }
         };
 
-        // Existing Cert Logic
-        window.openCertModal = function(studentId, courseId) { /* existing logic */ };
-        window.updateCert = function() { /* existing logic */ };
-        window.closeModal = function() { document.getElementById('certModal').style.display = 'none'; };
-        window.printCertificate = function() { window.print(); };
-        window.shareCertificate = async function() { /* existing logic */ };
-        window.saveDataAndClose = async function() { /* existing logic */ };
+        // ==========================================
+        // PHASE 2: MODULE VALIDATION & CERTIFICATE
+        // ==========================================
+        
+        window.validateAndOpenCert = async function(studentId, courseId) {
+            const course = allCourses.find(c => c.id === courseId);
+            if (!course || !course.modules || course.modules.length === 0) {
+                alert("No modules found for this course."); return;
+            }
+
+            // Fetch past exam results for this student
+            const { data: pastResults, error } = await supabase
+                .from('exam_results')
+                .select('module_name')
+                .eq('student_id', studentId);
+            
+            if (error) {
+                alert("Error fetching exam records."); return;
+            }
+
+            // Extract unique completed modules
+            const completedModules = pastResults.map(r => r.module_name);
+            const pendingModules = course.modules.filter(m => !completedModules.includes(m));
+
+            // Check if there are any pending modules
+            if (pendingModules.length > 0) {
+                alert(`⚠️ Cannot Generate Certificate!\n\nThis student has not completed all modules in the course.\n\nPending Modules:\n- ${pendingModules.join('\n- ')}`);
+            } else {
+                // If all modules passed, open certificate studio
+                openCertModal(studentId, courseId);
+            }
+        };
+
+        window.zoomCert = function(amount) {
+            currentZoom += amount;
+            if(currentZoom < 0.2) currentZoom = 0.2; if(currentZoom > 1.5) currentZoom = 1.5;
+            document.getElementById('certificateRenderArea').style.transform = `scale(${currentZoom})`;
+            document.getElementById('certViewport').style.width = `${750 * currentZoom}px`;
+            document.getElementById('certViewport').style.height = `${1060 * currentZoom}px`;
+        };
+
+        window.openCertModal = function(studentId, courseId) {
+            const student = allStudents.find(s => s.id === studentId), course = allCourses.find(c => c.id === courseId);
+            if(!student || !course) return; 
+            
+            const today = new Date(), dateStr = today.getDate().toString().padStart(2, '0') + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getFullYear();
+            let fromDate = student.admission_date ? new Date(student.admission_date) : today;
+
+            document.getElementById('f-serial').value = 'GM ' + Date.now().toString().slice(-7);
+            document.getElementById('f-reg').value = student.register_number || 'REG N/A';
+            document.getElementById('f-name').value = (student.full_name || '').toUpperCase();
+            document.getElementById('f-course').value = (course.course_name || '').toUpperCase();
+            document.getElementById('f-issue-date').value = dateStr; document.getElementById('f-exam-date').value = dateStr;
+            document.getElementById('f-date-from').value = fromDate.getDate().toString().padStart(2, '0') + '-' + (fromDate.getMonth()+1).toString().padStart(2, '0') + '-' + fromDate.getFullYear();
+            document.getElementById('f-date-to').value = dateStr;
+
+            updateCert(); 
+            // Smart Zoom for Mobile
+            let initialZoom = window.innerWidth < 600 ? ((window.innerWidth - 60) / 750) : 0.55;
+            currentZoom = initialZoom; zoomCert(0); 
+
+            document.getElementById('certModal').style.display = 'flex';
+        };
+
+        window.updateCert = function() {
+            ['serial', 'reg', 'name', 'course', 'grade', 'issue-date', 'exam-date', 'date-from', 'date-to'].forEach(id => {
+                document.getElementById(`c-${id}`).innerText = document.getElementById(`f-${id}`).value;
+            });
+        };
+
+        window.sendCertPDF = async function() {
+            const btn = document.getElementById('certPdfBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Generating PDF...'; btn.disabled = true;
+            try {
+                const wrapper = document.getElementById('certificateRenderArea');
+                const oldTransform = wrapper.style.transform;
+                wrapper.style.transform = 'scale(1)'; // Real size for render
+                
+                const { jsPDF } = window.jspdf;
+                // High quality canvas rendering
+                const canvas = await html2canvas(wrapper, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                wrapper.style.transform = oldTransform; 
+                
+                const imgData = canvas.toDataURL('image/png');
+                
+                // Certificate size roughly A4 portrait (210 x 297 mm)
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: [210, 297]
+                });
+                
+                // Fit perfectly onto the PDF without margins
+                pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+                
+                const name = document.getElementById('f-name').value.trim() || 'Student';
+                const filename = `Certificate_${name}.pdf`;
+                
+                const pdfBlob = pdf.output('blob');
+                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+                
+                // Directly share if possible (mobile), otherwise trigger download (PC)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try { await navigator.share({ files: [file], title: 'Certificate' }); } 
+                    catch (err) { pdf.save(filename); }
+                } else {
+                    pdf.save(filename);
+                }
+            } catch (error) { 
+                alert("Could not generate PDF. Please try again."); 
+            } finally {
+                btn.innerHTML = originalText; btn.disabled = false; 
+            }
+        };
+
+        window.shareCertificate = async function() {
+            const btn = document.getElementById('shareCertBtn'), originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
+            try {
+                const wrapper = document.getElementById('certificateRenderArea'), oldTransform = wrapper.style.transform;
+                wrapper.style.transform = 'scale(1)'; // Real size for render
+                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                wrapper.style.transform = oldTransform; 
+
+                canvas.toBlob(async (blob) => {
+                    const name = document.getElementById('f-name').value.trim() || 'Student';
+                    const file = new File([blob], `Certificate_${name}.png`, { type: 'image/png' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try { await navigator.share({ files: [file], title: 'Certificate', text: `Certificate for ${name}` }); } catch (err) {}
+                    } else {
+                        const link = document.createElement('a'); link.download = `Certificate_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+                    }
+                    btn.innerHTML = originalText; btn.disabled = false;
+                }, 'image/png');
+            } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
+        };
+
+        window.closeModal = function() { 
+            document.getElementById('certModal').style.display = 'none'; 
+        };
 
         checkAuth();
     </script>
