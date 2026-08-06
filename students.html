@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,7 +84,7 @@
             body.print-cert .cert-preview-col { background: white; padding: 0; display: block; overflow: visible; }
             body.print-cert .cert-scroll-area { height: auto; overflow: visible; background: white; padding: 0; }
             body.print-cert #certViewport { width: 100% !important; height: auto !important; margin: 0 auto; display: flex; justify-content: center; }
-            body.print-cert .cert-wrapper { transform: scale(0.95) !important; margin: 0 auto; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;}
+            body.print-cert .cert-wrapper { transform-origin: top center !important; transform: scale(0.95) !important; margin: 0 auto; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;}
             
             @page { size: auto; margin: 10mm; }
         }
@@ -96,9 +95,10 @@
         .cert-preview-col { flex: 1.8; min-width: 350px; display: flex; flex-direction: column; background: #e2e8f0; padding: 15px; border-radius: 8px; }
         .zoom-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; color: #1e3a8a; }
         .zoom-btn { background: #fff; border: 1px solid #cbd5e1; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-left: 5px; }
-        .cert-scroll-area { width: 100%; height: 500px; overflow: auto; background: #cbd5e1; border-radius: 6px; display: flex; justify-content: center; align-items: flex-start; padding: 20px; }
+        .cert-scroll-area { width: 100%; height: 500px; overflow: auto; background: #cbd5e1; border-radius: 6px; padding: 20px; }
+        #certViewport { margin: 0 auto; position: relative; display: block; }
         
-        .cert-wrapper { position: relative; width: 750px; height: 1060px; flex-shrink: 0; background: #ffffff; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 20px 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Georgia', serif; color: #1e293b; box-sizing: border-box; transform-origin: top center; transition: transform 0.2s ease; }
+        .cert-wrapper { position: relative; width: 750px; height: 1060px; flex-shrink: 0; background: #ffffff; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 20px 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Georgia', serif; color: #1e293b; box-sizing: border-box; transform-origin: top left; transition: transform 0.2s ease; }
         .cert-inner-border { border: 10px solid #1e3a8a; outline: 3px solid #eab308; outline-offset: -16px; height: 100%; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; position: relative; background: rgba(255,255,255,0.9); }
         .cert-corner { position: absolute; width: 50px; height: 50px; border: 4px solid #eab308; }
         .cc-tl { top: -12px; left: -12px; border-right: none; border-bottom: none; }
