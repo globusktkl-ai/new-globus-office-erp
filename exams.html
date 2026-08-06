@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- PHASE 2: Added jsPDF for Certificate generation -->
+    <!-- PHASE 2 & 3: Added jsPDF for Certificate and Marklist generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
@@ -29,7 +29,6 @@
         .exam-info p { margin: 2px 0 0; font-size: 12px; color: #64748b; font-weight: 600; }
         
         .input-group label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; }
-        /* FIXED: Added box-sizing to prevent overflow on mobile */
         .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; transition: 0.2s; }
         .input-group input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
         
@@ -37,13 +36,12 @@
         .action-btn:active { transform: scale(0.98); }
         .empty-state { text-align: center; padding: 30px; color: #64748b; font-weight: 600; }
 
-        /* CERTIFICATE MODAL & ZOOM STYLES */
+        /* CERTIFICATE & MARKLIST MODAL STYLES */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: flex-start; padding: 20px 10px; overflow-y: auto; }
         .modal-container { background: #fff; width: 100%; max-width: 1050px; border-radius: 12px; display: flex; gap: 20px; padding: 20px; margin: auto; flex-wrap: wrap; }
         .cert-form-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; }
         .cert-preview-col { flex: 1.8; min-width: 350px; display: flex; flex-direction: column; background: #e2e8f0; padding: 15px; border-radius: 12px; }
         
-        /* FIXED: Mobile Responsive Media Query */
         @media (max-width: 768px) {
             .modal-container { flex-direction: column; padding: 15px; }
             .cert-form-col, .cert-preview-col { min-width: 100%; width: 100%; box-sizing: border-box; }
@@ -94,6 +92,11 @@
 
         .modal-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
 
+        /* PHASE 3: EXACT A4 MARKLIST STYLES */
+        .marklist-wrapper { position: relative; width: 794px; height: 1123px; flex-shrink: 0; background: #ffffff; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Arial', sans-serif; color: #1e293b; box-sizing: border-box; transform-origin: top center; transition: transform 0.2s ease; }
+        .marklist-table th { padding: 12px; border: 1px solid #cbd5e1; background: #f1f5f9; text-align: center; font-weight: bold; }
+        .marklist-table td { padding: 12px; border: 1px solid #cbd5e1; text-align: center; }
+
         @media print {
             body * { visibility: hidden; }
             #certModal, #certModal * { visibility: visible; }
@@ -103,7 +106,7 @@
             .cert-preview-col { background: white; padding: 0; display: block; overflow: visible; }
             .cert-scroll-area { height: auto; overflow: visible; background: white; padding: 0; }
             #certViewport { width: 100% !important; height: auto !important; margin: 0 auto; display: flex; justify-content: center; }
-            .cert-wrapper { transform: scale(0.95) !important; margin: 0 auto; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+            .cert-wrapper, .marklist-wrapper { transform: scale(0.95) !important; margin: 0 auto; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
             @page { size: A4 portrait; margin: 10mm; }
         }
     </style>
@@ -135,7 +138,7 @@
         <div id="studentsList"><div class="empty-state">Loading students...</div></div>
     </main>
 
-    <!-- MARKLIST MODAL (CUMULATIVE) -->
+    <!-- MARKLIST MODAL (CUMULATIVE - From Phase 1) -->
     <div id="marklistModal" class="modal-overlay">
         <div class="modal-container" style="max-width: 450px; padding:0; overflow:hidden;">
             <div style="background:#1e3a8a; padding:20px; color:white; text-align:center; position:relative;">
@@ -147,10 +150,111 @@
                 <!-- content populated by JS -->
             </div>
             
-            <!-- CLOSE BUTTON ADDED HERE -->
-            <div style="padding:15px; background:white; border-top:1px solid #e2e8f0; display: flex; gap: 10px;">
-                <button onclick="shareMarklistPNG()" style="flex:1; background:#4f46e5; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">📲 Share PNG</button>
-                <button onclick="document.getElementById('marklistModal').style.display='none'" style="flex:1; background:#ef4444; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">❌ Close</button>
+            <!-- PHASE 3: ADDED NEW GENERATE MARKLIST BUTTON HERE -->
+            <div style="padding:15px; background:white; border-top:1px solid #e2e8f0; display: flex; gap: 8px; flex-wrap: wrap;">
+                <button onclick="openMarklistStudio()" style="flex:1 1 100%; background:#10b981; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">📄 Generate Marklist</button>
+                <button onclick="shareMarklistPNG()" style="flex:1; background:#4f46e5; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📲 Share PNG</button>
+                <button onclick="document.getElementById('marklistModal').style.display='none'" style="flex:1; background:#ef4444; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">❌ Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHASE 3: NEW MARKLIST STUDIO MODAL -->
+    <div id="marklistStudioModal" class="modal-overlay">
+        <div class="modal-container cert-modal-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="margin:0; color:#1e3a8a; font-size: 18px;">📄 Marklist Studio</h3>
+                <button onclick="closeModal()" class="no-print" style="background:#ef4444; color:#fff; border:none; padding:5px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">X Close</button>
+            </div>
+            
+            <div class="cert-form-col no-print">
+                <div class="input-group" style="margin-bottom: 10px;"><label>Student Name</label><input type="text" id="ml_f_name" oninput="updateML()"></div>
+                <div class="input-group" style="margin-bottom: 10px;"><label>Reg No</label><input type="text" id="ml_f_reg" oninput="updateML()"></div>
+                <div class="input-group" style="margin-bottom: 10px;"><label>Course Name</label><input type="text" id="ml_f_course" oninput="updateML()"></div>
+                <div class="input-group" style="margin-bottom: 10px;"><label>Exam Month & Year</label><input type="text" id="ml_f_date" oninput="updateML()"></div>
+                
+                <hr style="border:1px dashed #cbd5e1; margin: 15px 0;">
+                <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                    <button id="mlPdfBtn" onclick="sendMarklistPDF()" style="padding:12px; background:#4f46e5; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">📄 Share PDF (A4)</button>
+                </div>
+            </div>
+            
+            <div class="cert-preview-col">
+                <div class="zoom-controls no-print">
+                    <span>🔍 Preview</span>
+                    <div>
+                        <button class="zoom-btn" onclick="zoomMarklist(0.1)">+</button>
+                        <button class="zoom-btn" onclick="zoomMarklist(-0.1)">-</button>
+                    </div>
+                </div>
+                <div class="cert-scroll-area">
+                    <div id="mlViewport" style="margin: 0 auto; transform-origin: top center;">
+                        <div class="marklist-wrapper" id="marklistRenderArea">
+                            
+                            <!-- Letterhead Header -->
+                            <div style="display: flex; align-items: center; border-bottom: 3px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 25px;">
+                                <img id="mlInstLogo" src="assets/images/logo.png" style="width:80px; height:80px; object-fit:contain; margin-right: 20px;" alt="Logo" onerror="this.style.display='none'">
+                                <div style="flex: 1;">
+                                    <h1 id="mlInstName" style="margin:0; font-size:28px; color:#1e3a8a; text-transform:uppercase; font-weight:900;">GLOBUS</h1>
+                                    <h2 id="mlSubName" style="margin:5px 0 0; font-size:14px; color:#475569; font-weight:700; text-transform:uppercase;">TECHNICAL ACADEMY</h2>
+                                    <p style="margin:5px 0 0; font-size:12px; color:#64748b; font-weight:600;"><span id="mlPhone">Ph: </span> | <span id="mlEmail">Email: </span></p>
+                                </div>
+                            </div>
+                            
+                            <h3 style="text-align: center; font-size: 22px; text-decoration: underline; margin-bottom: 35px; font-family: 'Georgia', serif;">STATEMENT OF MARKS</h3>
+                            
+                            <!-- Student Details Row -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; font-size: 15px; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background: #f8fafc;">
+                                <div><strong style="color: #475569;">Name of Student:</strong> <span id="ml_c_name" style="font-weight: bold; margin-left: 5px;">-</span></div>
+                                <div><strong style="color: #475569;">Register No:</strong> <span id="ml_c_reg" style="font-weight: bold; margin-left: 5px;">-</span></div>
+                                <div style="grid-column: span 2;"><strong style="color: #475569;">Course:</strong> <span id="ml_c_course" style="font-weight: bold; margin-left: 5px;">-</span></div>
+                                <div style="grid-column: span 2;"><strong style="color: #475569;">Month & Year of Exam:</strong> <span id="ml_c_date" style="font-weight: bold; margin-left: 5px;">-</span></div>
+                            </div>
+                            
+                            <!-- Marks Table -->
+                            <table class="marklist-table" style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 14px;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left;">Subject / Module</th>
+                                        <th>Max Marks</th>
+                                        <th>Marks Obtained</th>
+                                        <th>Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ml_table_body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                            
+                            <!-- Grading Scale Info -->
+                            <div style="font-size: 12px; color: #64748b; margin-bottom: 40px; line-height: 1.6;">
+                                <strong style="color: #1e293b;">Grading Scale:</strong><br>
+                                A+ (90-100%) | A (80-89%) | B+ (70-79%) | B (60-69%) | C+ (50-59%) | C (40-49%) | Failed (<40%)
+                            </div>
+                            
+                            <!-- Footer & Seal -->
+                            <div style="position: absolute; bottom: 50px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end;">
+                                <div style="text-align: center;">
+                                    <div style="border-bottom: 1px solid #1e293b; width: 160px; height: 40px; margin-bottom: 8px;"></div>
+                                    <div style="font-size: 14px; font-weight: bold;">Prepared By</div>
+                                </div>
+                                
+                                <div class="cert-seal" style="width: 130px; height: 130px; font-size: 10px;">
+                                    <span id="mlSealName">GLOBUS</span>
+                                    <span id="mlSealSub" style="margin-bottom:3px;">TECHNICAL</span>
+                                    <span>ACADEMY</span>
+                                    <span>★</span>
+                                </div>
+                                
+                                <div style="text-align: center;">
+                                    <div style="border-bottom: 1px solid #1e293b; width: 160px; height: 40px; margin-bottom: 8px;"></div>
+                                    <div style="font-size: 14px; font-weight: bold;">Controller of Examinations</div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -164,7 +268,6 @@
             </div>
             
             <div class="cert-form-col no-print">
-                <!-- FIXED: Structured layout using input-group grids for Mobile Responsiveness -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div class="input-group" style="margin:0;"><label>Serial #</label><input type="text" id="f-serial" oninput="updateCert()"></div>
                     <div class="input-group" style="margin:0;"><label>Reg #</label><input type="text" id="f-reg" oninput="updateCert()"></div>
@@ -268,8 +371,18 @@
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
+                    // Certificates mapped to DB data
                     if(document.getElementById('certInstName')) document.getElementById('certInstName').innerText = (data.institute_name + ' ' + (data.sub_name || '')).trim() || 'Globus Technical Academy';
                     if(data.logo_url && document.getElementById('certInstLogo')) document.getElementById('certInstLogo').src = data.logo_url;
+                    
+                    // PHASE 3: Marklist Studio mapped to DB data
+                    if(document.getElementById('mlInstName')) document.getElementById('mlInstName').innerText = data.institute_name || 'GLOBUS';
+                    if(document.getElementById('mlSubName')) document.getElementById('mlSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
+                    if(data.logo_url && document.getElementById('mlInstLogo')) document.getElementById('mlInstLogo').src = data.logo_url;
+                    if(document.getElementById('mlPhone')) document.getElementById('mlPhone').innerText = "Ph: " + (data.phone || 'N/A');
+                    if(document.getElementById('mlEmail')) document.getElementById('mlEmail').innerText = "Email: " + (data.email || 'N/A');
+                    if(document.getElementById('mlSealName')) document.getElementById('mlSealName').innerText = data.institute_name || 'GLOBUS';
+                    if(document.getElementById('mlSealSub')) document.getElementById('mlSealSub').innerText = data.sub_name || 'TECHNICAL ACADEMY';
                 }
             } catch (e) { console.log("No settings found yet."); }
         }
@@ -347,7 +460,7 @@
                     alert('Unlocked! You can now edit this module.');
                 } else {
                     if (ans !== null) alert('Incorrect Answer');
-                    selectEl.value = prevVal; // Revert selection
+                    selectEl.value = prevVal; 
                 }
             } else {
                 selectEl.setAttribute('data-prev', selectEl.value);
@@ -422,7 +535,6 @@
             });
         };
 
-
         window.updateMarks = async function(studentId, courseId) {
             const mod = document.getElementById(`mod_${studentId}`).value;
             const marks = document.getElementById(`marks_${studentId}`).value;
@@ -467,6 +579,9 @@
         };
 
         window.showMarklist = async function(studentId, courseId) {
+            window.currentMlStudentId = studentId;
+            window.currentMlCourseId = courseId;
+            
             const student = allStudents.find(s => s.id === studentId);
             document.getElementById('ml_stu_name').innerText = student.full_name + ' (' + (student.register_number || 'N/A') + ')';
             
@@ -479,9 +594,7 @@
             let html = '';
             if(pastResults && pastResults.length > 0) {
                 const latestResultsMap = {};
-                pastResults.forEach(res => {
-                    latestResultsMap[res.module_name] = res; 
-                });
+                pastResults.forEach(res => { latestResultsMap[res.module_name] = res; });
                 const uniqueResults = Object.values(latestResultsMap);
 
                 uniqueResults.forEach(res => {
@@ -532,6 +645,149 @@
             }
         };
 
+        // ==========================================
+        // PHASE 3: MARKLIST STUDIO LOGIC (A4 PDF)
+        // ==========================================
+        window.openMarklistStudio = async function() {
+            document.getElementById('marklistModal').style.display = 'none';
+            
+            const studentId = window.currentMlStudentId;
+            const student = allStudents.find(s => s.id === studentId);
+            const course = allCourses.find(c => c.id === window.currentMlCourseId);
+            if(!student || !course) return;
+
+            const today = new Date();
+            const dateStr = (today.getMonth()+1).toString().padStart(2, '0') + '/' + today.getFullYear();
+
+            document.getElementById('ml_f_name').value = (student.full_name || '').toUpperCase();
+            document.getElementById('ml_f_reg').value = student.register_number || 'N/A';
+            document.getElementById('ml_f_course').value = (course.course_name || '').toUpperCase();
+            document.getElementById('ml_f_date').value = dateStr;
+
+            updateML();
+
+            // Populate table in A4 Studio
+            const tbody = document.getElementById('ml_table_body');
+            tbody.innerHTML = '';
+            
+            const { data: pastResults } = await supabase.from('exam_results').select('*').eq('student_id', studentId).order('created_at', {ascending: true});
+            const latestResultsMap = {};
+            if(pastResults) pastResults.forEach(res => { latestResultsMap[res.module_name] = res; });
+            const uniqueResults = Object.values(latestResultsMap);
+
+            let totalMax = 0;
+            let totalObs = 0;
+
+            uniqueResults.forEach(res => {
+                let p = (res.marks / 100) * 100;
+                let g = p>=90?'A+':p>=80?'A':p>=70?'B+':p>=60?'B':p>=50?'C+':p>=40?'C':'Failed';
+                totalMax += 100; // Fixed max mark as 100 per module
+                totalObs += res.marks;
+
+                tbody.innerHTML += `
+                <tr>
+                    <td style="text-align: left; font-weight: 600;">${res.module_name}</td>
+                    <td>100</td>
+                    <td style="font-weight: bold;">${res.marks}</td>
+                    <td style="color: #059669; font-weight: bold;">${g}</td>
+                </tr>`;
+            });
+
+            // Handle current session
+            const currMod = document.getElementById(`mod_${studentId}`).value;
+            const currMarks = document.getElementById(`marks_${studentId}`).value;
+            const currMax = document.getElementById(`max_${studentId}`).value || 100;
+            const currGrade = document.getElementById(`grade_${studentId}`).value;
+
+            if (currMarks && !latestResultsMap[currMod]) {
+                totalMax += parseFloat(currMax);
+                totalObs += parseFloat(currMarks);
+                tbody.innerHTML += `
+                <tr>
+                    <td style="text-align: left; font-weight: 600;">${currMod} <span style="font-size:11px; color:#64748b;">(Current)</span></td>
+                    <td>${currMax}</td>
+                    <td style="font-weight: bold;">${currMarks}</td>
+                    <td style="color: #7c3aed; font-weight: bold;">${currGrade || '-'}</td>
+                </tr>`;
+            }
+
+            // Generate Total Row
+            if (totalMax > 0) {
+                let overallP = (totalObs / totalMax) * 100;
+                let overallG = overallP>=90?'A+':overallP>=80?'A':overallP>=70?'B+':overallP>=60?'B':overallP>=50?'C+':overallP>=40?'C':'Failed';
+                tbody.innerHTML += `
+                <tr style="background: #e2e8f0; font-weight: bold; font-size: 15px;">
+                    <td style="text-align: right;">GRAND TOTAL</td>
+                    <td>${totalMax}</td>
+                    <td style="color: #1e3a8a;">${totalObs}</td>
+                    <td style="color: #1e3a8a;">${overallG}</td>
+                </tr>`;
+            }
+
+            // Mobile zoom logic for A4 Studio
+            window.currentMlZoom = window.innerWidth < 600 ? ((window.innerWidth - 60) / 794) : 0.55;
+            zoomMarklist(0);
+
+            document.getElementById('marklistStudioModal').style.display = 'flex';
+        };
+
+        window.updateML = function() {
+            document.getElementById('ml_c_name').innerText = document.getElementById('ml_f_name').value;
+            document.getElementById('ml_c_reg').innerText = document.getElementById('ml_f_reg').value;
+            document.getElementById('ml_c_course').innerText = document.getElementById('ml_f_course').value;
+            document.getElementById('ml_c_date').innerText = document.getElementById('ml_f_date').value;
+        };
+
+        window.zoomMarklist = function(amount) {
+            window.currentMlZoom += amount;
+            if(window.currentMlZoom < 0.2) window.currentMlZoom = 0.2; if(window.currentMlZoom > 1.5) window.currentMlZoom = 1.5;
+            document.getElementById('marklistRenderArea').style.transform = `scale(${window.currentMlZoom})`;
+            document.getElementById('mlViewport').style.width = `${794 * window.currentMlZoom}px`;
+            document.getElementById('mlViewport').style.height = `${1123 * window.currentMlZoom}px`;
+        };
+
+        window.sendMarklistPDF = async function() {
+            const btn = document.getElementById('mlPdfBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Generating PDF...'; btn.disabled = true;
+            try {
+                const wrapper = document.getElementById('marklistRenderArea');
+                const oldTransform = wrapper.style.transform;
+                wrapper.style.transform = 'scale(1)'; 
+                
+                const { jsPDF } = window.jspdf;
+                // High quality canvas rendering exactly fitting the container
+                const canvas = await html2canvas(wrapper, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                wrapper.style.transform = oldTransform; 
+                
+                const imgData = canvas.toDataURL('image/png');
+                
+                // Exactly A4 format without margins
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [210, 297] });
+                pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+                
+                const name = document.getElementById('ml_f_name').value.trim() || 'Student';
+                const filename = `Marklist_${name}.pdf`;
+                
+                const pdfBlob = pdf.output('blob');
+                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+                
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try { await navigator.share({ files: [file], title: 'Statement of Marks' }); } 
+                    catch (err) { pdf.save(filename); }
+                } else {
+                    pdf.save(filename);
+                }
+            } catch (error) { 
+                alert("Could not generate PDF. Please try again."); 
+            } finally {
+                btn.innerHTML = originalText; btn.disabled = false; 
+            }
+        };
+
+        // ==========================================
+        // PHASE 2: MODULE VALIDATION & CERTIFICATE
+        // ==========================================
         window.validateAndOpenCert = async function(studentId, courseId) {
             const course = allCourses.find(c => c.id === courseId);
             if (!course || !course.modules || course.modules.length === 0) {
@@ -659,6 +915,7 @@
 
         window.closeModal = function() { 
             document.getElementById('certModal').style.display = 'none'; 
+            document.getElementById('marklistStudioModal').style.display = 'none'; // PHASE 3 close hook
         };
 
         checkAuth();
