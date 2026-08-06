@@ -14,7 +14,13 @@
         body { background-color: #f8fafc; }
         .main-content { padding: 15px; max-width: 900px; margin: 0 auto; }
         .page-title { text-align: center; font-size: 20px; font-weight: 900; color: #1e3a8a; margin-bottom: 20px; text-transform: uppercase; }
-        .search-box { width: 100%; padding: 14px 20px; border: 2px solid #e2e8f0; border-radius: 30px; font-size: 14px; outline: none; margin-bottom: 20px; }
+        
+        /* NEW: Search and Filter Styles (Imported from Directory) */
+        .search-filter-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
+        .search-box-pill { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; outline: none; font-size: 15px; color: #333; transition: border-color 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .search-box-pill:focus { border-color: #3b82f6; }
+        .filter-dropdown-pill { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; outline: none; background: #f8fafc; font-size: 14px; font-weight: 700; color: #1e3a8a; cursor: pointer; transition: border-color 0.3s; }
+        .filter-dropdown-pill:focus { border-color: #3b82f6; }
 
         .exam-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .exam-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px; }
@@ -105,8 +111,18 @@
 
     <main class="main-content no-print">
         <h2 class="page-title">🏆 Exams & Progression</h2>
-        <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search active students...">
-        <div id="studentsList"><div class="empty-state">Loading active students...</div></div>
+        
+        <!-- NEW FILTER & SEARCH SECTION -->
+        <div class="search-filter-container">
+            <input type="text" id="searchInput" class="search-box-pill" placeholder="🔍 Search Name, Reg No, Phone...">
+            <select id="statusFilter" class="filter-dropdown-pill">
+                <option value="active" selected>🟢 Active Students</option>
+                <option value="completed">🎓 Completed Students</option>
+                <option value="all">📁 All Students</option>
+            </select>
+        </div>
+
+        <div id="studentsList"><div class="empty-state">Loading students...</div></div>
     </main>
 
     <!-- NEW MARKLIST MODAL (CUMULATIVE) -->
@@ -120,8 +136,11 @@
             <div id="ml_content" style="padding:20px; max-height:60vh; overflow-y:auto; background:#f8fafc;">
                 <!-- content populated by JS -->
             </div>
-            <div style="padding:15px; background:white; border-top:1px solid #e2e8f0;">
-                <button onclick="shareMarklistPNG()" style="width:100%; background:#4f46e5; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">📲 Share Marklist PNG</button>
+            
+            <!-- NEW CLOSE BUTTON ADDED HERE -->
+            <div style="padding:15px; background:white; border-top:1px solid #e2e8f0; display: flex; gap: 10px;">
+                <button onclick="shareMarklistPNG()" style="flex:1; background:#4f46e5; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">📲 Share PNG</button>
+                <button onclick="document.getElementById('marklistModal').style.display='none'" style="flex:1; background:#ef4444; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">❌ Close</button>
             </div>
         </div>
     </div>
@@ -248,12 +267,37 @@
 
         async function fetchData() {
             try {
-                const { data: students } = await supabase.from('students').select('*').eq('status', 'active').order('created_at', { ascending: false });
+                // MODIFIED: Fetch all students so we can filter Active/Completed
+                const { data: students } = await supabase.from('students').select('*').order('created_at', { ascending: false });
                 const { data: courses } = await supabase.from('courses').select('*');
                 allStudents = students || []; allCourses = courses || [];
-                renderStudents(allStudents);
+                
+                // Init filtering logic instead of rendering all directly
+                applyFilters();
             } catch (err) { console.error(err); alert("Error loading data!"); }
         }
+
+        // NEW FILTER LOGIC
+        window.applyFilters = function() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusTerm = document.getElementById('statusFilter').value; 
+
+            let filtered = allStudents.filter(s => {
+                const matchesSearch = (s.full_name?.toLowerCase().includes(searchTerm) || s.register_number?.toLowerCase().includes(searchTerm) || s.phone_number?.toLowerCase().includes(searchTerm));
+                let matchesStatus = true;
+                const stuStatus = (s.status || 'active').toLowerCase();
+                
+                if (statusTerm === 'active') matchesStatus = (stuStatus === 'active');
+                else if (statusTerm === 'completed') matchesStatus = (stuStatus === 'completed' || stuStatus === 'inactive');
+                
+                return matchesSearch && matchesStatus;
+            });
+            renderStudents(filtered);
+        }
+
+        // Listeners for filter
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
 
         // Max Mark Validation
         window.calcGrade = function(sid) {
@@ -308,7 +352,7 @@
 
         window.renderStudents = function(studentsToRender) {
             const container = document.getElementById('studentsList'); container.innerHTML = '';
-            if (studentsToRender.length === 0) { container.innerHTML = '<div class="empty-state">No active students found.</div>'; return; }
+            if (studentsToRender.length === 0) { container.innerHTML = '<div class="empty-state">No students found matching your criteria.</div>'; return; }
 
             studentsToRender.forEach(student => {
                 const course = allCourses.find(c => c.id === student.course_id);
@@ -342,6 +386,7 @@
                         <img src="${avatar}" class="exam-avatar">
                         <div class="exam-info">
                             <h4>${student.full_name}</h4><p>Reg: ${student.register_number || 'N/A'} | Course: ${course.course_name}</p>
+                            <p style="color: ${student.status === 'completed' ? '#10b981' : '#3b82f6'}; font-weight: 800;">Status: ${(student.status || 'Active').toUpperCase()}</p>
                         </div>
                     </div>
                     
@@ -374,10 +419,6 @@
             });
         };
 
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            renderStudents(allStudents.filter(s => s.full_name?.toLowerCase().includes(term) || s.register_number?.toLowerCase().includes(term)));
-        });
 
         window.updateMarks = async function(studentId, courseId) {
             const mod = document.getElementById(`mod_${studentId}`).value;
