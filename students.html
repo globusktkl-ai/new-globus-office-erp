@@ -1,1 +1,222 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directory - Globus Technical Academy</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        /* Shared Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 1000; justify-content: center; align-items: flex-start; padding: 20px; overflow-y: auto; backdrop-filter: blur(5px); }
+        .modal-container { background: #fff; width: 100%; max-width: 780px; border-radius: 16px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); margin: auto; display: flex; gap: 20px; flex-wrap: wrap; position: relative; }
+        
+        /* Stacked Search & Filter */
+        .search-filter-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
+        .search-box-pill { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; outline: none; font-size: 15px; color: #333; transition: border-color 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .search-box-pill:focus { border-color: #3b82f6; }
+        .filter-dropdown-pill { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; outline: none; background: #f8fafc; font-size: 14px; font-weight: 700; color: #1e3a8a; cursor: pointer; transition: border-color 0.3s; }
+        .filter-dropdown-pill:focus { border-color: #3b82f6; }
+        
+        .student-mobile-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s; }
+        .student-mobile-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+        .smc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 15px; }
+        .smc-name { font-size: 19px; font-weight: 900; color: #0f172a; margin-bottom: 4px; line-height: 1.2; }
+        .smc-reg { font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .smc-header-center img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #eff6ff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .smc-row { display: flex; align-items: flex-start; margin-bottom: 10px; font-size: 14px; }
+        .smc-label { width: 110px; color: #64748b; font-weight: 700; flex-shrink: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .smc-value { flex: 1; color: #1e293b; font-weight: 600; }
+
+        .card-action-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+        .btn-card { border: none; padding: 10px 4px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; text-align: center; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .btn-view { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+        .btn-view:hover { background: #e2e8f0; }
+        .btn-id { background: #3b82f6; color: #fff; border: 1px solid #2563eb; }
+        .btn-id:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-cert-mini { background: #f59e0b; color: #fff; border: 1px solid #d97706; }
+        .btn-del { background: #fff; color: #ef4444; border: 1px solid #fca5a5; }
+        .btn-del:hover { background: #fef2f2; border-color: #ef4444; }
+        .btn-del-full { background: #fef2f2; color: #ef4444; border: 1px dashed #fca5a5; width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
+
+        .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; padding-top: 20px; position: relative; }
+        .card-edit-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .close-modal-btn { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; border: 2px solid white; border-radius: 50%; width: 36px; height: 36px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.2s; }
+        .close-modal-btn:hover { background: #dc2626; transform: scale(1.1); }
+
+        .form-control-cert { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; margin-bottom: 12px; outline: none; font-weight: 500; }
+        .form-control-cert:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+
+        @media (max-width: 650px) {
+            .card-preview-col, .card-edit-col { min-width: 100%; }
+            .modal-container { padding: 15px; margin-top: 10px; }
+            .close-modal-btn { top: 10px; right: 10px; }
+        }
+
+        /* STRICT PRINT LOGIC */
+        @media print {
+            body * { visibility: hidden; }
+            
+            /* ID CARD PRINTING ONLY */
+            body.print-id #studentModal, body.print-id #smartCardContent, body.print-id #smartCardContent * { visibility: visible; }
+            body.print-id #studentModal { position: absolute; left: 0; top: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
+            body.print-id .card-edit-col, body.print-id .close-modal-btn, body.print-id .no-print { display: none !important; }
+            
+            body.print-id #smartCardContent { 
+                position: absolute !important;
+                top: 15mm !important;
+                left: 15mm !important;
+                transform: none !important; 
+                border: 1px dashed #ccc !important; 
+                box-shadow: none !important; 
+                margin: 0 !important;
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important;
+            }
+            
+            /* CERTIFICATE PRINTING ONLY */
+            body.print-cert #certModal, body.print-cert #certModal * { visibility: visible; }
+            body.print-cert #certModal { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
+            body.print-cert .cert-form-col, body.print-cert .zoom-controls, body.print-cert .no-print, body.print-cert .close-modal-btn { display: none !important; }
+            body.print-cert .cert-preview-col { background: white; padding: 0; display: block; overflow: visible; }
+            body.print-cert .cert-scroll-area { height: auto; overflow: visible; background: white; padding: 0; }
+            body.print-cert #certViewport { width: 100% !important; height: auto !important; margin: 0 auto; display: flex; justify-content: center; }
+            body.print-cert .cert-wrapper { transform-origin: top center !important; transform: scale(0.95) !important; margin: 0 auto; box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;}
+            
+            @page { size: auto; margin: 10mm; }
+        }
+
+        /* CERTIFICATE MODAL STYLES */
+        .cert-modal-container { max-width: 1050px; }
+        .cert-form-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .cert-preview-col { flex: 1.8; min-width: 350px; display: flex; flex-direction: column; background: #e2e8f0; padding: 15px; border-radius: 8px; }
+        .zoom-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; color: #1e3a8a; }
+        .zoom-btn { background: #fff; border: 1px solid #cbd5e1; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; margin-left: 5px; }
+        .cert-scroll-area { width: 100%; height: 500px; overflow: auto; background: #cbd5e1; border-radius: 6px; padding: 20px; }
+        #certViewport { margin: 0 auto; position: relative; display: block; }
+        
+        .cert-wrapper { position: relative; width: 750px; height: 1060px; flex-shrink: 0; background: #ffffff; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 20px 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Georgia', serif; color: #1e293b; box-sizing: border-box; transform-origin: top left; transition: transform 0.2s ease; }
+        .cert-inner-border { border: 10px solid #1e3a8a; outline: 3px solid #eab308; outline-offset: -16px; height: 100%; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; position: relative; background: rgba(255,255,255,0.9); }
+        .cert-corner { position: absolute; width: 50px; height: 50px; border: 4px solid #eab308; }
+        .cc-tl { top: -12px; left: -12px; border-right: none; border-bottom: none; }
+        .cc-tr { top: -12px; right: -12px; border-left: none; border-bottom: none; }
+        .cc-bl { bottom: -12px; left: -12px; border-right: none; border-top: none; }
+        .cc-br { bottom: -12px; right: -12px; border-left: none; border-top: none; }
+
+        .cert-top-row { display: flex; justify-content: space-between; font-weight: bold; color: #dc2626; font-size: 15px; font-family: 'Arial', sans-serif; margin-bottom: 20px;}
+        .cert-logo-section { text-align: center; }
+        .cert-logo-section img { width: 90px; height: 90px; object-fit: contain; margin-bottom: 10px; }
+        .cert-brand { font-size: 30px; color: #1e3a8a; margin: 0 0 5px; font-weight: 900; letter-spacing: 1px; font-family: 'Arial', sans-serif; text-transform: uppercase; }
+        .cert-sub-brand { font-size: 14px; color: #475569; margin: 0; font-family: 'Arial', sans-serif; font-weight: 600; letter-spacing: 0.5px; }
+        
+        .cert-title-section { text-align: center; margin: 30px 0; }
+        .cert-title-main { font-size: 48px; color: #b45309; margin: 0; font-style: italic; font-weight: bold; letter-spacing: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .cert-title-sub { font-size: 18px; color: #64748b; letter-spacing: 4px; margin-top: 5px; text-transform: uppercase; }
+        
+        .cert-body-section { text-align: center; line-height: 1.8; }
+        .cert-body-text { font-size: 20px; color: #334155; font-style: italic; margin-bottom: 15px; }
+        .cert-student-name { font-size: 34px; color: #0f172a; margin: 15px 0; font-weight: bold; border-bottom: 2px solid #cbd5e1; display: inline-block; padding: 0 20px 5px; }
+        .cert-course-name { font-size: 22px; color: #1d4ed8; margin: 15px 0; font-weight: bold; text-transform: uppercase; font-family: 'Arial', sans-serif; padding: 0 20px;}
+        .cert-grade-text { font-size: 20px; margin-top: 15px; }
+        .cert-grade-value { font-size: 26px; font-weight: bold; color: #dc2626; text-decoration: underline; }
+
+        .cert-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: center; margin: 30px auto 0; width: 90%; font-size: 16px; font-family: 'Arial', sans-serif; color: #1e293b; }
+        .cert-detail-box { background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; }
+
+        .cert-footer-section { position: absolute; bottom: 40px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .cert-sign-box { text-align: center; width: 160px; }
+        .cert-sign-line { border-bottom: 1px solid #1e293b; height: 50px; margin-bottom: 8px; }
+        .cert-sign-label { font-size: 15px; font-family: 'Arial', sans-serif; font-weight: bold; color: #475569; }
+        
+        .cert-seal { width: 110px; height: 110px; border: 4px double #eab308; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 9.5px; font-weight: bold; color: #b45309; transform: rotate(-10deg); background: rgba(254, 243, 199, 0.85); box-shadow: inset 0 0 15px rgba(180,83,9,0.3); font-family: 'Arial', sans-serif; line-height: 1.4; margin-bottom: -15px; padding: 5px; box-sizing: border-box; mix-blend-mode: multiply; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    
+    <nav class="app-header no-print">
+        <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 10px;">
+            <img id="navLogo" src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <div style="display: flex; flex-direction: column;">
+                <span style="font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</span>
+                <span style="font-size: 11px; color: #64748b; font-weight: 600;">Technical Academy</span>
+            </div>
+        </div>
+        <div class="header-right"><button class="btn-logout-custom" id="logoutBtn" style="padding: 6px 12px; font-size: 12px; border-radius: 6px; background: #ef4444; color: white; border: none; font-weight: bold;">Logout</button></div>
+    </nav>
+
+    <main class="main-content no-print" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 15px;"><a href="dashboard.html" style="color: #3b82f6; text-decoration: none; font-weight: 700; font-size:14px;">← Return to Dashboard</a></div>
+        <h2 style="text-align: center; font-size: 24px; margin-bottom: 25px; color: #0f172a; font-weight: 900; letter-spacing: -0.5px;">Student Directory</h2>
+        
+        <div class="search-filter-container">
+            <input type="text" id="searchInput" class="search-box-pill" placeholder="🔍 Search Name, Reg No, Phone...">
+            <select id="statusFilter" class="filter-dropdown-pill">
+                <option value="active" selected>🟢 Active Students</option>
+                <option value="completed">🎓 Completed Students</option>
+                <option value="all">📁 All Students</option>
+            </select>
+        </div>
+        
+        <div id="studentsList"><div style="text-align:center; padding:30px; color:#94a3b8; font-weight:bold;">Loading students database...</div></div>
+    </main>
+
+    <!-- 1. VIEW & EDIT + ID CARD MODAL -->
+    <div id="studentModal" class="modal-overlay">
+        
+        <div id="viewEditContainer" class="modal-container no-print" style="display:none; max-width:550px;">
+            <button onclick="closeModal()" class="close-modal-btn">×</button>
+            <div style="width: 100%;">
+                <div style="margin-bottom:20px;">
+                    <h3 style="font-size:20px; font-weight:900; color:#1e293b; margin:0;">Profile Details</h3>
+                    <p style="color:#64748b; font-size:13px; font-weight:600; margin-top:2px;">View and update student information</p>
+                </div>
+                <div id="viewEditContent"></div>
+            </div>
+        </div>
+
+        <div id="profileCardContainer" class="modal-container" style="display:none;">
+            <button onclick="closeModal()" class="close-modal-btn no-print">×</button>
+            
+            <div class="card-preview-col">
+                <div id="smartCardContent" style="width: 280px; height: 445px; background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin:0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                    
+                    <div style="background: #1e3a8a; height: 110px; width: 150%; position: absolute; top: -25px; left: -25%; border-radius: 50%; z-index: 1;"></div>
+                    
+                    <div style="position: relative; width: 100%; height: 50px; margin-top: 10px; margin-bottom: 15px; z-index: 2;">
+                        
+                        <img id="cardInstLogo" src="assets/images/logo.png" style="position: absolute; left: 15px; top: -4px; width: 50px; height: 50px; object-fit: contain; border: none; padding: 0; background: transparent;" alt="Logo" onerror="this.style.display='none'">
+                        
+                        <div style="position: absolute; left: 0; right: 0; top: 4px; text-align: center; z-index: 3; padding: 0 10px;">
+                            <div id="cardInstName" style="font-size: 19px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GLOBUS</div>
+                            <div id="cardSubName" style="font-size: 8px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TECHNICAL ACADEMY</div>
+                            <div id="cardAddress" style="font-size: 5px; color: #e2e8f0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;"></div>
+                            <div id="cardEmail" style="font-size: 5px; color: #e2e8f0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f59e0b; color: #fff; font-size: 11px; font-weight: 800; text-align: center; padding: 4px 0; width: 65%; margin: 0 auto 10px; border-radius: 20px; position: relative; z-index: 2;">STUDENT ID CARD</div>
+                    
+                    <div style="text-align: center; margin-bottom: 12px; position: relative; z-index: 2;">
+                        <img id="cardAvatarImg" src="https://avatar.iran.liara.run/public" style="width: 100px; height: 125px; object-fit: cover; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                    </div>
+                    
+                    <div style="padding: 0 12px; text-align: center; position: relative; z-index: 2;">
+                        <div style="margin-bottom: 8px;">
+                            <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">STUDENT NAME</div>
+                            <div id="cardStudentName" style="font-size: 17px; font-weight: 600; color: #1e293b;">STUDENT NAME</div>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">COURSE</div>
+                            <div id="cardCourseName" style="font-size: 12px; font-weight: 800; color: #059669;">COURSE NAME</div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0; width: 100%; box-sizing: border-box;">
+                            <div style="text-align:left;">
+                                <div style="font-size: 8px; color: #64748b; font-weight: 800;">REG NO</div>
+                                <div id="cardRegNo" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
+                            </div>
+                            <div style="text-align:right;">
+                     
