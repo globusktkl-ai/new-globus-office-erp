@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="assets/css/style.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- PHASE 2 & 3: Added jsPDF for Certificate and Marklist generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
@@ -15,7 +14,6 @@
         .main-content { padding: 15px; max-width: 900px; margin: 0 auto; }
         .page-title { text-align: center; font-size: 20px; font-weight: 900; color: #1e3a8a; margin-bottom: 20px; text-transform: uppercase; }
         
-        /* Search and Filter Styles */
         .search-filter-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
         .search-box-pill { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; outline: none; font-size: 15px; color: #333; transition: border-color 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); box-sizing: border-box; }
         .search-box-pill:focus { border-color: #3b82f6; }
@@ -36,7 +34,6 @@
         .action-btn:active { transform: scale(0.98); }
         .empty-state { text-align: center; padding: 30px; color: #64748b; font-weight: 600; }
 
-        /* CERTIFICATE & MARKLIST MODAL STYLES */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: flex-start; padding: 20px 10px; overflow-y: auto; }
         .modal-container { background: #fff; width: 100%; max-width: 1050px; border-radius: 12px; display: flex; gap: 20px; padding: 20px; margin: auto; flex-wrap: wrap; }
         .cert-form-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; }
@@ -54,7 +51,6 @@
         
         .cert-scroll-area { width: 100%; height: 550px; overflow: auto; background: #cbd5e1; border-radius: 6px; display: flex; justify-content: center; align-items: flex-start; padding: 20px; box-sizing: border-box; }
         
-        /* EXACT HTML/CSS CERTIFICATE TEMPLATE */
         .cert-wrapper { position: relative; width: 750px; height: 1060px; flex-shrink: 0; background: #ffffff; background-image: radial-gradient(#f1f5f9 1px, transparent 1px); background-size: 20px 20px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Georgia', serif; color: #1e293b; box-sizing: border-box; transform-origin: top center; transition: transform 0.2s ease; }
         .cert-inner-border { border: 10px solid #1e3a8a; outline: 3px solid #eab308; outline-offset: -16px; height: 100%; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-start; position: relative; background: rgba(255,255,255,0.9); }
         .cert-corner { position: absolute; width: 50px; height: 50px; border: 4px solid #eab308; }
@@ -92,7 +88,6 @@
 
         .modal-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
 
-        /* PHASE 3: EXACT A4 MARKLIST STYLES */
         .marklist-wrapper { position: relative; width: 794px; height: 1123px; flex-shrink: 0; background: #ffffff; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Arial', sans-serif; color: #1e293b; box-sizing: border-box; transform-origin: top center; transition: transform 0.2s ease; }
         .marklist-table th { padding: 12px; border: 1px solid #cbd5e1; background: #f1f5f9; text-align: center; font-weight: bold; }
         .marklist-table td { padding: 12px; border: 1px solid #cbd5e1; text-align: center; }
@@ -125,7 +120,6 @@
     <main class="main-content no-print">
         <h2 class="page-title">🏆 Exams & Progression</h2>
         
-        <!-- FILTER & SEARCH SECTION -->
         <div class="search-filter-container">
             <input type="text" id="searchInput" class="search-box-pill" placeholder="🔍 Search Name, Reg No, Phone...">
             <select id="statusFilter" class="filter-dropdown-pill">
@@ -138,7 +132,7 @@
         <div id="studentsList"><div class="empty-state">Loading students...</div></div>
     </main>
 
-    <!-- MARKLIST MODAL (CUMULATIVE - From Phase 1) -->
+    <!-- MARKLIST MODAL (CUMULATIVE) -->
     <div id="marklistModal" class="modal-overlay">
         <div class="modal-container" style="max-width: 450px; padding:0; overflow:hidden;">
             <div style="background:#1e3a8a; padding:20px; color:white; text-align:center; position:relative;">
@@ -147,10 +141,8 @@
                 <p id="ml_stu_name" style="margin:5px 0 0; font-size:14px; opacity:0.8;"></p>
             </div>
             <div id="ml_content" style="padding:20px; max-height:60vh; overflow-y:auto; background:#f8fafc;">
-                <!-- content populated by JS -->
             </div>
             
-            <!-- PHASE 3: ADDED NEW GENERATE MARKLIST BUTTON HERE -->
             <div style="padding:15px; background:white; border-top:1px solid #e2e8f0; display: flex; gap: 8px; flex-wrap: wrap;">
                 <button onclick="openMarklistStudio()" style="flex:1 1 100%; background:#10b981; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:14px;">📄 Generate Marklist</button>
                 <button onclick="shareMarklistPNG()" style="flex:1; background:#4f46e5; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📲 Share PNG</button>
@@ -159,7 +151,7 @@
         </div>
     </div>
 
-    <!-- PHASE 3: NEW MARKLIST STUDIO MODAL -->
+    <!-- MARKLIST STUDIO MODAL -->
     <div id="marklistStudioModal" class="modal-overlay">
         <div class="modal-container cert-modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
@@ -191,7 +183,6 @@
                     <div id="mlViewport" style="margin: 0 auto; transform-origin: top center;">
                         <div class="marklist-wrapper" id="marklistRenderArea">
                             
-                            <!-- Letterhead Header -->
                             <div style="display: flex; align-items: center; border-bottom: 3px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 25px;">
                                 <img id="mlInstLogo" src="assets/images/logo.png" style="width:80px; height:80px; object-fit:contain; margin-right: 20px;" alt="Logo" onerror="this.style.display='none'">
                                 <div style="flex: 1;">
@@ -203,7 +194,6 @@
                             
                             <h3 style="text-align: center; font-size: 22px; text-decoration: underline; margin-bottom: 35px; font-family: 'Georgia', serif;">STATEMENT OF MARKS</h3>
                             
-                            <!-- Student Details Row -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; font-size: 15px; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; background: #f8fafc;">
                                 <div><strong style="color: #475569;">Name of Student:</strong> <span id="ml_c_name" style="font-weight: bold; margin-left: 5px;">-</span></div>
                                 <div><strong style="color: #475569;">Register No:</strong> <span id="ml_c_reg" style="font-weight: bold; margin-left: 5px;">-</span></div>
@@ -211,7 +201,6 @@
                                 <div style="grid-column: span 2;"><strong style="color: #475569;">Month & Year of Exam:</strong> <span id="ml_c_date" style="font-weight: bold; margin-left: 5px;">-</span></div>
                             </div>
                             
-                            <!-- Marks Table -->
                             <table class="marklist-table" style="width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 14px;">
                                 <thead>
                                     <tr>
@@ -222,17 +211,14 @@
                                     </tr>
                                 </thead>
                                 <tbody id="ml_table_body">
-                                    <!-- Populated by JS -->
                                 </tbody>
                             </table>
                             
-                            <!-- Grading Scale Info -->
                             <div style="font-size: 12px; color: #64748b; margin-bottom: 40px; line-height: 1.6;">
                                 <strong style="color: #1e293b;">Grading Scale:</strong><br>
                                 A+ (90-100%) | A (80-89%) | B+ (70-79%) | B (60-69%) | C+ (50-59%) | C (40-49%) | Failed (<40%)
                             </div>
                             
-                            <!-- Footer & Seal -->
                             <div style="position: absolute; bottom: 50px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: flex-end;">
                                 <div style="text-align: center;">
                                     <div style="border-bottom: 1px solid #1e293b; width: 160px; height: 40px; margin-bottom: 8px;"></div>
@@ -342,7 +328,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- ABSOLUTE FOOTER POSITIONING -->
                                 <div class="cert-footer-section">
                                     <div class="cert-sign-box"><div class="cert-sign-line"></div><div class="cert-sign-label">Course Director</div></div>
                                     <div class="cert-seal">GLOBUS<br>TECHNICAL<br>ACADEMY<br>★</div>
@@ -371,11 +356,9 @@
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
-                    // Certificates mapped to DB data
                     if(document.getElementById('certInstName')) document.getElementById('certInstName').innerText = (data.institute_name + ' ' + (data.sub_name || '')).trim() || 'Globus Technical Academy';
                     if(data.logo_url && document.getElementById('certInstLogo')) document.getElementById('certInstLogo').src = data.logo_url;
                     
-                    // PHASE 3: Marklist Studio mapped to DB data
                     if(document.getElementById('mlInstName')) document.getElementById('mlInstName').innerText = data.institute_name || 'GLOBUS';
                     if(document.getElementById('mlSubName')) document.getElementById('mlSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
                     if(data.logo_url && document.getElementById('mlInstLogo')) document.getElementById('mlInstLogo').src = data.logo_url;
@@ -497,6 +480,9 @@
                 const card = document.createElement('div');
                 card.className = 'exam-card';
                 
+                // Job Training button text logic
+                let btnText = (currentModule && currentModule.toLowerCase() === 'job training') ? '2. Finish' : '2. Promotion';
+
                 card.innerHTML = `
                     <div class="exam-header">
                         <img src="${avatar}" class="exam-avatar">
@@ -526,7 +512,7 @@
 
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
                         <button class="action-btn" style="background:#3b82f6; margin:0; font-size:11px; padding:10px 2px;" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
-                        <button class="action-btn" id="prom_${student.id}" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px;" disabled onclick="execPromote('${student.id}', '${course.id}')">2. Promotion</button>
+                        <button class="action-btn" id="prom_${student.id}" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px;" disabled onclick="execPromote('${student.id}', '${course.id}')">${btnText}</button>
                         <button class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px;" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
                     </div>
                     <button class="action-btn" style="background:#f59e0b; margin-top:8px; width:100%; font-size:13px;" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
@@ -549,6 +535,12 @@
             const promBtn = document.getElementById(`prom_${studentId}`);
             promBtn.disabled = false;
             promBtn.style.opacity = '1';
+            
+            if(mod.toLowerCase() === 'job training') {
+                promBtn.innerText = '2. Finish';
+            } else {
+                promBtn.innerText = '2. Promotion';
+            }
         };
 
         window.execPromote = async function(studentId, courseId) {
@@ -645,9 +637,6 @@
             }
         };
 
-        // ==========================================
-        // PHASE 3: MARKLIST STUDIO LOGIC (A4 PDF)
-        // ==========================================
         window.openMarklistStudio = async function() {
             document.getElementById('marklistModal').style.display = 'none';
             
@@ -666,7 +655,6 @@
 
             updateML();
 
-            // Populate table in A4 Studio
             const tbody = document.getElementById('ml_table_body');
             tbody.innerHTML = '';
             
@@ -681,7 +669,7 @@
             uniqueResults.forEach(res => {
                 let p = (res.marks / 100) * 100;
                 let g = p>=90?'A+':p>=80?'A':p>=70?'B+':p>=60?'B':p>=50?'C+':p>=40?'C':'Failed';
-                totalMax += 100; // Fixed max mark as 100 per module
+                totalMax += 100; 
                 totalObs += res.marks;
 
                 tbody.innerHTML += `
@@ -693,7 +681,6 @@
                 </tr>`;
             });
 
-            // Handle current session
             const currMod = document.getElementById(`mod_${studentId}`).value;
             const currMarks = document.getElementById(`marks_${studentId}`).value;
             const currMax = document.getElementById(`max_${studentId}`).value || 100;
@@ -711,7 +698,6 @@
                 </tr>`;
             }
 
-            // Generate Total Row
             if (totalMax > 0) {
                 let overallP = (totalObs / totalMax) * 100;
                 let overallG = overallP>=90?'A+':overallP>=80?'A':overallP>=70?'B+':overallP>=60?'B':overallP>=50?'C+':overallP>=40?'C':'Failed';
@@ -724,7 +710,6 @@
                 </tr>`;
             }
 
-            // Mobile zoom logic for A4 Studio
             window.currentMlZoom = window.innerWidth < 600 ? ((window.innerWidth - 60) / 794) : 0.55;
             zoomMarklist(0);
 
@@ -756,13 +741,11 @@
                 wrapper.style.transform = 'scale(1)'; 
                 
                 const { jsPDF } = window.jspdf;
-                // High quality canvas rendering exactly fitting the container
                 const canvas = await html2canvas(wrapper, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
                 wrapper.style.transform = oldTransform; 
                 
                 const imgData = canvas.toDataURL('image/png');
                 
-                // Exactly A4 format without margins
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [210, 297] });
                 pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
                 
@@ -785,9 +768,6 @@
             }
         };
 
-        // ==========================================
-        // PHASE 2: MODULE VALIDATION & CERTIFICATE
-        // ==========================================
         window.validateAndOpenCert = async function(studentId, courseId) {
             const course = allCourses.find(c => c.id === courseId);
             if (!course || !course.modules || course.modules.length === 0) {
@@ -807,7 +787,7 @@
             const pendingModules = course.modules.filter(m => !completedModules.includes(m));
 
             if (pendingModules.length > 0) {
-                alert(`⚠️ Cannot Generate Certificate!\n\nThis student has not completed all modules in the course.\n\nPending Modules:\n- ${pendingModules.join('\n- ')}`);
+                alert(`⚠️ സർട്ടിഫിക്കറ്റ് നൽകാൻ കഴിയില്ല!\n\nഈ വിദ്യാർത്ഥി താഴെ പറയുന്ന മൊഡ്യൂളുകളുടെ പരീക്ഷ പൂർത്തിയാക്കിയിട്ടില്ല. ദയവായി ഇവ പൂർത്തീകരിക്കുക:\n\n- ${pendingModules.join('\n- ')}`);
             } else {
                 openCertModal(studentId, courseId);
             }
@@ -915,7 +895,7 @@
 
         window.closeModal = function() { 
             document.getElementById('certModal').style.display = 'none'; 
-            document.getElementById('marklistStudioModal').style.display = 'none'; // PHASE 3 close hook
+            document.getElementById('marklistStudioModal').style.display = 'none'; 
         };
 
         checkAuth();
