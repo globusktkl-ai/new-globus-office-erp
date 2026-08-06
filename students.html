@@ -231,7 +231,7 @@
                     </div>
                     
                     
-                    <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 7px; color: #cbd5e1; font-weight: 700; text-align: center; z-index: 2;">If found, please return to: +91 9846000000</div>
+                    <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 7px; color: #cbd5e1; font-weight: 700; text-align: center; z-index: 2;">If found, please return to: <span id="cardReturnPhone">+91 9846000000</span></div>
                     
                     <!-- Dynamic Violet Round Seal -->
                     <div style="position: absolute; bottom: 15px; right: 10px; width: 68px; height: 68px; border: 2px solid rgba(139, 92, 246, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; transform: rotate(-15deg); z-index: 10; box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.15); mix-blend-mode: multiply;">
@@ -421,6 +421,7 @@
                     if(document.getElementById('sealMainName')) document.getElementById('sealMainName').innerText = data.institute_name || 'GLOBUS';
                     if(document.getElementById('sealSubName')) document.getElementById('sealSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
                     if(document.getElementById('sealAddress')) document.getElementById('sealAddress').innerText = data.address || '';
+                    if(document.getElementById('cardReturnPhone') && data.phone) document.getElementById('cardReturnPhone').innerText = '+91 ' + data.phone;
 
                     // Update Certificate
                     if(document.getElementById('certInstName')) document.getElementById('certInstName').innerText = (data.institute_name + ' ' + (data.sub_name || '')).trim() || 'Globus Technical Academy';
