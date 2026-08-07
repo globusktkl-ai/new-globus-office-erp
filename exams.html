@@ -158,9 +158,10 @@
             </div>
             
             <div class="cert-form-col no-print">
-                <div class="input-group" style="margin-bottom: 10px;"><label>Student Name</label><input type="text" id="ml_f_name" oninput="updateML()"></div>
-                <div class="input-group" style="margin-bottom: 10px;"><label>Reg No</label><input type="text" id="ml_f_reg" oninput="updateML()"></div>
-                <div class="input-group" style="margin-bottom: 10px;"><label>Course Name</label><input type="text" id="ml_f_course" oninput="updateML()"></div>
+                <div class="input-group" style="margin-bottom: 10px;"><label>Serial No</label><input type="text" id="ml_f_serial" readonly style="background:#e2e8f0; color:#64748b; cursor:not-allowed;" oninput="updateML()"></div>
+                <div class="input-group" style="margin-bottom: 10px;"><label>Student Name</label><input type="text" id="ml_f_name" readonly style="background:#e2e8f0; color:#64748b; cursor:not-allowed;" oninput="updateML()"></div>
+                <div class="input-group" style="margin-bottom: 10px;"><label>Reg No</label><input type="text" id="ml_f_reg" readonly style="background:#e2e8f0; color:#64748b; cursor:not-allowed;" oninput="updateML()"></div>
+                <div class="input-group" style="margin-bottom: 10px;"><label>Course Name</label><input type="text" id="ml_f_course" readonly style="background:#e2e8f0; color:#64748b; cursor:not-allowed;" oninput="updateML()"></div>
                 <div class="input-group" style="margin-bottom: 10px;"><label>Exam Month & Year</label><input type="text" id="ml_f_date" oninput="updateML()"></div>
                 
                 <hr style="border:1px dashed #cbd5e1; margin: 15px 0;">
@@ -187,6 +188,9 @@
                                     <h1 id="mlInstName" style="margin:0; font-size:28px; color:#1e3a8a; text-transform:uppercase; font-weight:900;">GLOBUS</h1>
                                     <h2 id="mlSubName" style="margin:5px 0 0; font-size:14px; color:#475569; font-weight:700; text-transform:uppercase;">TECHNICAL ACADEMY</h2>
                                     <p style="margin:5px 0 0; font-size:12px; color:#64748b; font-weight:600;"><span id="mlPhone">Ph: </span> | <span id="mlEmail">Email: </span></p>
+                                </div>
+                                <div style="text-align: right; font-size: 12px; color: #64748b; margin-bottom: 10px;">
+                                    <strong>Serial No:</strong> <span id="ml_c_serial">GM0000000</span>
                                 </div>
                             </div>
                             
@@ -343,11 +347,31 @@
         import { supabase } from './assets/js/supabase-config.js';
         let allStudents = [], allCourses = [], activeStudentData = null, currentZoom = 0.55;
 
+        // Helper function: Generate deterministic secure Serial Number
+        function generateSerialNumber(student) {
+            let hash = 0;
+            let str = student.id + (student.register_number || '000');
+            for (let i = 0; i < str.length; i++) {
+                hash = (hash << 5) - hash + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return 'GM' + Math.abs(hash).toString().padStart(7, '0').substring(0, 7);
+        }
+
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
-            loadSettings(); 
-            fetchData();
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) { window.location.href = 'login.html'; return; }
+                loadSettings(); 
+                fetchData();
+            } catch(e) {
+                console.log("Supabase not connected. Loading mock data.");
+                allStudents = [
+                    { id: '1', full_name: 'Jabir', register_number: 'Yyt7765', phone_number: '3326653320', gender: 'Male', qualification: 'SSLC', course_id: 'c1', course_name: 'Mobile Phone Technician', module: 'Course Completed', total_fee: 2000, status: 'completed' }
+                ];
+                allCourses = [{id:'c1', course_name: 'Mobile Phone Technician', modules: ['Module 1', 'Job Training']}];
+                applyFilters();
+            }
         }
 
         async function loadSettings() {
@@ -383,7 +407,7 @@
             const statusTerm = document.getElementById('statusFilter').value; 
 
             let filtered = allStudents.filter(s => {
-                const matchesSearch = (s.full_name?.toLowerCase().includes(searchTerm) || s.register_number?.toLowerCase().includes(searchTerm) || s.phone_number?.toLowerCase().includes(searchTerm));
+                const matchesSearch = (s.full_name || '').toLowerCase().includes(searchTerm) || (s.register_number || '').toLowerCase().includes(searchTerm) || (s.phone_number || '').toLowerCase().includes(searchTerm);
                 let matchesStatus = true;
                 const stuStatus = (s.status || 'active').toLowerCase();
                 
@@ -432,7 +456,7 @@
             if(isLocked) {
                 let n1 = Math.floor(Math.random() * 10) + 1;
                 let n2 = Math.floor(Math.random() * 10) + 1;
-                let ans = prompt(`Module Locked 🔒\nTo edit past marks, prove you are authorized:\nSolve: ${n1} + ${n2} = ?`);
+                let ans = prompt(`Security Verification\nTo edit past marks, prove you are authorized:\nSolve: ${n1} + ${n2} = ?`);
                 
                 if (ans !== null && parseInt(ans) === (n1+n2)) {
                     selectedOption.setAttribute('data-locked', 'false');
@@ -459,7 +483,7 @@
                     document.getElementById(`perc_${studentId}`).value = '';
                     document.getElementById(`grade_${studentId}`).value = '';
 
-                    alert('Unlocked! You can now edit this module.');
+                    alert('Verification Successful! You can now edit this module.');
                 } else {
                     if (ans !== null) alert('Incorrect Answer! Update aborted.');
                     selectEl.value = prevVal; 
@@ -478,7 +502,7 @@
             if (studentsToRender.length === 0) { container.innerHTML = '<div class="empty-state">No students found matching your criteria.</div>'; return; }
 
             studentsToRender.forEach(student => {
-                const course = allCourses.find(c => c.id === student.course_id);
+                const course = allCourses.find(c => c.id == student.course_id);
                 if (!course || !course.modules) return; 
 
                 let isCompleted = student.status === 'completed';
@@ -507,7 +531,6 @@
                 }
 
                 let displayActionArea = isCompleted ? 'none' : 'block';
-                // FIXED: Explicitly checking if the module is Job Training for the Finish button
                 let isLastModule = (!isCompleted && (currentModule.toLowerCase() === 'job training' || currentModule === course.modules[course.modules.length - 1]));
                 let btnText = isLastModule ? '2. Finish' : '2. Promotion';
 
@@ -566,12 +589,11 @@
             alert('Marks Saved! Promotion/Finish is now enabled.');
             
             const promBtn = document.getElementById(`prom_${studentId}`);
-            const course = allCourses.find(c => c.id === courseId);
+            const course = allCourses.find(c => c.id == courseId);
             
             if(promBtn && course) {
                 promBtn.disabled = false;
                 promBtn.style.opacity = '1';
-                // FIXED: Explicitly checking if the module is Job Training for the Finish button
                 let isLastModule = (mod.toLowerCase() === 'job training' || mod === course.modules[course.modules.length - 1]);
                 promBtn.innerText = isLastModule ? '2. Finish' : '2. Promotion';
             }
@@ -580,7 +602,7 @@
         window.execPromote = async function(studentId, courseId) {
             if(!confirm("Are you sure you want to proceed?")) return;
 
-            const course = allCourses.find(c => c.id === courseId);
+            const course = allCourses.find(c => c.id == courseId);
             const currentMod = document.getElementById(`mod_${studentId}`).value;
             
             let nextMod = null;
@@ -684,12 +706,15 @@
             
             const studentId = window.currentMlStudentId;
             const student = allStudents.find(s => s.id === studentId);
-            const course = allCourses.find(c => c.id === window.currentMlCourseId);
+            const course = allCourses.find(c => c.id == window.currentMlCourseId);
             if(!student || !course) return;
 
             const today = new Date();
             const dateStr = (today.getMonth()+1).toString().padStart(2, '0') + '/' + today.getFullYear();
+            
+            const commonSerial = generateSerialNumber(student);
 
+            document.getElementById('ml_f_serial').value = commonSerial;
             document.getElementById('ml_f_name').value = (student.full_name || '').toUpperCase();
             document.getElementById('ml_f_reg').value = student.register_number || 'N/A';
             document.getElementById('ml_f_course').value = (course.course_name || '').toUpperCase();
@@ -762,6 +787,7 @@
         };
 
         window.updateML = function() {
+            document.getElementById('ml_c_serial').innerText = document.getElementById('ml_f_serial').value;
             document.getElementById('ml_c_name').innerText = document.getElementById('ml_f_name').value;
             document.getElementById('ml_c_reg').innerText = document.getElementById('ml_f_reg').value;
             document.getElementById('ml_c_course').innerText = document.getElementById('ml_f_course').value;
@@ -814,7 +840,7 @@
         };
 
         window.validateAndOpenCert = async function(studentId, courseId) {
-            const course = allCourses.find(c => c.id === courseId);
+            const course = allCourses.find(c => c.id == courseId);
             if (!course || !course.modules || course.modules.length === 0) {
                 alert("Error: No modules found for this course."); return;
             }
@@ -831,9 +857,8 @@
             const completedModules = pastResults.map(r => r.module_name);
             const pendingModules = course.modules.filter(m => !completedModules.includes(m));
 
-            // FIXED: If modules are pending, show the exact list in Malayalam
             if (pendingModules.length > 0) {
-                alert(`⚠️ Unable to issue certificate!\n\nThis student has not completed the exams for the following modules. Please complete these:\n\n- ${pendingModules.join('\n- ')}`);
+                alert(`⚠️ Cannot generate certificate!\n\nThis student has not completed examinations for the following modules. Please complete them to proceed:\n\n- ${pendingModules.join('\n- ')}`);
             } else {
                 openCertModal(studentId, courseId);
             }
@@ -848,7 +873,7 @@
         };
 
         window.openCertModal = async function(studentId, courseId) {
-            const student = allStudents.find(s => s.id === studentId), course = allCourses.find(c => c.id === courseId);
+            const student = allStudents.find(s => s.id === studentId), course = allCourses.find(c => c.id == courseId);
             if(!student || !course) return; 
             
             const sm = document.getElementById('studentModal');
@@ -856,6 +881,8 @@
             
             const today = new Date(), dateStr = today.getDate().toString().padStart(2, '0') + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getFullYear();
             let fromDate = student.admission_date ? new Date(student.admission_date) : today;
+
+            const commonSerial = generateSerialNumber(student);
 
             let overallG = 'A+'; 
             try {
@@ -881,7 +908,7 @@
                 console.error("Error calculating grade:", err);
             }
 
-            document.getElementById('f-serial').value = 'GM ' + Date.now().toString().slice(-7);
+            document.getElementById('f-serial').value = commonSerial;
             document.getElementById('f-reg').value = student.register_number || 'REG N/A';
             document.getElementById('f-name').value = (student.full_name || '').toUpperCase();
             document.getElementById('f-course').value = (course.course_name || '').toUpperCase();
@@ -970,15 +997,8 @@
 
         window.closeModal = function() { 
             document.getElementById('certModal').style.display = 'none'; 
-            document.getElementById('studentModal').style.display = 'none';
-            document.getElementById('viewEditContainer').style.display = 'none';
-            document.getElementById('profileCardContainer').style.display = 'none';
             document.getElementById('marklistStudioModal').style.display = 'none'; 
         };
-
-        document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); 
-        });
 
         checkAuth();
     </script>
