@@ -86,8 +86,6 @@
         
         .cert-seal { width: 110px; height: 110px; border: 4px double #eab308; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-size: 9.5px; font-weight: bold; color: #b45309; transform: rotate(-10deg); background: rgba(254, 243, 199, 0.85); box-shadow: inset 0 0 15px rgba(180,83,9,0.3); font-family: 'Arial', sans-serif; line-height: 1.4; margin-bottom: -15px; padding: 5px; box-sizing: border-box; mix-blend-mode: multiply; }
 
-        .modal-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-
         .marklist-wrapper { position: relative; width: 794px; height: 1123px; flex-shrink: 0; background: #ffffff; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); font-family: 'Arial', sans-serif; color: #1e293b; box-sizing: border-box; transform-origin: top center; transition: transform 0.2s ease; }
         .marklist-table th { padding: 12px; border: 1px solid #cbd5e1; background: #f1f5f9; text-align: center; font-weight: bold; }
         .marklist-table td { padding: 12px; border: 1px solid #cbd5e1; text-align: center; }
@@ -440,13 +438,40 @@
                     selectedOption.setAttribute('data-locked', 'false');
                     selectedOption.text = selectedOption.text.replace('🔒', '🔓');
                     selectEl.setAttribute('data-prev', selectEl.value);
+                    
+                    // Show hidden input boxes if they were hidden (when Course Finished)
+                    const inputArea = document.getElementById(`input_area_${studentId}`);
+                    if(inputArea) inputArea.style.display = 'block';
+                    
+                    const updBtn = document.getElementById(`upd_btn_${studentId}`);
+                    if(updBtn) updBtn.style.display = 'block';
+                    
+                    const promBtn = document.getElementById(`prom_${studentId}`);
+                    if(promBtn) {
+                        promBtn.style.display = 'block';
+                        promBtn.disabled = true;
+                        promBtn.style.opacity = '0.5';
+                    }
+
+                    const mlBtn = document.getElementById(`ml_btn_${studentId}`);
+                    if(mlBtn) mlBtn.style.gridColumn = 'span 1';
+
+                    // Clear fields for safety
+                    document.getElementById(`marks_${studentId}`).value = '';
+                    document.getElementById(`perc_${studentId}`).value = '';
+                    document.getElementById(`grade_${studentId}`).value = '';
+
                     alert('Unlocked! You can now edit this module.');
                 } else {
-                    if (ans !== null) alert('Incorrect Answer');
+                    if (ans !== null) alert('Incorrect Answer! Update aborted.');
                     selectEl.value = prevVal; 
                 }
             } else {
                 selectEl.setAttribute('data-prev', selectEl.value);
+                if (selectEl.value !== 'Course Completed') {
+                     const inputArea = document.getElementById(`input_area_${studentId}`);
+                     if(inputArea) inputArea.style.display = 'block';
+                }
             }
         };
 
@@ -458,30 +483,38 @@
                 const course = allCourses.find(c => c.id === student.course_id);
                 if (!course || !course.modules) return; 
 
-                let currentModule = student.module || course.modules[0];
-                let moduleIndex = course.modules.indexOf(currentModule);
-                if(moduleIndex === -1) { moduleIndex = 0; currentModule = course.modules[0]; }
+                let isCompleted = student.status === 'completed';
+                let currentModule = isCompleted ? 'Course Completed' : (student.module || course.modules[0]);
                 
                 const avatar = student.photo_url || (student.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
 
                 let moduleOptions = '';
-                let foundCurrent = false;
-                course.modules.forEach((m) => {
-                    if (m === currentModule) {
-                        moduleOptions += `<option value="${m}" data-locked="false" selected>📖 ${m} (Current)</option>`;
-                        foundCurrent = true;
-                    } else if (!foundCurrent) {
-                        moduleOptions += `<option value="${m}" data-locked="true">🔒 ${m} (Completed)</option>`;
-                    } else {
-                        moduleOptions += `<option value="${m}" data-locked="false">${m}</option>`;
-                    }
-                });
+                if (isCompleted) {
+                    moduleOptions += `<option value="Course Completed" selected disabled style="color: #10b981; font-weight: bold;">🏆 Course Completed</option>`;
+                    course.modules.forEach(m => {
+                        moduleOptions += `<option value="${m}" data-locked="true">🔒 ${m}</option>`;
+                    });
+                } else {
+                    let foundCurrent = false;
+                    course.modules.forEach((m) => {
+                        if (m === currentModule) {
+                            moduleOptions += `<option value="${m}" data-locked="false" selected>📖 ${m} (Current)</option>`;
+                            foundCurrent = true;
+                        } else if (!foundCurrent) {
+                            moduleOptions += `<option value="${m}" data-locked="true">🔒 ${m} (Completed)</option>`;
+                        } else {
+                            moduleOptions += `<option value="${m}" data-locked="false">${m}</option>`;
+                        }
+                    });
+                }
+
+                let displayActionArea = isCompleted ? 'none' : 'block';
+                let isLastModule = (!isCompleted && currentModule === course.modules[course.modules.length - 1]);
+                let btnText = isLastModule ? '2. Finish' : '2. Promotion';
 
                 const card = document.createElement('div');
                 card.className = 'exam-card';
                 
-                let btnText = (currentModule && currentModule.toLowerCase() === 'job training') ? '2. Finish' : '2. Promotion';
-
                 card.innerHTML = `
                     <div class="exam-header">
                         <img src="${avatar}" class="exam-avatar">
@@ -498,21 +531,23 @@
                         </select>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                        <div class="input-group"><label>Max Marks</label><input type="number" id="max_${student.id}" value="100" oninput="calcGrade('${student.id}')" style="text-align:center;"></div>
-                        <div class="input-group"><label>Obtained</label><input type="number" id="marks_${student.id}" style="border-color:#3b82f6; background:#eff6ff; text-align:center; color:#1d4ed8; font-weight:bold;" oninput="calcGrade('${student.id}')"></div>
-                        <div class="input-group"><label>Attend %</label><input type="number" id="att_${student.id}" value="90" style="text-align:center;"></div>
-                    </div>
+                    <div id="input_area_${student.id}" style="display: ${displayActionArea};">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <div class="input-group"><label>Max Marks</label><input type="number" id="max_${student.id}" value="100" oninput="calcGrade('${student.id}')" style="text-align:center;"></div>
+                            <div class="input-group"><label>Obtained</label><input type="number" id="marks_${student.id}" style="border-color:#3b82f6; background:#eff6ff; text-align:center; color:#1d4ed8; font-weight:bold;" oninput="calcGrade('${student.id}')"></div>
+                            <div class="input-group"><label>Attend %</label><input type="number" id="att_${student.id}" value="90" style="text-align:center;"></div>
+                        </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-                        <div class="input-group" style="margin:0;"><label style="color:#059669;">Percentage</label><input type="text" id="perc_${student.id}" readonly style="border:none; background:transparent; font-weight:bold; font-size:16px; color:#059669; padding:0; outline:none;"></div>
-                        <div class="input-group" style="margin:0;"><label style="color:#7c3aed;">Grade</label><input type="text" id="grade_${student.id}" readonly style="border:none; background:transparent; font-weight:bold; font-size:16px; color:#7c3aed; padding:0; outline:none;"></div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+                            <div class="input-group" style="margin:0;"><label style="color:#059669;">Percentage</label><input type="text" id="perc_${student.id}" readonly style="border:none; background:transparent; font-weight:bold; font-size:16px; color:#059669; padding:0; outline:none;"></div>
+                            <div class="input-group" style="margin:0;"><label style="color:#7c3aed;">Grade</label><input type="text" id="grade_${student.id}" readonly style="border:none; background:transparent; font-weight:bold; font-size:16px; color:#7c3aed; padding:0; outline:none;"></div>
+                        </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                        <button class="action-btn" style="background:#3b82f6; margin:0; font-size:11px; padding:10px 2px;" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
-                        <button class="action-btn" id="prom_${student.id}" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px;" disabled onclick="execPromote('${student.id}', '${course.id}')">${btnText}</button>
-                        <button class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px;" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
+                        <button id="upd_btn_${student.id}" class="action-btn" style="background:#3b82f6; margin:0; font-size:11px; padding:10px 2px; display: ${displayActionArea};" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
+                        <button id="prom_${student.id}" class="action-btn" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px; display: ${displayActionArea};" disabled onclick="execPromote('${student.id}', '${course.id}')">${btnText}</button>
+                        <button id="ml_btn_${student.id}" class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px; ${isCompleted ? 'grid-column: span 3;' : ''}" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
                     </div>
                     <button class="action-btn" style="background:#f59e0b; margin-top:8px; width:100%; font-size:13px;" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
                 `;
@@ -529,21 +564,21 @@
             
             await supabase.from('exam_results').insert([{ student_id: studentId, course_id: courseId, module_name: mod, marks: Number(marks), attendance: Number(att) }]);
             
-            alert('Marks Saved! Promotion is now enabled.');
+            alert('Marks Saved! Promotion/Finish is now enabled.');
             
             const promBtn = document.getElementById(`prom_${studentId}`);
-            promBtn.disabled = false;
-            promBtn.style.opacity = '1';
+            const course = allCourses.find(c => c.id === courseId);
             
-            if(mod.toLowerCase() === 'job training') {
-                promBtn.innerText = '2. Finish';
-            } else {
-                promBtn.innerText = '2. Promotion';
+            if(promBtn && course) {
+                promBtn.disabled = false;
+                promBtn.style.opacity = '1';
+                let isLastModule = (mod === course.modules[course.modules.length - 1]);
+                promBtn.innerText = isLastModule ? '2. Finish' : '2. Promotion';
             }
         };
 
         window.execPromote = async function(studentId, courseId) {
-            if(!confirm("Are you sure you want to promote this student to the next module?")) return;
+            if(!confirm("Are you sure you want to proceed?")) return;
 
             const course = allCourses.find(c => c.id === courseId);
             const currentMod = document.getElementById(`mod_${studentId}`).value;
@@ -558,13 +593,15 @@
                 await supabase.from('students').update({ module: nextMod }).eq('id', studentId);
                 alert('Success! Student promoted to: ' + nextMod);
             } else {
-                await supabase.from('students').update({ status: 'completed' }).eq('id', studentId);
-                alert('Success! Course is now completed. Check Directory -> Completed Students to generate Certificate.');
+                await supabase.from('students').update({ status: 'completed', module: 'Course Completed' }).eq('id', studentId);
+                alert('Success! Course is now completed. You can now generate the certificate.');
             }
             
             const promBtn = document.getElementById(`prom_${studentId}`);
-            promBtn.disabled = true;
-            promBtn.style.opacity = '0.5';
+            if(promBtn) {
+                promBtn.disabled = true;
+                promBtn.style.opacity = '0.5';
+            }
             
             fetchData();
         };
@@ -583,8 +620,9 @@
             const { data: pastResults } = await supabase.from('exam_results').select('*').eq('student_id', studentId).order('created_at', {ascending: true});
             
             let html = '';
+            const latestResultsMap = {};
+            
             if(pastResults && pastResults.length > 0) {
-                const latestResultsMap = {};
                 pastResults.forEach(res => { latestResultsMap[res.module_name] = res; });
                 const uniqueResults = Object.values(latestResultsMap);
 
@@ -600,17 +638,24 @@
                 });
             }
             
-            const currMod = document.getElementById(`mod_${studentId}`).value;
-            const currMarks = document.getElementById(`marks_${studentId}`).value || '-';
-            const currMax = document.getElementById(`max_${studentId}`).value || '100';
-            const currGrade = document.getElementById(`grade_${studentId}`).value || '-';
-            
-            html += `
-            <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px; margin-bottom:10px;">
-                <div style="font-weight:bold; color:#1d4ed8; border-bottom:1px solid #dbeafe; padding-bottom:5px; margin-bottom:8px;">📖 ${currMod} (Current)</div>
-                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;"><span style="color:#64748b;">Marks:</span> <span style="font-weight:bold;">${currMarks} / ${currMax}</span></div>
-                <div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:#64748b;">Grade:</span> <span style="font-weight:bold; color:#7c3aed;">${currGrade}</span></div>
-            </div>`;
+            // Check if there's a live current session active (Not completed)
+            const modSelect = document.getElementById(`mod_${studentId}`);
+            if (modSelect && modSelect.value !== 'Course Completed') {
+                const currMod = modSelect.value;
+                const currMarks = document.getElementById(`marks_${studentId}`).value || '-';
+                const currMax = document.getElementById(`max_${studentId}`).value || '100';
+                const currGrade = document.getElementById(`grade_${studentId}`).value || '-';
+                
+                // Only show current session if it isn't already inside the uniqueResults
+                if (!latestResultsMap[currMod]) {
+                    html += `
+                    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px; margin-bottom:10px;">
+                        <div style="font-weight:bold; color:#1d4ed8; border-bottom:1px solid #dbeafe; padding-bottom:5px; margin-bottom:8px;">📖 ${currMod} (Current)</div>
+                        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;"><span style="color:#64748b;">Marks:</span> <span style="font-weight:bold;">${currMarks} / ${currMax}</span></div>
+                        <div style="display:flex; justify-content:space-between; font-size:13px;"><span style="color:#64748b;">Grade:</span> <span style="font-weight:bold; color:#7c3aed;">${currGrade}</span></div>
+                    </div>`;
+                }
+            }
             
             contentDiv.innerHTML = html;
         };
@@ -680,21 +725,25 @@
                 </tr>`;
             });
 
-            const currMod = document.getElementById(`mod_${studentId}`).value;
-            const currMarks = document.getElementById(`marks_${studentId}`).value;
-            const currMax = document.getElementById(`max_${studentId}`).value || 100;
-            const currGrade = document.getElementById(`grade_${studentId}`).value;
+            // Handle current session
+            const modSelect = document.getElementById(`mod_${studentId}`);
+            if (modSelect && modSelect.value !== 'Course Completed') {
+                const currMod = modSelect.value;
+                const currMarks = document.getElementById(`marks_${studentId}`).value;
+                const currMax = document.getElementById(`max_${studentId}`).value || 100;
+                const currGrade = document.getElementById(`grade_${studentId}`).value;
 
-            if (currMarks && !latestResultsMap[currMod]) {
-                totalMax += parseFloat(currMax);
-                totalObs += parseFloat(currMarks);
-                tbody.innerHTML += `
-                <tr>
-                    <td style="text-align: left; font-weight: 600;">${currMod} <span style="font-size:11px; color:#64748b;">(Current)</span></td>
-                    <td>${currMax}</td>
-                    <td style="font-weight: bold;">${currMarks}</td>
-                    <td style="color: #7c3aed; font-weight: bold;">${currGrade || '-'}</td>
-                </tr>`;
+                if (currMarks && !latestResultsMap[currMod]) {
+                    totalMax += parseFloat(currMax);
+                    totalObs += parseFloat(currMarks);
+                    tbody.innerHTML += `
+                    <tr>
+                        <td style="text-align: left; font-weight: 600;">${currMod} <span style="font-size:11px; color:#64748b;">(Current)</span></td>
+                        <td>${currMax}</td>
+                        <td style="font-weight: bold;">${currMarks}</td>
+                        <td style="color: #7c3aed; font-weight: bold;">${currGrade || '-'}</td>
+                    </tr>`;
+                }
             }
 
             if (totalMax > 0) {
@@ -770,7 +819,7 @@
         window.validateAndOpenCert = async function(studentId, courseId) {
             const course = allCourses.find(c => c.id === courseId);
             if (!course || !course.modules || course.modules.length === 0) {
-                alert("No modules found for this course."); return;
+                alert("Error: No modules found for this course."); return;
             }
 
             const { data: pastResults, error } = await supabase
@@ -779,14 +828,14 @@
                 .eq('student_id', studentId);
             
             if (error) {
-                alert("Error fetching exam records."); return;
+                alert("Error fetching exam records from database."); return;
             }
 
             const completedModules = pastResults.map(r => r.module_name);
             const pendingModules = course.modules.filter(m => !completedModules.includes(m));
 
             if (pendingModules.length > 0) {
-                alert(`⚠️ Unable to issue certificate!\n\nThis student has not completed the following modules. Please complete them.:\n\n- ${pendingModules.join('\n- ')}`);
+                alert(`⚠️ Cannot generate certificate!\n\nThis student has not completed examinations for the following modules. Please complete them to proceed:\n\n- ${pendingModules.join('\n- ')}`);
             } else {
                 openCertModal(studentId, courseId);
             }
@@ -803,8 +852,6 @@
         window.openCertModal = function(studentId, courseId) {
             const student = allStudents.find(s => s.id === studentId), course = allCourses.find(c => c.id === courseId);
             if(!student || !course) return; 
-            
-            document.getElementById('studentModal').style.display = 'none'; 
             
             const today = new Date(), dateStr = today.getDate().toString().padStart(2, '0') + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getFullYear();
             let fromDate = student.admission_date ? new Date(student.admission_date) : today;
