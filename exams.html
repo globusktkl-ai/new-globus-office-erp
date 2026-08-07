@@ -853,7 +853,6 @@
             const today = new Date(), dateStr = today.getDate().toString().padStart(2, '0') + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getFullYear();
             let fromDate = student.admission_date ? new Date(student.admission_date) : today;
 
-            // NEW: Automatically calculate cumulative grade for the certificate
             let overallG = 'A+'; 
             try {
                 const { data: pastResults } = await supabase.from('exam_results').select('*').eq('student_id', studentId).order('created_at', {ascending: true});
