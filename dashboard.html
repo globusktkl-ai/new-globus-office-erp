@@ -30,12 +30,20 @@
         .nav-icon { font-size: 24px !important; margin-bottom: 8px !important; }
         .nav-btn.expense-btn { background-color: #fef2f2 !important; border-color: #fecaca !important; color: #b91c1c !important; }
         .nav-btn.report-btn { background-color: #f0fdf4 !important; border-color: #bbf7d0 !important; color: #15803d !important; }
+        .nav-btn.fee-report-btn { background-color: #eff6ff !important; border-color: #bfdbfe !important; color: #1d4ed8 !important; }
         
         /* Modal Styles */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; padding: 15px; }
-        .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
+        .modal-container { background: #fff; width: 100%; max-width: 900px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
         label { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block; }
+
+        /* Report Table Styling */
+        .report-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; min-width: 750px; }
+        .report-table th { padding: 12px 10px; background: #f8fafc; border-bottom: 2px solid #cbd5e1; color: #475569; font-weight: 800; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        .report-table td { padding: 12px 10px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-weight: 500; }
+        .report-table tr:hover { background: #f1f5f9; }
+        .filter-group { display: flex; gap: 15px; flex-wrap: wrap; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -75,50 +83,68 @@
             <div class="nav-grid">
                 <a href="fees.html" class="nav-btn"><span class="nav-icon">💵</span>Collect Fee</a>
                 <a href="expense.html" class="nav-btn expense-btn"><span class="nav-icon">📓</span>Day Book</a>
+                <!-- NEW TAPPED BUTTON FOR FEE REPORT -->
+                <a href="#" onclick="openFeeReportModal()" class="nav-btn fee-report-btn"><span class="nav-icon">📋</span>Fee Payment Report</a>
                 <a href="report.html" class="nav-btn report-btn"><span class="nav-icon">📊</span>Reports</a>
-            </div>
-        </div>
-
-        <!-- NEW: MODULE-WISE FEE PAYMENT REPORT SECTION -->
-        <div class="module-section" style="margin-top: 25px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
-                <h3 class="module-title finance" style="margin-bottom: 0 !important; color: #0f172a;"><span>📋</span> Module-wise Fee Payment Report</h3>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-                    <select id="feeFilter" class="form-control" style="width: auto; margin-bottom: 0; padding: 6px 10px;" onchange="applyFeeFilter()">
-                        <option value="all">All Active Students</option>
-                        <option value="completed">Fee Completed</option>
-                        <option value="pending">Fee Pending</option>
-                    </select>
-                    <button onclick="exportCSV()" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">📊 Excel</button>
-                    <button id="pdfBtn" onclick="exportPDF()" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">📄 PDF</button>
-                </div>
-            </div>
-            
-            <div id="reportTableWrapper" style="overflow-x: auto; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; min-width: 700px;">
-                    <thead>
-                        <tr style="background: #f8fafc; border-bottom: 2px solid #cbd5e1;">
-                            <th style="padding: 10px; color: #475569;">Name</th>
-                            <th style="padding: 10px; color: #475569;">Course</th>
-                            <th style="padding: 10px; color: #475569;">Module</th>
-                            <th style="padding: 10px; color: #475569;">Total Fee</th>
-                            <th style="padding: 10px; color: #1e3a8a;">Expected Fee</th>
-                            <th style="padding: 10px; color: #10b981;">Total Paid</th>
-                            <th style="padding: 10px; color: #f59e0b;">Discount</th>
-                            <th style="padding: 10px; color: #ef4444;">Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody id="feeReportBody">
-                        <tr><td colspan="8" style="text-align: center; padding: 20px; font-weight: bold; color: #94a3b8;">Loading report data...</td></tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </main>
 
+    <!-- NEW: FEE REPORT MODAL WINDOW -->
+    <div id="feeReportModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 1000px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+                <h3 style="margin: 0; color: #0f172a; font-size: 18px;">📋 Module-wise Fee Payment Report</h3>
+                <button onclick="document.getElementById('feeReportModal').style.display='none'" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">X Close</button>
+            </div>
+            
+            <div class="filter-group">
+                <div style="flex: 1; min-width: 200px;">
+                    <label>Search by Module</label>
+                    <select id="filterModule" class="form-control" style="margin-bottom: 0;" onchange="applyFeeFilter()">
+                        <option value="all">All Modules</option>
+                        <!-- Dynamic Modules will be appended here -->
+                    </select>
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <label>Fee Status</label>
+                    <select id="filterFeeStatus" class="form-control" style="margin-bottom: 0;" onchange="applyFeeFilter()">
+                        <option value="all">All Active Students</option>
+                        <option value="completed">Fee Completed</option>
+                        <option value="pending">Fee Pending</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: flex-end; gap: 10px;">
+                    <button onclick="exportCSV()" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">📊 Export Excel</button>
+                    <button id="pdfBtn" onclick="exportPDF()" style="background: #3b82f6; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">📄 Save PDF</button>
+                </div>
+            </div>
+            
+            <div id="reportTableWrapper" style="overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Course</th>
+                            <th>Current Module</th>
+                            <th>Total Fee</th>
+                            <th style="color: #1d4ed8;">Expected Fee</th>
+                            <th style="color: #059669;">Total Paid</th>
+                            <th style="color: #d97706;">Discount</th>
+                            <th style="color: #b91c1c;">Pending Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feeReportBody">
+                        <tr><td colspan="8" style="text-align: center; padding: 30px; font-weight: bold; color: #94a3b8;">Loading report data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- SETTINGS MODAL -->
     <div id="settingsModal" class="modal-overlay">
-        <div class="modal-container">
+        <div class="modal-container" style="max-width: 500px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
                 <button onclick="document.getElementById('settingsModal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
@@ -218,7 +244,6 @@
 
         async function loadDashboardData() {
             try {
-                // Fetch all necessary data at once to build dashboard and reports
                 const [stuRes, crsRes, payRes, examRes] = await Promise.all([
                     supabase.from('students').select('*'),
                     supabase.from('courses').select('*'),
@@ -231,7 +256,7 @@
                 const paymentsData = payRes.data || [];
                 const examData = examRes.data || [];
 
-                // 1. Basic Stats
+                // Basic Stats
                 const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
                 document.getElementById('statStudents').textContent = activeStudents.length;
 
@@ -243,7 +268,7 @@
                 const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
                 document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
 
-                // 2. Build Fee Report Data (Active Students Only)
+                // Build Fee Report Data (ACTIVE STUDENTS ONLY)
                 window.feeReportData = activeStudents.map(s => {
                     const course = coursesData.find(c => c.id == s.course_id);
                     const courseName = course ? course.course_name : (s.course_name || 'N/A');
@@ -251,30 +276,28 @@
                     const totalFee = Number(s.total_fee) || 0;
                     const admissionFee = Number(s.admission_fee) || 0;
                     
-                    // Total payments & discount
+                    // Payments & Discount
                     const stuPayments = paymentsData.filter(p => p.student_id === s.id);
                     const totalPaidPayments = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
                     const totalDiscount = stuPayments.reduce((sum, p) => sum + (Number(p.discount_amount) || 0), 0);
                     const totalPaid = admissionFee + totalPaidPayments;
                     
-                    // Modules Exam Completed
+                    // Modules Logic
                     const stuExams = examData.filter(e => e.student_id === s.id);
-                    // Use Set to count unique modules written
                     const completedModulesCount = new Set(stuExams.map(e => e.module_name)).size;
                     
-                    // Smart Calculation (Divide total by 5, multiply by completed modules)
+                    // Smart Expected Fee Calculation (Total Fee / 5) * completed modules
                     let expectedFee = (totalFee / 5) * completedModulesCount;
-                    if (expectedFee > totalFee) expectedFee = totalFee; // Prevent going over max
+                    if (expectedFee > totalFee) expectedFee = totalFee;
                     
-                    // Balance Logic
                     let balance = expectedFee - (totalPaid + totalDiscount);
-                    if (balance < 0) balance = 0; // Negative means advanced payment, pending is 0
+                    if (balance < 0) balance = 0;
 
                     return {
                         id: s.id,
                         name: s.full_name,
                         course: courseName,
-                        module: s.module || '-',
+                        module: s.module || 'Not Started',
                         totalFee: totalFee,
                         expectedFee: Math.round(expectedFee),
                         totalPaid: totalPaid,
@@ -283,60 +306,86 @@
                     };
                 });
 
-                // Update Pending Fee Stat using our new highly accurate calculation
+                // Update Total Pending Fee Stat
                 const totalPending = window.feeReportData.reduce((sum, row) => sum + row.balance, 0);
                 document.getElementById('statPendingFees').textContent = '₹ ' + totalPending;
-
-                // Load initial table
-                applyFeeFilter();
 
             } catch (err) { console.error("Dashboard Loading Error:", err); }
         }
 
-        // Apply filters to the table
+        // Open Modal and Populate Modules
+        window.openFeeReportModal = function() {
+            document.getElementById('feeReportModal').style.display = 'flex';
+            
+            // Extract unique modules dynamically from active students
+            const uniqueModules = [...new Set(window.feeReportData.map(r => r.module))].sort();
+            const modSelect = document.getElementById('filterModule');
+            modSelect.innerHTML = '<option value="all">All Modules</option>';
+            uniqueModules.forEach(mod => {
+                const opt = document.createElement('option');
+                opt.value = mod;
+                opt.textContent = mod;
+                modSelect.appendChild(opt);
+            });
+
+            // Reset filters to default and apply
+            document.getElementById('filterFeeStatus').value = 'all';
+            applyFeeFilter();
+        }
+
+        // Smart Filtering System
         window.applyFeeFilter = function() {
-            const filter = document.getElementById('feeFilter').value;
+            const moduleFilter = document.getElementById('filterModule').value;
+            const statusFilter = document.getElementById('filterFeeStatus').value;
+            
             let filtered = window.feeReportData || [];
             
-            if (filter === 'completed') {
+            // 1. Filter by Module
+            if (moduleFilter !== 'all') {
+                filtered = filtered.filter(r => r.module === moduleFilter);
+            }
+            
+            // 2. Filter by Fee Status
+            if (statusFilter === 'completed') {
                 filtered = filtered.filter(r => r.balance <= 0);
-            } else if (filter === 'pending') {
+            } else if (statusFilter === 'pending') {
                 filtered = filtered.filter(r => r.balance > 0);
             }
             
-            window.filteredFeeData = filtered; // Save for PDF/CSV export
+            window.filteredFeeData = filtered; 
             
             const tbody = document.getElementById('feeReportBody');
             tbody.innerHTML = '';
             
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #64748b; font-weight: bold;">No records found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #64748b; font-size: 14px;">No active students found for this selection.</td></tr>';
                 return;
             }
             
             filtered.forEach(row => {
                 const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid #e2e8f0';
                 tr.innerHTML = `
-                    <td style="padding: 10px; font-weight: bold; color: #1e293b;">${row.name}</td>
-                    <td style="padding: 10px; color: #475569;">${row.course}</td>
-                    <td style="padding: 10px; color: #475569;">${row.module}</td>
-                    <td style="padding: 10px; color: #475569;">₹ ${row.totalFee}</td>
-                    <td style="padding: 10px; font-weight: bold; color: #1e3a8a;">₹ ${row.expectedFee}</td>
-                    <td style="padding: 10px; color: #10b981; font-weight: bold;">₹ ${row.totalPaid}</td>
-                    <td style="padding: 10px; color: #f59e0b;">₹ ${row.discount}</td>
-                    <td style="padding: 10px; font-weight: 900; color: ${row.balance > 0 ? '#ef4444' : '#10b981'};">₹ ${row.balance}</td>
+                    <td style="font-weight: bold;">${row.name}</td>
+                    <td>${row.course}</td>
+                    <td style="font-weight: 700; color: #475569;">${row.module}</td>
+                    <td>₹ ${row.totalFee}</td>
+                    <td style="font-weight: 800; color: #1d4ed8;">₹ ${row.expectedFee}</td>
+                    <td style="font-weight: bold; color: #10b981;">₹ ${row.totalPaid}</td>
+                    <td style="color: #d97706;">₹ ${row.discount}</td>
+                    <td style="font-weight: 900; font-size: 14px; color: ${row.balance > 0 ? '#ef4444' : '#10b981'};">
+                        ₹ ${row.balance}
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // Export table to CSV
+        // Export to CSV
         window.exportCSV = function() {
             if(!window.filteredFeeData || window.filteredFeeData.length === 0) {
-                alert("No data to export!"); return;
+                alert("Warning: No data to export!"); return;
             }
-            let csv = "Name,Course,Current Module,Total Fee,Expected Fee,Total Paid,Discount,Pending Balance\n";
+            let csv = "Name,Course,Current Module,Total Course Fee,Expected Fee,Total Paid,Discount,Pending Balance\n";
             window.filteredFeeData.forEach(row => {
                 csv += `"${row.name}","${row.course}","${row.module}",${row.totalFee},${row.expectedFee},${row.totalPaid},${row.discount},${row.balance}\n`;
             });
@@ -348,21 +397,21 @@
             a.click();
         }
 
-        // Export table to PDF
+        // Export to PDF
         window.exportPDF = async function() {
             if(!window.filteredFeeData || window.filteredFeeData.length === 0) {
-                alert("No data to export!"); return;
+                alert("Warning: No data to export!"); return;
             }
             const btn = document.getElementById('pdfBtn');
             const oldText = btn.innerHTML;
-            btn.innerHTML = '⏳...'; btn.disabled = true;
+            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
                 const tableWrap = document.getElementById('reportTableWrapper');
                 const canvas = await html2canvas(tableWrap, { scale: 2, backgroundColor: '#ffffff' });
                 const imgData = canvas.toDataURL('image/png');
                 
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('l', 'mm', 'a4'); // Landscape for tables
+                const pdf = new jsPDF('l', 'mm', 'a4');
                 
                 const imgProps= pdf.getImageProperties(imgData);
                 const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -371,7 +420,7 @@
                 pdf.setFontSize(16);
                 pdf.text("Module-wise Fee Payment Report", 14, 15);
                 
-                pdf.addImage(imgData, 'PNG', 10, 20, pdfWidth-20, pdfHeight-20);
+                pdf.addImage(imgData, 'PNG', 10, 25, pdfWidth-20, pdfHeight-20);
                 pdf.save('Module_wise_Fee_Report.pdf');
             } catch (e) {
                 alert('Error generating PDF report.');
