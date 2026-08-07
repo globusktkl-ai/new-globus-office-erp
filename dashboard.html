@@ -34,7 +34,7 @@
         
         /* Modal Styles */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
-        .modal-container { background: #fff; width: 100%; max-width: 900px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-container { background: #fff; width: 100%; max-width: 950px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
         label { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block; }
 
@@ -83,7 +83,7 @@
             <div class="nav-grid">
                 <a href="fees.html" class="nav-btn"><span class="nav-icon">💵</span>Collect Fee</a>
                 <a href="expense.html" class="nav-btn expense-btn"><span class="nav-icon">📓</span>Day Book</a>
-                <!-- NEW TAPPED BUTTON FOR FEE REPORT -->
+                <!-- FEE REPORT BUTTON (Opens Modal) -->
                 <a href="#" onclick="openFeeReportModal()" class="nav-btn fee-report-btn"><span class="nav-icon">📋</span>Fee Payment Report</a>
                 <a href="report.html" class="nav-btn report-btn"><span class="nav-icon">📊</span>Reports</a>
             </div>
@@ -92,31 +92,32 @@
 
     <!-- NEW: FEE REPORT MODAL WINDOW -->
     <div id="feeReportModal" class="modal-overlay">
-        <div class="modal-container" style="max-width: 1000px;">
+        <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
-                <h3 style="margin: 0; color: #0f172a; font-size: 18px;">📋 Module-wise Fee Payment Report</h3>
-                <button onclick="document.getElementById('feeReportModal').style.display='none'" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">X Close</button>
+                <h3 style="margin: 0; color: #0f172a; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 22px;">📋</span> 
+                    <span style="text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px;">Module-wise Fee Payment Report</span>
+                </h3>
+                <button onclick="document.getElementById('feeReportModal').style.display='none'" style="background: transparent; color: #ef4444; border: 2px solid #ef4444; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">X Close</button>
             </div>
             
             <div class="filter-group">
                 <div style="flex: 1; min-width: 200px;">
-                    <label>Search by Module</label>
-                    <select id="filterModule" class="form-control" style="margin-bottom: 0;" onchange="applyFeeFilter()">
+                    <select id="filterModule" class="form-control" style="margin-bottom: 0; font-weight: 600; color: #1e293b;" onchange="applyFeeFilter()">
                         <option value="all">All Modules</option>
-                        <!-- Dynamic Modules will be appended here -->
+                        <!-- ALL Modules from ALL courses will be appended here -->
                     </select>
                 </div>
                 <div style="flex: 1; min-width: 200px;">
-                    <label>Fee Status</label>
-                    <select id="filterFeeStatus" class="form-control" style="margin-bottom: 0;" onchange="applyFeeFilter()">
+                    <select id="filterFeeStatus" class="form-control" style="margin-bottom: 0; font-weight: 600; color: #1e293b;" onchange="applyFeeFilter()">
                         <option value="all">All Active Students</option>
                         <option value="completed">Fee Completed</option>
                         <option value="pending">Fee Pending</option>
                     </select>
                 </div>
-                <div style="display: flex; align-items: flex-end; gap: 10px;">
-                    <button onclick="exportCSV()" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">📊 Export Excel</button>
-                    <button id="pdfBtn" onclick="exportPDF()" style="background: #3b82f6; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px;">📄 Save PDF</button>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button onclick="exportCSV()" style="background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 13px; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 4px rgba(16,185,129,0.2);">📊 Excel</button>
+                    <button id="pdfBtn" onclick="exportPDF()" style="background: #ef4444; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 13px; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 4px rgba(239,68,68,0.2);">📄 PDF</button>
                 </div>
             </div>
             
@@ -268,6 +269,23 @@
                 const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
                 document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
 
+                // --- NEW: POPULATE ALL MODULES GLOBALLY ---
+                const allModulesSet = new Set();
+                coursesData.forEach(course => {
+                    if (course.status === 'Active' && Array.isArray(course.modules)) {
+                        course.modules.forEach(m => allModulesSet.add(m));
+                    }
+                });
+                // Adding any other module existing in active students list just in case
+                activeStudents.forEach(s => {
+                    if (s.module && s.module !== 'Not Started' && s.module !== 'Course Completed') {
+                        allModulesSet.add(s.module);
+                    }
+                });
+
+                window.globalUniqueModules = [...allModulesSet].sort();
+                // ------------------------------------------
+
                 // Build Fee Report Data (ACTIVE STUDENTS ONLY)
                 window.feeReportData = activeStudents.map(s => {
                     const course = coursesData.find(c => c.id == s.course_id);
@@ -286,7 +304,7 @@
                     const stuExams = examData.filter(e => e.student_id === s.id);
                     const completedModulesCount = new Set(stuExams.map(e => e.module_name)).size;
                     
-                    // Smart Expected Fee Calculation (Total Fee / 5) * completed modules
+                    // Smart Expected Fee Calculation
                     let expectedFee = (totalFee / 5) * completedModulesCount;
                     if (expectedFee > totalFee) expectedFee = totalFee;
                     
@@ -313,22 +331,24 @@
             } catch (err) { console.error("Dashboard Loading Error:", err); }
         }
 
-        // Open Modal and Populate Modules
+        // Open Modal and Populate Dropdowns
         window.openFeeReportModal = function() {
             document.getElementById('feeReportModal').style.display = 'flex';
             
-            // Extract unique modules dynamically from active students
-            const uniqueModules = [...new Set(window.feeReportData.map(r => r.module))].sort();
+            // Populate Dropdown with ALL modules
             const modSelect = document.getElementById('filterModule');
             modSelect.innerHTML = '<option value="all">All Modules</option>';
-            uniqueModules.forEach(mod => {
-                const opt = document.createElement('option');
-                opt.value = mod;
-                opt.textContent = mod;
-                modSelect.appendChild(opt);
-            });
+            if(window.globalUniqueModules) {
+                window.globalUniqueModules.forEach(mod => {
+                    const opt = document.createElement('option');
+                    opt.value = mod;
+                    opt.textContent = mod;
+                    modSelect.appendChild(opt);
+                });
+            }
 
             // Reset filters to default and apply
+            document.getElementById('filterModule').value = 'all';
             document.getElementById('filterFeeStatus').value = 'all';
             applyFeeFilter();
         }
@@ -358,20 +378,20 @@
             tbody.innerHTML = '';
             
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #64748b; font-size: 14px;">No active students found for this selection.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #64748b; font-size: 14px; font-weight: bold;">No active students found for this selection.</td></tr>';
                 return;
             }
             
             filtered.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-weight: bold;">${row.name}</td>
-                    <td>${row.course}</td>
-                    <td style="font-weight: 700; color: #475569;">${row.module}</td>
+                    <td style="font-weight: 800; color: #0f172a;">${row.name}</td>
+                    <td style="font-weight: 600;">${row.course}</td>
+                    <td style="font-weight: 700; color: #334155;">${row.module}</td>
                     <td>₹ ${row.totalFee}</td>
                     <td style="font-weight: 800; color: #1d4ed8;">₹ ${row.expectedFee}</td>
                     <td style="font-weight: bold; color: #10b981;">₹ ${row.totalPaid}</td>
-                    <td style="color: #d97706;">₹ ${row.discount}</td>
+                    <td style="color: #d97706; font-weight: bold;">₹ ${row.discount}</td>
                     <td style="font-weight: 900; font-size: 14px; color: ${row.balance > 0 ? '#ef4444' : '#10b981'};">
                         ₹ ${row.balance}
                     </td>
