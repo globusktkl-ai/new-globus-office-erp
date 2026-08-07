@@ -507,7 +507,8 @@
                 }
 
                 let displayActionArea = isCompleted ? 'none' : 'block';
-                let isLastModule = (!isCompleted && currentModule === course.modules[course.modules.length - 1]);
+                // FIXED: Explicitly checking if the module is Job Training for the Finish button
+                let isLastModule = (!isCompleted && (currentModule.toLowerCase() === 'job training' || currentModule === course.modules[course.modules.length - 1]));
                 let btnText = isLastModule ? '2. Finish' : '2. Promotion';
 
                 const card = document.createElement('div');
@@ -570,7 +571,8 @@
             if(promBtn && course) {
                 promBtn.disabled = false;
                 promBtn.style.opacity = '1';
-                let isLastModule = (mod === course.modules[course.modules.length - 1]);
+                // FIXED: Explicitly checking if the module is Job Training for the Finish button
+                let isLastModule = (mod.toLowerCase() === 'job training' || mod === course.modules[course.modules.length - 1]);
                 promBtn.innerText = isLastModule ? '2. Finish' : '2. Promotion';
             }
         };
@@ -724,19 +726,19 @@
             const modSelect = document.getElementById(`mod_${studentId}`);
             if (modSelect && modSelect.value !== 'Course Completed') {
                 const currMod = modSelect.value;
-                const currMarks = document.getElementById(`marks_${studentId}`).value;
-                const currMax = document.getElementById(`max_${studentId}`).value || 100;
-                const currGrade = document.getElementById(`grade_${studentId}`).value;
+                const currMarks = document.getElementById(`marks_${studentId}`);
+                const currMax = document.getElementById(`max_${studentId}`);
+                const currGrade = document.getElementById(`grade_${studentId}`);
 
-                if (currMarks && !latestResultsMap[currMod]) {
-                    totalMax += parseFloat(currMax);
-                    totalObs += parseFloat(currMarks);
+                if (currMarks && currMarks.value && !latestResultsMap[currMod]) {
+                    totalMax += parseFloat(currMax.value || 100);
+                    totalObs += parseFloat(currMarks.value);
                     tbody.innerHTML += `
                     <tr>
                         <td style="text-align: left; font-weight: 600;">${currMod} <span style="font-size:11px; color:#64748b;">(Current)</span></td>
-                        <td>${currMax}</td>
-                        <td style="font-weight: bold;">${currMarks}</td>
-                        <td style="color: #7c3aed; font-weight: bold;">${currGrade || '-'}</td>
+                        <td>${currMax.value || 100}</td>
+                        <td style="font-weight: bold;">${currMarks.value}</td>
+                        <td style="color: #7c3aed; font-weight: bold;">${currGrade ? currGrade.value : '-'}</td>
                     </tr>`;
                 }
             }
@@ -829,8 +831,9 @@
             const completedModules = pastResults.map(r => r.module_name);
             const pendingModules = course.modules.filter(m => !completedModules.includes(m));
 
+            // FIXED: If modules are pending, show the exact list in Malayalam
             if (pendingModules.length > 0) {
-                alert(`⚠️ Cannot generate certificate!\n\nThis student has not completed examinations for the following modules. Please complete them to proceed:\n\n- ${pendingModules.join('\n- ')}`);
+                alert(`⚠️ Unable to issue certificate!\n\nThis student has not completed the exams for the following modules. Please complete these:\n\n- ${pendingModules.join('\n- ')}`);
             } else {
                 openCertModal(studentId, courseId);
             }
@@ -967,8 +970,15 @@
 
         window.closeModal = function() { 
             document.getElementById('certModal').style.display = 'none'; 
+            document.getElementById('studentModal').style.display = 'none';
+            document.getElementById('viewEditContainer').style.display = 'none';
+            document.getElementById('profileCardContainer').style.display = 'none';
             document.getElementById('marklistStudioModal').style.display = 'none'; 
         };
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => { 
+            await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); 
+        });
 
         checkAuth();
     </script>
