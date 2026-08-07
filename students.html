@@ -865,7 +865,7 @@
             const pendingModules = course.modules.filter(m => !completedModules.includes(m));
 
             if (pendingModules.length > 0) {
-                alert(`⚠️ സർട്ടിഫിക്കറ്റ് നൽകാൻ കഴിയില്ല!\n\nഈ വിദ്യാർത്ഥി താഴെ പറയുന്ന മൊഡ്യൂളുകളുടെ പരീക്ഷ പൂർത്തിയാക്കിയിട്ടില്ല. ദയവായി ഇവ പൂർത്തീകരിക്കുക:\n\n- ${pendingModules.join('\n- ')}`);
+                alert(`⚠️ Unable to issue certificate!\n\nThis student has not completed the following modules. Please complete them.:\n\n- ${pendingModules.join('\n- ')}`);
             } else {
                 openCertModal(studentId, courseId);
             }
