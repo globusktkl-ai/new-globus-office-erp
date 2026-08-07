@@ -49,10 +49,10 @@
                     <input type="number" id="amountPaid" class="form-control" required min="0" placeholder="Enter amount">
                 </div>
 
-                <!-- NEW: Discount / Adjustment Column -->
+                <!-- DISCOUNT COLUMN WITH ZERO REMOVED -->
                 <div class="form-group">
                     <label class="form-label">Discount / Adjustment (₹)</label>
-                    <input type="number" id="discountAmount" class="form-control" min="0" placeholder="Enter discount (optional)" value="0">
+                    <input type="number" id="discountAmount" class="form-control" min="0" placeholder="Enter discount (optional)">
                 </div>
 
                 <div class="form-group">
@@ -127,7 +127,6 @@
             }
         });
 
-        // NEW: Live balance calculation function
         function updateLiveBalance() {
             if (!selectedStudentId) return;
             
@@ -154,7 +153,6 @@
             }
         }
 
-        // Attach event listeners for live updates
         document.getElementById('amountPaid').addEventListener('input', updateLiveBalance);
         document.getElementById('discountAmount').addEventListener('input', updateLiveBalance);
 
@@ -169,14 +167,12 @@
                 document.getElementById('studentSearchInput').value = `${s.full_name} (${s.register_number})`;
                 this.style.display = 'none';
 
-                // Reset inputs
                 document.getElementById('amountPaid').value = '';
-                document.getElementById('discountAmount').value = '0';
+                document.getElementById('discountAmount').value = '';
 
                 const tFee = Number(s.total_fee) || 0;
                 const aFee = Number(s.admission_fee) || 0;
                 
-                // Calculate total paid AND total discount applied so far
                 const pay = paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => {
                     const paidAmt = Number(p.amount_paid) || 0;
                     const discAmt = Number(p.discount_amount) || 0;
@@ -230,7 +226,7 @@
             const { error } = await supabase.from('fee_payments').insert([{
                 student_id: selectedStudentId,
                 amount_paid: amountPaid,
-                discount_amount: discountAmount, // NEW: Recording discount amount
+                discount_amount: discountAmount,
                 payment_mode: document.getElementById('paymentMode').value,
                 receipt_no: document.getElementById('txnId').value, 
                 payment_date: document.getElementById('paymentDate').value
