@@ -46,8 +46,13 @@
                 
                 <div class="form-group">
                     <label class="form-label">Amount to Pay (₹)</label>
-                    <!-- FIX: Set min to 1, max will be dynamically set by JS to prevent overpayment -->
-                    <input type="number" id="amountPaid" class="form-control" required min="1" placeholder="Enter amount">
+                    <input type="number" id="amountPaid" class="form-control" required min="0" placeholder="Enter amount">
+                </div>
+
+                <!-- NEW: Discount / Adjustment Column -->
+                <div class="form-group">
+                    <label class="form-label">Discount / Adjustment (₹)</label>
+                    <input type="number" id="discountAmount" class="form-control" min="0" placeholder="Enter discount (optional)" value="0">
                 </div>
 
                 <div class="form-group">
@@ -90,7 +95,7 @@
         async function fetchData() {
             const [studentsRes, paymentsRes] = await Promise.all([
                 supabase.from('students').select('id, register_number, full_name, phone_number, total_fee, admission_fee').order('full_name'),
-                supabase.from('fee_payments').select('student_id, amount_paid')
+                supabase.from('fee_payments').select('student_id, amount_paid, discount_amount')
             ]);
             studentsData = studentsRes.data || [];
             paymentsData = paymentsRes.data || [];
@@ -122,6 +127,37 @@
             }
         });
 
+        // NEW: Live balance calculation function
+        function updateLiveBalance() {
+            if (!selectedStudentId) return;
+            
+            const paying = Number(document.getElementById('amountPaid').value) || 0;
+            const discount = Number(document.getElementById('discountAmount').value) || 0;
+            const totalDeduction = paying + discount;
+            const newBalance = currentBalance - totalDeduction;
+            
+            const pEl = document.getElementById('txtPending');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (newBalance < 0) {
+                pEl.textContent = `₹ ${newBalance} (Amount exceeds pending balance!)`;
+                pEl.style.color = "#EF4444";
+                submitBtn.disabled = true;
+            } else if (newBalance === 0) {
+                pEl.textContent = "Fully Paid (₹ 0)";
+                pEl.style.color = "#10B981";
+                submitBtn.disabled = false;
+            } else {
+                pEl.textContent = `₹ ${newBalance}`;
+                pEl.style.color = "#EF4444";
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Attach event listeners for live updates
+        document.getElementById('amountPaid').addEventListener('input', updateLiveBalance);
+        document.getElementById('discountAmount').addEventListener('input', updateLiveBalance);
+
         document.getElementById('studentSelect').addEventListener('change', function() {
             selectedStudentId = this.value;
             const div = document.getElementById('feeDetails');
@@ -133,28 +169,37 @@
                 document.getElementById('studentSearchInput').value = `${s.full_name} (${s.register_number})`;
                 this.style.display = 'none';
 
+                // Reset inputs
+                document.getElementById('amountPaid').value = '';
+                document.getElementById('discountAmount').value = '0';
+
                 const tFee = Number(s.total_fee) || 0;
                 const aFee = Number(s.admission_fee) || 0;
-                const pay = paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => sum + Number(p.amount_paid), 0);
+                
+                // Calculate total paid AND total discount applied so far
+                const pay = paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => {
+                    const paidAmt = Number(p.amount_paid) || 0;
+                    const discAmt = Number(p.discount_amount) || 0;
+                    return sum + paidAmt + discAmt;
+                }, 0);
                 
                 currentBalance = tFee - (aFee + pay);
 
                 document.getElementById('txtTotalFee').textContent = `₹ ${tFee}`;
                 document.getElementById('txtTotalPaid').textContent = `₹ ${aFee + pay}`;
                 
-                // SMART VALIDATION: Max amount possible to type is now limited to the balance
-                document.getElementById('amountPaid').max = currentBalance;
-                
                 const pEl = document.getElementById('txtPending');
                 if (currentBalance <= 0) {
                     pEl.textContent = "Fully Paid (₹ 0)";
                     pEl.style.color = "#10B981";
                     document.getElementById('amountPaid').disabled = true;
+                    document.getElementById('discountAmount').disabled = true;
                     document.getElementById('submitBtn').disabled = true;
                 } else {
                     pEl.textContent = `₹ ${currentBalance}`;
                     pEl.style.color = "#EF4444";
                     document.getElementById('amountPaid').disabled = false;
+                    document.getElementById('discountAmount').disabled = false;
                     document.getElementById('submitBtn').disabled = false;
                 }
                 div.style.display = 'block';
@@ -163,11 +208,19 @@
 
         document.getElementById('feeForm').addEventListener('submit', async (e) => {
             e.preventDefault(); 
-            if (!selectedStudentId) { alert('Please select a student.'); return; }
+            if (!selectedStudentId) { alert('Warning: Please select a student.'); return; }
 
-            const amountPaid = Number(document.getElementById('amountPaid').value);
-            if (amountPaid > currentBalance) {
-                alert(`❌ Error: Payment amount (₹ ${amountPaid}) cannot be greater than the pending balance (₹ ${currentBalance})!`);
+            const amountPaid = Number(document.getElementById('amountPaid').value) || 0;
+            const discountAmount = Number(document.getElementById('discountAmount').value) || 0;
+            const totalDeduction = amountPaid + discountAmount;
+
+            if (totalDeduction === 0) {
+                alert('Warning: Please enter a valid payment or discount amount.');
+                return;
+            }
+
+            if (totalDeduction > currentBalance) {
+                alert(`Error: The total deduction (Payment + Discount = ₹ ${totalDeduction}) cannot exceed the pending balance (₹ ${currentBalance})!`);
                 return;
             }
 
@@ -177,17 +230,18 @@
             const { error } = await supabase.from('fee_payments').insert([{
                 student_id: selectedStudentId,
                 amount_paid: amountPaid,
+                discount_amount: discountAmount, // NEW: Recording discount amount
                 payment_mode: document.getElementById('paymentMode').value,
                 receipt_no: document.getElementById('txnId').value, 
                 payment_date: document.getElementById('paymentDate').value
             }]);
 
             if (error) {
-                alert('Error: ' + error.message);
+                alert('Error processing payment: ' + error.message);
                 document.getElementById('submitBtn').disabled = false;
                 document.getElementById('submitBtn').textContent = 'Submit Payment';
             } else { 
-                alert('Payment Recorded Successfully!'); 
+                alert('Payment recorded successfully!'); 
                 window.location.href = 'dashboard.html'; 
             }
         });
