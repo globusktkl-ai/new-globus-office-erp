@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Scripts for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
         body { background-color: #f8fafc; }
         .main-content { padding: 15px; }
@@ -73,6 +78,42 @@
                 <a href="report.html" class="nav-btn report-btn"><span class="nav-icon">📊</span>Reports</a>
             </div>
         </div>
+
+        <!-- NEW: MODULE-WISE FEE PAYMENT REPORT SECTION -->
+        <div class="module-section" style="margin-top: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
+                <h3 class="module-title finance" style="margin-bottom: 0 !important; color: #0f172a;"><span>📋</span> Module-wise Fee Payment Report</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                    <select id="feeFilter" class="form-control" style="width: auto; margin-bottom: 0; padding: 6px 10px;" onchange="applyFeeFilter()">
+                        <option value="all">All Active Students</option>
+                        <option value="completed">Fee Completed</option>
+                        <option value="pending">Fee Pending</option>
+                    </select>
+                    <button onclick="exportCSV()" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">📊 Excel</button>
+                    <button id="pdfBtn" onclick="exportPDF()" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px;">📄 PDF</button>
+                </div>
+            </div>
+            
+            <div id="reportTableWrapper" style="overflow-x: auto; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; min-width: 700px;">
+                    <thead>
+                        <tr style="background: #f8fafc; border-bottom: 2px solid #cbd5e1;">
+                            <th style="padding: 10px; color: #475569;">Name</th>
+                            <th style="padding: 10px; color: #475569;">Course</th>
+                            <th style="padding: 10px; color: #475569;">Module</th>
+                            <th style="padding: 10px; color: #475569;">Total Fee</th>
+                            <th style="padding: 10px; color: #1e3a8a;">Expected Fee</th>
+                            <th style="padding: 10px; color: #10b981;">Total Paid</th>
+                            <th style="padding: 10px; color: #f59e0b;">Discount</th>
+                            <th style="padding: 10px; color: #ef4444;">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feeReportBody">
+                        <tr><td colspan="8" style="text-align: center; padding: 20px; font-weight: bold; color: #94a3b8;">Loading report data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
     <!-- SETTINGS MODAL -->
@@ -83,19 +124,16 @@
                 <button onclick="document.getElementById('settingsModal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
             </div>
             <form id="settingsForm" onsubmit="saveSettings(event)">
-                <!-- Placeholders removed for Main Name and Sub Name -->
                 <label>Institute Main Name (Brand)</label>
                 <input type="text" id="set_name" class="form-control" required>
                 
                 <label>Sub Name / Tagline</label>
                 <input type="text" id="set_sub" class="form-control">
                 
-                <!-- Address placeholder kept -->
                 <label>Full Address</label>
                 <input type="text" id="set_address" class="form-control" placeholder="City, State, PIN">
                 
                 <div style="display: flex; gap: 10px;">
-                    <!-- Phone set to strictly type number, slicing to 10 chars max -->
                     <div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10);"></div>
                     <div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div>
                 </div>
@@ -103,7 +141,6 @@
                 <label>Logo URL (Leave blank to use default)</label>
                 <input type="text" id="set_logo" class="form-control" placeholder="https://example.com/logo.png">
                 
-                <!-- Buttons Side by Side (Save and Reset) -->
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
                     <button type="button" onclick="confirmReset()" style="flex:1; background: #ef4444; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">🗑️ Reset</button>
@@ -142,12 +179,10 @@
 
         window.saveSettings = async function(e) {
             e.preventDefault();
-
-            // STRICT 10 DIGIT PHONE NUMBER CHECK
             let phoneVal = document.getElementById('set_phone').value;
             if (phoneVal && phoneVal.length !== 10) {
                 alert('Error: Phone number must strictly be 10 digits!');
-                return; // Stop execution if less or more than 10
+                return; 
             }
 
             const payload = {
@@ -164,7 +199,6 @@
             else { alert('Settings Saved! Will reflect across all print formats.'); document.getElementById('settingsModal').style.display='none'; loadSettings(); }
         }
 
-        // CAPTCHA LOGIC FOR RESET BUTTON
         window.confirmReset = function() {
             let num1 = Math.floor(Math.random() * 10) + 1;
             let num2 = Math.floor(Math.random() * 10) + 1;
@@ -184,38 +218,165 @@
 
         async function loadDashboardData() {
             try {
-                const { count: studentCount } = await supabase.from('students').select('*', { count: 'exact', head: true });
-                document.getElementById('statStudents').textContent = studentCount || 0;
+                // Fetch all necessary data at once to build dashboard and reports
+                const [stuRes, crsRes, payRes, examRes] = await Promise.all([
+                    supabase.from('students').select('*'),
+                    supabase.from('courses').select('*'),
+                    supabase.from('fee_payments').select('*'),
+                    supabase.from('exam_results').select('*')
+                ]);
+                
+                const studentsData = stuRes.data || [];
+                const coursesData = crsRes.data || [];
+                const paymentsData = payRes.data || [];
+                const examData = examRes.data || [];
 
-                const { count: courseCount } = await supabase.from('courses').select('*', { count: 'exact', head: true }).eq('status', 'Active');
-                document.getElementById('statCourses').textContent = courseCount || 0;
+                // 1. Basic Stats
+                const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
+                document.getElementById('statStudents').textContent = activeStudents.length;
+
+                const activeCourses = coursesData.filter(c => c.status === 'Active');
+                document.getElementById('statCourses').textContent = activeCourses.length;
 
                 const todayDate = new Date().toISOString().split('T')[0];
-                
-                const { data: collections } = await supabase.from('fee_payments').select('amount_paid').eq('payment_date', todayDate);
-                let paymentsToday = collections ? collections.reduce((sum, record) => sum + Number(record.amount_paid), 0) : 0;
-                
-                const { data: admissionsToday } = await supabase.from('students').select('admission_fee').eq('admission_date', todayDate);
-                let admissionsTotal = admissionsToday ? admissionsToday.reduce((sum, record) => sum + Number(record.admission_fee), 0) : 0;
+                const paymentsToday = paymentsData.filter(p => p.payment_date === todayDate).reduce((sum, p) => sum + Number(p.amount_paid), 0);
+                const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
+                document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
 
-                document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsTotal);
+                // 2. Build Fee Report Data (Active Students Only)
+                window.feeReportData = activeStudents.map(s => {
+                    const course = coursesData.find(c => c.id == s.course_id);
+                    const courseName = course ? course.course_name : (s.course_name || 'N/A');
+                    
+                    const totalFee = Number(s.total_fee) || 0;
+                    const admissionFee = Number(s.admission_fee) || 0;
+                    
+                    // Total payments & discount
+                    const stuPayments = paymentsData.filter(p => p.student_id === s.id);
+                    const totalPaidPayments = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
+                    const totalDiscount = stuPayments.reduce((sum, p) => sum + (Number(p.discount_amount) || 0), 0);
+                    const totalPaid = admissionFee + totalPaidPayments;
+                    
+                    // Modules Exam Completed
+                    const stuExams = examData.filter(e => e.student_id === s.id);
+                    // Use Set to count unique modules written
+                    const completedModulesCount = new Set(stuExams.map(e => e.module_name)).size;
+                    
+                    // Smart Calculation (Divide total by 5, multiply by completed modules)
+                    let expectedFee = (totalFee / 5) * completedModulesCount;
+                    if (expectedFee > totalFee) expectedFee = totalFee; // Prevent going over max
+                    
+                    // Balance Logic
+                    let balance = expectedFee - (totalPaid + totalDiscount);
+                    if (balance < 0) balance = 0; // Negative means advanced payment, pending is 0
 
-                const { data: studentsData } = await supabase.from('students').select('id, total_fee, admission_fee');
-                const { data: paymentsData } = await supabase.from('fee_payments').select('student_id, amount_paid');
-                
-                let pendingFeesSum = 0;
-                if (studentsData) {
-                    studentsData.forEach(s => {
-                        let total = Number(s.total_fee) || 0;
-                        let admission = Number(s.admission_fee) || 0;
-                        let otherPayments = paymentsData ? paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => sum + Number(p.amount_paid), 0) : 0;
-                        const balance = total - admission - otherPayments;
-                        if (balance > 0) pendingFeesSum += balance;
-                    });
-                }
-                document.getElementById('statPendingFees').textContent = '₹ ' + pendingFeesSum;
+                    return {
+                        id: s.id,
+                        name: s.full_name,
+                        course: courseName,
+                        module: s.module || '-',
+                        totalFee: totalFee,
+                        expectedFee: Math.round(expectedFee),
+                        totalPaid: totalPaid,
+                        discount: totalDiscount,
+                        balance: Math.round(balance)
+                    };
+                });
+
+                // Update Pending Fee Stat using our new highly accurate calculation
+                const totalPending = window.feeReportData.reduce((sum, row) => sum + row.balance, 0);
+                document.getElementById('statPendingFees').textContent = '₹ ' + totalPending;
+
+                // Load initial table
+                applyFeeFilter();
 
             } catch (err) { console.error("Dashboard Loading Error:", err); }
+        }
+
+        // Apply filters to the table
+        window.applyFeeFilter = function() {
+            const filter = document.getElementById('feeFilter').value;
+            let filtered = window.feeReportData || [];
+            
+            if (filter === 'completed') {
+                filtered = filtered.filter(r => r.balance <= 0);
+            } else if (filter === 'pending') {
+                filtered = filtered.filter(r => r.balance > 0);
+            }
+            
+            window.filteredFeeData = filtered; // Save for PDF/CSV export
+            
+            const tbody = document.getElementById('feeReportBody');
+            tbody.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px; color: #64748b; font-weight: bold;">No records found.</td></tr>';
+                return;
+            }
+            
+            filtered.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #e2e8f0';
+                tr.innerHTML = `
+                    <td style="padding: 10px; font-weight: bold; color: #1e293b;">${row.name}</td>
+                    <td style="padding: 10px; color: #475569;">${row.course}</td>
+                    <td style="padding: 10px; color: #475569;">${row.module}</td>
+                    <td style="padding: 10px; color: #475569;">₹ ${row.totalFee}</td>
+                    <td style="padding: 10px; font-weight: bold; color: #1e3a8a;">₹ ${row.expectedFee}</td>
+                    <td style="padding: 10px; color: #10b981; font-weight: bold;">₹ ${row.totalPaid}</td>
+                    <td style="padding: 10px; color: #f59e0b;">₹ ${row.discount}</td>
+                    <td style="padding: 10px; font-weight: 900; color: ${row.balance > 0 ? '#ef4444' : '#10b981'};">₹ ${row.balance}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Export table to CSV
+        window.exportCSV = function() {
+            if(!window.filteredFeeData || window.filteredFeeData.length === 0) {
+                alert("No data to export!"); return;
+            }
+            let csv = "Name,Course,Current Module,Total Fee,Expected Fee,Total Paid,Discount,Pending Balance\n";
+            window.filteredFeeData.forEach(row => {
+                csv += `"${row.name}","${row.course}","${row.module}",${row.totalFee},${row.expectedFee},${row.totalPaid},${row.discount},${row.balance}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Module_wise_Fee_Report.csv';
+            a.click();
+        }
+
+        // Export table to PDF
+        window.exportPDF = async function() {
+            if(!window.filteredFeeData || window.filteredFeeData.length === 0) {
+                alert("No data to export!"); return;
+            }
+            const btn = document.getElementById('pdfBtn');
+            const oldText = btn.innerHTML;
+            btn.innerHTML = '⏳...'; btn.disabled = true;
+            try {
+                const tableWrap = document.getElementById('reportTableWrapper');
+                const canvas = await html2canvas(tableWrap, { scale: 2, backgroundColor: '#ffffff' });
+                const imgData = canvas.toDataURL('image/png');
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('l', 'mm', 'a4'); // Landscape for tables
+                
+                const imgProps= pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                
+                pdf.setFontSize(16);
+                pdf.text("Module-wise Fee Payment Report", 14, 15);
+                
+                pdf.addImage(imgData, 'PNG', 10, 20, pdfWidth-20, pdfHeight-20);
+                pdf.save('Module_wise_Fee_Report.pdf');
+            } catch (e) {
+                alert('Error generating PDF report.');
+            }
+            btn.innerHTML = oldText; btn.disabled = false;
         }
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
