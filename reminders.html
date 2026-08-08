@@ -16,10 +16,6 @@
         .btn-back-dashboard:active { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
 
-        /* AUDIO UNLOCK BUTTON */
-        .audio-unlock-btn { background: #10b981; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 900; font-size: 16px; margin-bottom: 20px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4); cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; animation: pulseBtn 2s infinite;}
-        @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         @media(max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
 
@@ -29,18 +25,12 @@
         
         .master-switch-container { display: flex; justify-content: center; align-items: center; gap: 12px; background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px solid #bbf7d0; margin-bottom: 18px; }
         
-        .schedule-settings-box { background: #ffffff; border: 1px solid #e2e8f0; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .setting-group { margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
-        .setting-group:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+        .schedule-settings-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 10px; margin-bottom: 18px; }
+        .schedule-label { font-size: 12px; font-weight: 900; color: #475569; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
+        .schedule-select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; font-weight: bold; color: #1e3a8a; margin-bottom: 15px; outline: none; background: white;}
         
-        .schedule-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
-        .schedule-label.highlight { color: #ea580c; }
-        
-        .schedule-select { width: 100%; padding: 12px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700; color: #1e293b; outline: none; background: #f8fafc; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 18px auto; }
-        .schedule-select:focus { border-color: #3b82f6; background-color: #fff; }
-        
-        .days-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 8px; margin-top: 5px;}
-        .day-checkbox { display: flex; align-items: center; justify-content: center; gap: 4px; background: #f8fafc; padding: 10px 5px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; color: #475569; transition: 0.2s;}
+        .days-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 8px; margin-top: 5px; margin-bottom: 15px;}
+        .day-checkbox { display: flex; align-items: center; justify-content: center; gap: 4px; background: white; padding: 8px 5px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; color: #64748b; transition: 0.2s;}
         .day-checkbox input:checked + span { color: #ef4444; text-decoration: line-through; }
         .day-checkbox:has(input:checked) { background: #fef2f2; border-color: #fca5a5; }
 
@@ -53,19 +43,17 @@
         input:checked + .slider { background-color: #10b981; } 
         input:checked + .slider:before { transform: translateX(26px); }
 
-        .bell-list-title { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase; }
-        
-        .time-group { display: flex; align-items: center; background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; gap: 10px; flex-wrap: nowrap;}
-        .time-input-name { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 700; color: #0f172a; outline: none; flex: 1; font-size: 14px; min-width: 0; background: white;}
+        .time-group { display: flex; align-items: center; background: white; padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #e2e8f0; gap: 10px; flex-wrap: nowrap;}
+        .time-input-name { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 700; color: #334155; outline: none; flex: 1; font-size: 14px; min-width: 0;}
         .time-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 900; color: #1e3a8a; outline: none; flex: 0 0 110px; font-size: 14px; text-align: center; background: #eff6ff; cursor: pointer; caret-color: transparent;}
         
-        .btn-remove-bell { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 8px; padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0;}
+        .btn-remove-bell { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 8px; padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;}
         .btn-remove-bell:hover { background: #ef4444; color: white; }
 
-        .btn-add-bell { background: #ffffff; color: #3b82f6; border: 2px dashed #93c5fd; padding: 12px; width: 100%; border-radius: 10px; font-weight: 800; cursor: pointer; margin-bottom: 20px; font-size: 14px; transition: 0.2s;}
+        .btn-add-bell { background: #f8fafc; color: #3b82f6; border: 2px dashed #cbd5e1; padding: 14px; width: 100%; border-radius: 10px; font-weight: 900; cursor: pointer; margin-bottom: 18px; font-size: 14px; transition: 0.2s;}
         .btn-add-bell:hover { border-color: #3b82f6; background: #eff6ff; }
 
-        .btn-save-bell { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); transition: 0.2s; letter-spacing: 0.5px;}
+        .btn-save-bell { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 15px; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); transition: 0.2s; letter-spacing: 0.5px;}
         .btn-save-bell:active { transform: scale(0.98); }
 
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #f1f5f9; }
@@ -142,12 +130,6 @@
             <h1 class="page-title">Smart Assistant</h1>
         </div>
 
-        <!-- NEW AUDIO UNLOCK BUTTON -->
-        <button id="audioUnlockBtn" class="audio-unlock-btn" onclick="unlockAudioSystem()">
-            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-            Tap here to Activate Sound System
-        </button>
-
         <div class="grid-container">
             <div class="panel">
                 <div class="panel-header">
@@ -166,49 +148,41 @@
                 </div>
 
                 <div class="schedule-settings-box">
-                    <div class="setting-group">
-                        <label class="schedule-label highlight">Dashboard Notification Setup</label>
-                        <select id="warningDuration" class="schedule-select" style="border-color: #fbd38d;">
-                            <option value="15">Show Alert 15 Min Before Bell</option>
-                            <option value="30">Show Alert 30 Min Before Bell</option>
-                            <option value="60">Show Alert 1 Hour Before Bell</option>
-                            <option value="0">Do Not Show Alert on Dashboard</option>
-                        </select>
-                    </div>
+                    <!-- NEW: Upcoming Alert Duration -->
+                    <label class="schedule-label" style="color: #ea580c;">Dashboard Notification Setup</label>
+                    <select id="warningDuration" class="schedule-select" style="border-color: #fbd38d; margin-bottom: 15px;">
+                        <option value="15">Show Alert 15 Min Before Bell</option>
+                        <option value="30">Show Alert 30 Min Before Bell</option>
+                        <option value="60">Show Alert 1 Hour Before Bell</option>
+                        <option value="0">Do Not Show Alert on Dashboard</option>
+                    </select>
 
-                    <div class="setting-group">
-                        <label class="schedule-label">Active Schedule Duration</label>
-                        <select id="scheduleDuration" class="schedule-select">
-                            <option value="forever">Always Active (Forever)</option>
-                            <option value="1week">Active for Next 1 Week</option>
-                            <option value="1month">Active for Next 1 Month</option>
-                        </select>
-                    </div>
+                    <label class="schedule-label">Active Schedule Duration</label>
+                    <select id="scheduleDuration" class="schedule-select">
+                        <option value="forever">Always Active (Forever)</option>
+                        <option value="1week">Active for Next 1 Week</option>
+                        <option value="1month">Active for Next 1 Month</option>
+                    </select>
                     
-                    <div class="setting-group">
-                        <label class="schedule-label">Notification Tune</label>
-                        <select id="audioSelect" class="schedule-select" onchange="previewAudio()">
-                            <option value="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">Short Beep (Default)</option>
-                            <option value="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">Gentle Chime</option>
-                            <option value="https://actions.google.com/sounds/v1/alarms/mechanical_clock_ring.ogg">School Bell</option>
-                        </select>
-                    </div>
+                    <label class="schedule-label">Notification Tune</label>
+                    <select id="audioSelect" class="schedule-select" onchange="previewAudio()">
+                        <option value="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">Short Beep (Default)</option>
+                        <option value="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">Gentle Chime</option>
+                        <option value="https://actions.google.com/sounds/v1/alarms/mechanical_clock_ring.ogg">School Bell</option>
+                    </select>
 
-                    <div class="setting-group" style="border-bottom: none; padding-bottom: 0;">
-                        <label class="schedule-label">Exclude Days (Mute Bell)</label>
-                        <div class="days-grid">
-                            <label class="day-checkbox"><input type="checkbox" value="0" class="exclude-day" style="display:none;"> <span>Sun</span></label>
-                            <label class="day-checkbox"><input type="checkbox" value="1" class="exclude-day" style="display:none;"> <span>Mon</span></label>
-                            <label class="day-checkbox"><input type="checkbox" value="2" class="exclude-day" style="display:none;"> <span>Tue</span></label>
-                            <label class="day-checkbox"><input type="checkbox" value="3" class="exclude-day" style="display:none;"> <span>Wed</span></label>
-                            <label class="day-checkbox"><input type="checkbox" value="4" class="exclude-day" style="display:none;"> <span>Thu</span></label>
-                            <label class="day-checkbox"><input type="checkbox" value="5" class="exclude-day" style="display:none;"> <span>Fri</span></label>
-                            <label class="day-checkbox"><input type="checkbox" value="6" class="exclude-day" style="display:none;"> <span>Sat</span></label>
-                        </div>
+                    <label class="schedule-label">Exclude Days (Mute Bell)</label>
+                    <div class="days-grid">
+                        <label class="day-checkbox"><input type="checkbox" value="0" class="exclude-day" style="display:none;"> <span>Sun</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="1" class="exclude-day" style="display:none;"> <span>Mon</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="2" class="exclude-day" style="display:none;"> <span>Tue</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="3" class="exclude-day" style="display:none;"> <span>Wed</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="4" class="exclude-day" style="display:none;"> <span>Thu</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="5" class="exclude-day" style="display:none;"> <span>Fri</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="6" class="exclude-day" style="display:none;"> <span>Sat</span></label>
                     </div>
                 </div>
 
-                <div class="bell-list-title">Set Daily Bell Timings</div>
                 <div id="bellListContainer">
                     <!-- Dynamic Bells appended here -->
                 </div>
@@ -238,6 +212,7 @@
                 <div class="empty-state">Loading financial records...</div>
             </div>
         </div>
+
     </main>
 
     <script type="module">
@@ -247,40 +222,23 @@
         let playedToday = {}; 
         let bellSettings = { isOn: false, expiryDate: null, excludedDays: [], bells: [], audioUrl: '', warningDuration: 15 };
 
-        // 1. Audio Unlock (Mobile Fix)
-        window.unlockAudioSystem = function() {
-            const audioObj = document.getElementById('bellAudio');
-            audioObj.src = document.getElementById('audioSelect').value;
-            audioObj.play().then(() => {
-                audioObj.pause();
-                audioObj.currentTime = 0;
-                document.getElementById('audioUnlockBtn').style.display = 'none';
-                
-                const btnSave = document.querySelector('.btn-save-bell');
-                const origText = btnSave.innerHTML;
-                btnSave.innerHTML = "✅ System Unlocked! Ready to ring.";
-                btnSave.style.background = "#10b981";
-                setTimeout(() => {
-                    btnSave.innerHTML = origText;
-                    btnSave.style.background = "";
-                }, 3000);
-            }).catch(e => {
-                console.error("Audio unlock failed:", e);
-                alert("Please tap the button again to unlock audio.");
-            });
-        };
+        async function initAssistant() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            initCustomPicker();
+            loadBellTimings();
+            fetchStudentAlerts();
+        }
 
-        // 2. Custom Time Picker Logic
+        // --- CUSTOM TIME PICKER LOGIC ---
         let activeTimeInputId = null;
 
-        window.initCustomPicker = function() {
+        function initCustomPicker() {
             const hrSelect = document.getElementById('tp-hour');
-            hrSelect.innerHTML = '';
             for(let i=1; i<=12; i++) { hrSelect.add(new Option(String(i).padStart(2,'0'), String(i).padStart(2,'0'))); }
             const minSelect = document.getElementById('tp-minute');
-            minSelect.innerHTML = '';
             for(let i=0; i<=59; i++) { minSelect.add(new Option(String(i).padStart(2,'0'), String(i).padStart(2,'0'))); }
-        };
+        }
 
         window.openTimePicker = function(inputId) {
             activeTimeInputId = inputId;
@@ -288,7 +246,7 @@
             const val24 = input.getAttribute('data-time24'); 
             
             let h = "09", m = "30", ampm = "AM";
-            if (val24 && val24.includes(':')) {
+            if (val24) {
                 let parts = val24.split(':');
                 let hour24 = parseInt(parts[0]);
                 m = parts[1];
@@ -301,6 +259,7 @@
             document.getElementById('tp-hour').value = h;
             document.getElementById('tp-minute').value = m;
             document.getElementById('tp-ampm').value = ampm;
+            
             document.getElementById('customTimePickerModal').style.display = 'flex';
         };
 
@@ -317,6 +276,7 @@
             if (ampm === "PM" && hour24 !== 12) hour24 += 12;
             if (ampm === "AM" && hour24 === 12) hour24 = 0;
             let time24 = String(hour24).padStart(2, '0') + ':' + m;
+            
             let displayTime = h + ':' + m + ' ' + ampm;
             
             if (activeTimeInputId) {
@@ -324,24 +284,22 @@
                 input.value = displayTime;
                 input.setAttribute('data-time24', time24);
             }
-            window.closeTimePicker();
+            closeTimePicker();
         };
 
-        // 3. Audio & Bell Controls
+        // --- AUDIO PREVIEW (Max 2 Seconds) ---
         window.previewAudio = function() {
             const audioSrc = document.getElementById('audioSelect').value;
             const audioObj = document.getElementById('bellAudio');
             audioObj.src = audioSrc;
-            audioObj.loop = false; 
-            
-            let playPromise = audioObj.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    setTimeout(() => { audioObj.pause(); audioObj.currentTime = 0; }, 2000);
-                }).catch(e => {
-                    console.log("Preview blocked.");
-                });
-            }
+            audioObj.loop = false; // Prevent looping during preview
+            audioObj.play().catch(e => console.log("Audio preview blocked."));
+
+            // Stop automatically after 2 seconds
+            setTimeout(() => {
+                audioObj.pause();
+                audioObj.currentTime = 0;
+            }, 2000);
         };
 
         window.stopRinging = function() {
@@ -355,8 +313,6 @@
             const container = document.getElementById('bellListContainer');
             const rowId = 'bell_' + Date.now() + Math.floor(Math.random() * 100);
             
-            if(!time24 || !time24.includes(':')) time24 = '09:30';
-
             let parts = time24.split(':');
             let hour24 = parseInt(parts[0]);
             let m = parts[1];
@@ -371,8 +327,8 @@
             const html = `
                 <div class="time-group" id="${rowId}_group">
                     <input type="text" class="time-input-name bell-name" placeholder="e.g. Morning Bell" value="${name}">
-                    <input type="text" class="time-input bell-time" id="${rowId}" value="${displayTime}" data-time24="${time24}" readonly onclick="window.openTimePicker('${rowId}')" placeholder="Select Time">
-                    <button class="btn-remove-bell" onclick="window.removeBellRow('${rowId}_group')" title="Remove Bell">${trashIcon}</button>
+                    <input type="text" class="time-input bell-time" id="${rowId}" value="${displayTime}" data-time24="${time24}" readonly onclick="openTimePicker('${rowId}')" placeholder="Select Time">
+                    <button class="btn-remove-bell" onclick="removeBellRow('${rowId}_group')" title="Remove Bell">${trashIcon}</button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', html);
@@ -389,7 +345,7 @@
             if (isOn) {
                 statusText.innerText = "System is ON (Monitoring)";
                 statusText.style.color = "#10b981";
-                window.startBellService();
+                startBellService();
             } else {
                 statusText.innerText = "System is OFF";
                 statusText.style.color = "#ef4444";
@@ -435,21 +391,68 @@
                 warningDuration: warningDur
             };
             
-            localStorage.setItem('globus_bell_settings_v8', JSON.stringify(bellSettings));
+            localStorage.setItem('globus_bell_settings_v6', JSON.stringify(bellSettings));
             playedToday = {}; 
             
             document.getElementById('bellAudio').src = audioSrc;
             
-            window.checkExpiryAndStart();
+            checkExpiryAndStart();
             alert("Smart Calendar Schedule & Settings Saved!");
         };
 
-        window.checkExpiryAndStart = function() {
+        function loadBellTimings() {
+            const saved = localStorage.getItem('globus_bell_settings_v6');
+            if (saved) {
+                bellSettings = JSON.parse(saved);
+                document.getElementById('masterBellToggle').checked = bellSettings.isOn || false;
+                
+                if(bellSettings.warningDuration !== undefined) {
+                    document.getElementById('warningDuration').value = bellSettings.warningDuration;
+                }
+
+                if(bellSettings.audioUrl) {
+                    document.getElementById('audioSelect').value = bellSettings.audioUrl;
+                    document.getElementById('bellAudio').src = bellSettings.audioUrl;
+                } else {
+                    document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
+                }
+
+                if (bellSettings.excludedDays) {
+                    document.querySelectorAll('.exclude-day').forEach(cb => {
+                        if(bellSettings.excludedDays.includes(parseInt(cb.value))) cb.checked = true;
+                    });
+                }
+                
+                if (!bellSettings.expiryDate) document.getElementById('scheduleDuration').value = 'forever';
+                else {
+                    let diffDays = Math.ceil((bellSettings.expiryDate - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                    if (diffDays <= 7 && diffDays > 0) document.getElementById('scheduleDuration').value = '1week';
+                    else if (diffDays > 7) document.getElementById('scheduleDuration').value = '1month';
+                }
+
+                if(bellSettings.bells && bellSettings.bells.length > 0) {
+                    bellSettings.bells.forEach(b => addNewBellRow(b.name, b.time));
+                } else {
+                    addNewBellRow('Morning Bell', '09:30');
+                    addNewBellRow('Lunch Break', '13:00');
+                    addNewBellRow('Closing Bell', '16:00');
+                }
+
+                checkExpiryAndStart();
+            } else {
+                addNewBellRow('Morning Bell', '09:30');
+                addNewBellRow('Lunch Break', '13:00');
+                addNewBellRow('Closing Bell', '16:00');
+                document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
+            }
+        }
+
+        function checkExpiryAndStart() {
             const alertBox = document.getElementById('scheduleExpiryAlert');
             alertBox.style.display = 'none';
 
             if (!bellSettings.isOn) {
-                window.toggleMasterBell();
+                toggleMasterBell();
                 return;
             }
 
@@ -462,7 +465,7 @@
                     alertBox.innerHTML = "⚠️ <b>Schedule Expired!</b> The preset time duration for your bell schedule has ended. The system has been paused. Please set a new schedule.";
                     alertBox.style.display = 'block';
                     document.getElementById('masterBellToggle').checked = false;
-                    window.toggleMasterBell();
+                    toggleMasterBell();
                     return;
                 } else if (daysLeft <= 2) {
                     alertBox.innerHTML = `⚠️ <b>Schedule Ending Soon!</b> Your bell schedule will expire in <b>${daysLeft} day(s)</b>.`;
@@ -470,15 +473,18 @@
                 }
             }
 
-            window.toggleMasterBell();
-        };
+            toggleMasterBell();
+        }
 
-        window.startBellService = function() {
+        function startBellService() {
             if(bellTimer) clearInterval(bellTimer);
             
             bellTimer = setInterval(() => {
                 const now = new Date();
-                if (bellSettings.excludedDays && bellSettings.excludedDays.includes(now.getDay())) { return; }
+                
+                if (bellSettings.excludedDays && bellSettings.excludedDays.includes(now.getDay())) {
+                    return; 
+                }
 
                 const currentHour = String(now.getHours()).padStart(2, '0');
                 const currentMin = String(now.getMinutes()).padStart(2, '0');
@@ -490,14 +496,8 @@
                         
                         const audio = document.getElementById('bellAudio');
                         audio.currentTime = 0; 
-                        audio.loop = true; 
-                        
-                        let playPromise = audio.play();
-                        if (playPromise !== undefined) {
-                            playPromise.catch(e => {
-                                console.log("Auto-play prevented.");
-                            });
-                        }
+                        audio.loop = true; // Ring continuously until stopped
+                        audio.play().catch(e => console.log("Audio play blocked."));
                         
                         const alertBox = document.getElementById('bellAlert');
                         document.getElementById('bellAlertMsg').innerText = bell.name;
@@ -506,10 +506,10 @@
                         playedToday[uniqueId] = true;
                     }
                 });
-            }, 10000); 
-        };
+            }, 30000); 
+        }
 
-        // --- FETCH ALERTS LOGIC (SUPABASE) ---
+        // --- FETCH ALERTS LOGIC ---
         async function fetchStudentAlerts() {
             try {
                 const [stuRes, payRes] = await Promise.all([
@@ -544,8 +544,8 @@
                                         Wishes
                                     </a>
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        }
                     }
 
                     const totalFee = Number(s.total_fee) || 0; 
@@ -592,74 +592,10 @@
                 }
                 document.getElementById('feeList').innerHTML = feeHTML;
 
-            } catch(e) { 
-                console.error("Error loading alerts", e); 
-                document.getElementById('feeList').innerHTML = '<div class="empty-state" style="color:red;">Error connecting to database.</div>';
-            }
+            } catch(e) { console.error("Error loading alerts", e); }
         }
 
-        // --- SAFE INITIALIZATION ---
-        function loadSettingsSafe() {
-            const saved = localStorage.getItem('globus_bell_settings_v8');
-            let loadedSettings = null;
-            try {
-                if (saved) loadedSettings = JSON.parse(saved);
-            } catch(e) { console.error("Error parsing settings"); }
-
-            if (loadedSettings) {
-                bellSettings = loadedSettings;
-                document.getElementById('masterBellToggle').checked = bellSettings.isOn || false;
-                
-                if(bellSettings.warningDuration !== undefined) {
-                    document.getElementById('warningDuration').value = bellSettings.warningDuration;
-                }
-
-                if(bellSettings.audioUrl) {
-                    document.getElementById('audioSelect').value = bellSettings.audioUrl;
-                    document.getElementById('bellAudio').src = bellSettings.audioUrl;
-                } else {
-                    document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
-                }
-
-                if (bellSettings.excludedDays) {
-                    document.querySelectorAll('.exclude-day').forEach(cb => {
-                        if(bellSettings.excludedDays.includes(parseInt(cb.value))) cb.checked = true;
-                    });
-                }
-                
-                if (!bellSettings.expiryDate) document.getElementById('scheduleDuration').value = 'forever';
-                else {
-                    let diffDays = Math.ceil((bellSettings.expiryDate - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                    if (diffDays <= 7 && diffDays > 0) document.getElementById('scheduleDuration').value = '1week';
-                    else if (diffDays > 7) document.getElementById('scheduleDuration').value = '1month';
-                }
-
-                if(bellSettings.bells && bellSettings.bells.length > 0) {
-                    bellSettings.bells.forEach(b => window.addNewBellRow(b.name, b.time));
-                } else {
-                    window.addNewBellRow('Morning Bell', '09:30');
-                    window.addNewBellRow('Lunch Break', '13:00');
-                    window.addNewBellRow('Closing Bell', '16:00');
-                }
-
-                window.checkExpiryAndStart();
-            } else {
-                window.addNewBellRow('Morning Bell', '09:30');
-                window.addNewBellRow('Lunch Break', '13:00');
-                window.addNewBellRow('Closing Bell', '16:00');
-                document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
-                window.toggleMasterBell();
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            window.initCustomPicker();
-            loadSettingsSafe();
-            
-            supabase.auth.getSession().then(({ data: { session } }) => {
-                if (session) fetchStudentAlerts();
-            });
-        });
+        document.addEventListener('DOMContentLoaded', initAssistant);
     </script>
 </body>
 </html>
