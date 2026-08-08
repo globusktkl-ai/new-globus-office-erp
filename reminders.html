@@ -9,13 +9,13 @@
         body { background-color: #f8fafc; padding-bottom: 40px; }
         .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
         
-        /* Centered Header */
-        .top-nav { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; position: relative;}
-        .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; flex: 1; text-align: center; padding-right: 40px; }
+        /* Perfectly Centered Header */
+        .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; min-height: 45px;}
+        .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 100%;}
         
-        /* 3D Back Button */
-        .btn-back-dashboard { display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; flex-shrink: 0; position: absolute; left: 0;}
-        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        /* 3D Back Button (Absolute Positioned for perfect center title) */
+        .btn-back-dashboard { position: absolute; left: 0; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; z-index: 10;}
+        .btn-back-dashboard:active { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
 
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
@@ -23,57 +23,72 @@
 
         /* Panels */
         .panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; position: relative; }
-        .panel-header { display: flex; align-items: center; justify-content: center; gap: 10px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 15px; text-align: center;}
-        .panel-title { font-size: 16px; font-weight: 900; color: #1e293b; margin: 0; }
+        .panel-header { display: flex; align-items: center; justify-content: center; gap: 10px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 18px; text-align: center;}
+        .panel-title { font-size: 17px; font-weight: 900; color: #1e293b; margin: 0; }
         
         /* ADVANCED BELL SYSTEM STYLES */
-        .master-switch-container { display: flex; justify-content: center; align-items: center; gap: 10px; background: #f0fdf4; padding: 10px; border-radius: 8px; border: 1px solid #bbf7d0; margin-bottom: 15px; }
+        .master-switch-container { display: flex; justify-content: center; align-items: center; gap: 12px; background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px solid #bbf7d0; margin-bottom: 18px; }
         
         /* Schedule Settings Box */
-        .schedule-settings-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .schedule-label { font-size: 12px; font-weight: 800; color: #475569; margin-bottom: 5px; display: block; text-transform: uppercase; }
-        .schedule-select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-weight: bold; color: #1e3a8a; margin-bottom: 15px; outline: none; }
+        .schedule-settings-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 10px; margin-bottom: 18px; }
+        .schedule-label { font-size: 12px; font-weight: 900; color: #475569; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
+        .schedule-select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; font-weight: bold; color: #1e3a8a; margin-bottom: 15px; outline: none; background: white;}
         
-        .days-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
-        .day-checkbox { display: flex; align-items: center; gap: 4px; background: white; padding: 5px 10px; border: 1px solid #cbd5e1; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; color: #64748b;}
+        /* Grid for Checkboxes (Mobile Friendly) */
+        .days-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 8px; margin-top: 5px; }
+        .day-checkbox { display: flex; align-items: center; justify-content: center; gap: 4px; background: white; padding: 8px 5px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; color: #64748b; transition: 0.2s;}
         .day-checkbox input:checked + span { color: #ef4444; text-decoration: line-through; }
+        .day-checkbox:has(input:checked) { background: #fef2f2; border-color: #fca5a5; }
 
-        .expiry-alert { background: #fef2f2; border: 1px dashed #ef4444; color: #b91c1c; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 800; text-align: center; margin-bottom: 15px; display: none; }
+        .expiry-alert { background: #fef2f2; border: 1px dashed #ef4444; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 800; text-align: center; margin-bottom: 15px; display: none; }
         
         /* Toggle Switch */
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
+        .switch { position: relative; display: inline-block; width: 54px; height: 28px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         input:checked + .slider { background-color: #10b981; } 
-        input:checked + .slider:before { transform: translateX(24px); }
+        input:checked + .slider:before { transform: translateX(26px); }
 
-        .time-group { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0; gap: 10px;}
-        .time-input-name { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-weight: 600; color: #334155; outline: none; flex: 1; font-size: 13px;}
-        .time-input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; font-weight: bold; color: #1e3a8a; outline: none; }
-        .btn-remove-bell { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; font-size: 12px;}
-        
-        .btn-add-bell { background: #f1f5f9; color: #334155; border: 1px dashed #cbd5e1; padding: 10px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 13px;}
-        .btn-add-bell:hover { background: #e2e8f0; }
+        /* Dynamic Bell Rows */
+        .time-group { display: flex; align-items: center; background: white; padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #e2e8f0; gap: 10px; flex-wrap: nowrap;}
+        .time-input-name { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 700; color: #334155; outline: none; flex: 1; font-size: 14px; min-width: 0;}
+        .time-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 900; color: #1e3a8a; outline: none; flex: 0 0 130px; font-size: 14px;}
+        .btn-remove-bell { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 8px; padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;}
+        .btn-remove-bell:hover { background: #ef4444; color: white; }
 
-        .btn-save-bell { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2); transition: 0.2s;}
+        .btn-add-bell { background: #f8fafc; color: #3b82f6; border: 2px dashed #cbd5e1; padding: 14px; width: 100%; border-radius: 10px; font-weight: 900; cursor: pointer; margin-bottom: 18px; font-size: 14px; transition: 0.2s;}
+        .btn-add-bell:hover { border-color: #3b82f6; background: #eff6ff; }
+
+        .btn-save-bell { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 15px; cursor: pointer; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); transition: 0.2s;}
         .btn-save-bell:active { transform: scale(0.98); }
 
         /* Lists */
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #f1f5f9; }
         .list-item:last-child { border-bottom: none; }
-        .item-info h4 { margin: 0 0 4px 0; font-size: 14px; color: #0f172a; font-weight: 800; }
-        .item-info p { margin: 0; font-size: 12px; color: #64748b; font-weight: 600; }
-        .due-amount { color: #ef4444; font-weight: 900; font-size: 15px; }
+        .item-info h4 { margin: 0 0 5px 0; font-size: 15px; color: #0f172a; font-weight: 900; }
+        .item-info p { margin: 0; font-size: 12px; color: #64748b; font-weight: 700; }
+        .due-amount { color: #ef4444; font-weight: 900; font-size: 16px; }
         
-        .btn-wa { background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; text-decoration: none; }
-        .btn-wa:hover { background: #059669; }
+        .btn-wa { background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);}
+        .btn-wa:active { transform: scale(0.95); }
 
-        .empty-state { text-align: center; color: #94a3b8; font-weight: 600; font-size: 13px; padding: 20px; }
+        .empty-state { text-align: center; color: #94a3b8; font-weight: 700; font-size: 14px; padding: 25px; }
 
         /* Notification Popup */
-        #bellAlert { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fef08a; border: 2px solid #f59e0b; color: #b45309; padding: 15px 25px; border-radius: 10px; font-weight: 900; z-index: 9999; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3); animation: slideDown 0.5s ease; }
+        #bellAlert { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fef08a; border: 2px solid #f59e0b; color: #b45309; padding: 15px 25px; border-radius: 10px; font-weight: 900; z-index: 9999; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3); animation: slideDown 0.5s ease; width: 90%; max-width: 400px; text-align: center;}
         @keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
+
+        /* MOBILE OPTIMIZATION OVERRIDES */
+        @media(max-width: 600px) {
+            .panel { padding: 15px; }
+            /* Stack bell inputs vertically on small screens for better readability */
+            .time-group { flex-wrap: wrap; padding: 12px;}
+            .time-input-name { flex: 1 1 100%; margin-bottom: 8px; font-size: 15px; padding: 12px;}
+            .time-input { flex: 1; font-size: 15px; padding: 12px;}
+            .btn-remove-bell { padding: 12px 18px; }
+            .btn-wa { padding: 10px 15px; font-size: 13px; }
+        }
     </style>
 </head>
 <body>
@@ -82,7 +97,7 @@
     <audio id="bellAudio" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
     <main class="main-content">
-        <!-- Centered Header -->
+        <!-- Perfectly Centered Header -->
         <div class="top-nav">
             <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
                 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -94,7 +109,7 @@
             <!-- 1. Advanced Automatic Bell System -->
             <div class="panel">
                 <div class="panel-header">
-                    <span style="font-size: 20px;">⏰</span>
+                    <span style="font-size: 22px;">⏰</span>
                     <h2 class="panel-title">Automated Office Bell</h2>
                 </div>
                 
@@ -105,10 +120,10 @@
                         <input type="checkbox" id="masterBellToggle" onchange="toggleMasterBell()">
                         <span class="slider"></span>
                     </label>
-                    <span id="masterBellStatus" style="font-weight: 800; font-size: 13px; color: #64748b;">System is OFF</span>
+                    <span id="masterBellStatus" style="font-weight: 900; font-size: 14px; color: #64748b;">System is OFF</span>
                 </div>
 
-                <!-- Schedule Settings (NEW) -->
+                <!-- Schedule Settings Box -->
                 <div class="schedule-settings-box">
                     <label class="schedule-label">Active Schedule Duration</label>
                     <select id="scheduleDuration" class="schedule-select">
@@ -119,13 +134,13 @@
 
                     <label class="schedule-label">Exclude Days (Mute Bell)</label>
                     <div class="days-grid">
-                        <label class="day-checkbox"><input type="checkbox" value="0" class="exclude-day"> <span>Sun</span></label>
-                        <label class="day-checkbox"><input type="checkbox" value="1" class="exclude-day"> <span>Mon</span></label>
-                        <label class="day-checkbox"><input type="checkbox" value="2" class="exclude-day"> <span>Tue</span></label>
-                        <label class="day-checkbox"><input type="checkbox" value="3" class="exclude-day"> <span>Wed</span></label>
-                        <label class="day-checkbox"><input type="checkbox" value="4" class="exclude-day"> <span>Thu</span></label>
-                        <label class="day-checkbox"><input type="checkbox" value="5" class="exclude-day"> <span>Fri</span></label>
-                        <label class="day-checkbox"><input type="checkbox" value="6" class="exclude-day"> <span>Sat</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="0" class="exclude-day" style="display:none;"> <span>Sun</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="1" class="exclude-day" style="display:none;"> <span>Mon</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="2" class="exclude-day" style="display:none;"> <span>Tue</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="3" class="exclude-day" style="display:none;"> <span>Wed</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="4" class="exclude-day" style="display:none;"> <span>Thu</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="5" class="exclude-day" style="display:none;"> <span>Fri</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="6" class="exclude-day" style="display:none;"> <span>Sat</span></label>
                     </div>
                 </div>
 
@@ -140,7 +155,7 @@
             <!-- 2. Birthday Alerts -->
             <div class="panel">
                 <div class="panel-header">
-                    <span style="font-size: 20px;">🎂</span>
+                    <span style="font-size: 22px;">🎂</span>
                     <h2 class="panel-title">Today's Birthdays</h2>
                 </div>
                 <div id="birthdayList">
@@ -150,11 +165,11 @@
         </div>
 
         <!-- 3. Fee Due Reminders -->
-        <div class="panel">
+        <div class="panel" style="margin-bottom: 30px;">
             <div class="panel-header">
                 <h2 class="panel-title">Pending Fee Alerts</h2>
             </div>
-            <p style="font-size: 12px; color: #64748b; margin-top: -10px; margin-bottom: 15px; text-align: center;">List of active students with pending fees. Click WhatsApp to send a polite reminder automatically.</p>
+            <p style="font-size: 13px; color: #64748b; margin-top: -10px; margin-bottom: 20px; text-align: center; font-weight: 600;">List of active students with pending fees. Click WhatsApp to send a polite reminder automatically.</p>
             
             <div id="feeList">
                 <div class="empty-state">Loading financial records...</div>
@@ -181,19 +196,24 @@
         // --- DYNAMIC & SCHEDULED BELL SYSTEM LOGIC ---
         window.addNewBellRow = function(name = '', time = '') {
             const container = document.getElementById('bellListContainer');
-            const rowId = 'bell_' + Date.now();
+            const rowId = 'bell_' + Date.now() + Math.floor(Math.random() * 100);
+            
+            // Professional Trash Icon for Delete
+            const trashIcon = `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+
             const html = `
                 <div class="time-group" id="${rowId}">
                     <input type="text" class="time-input-name bell-name" placeholder="e.g. Morning Bell" value="${name}">
                     <input type="time" class="time-input bell-time" value="${time}">
-                    <button class="btn-remove-bell" onclick="removeBellRow('${rowId}')">X</button>
+                    <button class="btn-remove-bell" onclick="removeBellRow('${rowId}')" title="Remove Bell">${trashIcon}</button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', html);
         };
 
         window.removeBellRow = function(rowId) {
-            document.getElementById(rowId).remove();
+            const row = document.getElementById(rowId);
+            if(row) row.remove();
         };
 
         window.toggleMasterBell = function() {
@@ -245,7 +265,7 @@
                 bells: bells
             };
             
-            localStorage.setItem('globus_bell_settings_v2', JSON.stringify(bellSettings));
+            localStorage.setItem('globus_bell_settings_v3', JSON.stringify(bellSettings));
             playedToday = {}; 
             
             checkExpiryAndStart();
@@ -253,7 +273,7 @@
         };
 
         function loadBellTimings() {
-            const saved = localStorage.getItem('globus_bell_settings_v2');
+            const saved = localStorage.getItem('globus_bell_settings_v3');
             if (saved) {
                 bellSettings = JSON.parse(saved);
                 document.getElementById('masterBellToggle').checked = bellSettings.isOn || false;
@@ -382,7 +402,10 @@
                             birthdayHTML += `
                                 <div class="list-item">
                                     <div class="item-info"><h4>${s.full_name}</h4><p>Reg: ${s.register_number || '-'}</p></div>
-                                    <a href="${waLink}" target="_blank" class="btn-wa">Wishes</a>
+                                    <a href="${waLink}" target="_blank" class="btn-wa">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                                        Wishes
+                                    </a>
                                 </div>
                             `;
                         }
@@ -417,9 +440,12 @@
                                     <h4>${s.full_name}</h4>
                                     <p>Reg: ${s.register_number || '-'} | Phone: ${s.phone_number}</p>
                                 </div>
-                                <div style="display:flex; align-items:center; gap:15px;">
+                                <div style="display:flex; align-items:center; gap:12px;">
                                     <div class="due-amount">₹ ${item.balance}</div>
-                                    <a href="${waLink}" target="_blank" class="btn-wa">WhatsApp</a>
+                                    <a href="${waLink}" target="_blank" class="btn-wa">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                                        WhatsApp
+                                    </a>
                                 </div>
                             </div>
                         `;
