@@ -24,6 +24,11 @@
             .btn-back-dashboard span { display: none; } /* Hide text on small screens, keep only icon */
         }
 
+        /* DISABLE SCROLLING ON NUMBER INPUTS */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
         .search-filter-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
         .search-box-pill { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; outline: none; font-size: 15px; color: #333; transition: border-color 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); box-sizing: border-box; }
         .search-box-pill:focus { border-color: #3b82f6; }
@@ -383,6 +388,11 @@
             return 'GM' + Math.abs(hash).toString().padStart(7, '0').substring(0, 7);
         }
 
+        // PREVENT SCROLL WHEEL ON NUMBER INPUTS
+        document.addEventListener('wheel', function(event) {
+            if (document.activeElement.type === 'number') { document.activeElement.blur(); }
+        });
+
         async function checkAuth() {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
@@ -495,7 +505,6 @@
                     const updBtn = document.getElementById(`upd_btn_${studentId}`);
                     if(updBtn) updBtn.style.display = 'block';
                     
-                    // If course is completed, keep promotion button hidden even after unlocking
                     const student = allStudents.find(s => s.id === studentId);
                     if (student && student.status !== 'completed') {
                         const promBtn = document.getElementById(`prom_${studentId}`);
@@ -505,9 +514,6 @@
                             promBtn.style.opacity = '0.5';
                         }
                     }
-
-                    const mlBtn = document.getElementById(`ml_btn_${studentId}`);
-                    if(mlBtn) mlBtn.style.gridColumn = 'span 1';
 
                     document.getElementById(`marks_${studentId}`).value = '';
                     document.getElementById(`perc_${studentId}`).value = '';
@@ -531,6 +537,9 @@
             const container = document.getElementById('studentsList'); container.innerHTML = '';
             if (studentsToRender.length === 0) { container.innerHTML = '<div class="empty-state">No students found matching your criteria.</div>'; return; }
 
+            // Premium Color Palette for Modules
+            const colorPalette = ['#1d4ed8', '#b45309', '#047857', '#be185d', '#4338ca', '#0f766e', '#b91c1c', '#0f172a'];
+
             studentsToRender.forEach(student => {
                 const course = allCourses.find(c => c.id == student.course_id);
                 if (!course || !course.modules) return; 
@@ -552,19 +561,21 @@
                 let moduleOptions = '';
                 if (isCompleted) {
                     moduleOptions += `<option value="Course Completed" selected disabled style="color: #10b981; font-weight: bold;">🏆 Course Completed</option>`;
-                    course.modules.forEach(m => {
-                        moduleOptions += `<option value="${m}" data-locked="true">🔒 ${m}</option>`;
+                    course.modules.forEach((m, idx) => {
+                        const mColor = colorPalette[idx % colorPalette.length];
+                        moduleOptions += `<option value="${m}" data-locked="true" style="color: ${mColor}; font-weight: 600;">🔒 ${m}</option>`;
                     });
                 } else {
                     let foundCurrent = false;
-                    course.modules.forEach((m) => {
+                    course.modules.forEach((m, idx) => {
+                        const mColor = colorPalette[idx % colorPalette.length];
                         if (m === currentModule) {
-                            moduleOptions += `<option value="${m}" data-locked="false" selected>📖 ${m} (Current)</option>`;
+                            moduleOptions += `<option value="${m}" data-locked="false" selected style="color: ${mColor}; font-weight: bold;">📖 ${m} (Current)</option>`;
                             foundCurrent = true;
                         } else if (!foundCurrent) {
-                            moduleOptions += `<option value="${m}" data-locked="true">🔒 ${m} (Completed)</option>`;
+                            moduleOptions += `<option value="${m}" data-locked="true" style="color: ${mColor}; font-weight: 600;">🔒 ${m} (Completed)</option>`;
                         } else {
-                            moduleOptions += `<option value="${m}" data-locked="false">${m}</option>`;
+                            moduleOptions += `<option value="${m}" data-locked="false" style="color: ${mColor}; font-weight: 600;">${m}</option>`;
                         }
                     });
                 }
@@ -572,6 +583,26 @@
                 let displayActionArea = isCompleted ? 'none' : 'block';
                 let isLastModule = (!isCompleted && (currentModule.toLowerCase() === 'job training' || currentModule === course.modules[course.modules.length - 1]));
                 let btnText = isLastModule ? '2. Finish' : '2. Promotion';
+
+                // Determine Buttons HTML based on Completion Status
+                let buttonsHtml = '';
+                if (isCompleted) {
+                    buttonsHtml = `
+                        <button id="upd_btn_${student.id}" class="action-btn" style="background:#3b82f6; margin-bottom:10px; font-size:13px; padding:12px; display: none; width: 100%;" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
+                        
+                        <button id="ml_btn_${student.id}" class="action-btn" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); margin:0 0 8px 0; font-size:14px; padding:12px; box-shadow: 0 4px 6px rgba(139, 92, 246, 0.2);" onclick="showMarklist('${student.id}', '${course.id}')">📄 Generate Marklist</button>
+                        <button class="action-btn" style="background: linear-gradient(135deg, #f59e0b, #ea580c); margin:0; width:100%; font-size:14px; padding:12px; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
+                    `;
+                } else {
+                    buttonsHtml = `
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                            <button id="upd_btn_${student.id}" class="action-btn" style="background:#3b82f6; margin:0; font-size:11px; padding:10px 2px; display: ${displayActionArea};" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
+                            <button id="prom_${student.id}" class="action-btn" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px; display: ${displayActionArea};" disabled onclick="execPromote('${student.id}', '${course.id}')">${btnText}</button>
+                            <button id="ml_btn_${student.id}" class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px;" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
+                        </div>
+                        <button class="action-btn" style="background: linear-gradient(135deg, #f59e0b, #ea580c); margin-top:8px; width:100%; font-size:13px; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
+                    `;
+                }
 
                 const card = document.createElement('div');
                 card.className = 'exam-card';
@@ -610,12 +641,7 @@
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                        <button id="upd_btn_${student.id}" class="action-btn" style="background:#3b82f6; margin:0; font-size:11px; padding:10px 2px; display: ${displayActionArea}; ${isCompleted ? 'grid-column: span 2;' : ''}" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
-                        ${!isCompleted ? `<button id="prom_${student.id}" class="action-btn" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px; display: ${displayActionArea};" disabled onclick="execPromote('${student.id}', '${course.id}')">${btnText}</button>` : ''}
-                        <button id="ml_btn_${student.id}" class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px; ${isCompleted ? 'grid-column: span 1;' : ''}" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
-                    </div>
-                    <button class="action-btn" style="background:#f59e0b; margin-top:8px; width:100%; font-size:13px;" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
+                    ${buttonsHtml}
                 `;
                 container.appendChild(card);
             });
