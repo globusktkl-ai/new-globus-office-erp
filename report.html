@@ -52,7 +52,7 @@
         /* Fixed Alignment Issue Here */
         .date-inputs-container { display: none; gap: 10px; width: 100%; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px; box-sizing: border-box; }
         .date-inputs-container.active { display: flex; }
-        .date-col { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; } 
+        .date-col { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; } /* min-width: 0 forces flex items to stay inside the parent container */
         .date-col label { font-size: 12px; color: #64748b; font-weight: bold; }
         .date-col input { padding: 10px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; width: 100%; box-sizing: border-box; min-width: 0; }
 
@@ -96,7 +96,7 @@
 <body>
     
     <div class="top-nav">
-        <!-- 3D RETURN TO DASHBOARD BUTTON ADDED HERE -->
+        <!-- Premium 3D Back Button Added -->
         <a href="dashboard.html" class="btn-back-dashboard">
             <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
                 <defs>
@@ -428,5 +428,3 @@
     </script>
 </body>
 </html>
-
-http://googleusercontent.com/action_card_content/8b17cc47-7243-4c06-a15e-2ef28f771f00
