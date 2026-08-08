@@ -3,316 +3,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard - Globus</title>
+    <title>Courses Management - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
-
+    
     <style>
-        body { background-color: #f8fafc; }
-        .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
-        
-        h2 { font-size: 16px !important; font-weight: 900 !important; margin-bottom: 12px !important; color: #0f172a; text-transform: uppercase; letter-spacing: -0.5px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; display: inline-block;}
-        
-        /* Compact Stat Grid (Mobile First) */
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .stat-grid-finance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 25px; }
-        
-        .stat-box { background: #ffffff; padding: 12px 10px !important; border-radius: 10px !important; box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important; border: 1px solid #e2e8f0 !important; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .stat-box.finance-box { align-items: flex-start; text-align: left; padding: 15px 12px !important; border-left: 4px solid; }
-        .stat-label { font-size: 10px !important; color: #64748b !important; margin-bottom: 4px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 18px !important; font-weight: 900 !important; color: #1e293b; line-height: 1; }
-        
-        .module-section { background: #ffffff; border-radius: 12px !important; padding: 15px !important; margin-bottom: 20px !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important; border: 1px solid #f1f5f9; }
-        
-        /* Compact Navigation Grid */
-        .module-section .nav-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; margin-top: 15px; }
-        
-        .nav-btn { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px !important; padding: 12px 5px !important; text-decoration: none; color: #334155 !important; font-size: 11px !important; font-weight: 800 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important; min-height: 80px !important; text-align: center; transition: all 0.2s ease;}
-        .nav-btn:active { transform: scale(0.95); }
-        .nav-btn:hover { background: #ffffff; border-color: #cbd5e1; box-shadow: 0 4px 8px rgba(0,0,0,0.05) !important; }
-        
-        .nav-icon { margin-bottom: 8px !important; display: flex; align-items: center; justify-content: center; }
-        .nav-icon svg { width: 28px; height: 28px; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-        
-        .nav-btn.fee-btn { background-color: #f0fdf4 !important; border-color: #bbf7d0 !important; color: #15803d !important; }
-        .nav-btn.expense-btn { background-color: #fef2f2 !important; border-color: #fecaca !important; color: #b91c1c !important; }
-        
-        /* Logged in As & Premium Logout */
-        .header-auth-section { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.8); padding: 4px 4px 4px 12px; border-radius: 30px; border: 1px solid #e2e8f0; }
-        .logged-in-text { font-size: 10px; font-weight: 700; color: #64748b; display: flex; flex-direction: column; text-align: right; line-height: 1.2; }
-        .logged-in-email { color: #1e3a8a; font-weight: 900; font-size: 11px; }
+        /* DISABLE SCROLLING ON NUMBER INPUTS */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
 
-        .btn-logout-round {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white; border: none; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); transition: all 0.2s ease; flex-shrink: 0;
+        /* Premium 3D Back to Dashboard Button */
+        .btn-back-dashboard { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
+        .btn-back-dashboard:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
+        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); }
+
+        @media (max-width: 600px) {
+            .btn-back-dashboard span { display: none; } /* Hide text on small screens */
         }
-        .btn-logout-round:active { transform: scale(0.92); }
 
-        /* Settings Modal */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
-        .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
-        label { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block; }
+        /* Save Course Button (Light Blue Professional) */
+        .btn-save-course { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; border: none; padding: 14px 20px; border-radius: 8px; font-size: 16px; font-weight: bold; width: 100%; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); margin-top: 10px; }
+        .btn-save-course:hover { background: linear-gradient(135deg, #2563eb, #1d4ed8); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4); }
+        .btn-save-course:active { transform: scale(0.98); box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2); }
+        .btn-save-course:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Status Dropdown Colors */
+        select.status-select { font-weight: bold; }
+        select.status-select option[value="Active"] { background-color: #dcfce7; color: #166534; }
+        select.status-select option[value="Inactive"] { background-color: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
-    <nav class="app-header" style="padding: 10px 15px;">
-        <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 8px;">
-            <img src="assets/images/logo.png" id="navLogo" class="logo-small" alt="Logo" style="width: 35px; height: 35px;" onerror="this.style.display='none'">
-            <div style="display: flex; flex-direction: column;">
-                <span id="navInstName" style="font-size: 14px; font-weight: 900; text-transform: uppercase;">GLOBUS</span>
-                <span id="navSubName" style="font-size: 9px; color: #64748b; font-weight: 800;">Technical Academy</span>
+    
+    <nav class="app-header">
+        <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
+            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
+            <div style="display: flex; flex-direction: column; overflow: hidden;">
+                <span class="brand-top" style="font-size: 16px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Globus</span>
+                <span class="brand-bottom" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Technical Academy</span>
             </div>
         </div>
-        <div class="header-right">
-            <div class="header-auth-section">
-                <div class="logged-in-text">
-                    <span>Admin</span>
-                    <span class="logged-in-email" id="authEmail">Loading...</span>
-                </div>
-                <button class="btn-logout-round" id="logoutBtn" title="Secure Logout">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line>
-                    </svg>
-                </button>
-            </div>
+        
+        <div class="header-right" style="flex-shrink: 0; margin-left: 10px;">
+            <!-- 3D RETURN TO DASHBOARD BUTTON (HEADER) -->
+            <a href="dashboard.html" class="btn-back-dashboard">
+                <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
+                    <defs>
+                        <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#2563eb" />
+                            <stop offset="100%" stop-color="#9333ea" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M9 14L4 9l5-5" />
+                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+                </svg>
+                <span>Dashboard</span>
+            </a>
         </div>
     </nav>
 
     <main class="main-content">
-        <h2>Institute Overview</h2>
-        
-        <div class="stat-grid">
-            <div class="stat-box"><div class="stat-label">Total Students</div><div class="stat-value" id="statTotalStudents" style="color: #64748b;">0</div></div>
-            <div class="stat-box"><div class="stat-label" style="color: #2563eb !important;">Active Students</div><div class="stat-value" id="statActiveStudents" style="color: #1d4ed8;">0</div></div>
-            <div class="stat-box"><div class="stat-label">Active Courses</div><div class="stat-value" id="statCourses">0</div></div>
+        <!-- 1. നിലവിലുള്ള കോഴ്‌സുകളുടെ ലിസ്റ്റ് (MOVED TO TOP) -->
+        <div class="form-card" style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: var(--primary-dark);">Available Courses</h2>
+            <div id="coursesList"><div style="text-align:center; padding:15px; color:#6B7280;">Loading courses...</div></div>
         </div>
 
-        <div class="stat-grid-finance">
-            <div class="stat-box finance-box" style="border-left-color: #10B981 !important;">
-                <div class="stat-label">Today's Collection</div>
-                <div class="stat-value" id="statTodayCollection" style="color: #10B981; font-size: 20px !important;">₹ 0</div>
-            </div>
-            <div class="stat-box finance-box" style="border-left-color: #EF4444 !important;">
-                <div class="stat-label">Total Pending Dues</div>
-                <div class="stat-value" id="statPendingFees" style="color: #EF4444; font-size: 20px !important;">₹ 0</div>
-            </div>
-        </div>
-
-        <div class="module-section">
-            <h2 style="font-size: 14px !important; color: #1e3a8a; border-bottom: none; display: flex; align-items: center; gap: 5px; margin:0 !important;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Academic & Admin</h2>
-            <!-- 3 Column Grid with NEW SMART ASSISTANT BUTTON -->
-            <div class="nav-grid">
-                <a href="admission.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-adm); stroke:none;"><defs><linearGradient id="grad-adm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" opacity="0.3"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" style="stroke: #1e3a8a; fill:none;"/></svg></span>
-                    Admission
-                </a>
+        <!-- 2. പുതിയ കോഴ്‌സ് ചേർക്കാനുള്ള ഫോം (MOVED TO BOTTOM) -->
+        <div class="form-card" style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: var(--primary-dark);">Add New Course</h2>
+            <form id="courseForm">
+                <div class="form-group">
+                    <label class="form-label">Course Name</label>
+                    <input type="text" id="courseName" class="form-control" required placeholder="Enter course name">
+                </div>
                 
-                <a href="students.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-dir); stroke:none;"><defs><linearGradient id="grad-dir" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#6d28d9"/></linearGradient></defs><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" opacity="0.3"/><circle cx="9" cy="7" r="4" opacity="0.3"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" style="stroke: #4c1d95; fill:none;"/><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" style="stroke: #4c1d95; fill:none;"/><circle cx="9" cy="7" r="4" style="stroke: #4c1d95; fill:none;"/></svg></span>
-                    Directory
-                </a>
+                <div class="form-group">
+                    <label class="form-label">Course Modules</label>
+                    <div id="moduleInputsContainer">
+                        <div class="module-input-row" style="display:flex; gap:10px; margin-bottom:10px;">
+                            <input type="text" class="form-control add-module-input" placeholder="e.g. Basic Electronics" required>
+                            <button type="button" onclick="addModuleInput('moduleInputsContainer', 'add-module-input')" style="background:#10B981; color:#fff; border:none; padding:0 15px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;">+</button>
+                        </div>
+                    </div>
+                </div>
 
-                <a href="courses.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-crs); stroke:none;"><defs><linearGradient id="grad-crs" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" opacity="0.3"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" opacity="0.3"/><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" style="stroke: #78350f; fill:none;"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" style="stroke: #78350f; fill:none;"/></svg></span>
-                    Courses
-                </a>
-
-                <a href="exams.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-exm); stroke:none;"><defs><linearGradient id="grad-exm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#b91c1c"/></linearGradient></defs><circle cx="12" cy="8" r="7" opacity="0.3"/><circle cx="12" cy="8" r="7" style="stroke: #7f1d1d; fill:none;"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" style="stroke: #7f1d1d; fill:none;"/></svg></span>
-                    Exams
-                </a>
-
-                <a href="admission-report.html" class="nav-btn">
-                    <span class="nav-icon">
-                        <svg viewBox="0 0 24 24" style="fill:none; stroke:url(#grad-pie);">
-                            <defs>
-                                <linearGradient id="grad-pie" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#0ea5e9"/>
-                                    <stop offset="100%" stop-color="#0369a1"/>
-                                </linearGradient>
-                                <linearGradient id="grad-pie-fill" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3"/>
-                                    <stop offset="100%" stop-color="#0284c7" stop-opacity="0.3"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M22 12A10 10 0 0 0 12 2v10z" style="fill:url(#grad-pie-fill);" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </span>
-                    Adm Report
-                </a>
-
-                <!-- NEW SMART ASSISTANT (REMINDERS) BUTTON -->
-                <a href="reminders.html" class="nav-btn" style="background-color: #fffbeb !important; border-color: #fde68a !important; color: #b45309 !important;">
-                    <span class="nav-icon">
-                        <svg viewBox="0 0 24 24" width="28" height="28" style="fill:none; stroke: #d97706;">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            <circle cx="18" cy="6" r="3" fill="#ef4444" stroke="none"></circle>
-                        </svg>
-                    </span>
-                    Smart Alerts
-                </a>
-            </div>
+                <div class="form-group">
+                    <label class="form-label">Duration (e.g., 3 Months, 6 Months)</label>
+                    <input type="text" id="courseDuration" class="form-control" required placeholder="Enter duration">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Course Fee (₹)</label>
+                    <input type="number" id="courseFee" class="form-control" required min="0" placeholder="Enter total fee">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Capacity (Max Students)</label>
+                    <input type="number" id="courseCapacity" class="form-control" required min="1" placeholder="Enter capacity">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="courseStatus" class="form-control status-select" required onchange="updateSelectColor(this)">
+                        <option value="Active" style="background-color: #dcfce7; color: #166534;" selected>Active</option>
+                        <option value="Inactive" style="background-color: #fee2e2; color: #991b1b;">Inactive</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-save-course" id="saveCourseBtn">Save Course</button>
+            </form>
         </div>
 
-        <div class="module-section">
-            <h2 style="font-size: 14px !important; color: #064e3b; border-bottom: none; display: flex; align-items: center; gap: 5px; margin:0 !important;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Finance & Accounts</h2>
-            <div class="nav-grid" style="grid-template-columns: repeat(3, 1fr) !important;">
-                <a href="fees.html" class="nav-btn fee-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-fee); stroke:none;"><defs><linearGradient id="grad-fee" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#047857"/></linearGradient></defs><rect x="2" y="5" width="20" height="14" rx="2" opacity="0.3"/><rect x="2" y="5" width="20" height="14" rx="2" style="stroke: #064e3b; fill:none;"/><line x1="2" y1="10" x2="22" y2="10" style="stroke: #064e3b; fill:none;"/></svg></span>
-                    Fee Collect
-                </a>
-                
-                <a href="expense.html" class="nav-btn expense-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-exp); stroke:none;"><defs><linearGradient id="grad-exp" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#be185d"/></linearGradient></defs><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" opacity="0.3"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" opacity="0.3"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" style="stroke: #831843; fill:none;"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" style="stroke: #831843; fill:none;"/></svg></span>
-                    Day Book
-                </a>
-
-                <a href="report.html" class="nav-btn">
-                    <span class="nav-icon">
-                        <svg viewBox="0 0 24 24" style="fill:url(#grad-rpt); stroke:none;">
-                            <defs><linearGradient id="grad-rpt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#14b8a6"/><stop offset="100%" stop-color="#0f766e"/></linearGradient></defs>
-                            <line x1="18" y1="20" x2="18" y2="10" style="stroke: #134e4a; fill:none;"/>
-                            <line x1="12" y1="20" x2="12" y2="4" style="stroke: #134e4a; fill:none;"/>
-                            <line x1="6" y1="20" x2="6" y2="14" style="stroke: #134e4a; fill:none;"/>
-                        </svg>
-                    </span>
-                    Other Reports
-                </a>
-            </div>
+        <div style="display: flex; justify-content: center; margin-top: 25px; margin-bottom: 25px;">
+            <!-- 3D RETURN TO DASHBOARD BUTTON (FOOTER) -->
+            <a href="dashboard.html" class="btn-back-dashboard">
+                <svg viewBox="0 0 24 24" style="stroke:url(#grad-return-footer);">
+                    <defs>
+                        <linearGradient id="grad-return-footer" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#2563eb" />
+                            <stop offset="100%" stop-color="#9333ea" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M9 14L4 9l5-5" />
+                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+                </svg>
+                <span>Dashboard</span>
+            </a>
         </div>
     </main>
 
-    <!-- SETTINGS MODAL -->
-    <div id="settingsModal" class="modal-overlay">
-        <div class="modal-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
-                <button onclick="document.getElementById('settingsModal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
+    <!-- Course Details / Edit Modal Popup -->
+    <div id="courseModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; justify-content:center; align-items:flex-start; padding:30px 15px; overflow-y:auto;">
+        <div style="background:#fff; width:100%; max-width:500px; border-radius:12px; padding:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin: auto;">
+            <h3 id="modalTitle" style="margin-bottom:15px; font-size:18px; color:var(--primary-dark);">Course Details</h3>
+            <div id="modalContent"></div>
+            <div style="margin-top:20px; text-align:right;">
+                <button type="button" onclick="closeModal()" style="padding:8px 16px; background:#6B7280; color:#fff; border:none; border-radius:6px; font-weight:600; cursor:pointer;">Close</button>
             </div>
-            <form id="settingsForm" onsubmit="saveSettings(event)">
-                <label>Institute Main Name (Brand)</label>
-                <input type="text" id="set_name" class="form-control" required>
-                
-                <label>Sub Name / Tagline</label>
-                <input type="text" id="set_sub" class="form-control">
-                
-                <label>Full Address</label>
-                <input type="text" id="set_address" class="form-control" placeholder="City, State, PIN">
-                
-                <div style="display: flex; gap: 10px;">
-                    <div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10);"></div>
-                    <div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div>
-                </div>
-                
-                <label>Logo URL (Leave blank to use default)</label>
-                <input type="text" id="set_logo" class="form-control" placeholder="https://example.com/logo.png">
-                
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
-                    <button type="button" onclick="confirmReset()" style="flex:1; background: #ef4444; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">🗑️ Reset</button>
-                </div>
-            </form>
         </div>
     </div>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-        
-        async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
-            
-            const emailSpan = document.getElementById('authEmail');
-            if(session.user && session.user.email) {
-                emailSpan.innerText = session.user.email.split('@')[0];
-            }
-            
-            loadSettings();
-            loadDashboardData();
-        }
+        let allCourses = [];
 
-        async function loadSettings() {
-            try {
-                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
-                if (data) {
-                    document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
-                    document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
-                    if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
-                    
-                    document.getElementById('set_name').value = data.institute_name || '';
-                    document.getElementById('set_sub').value = data.sub_name || '';
-                    document.getElementById('set_address').value = data.address || '';
-                    document.getElementById('set_phone').value = data.phone || '';
-                    document.getElementById('set_email').value = data.email || '';
-                    document.getElementById('set_logo').value = data.logo_url || '';
-                }
-            } catch (e) {}
-        }
+        // PREVENT SCROLL WHEEL ON NUMBER INPUTS (Global Listener)
+        document.addEventListener('wheel', function(event) {
+            if (document.activeElement.type === 'number') { document.activeElement.blur(); }
+        });
 
-        window.saveSettings = async function(e) {
-            e.preventDefault();
-            let phoneVal = document.getElementById('set_phone').value;
-            if (phoneVal && phoneVal.length !== 10) { alert('Error: Phone number must strictly be 10 digits!'); return; }
-
-            const payload = {
-                id: 1, institute_name: document.getElementById('set_name').value, sub_name: document.getElementById('set_sub').value,
-                address: document.getElementById('set_address').value, phone: phoneVal, email: document.getElementById('set_email').value, logo_url: document.getElementById('set_logo').value
-            };
-            const { error } = await supabase.from('institute_settings').upsert([payload]);
-            if(error) alert('Error saving: ' + error.message);
-            else { alert('Settings Saved! Will reflect across all print formats.'); document.getElementById('settingsModal').style.display='none'; loadSettings(); }
-        }
-
-        window.confirmReset = function() {
-            let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
-            let userInput = prompt(`Security Verification\nTo clear settings data, please solve this math question:\n${num1} + ${num2} = ?`);
-            if (userInput !== null) {
-                if (parseInt(userInput) === (num1+num2)) { document.getElementById('settingsForm').reset(); alert('Reset Complete!'); } 
-                else { alert('Incorrect answer!'); }
+        // Function to update the background color of the select element based on chosen option
+        window.updateSelectColor = function(selectElement) {
+            if (selectElement.value === 'Active') {
+                selectElement.style.backgroundColor = '#dcfce7';
+                selectElement.style.color = '#166534';
+            } else {
+                selectElement.style.backgroundColor = '#fee2e2';
+                selectElement.style.color = '#991b1b';
             }
         };
 
-        async function loadDashboardData() {
-            try {
-                const [stuRes, crsRes, payRes] = await Promise.all([
-                    supabase.from('students').select('*'), supabase.from('courses').select('*'), supabase.from('fee_payments').select('*')
-                ]);
-                
-                const studentsData = stuRes.data || []; const coursesData = crsRes.data || []; const paymentsData = payRes.data || [];
+        // Initialize status color on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusSelect = document.getElementById('courseStatus');
+            if(statusSelect) updateSelectColor(statusSelect);
+        });
 
-                const totalStudentsCount = studentsData.length;
-                const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
-                
-                document.getElementById('statTotalStudents').textContent = totalStudentsCount;
-                document.getElementById('statActiveStudents').textContent = activeStudents.length;
-
-                const activeCourses = coursesData.filter(c => c.status === 'Active');
-                document.getElementById('statCourses').textContent = activeCourses.length;
-
-                const todayDate = new Date().toISOString().split('T')[0];
-                const paymentsToday = paymentsData.filter(p => p.payment_date === todayDate).reduce((sum, p) => sum + Number(p.amount_paid), 0);
-                const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
-                document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
-
-                let totalPendingSum = 0;
-                activeStudents.forEach(s => {
-                    const totalCourseFee = Number(s.total_fee) || 0; const admissionFee = Number(s.admission_fee) || 0;
-                    const stuPayments = paymentsData.filter(p => p.student_id === s.id);
-                    const totalPaidPayments = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
-                    const totalDiscount = stuPayments.reduce((sum, p) => sum + (Number(p.discount_amount) || 0), 0);
-                    let totalCoursePending = totalCourseFee - (admissionFee + totalPaidPayments + totalDiscount);
-                    if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
-                });
-                document.getElementById('statPendingFees').textContent = '₹ ' + totalPendingSum;
-
-            } catch (err) { console.error("Dashboard Loading Error:", err); }
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            fetchCourses();
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
+        async function fetchCourses() {
+            const { data, error } = await supabase.from('courses').select('*').order('created_at', { ascending: false });
+            if (error) {
+                console.error("Error fetching courses:", error);
+                return;
+            }
+            allCourses = data || [];
+            renderCourses(allCourses);
+        }
+
+        function renderCourses(courses) {
+            const container = document.getElementById('coursesList');
+            container.innerHTML = '';
+
+            if (courses.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:15px; color:#ef4444;">No courses found.</div>';
+                return;
+            }
+
+            courses.forEach(c => {
+                const mods = Array.isArray(c.modules) ? c.modules.length : 0;
+                
+                const card = document.createElement('div');
+                card.style.cssText = "background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 12px; margin-bottom: 10px;";
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div>
+                            <strong style="font-size: 15px; color: #111827;">${c.course_name}</strong>
+                            <div style="font-size: 13px; color: #4B5563; margin-top: 2px;">Duration: ${c.duration || 'N/A'} | Modules: ${mods} | Fee: ₹ ${c.total_fee || 0}</div>
+                            <div style="font-size: 12px; color: #6B7280; margin-top: 2px;">Capacity: ${c.capacity || 'N/A'} | Status: <span style="font-weight:600; color:${c.status === 'Active' ? '#10B981' : '#EF4444'};">${c.status || 'Active'}</span></div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
+                        <button onclick="viewCourse('${c.id}')" style="background: #3B82F6; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">View</button>
+                        <button onclick="editCourse('${c.id}')" style="background: #F59E0B; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Edit</button>
+                        <button onclick="deleteCourse('${c.id}', '${c.course_name}')" style="background: #EF4444; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.addModuleInput = function(containerId, inputClass) {
+            const container = document.getElementById(containerId);
+            const row = document.createElement('div');
+            row.className = 'module-input-row';
+            row.style.cssText = 'display:flex; gap:10px; margin-bottom:10px;';
+            row.innerHTML = `
+                <input type="text" class="form-control ${inputClass}" placeholder="Enter module name" required>
+                <button type="button" onclick="this.parentElement.remove()" style="background:#EF4444; color:#fff; border:none; padding:0 15px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:16px;">X</button>
+            `;
+            container.appendChild(row);
+        };
+
+        document.getElementById('courseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('courseName').value.trim();
+            const duration = document.getElementById('courseDuration').value.trim();
+            const fee = Number(document.getElementById('courseFee').value);
+            const capacity = Number(document.getElementById('courseCapacity').value);
+            const status = document.getElementById('courseStatus').value;
+
+            const moduleInputs = document.querySelectorAll('.add-module-input');
+            const modulesArray = Array.from(moduleInputs).map(inp => inp.value.trim()).filter(val => val !== '');
+
+            const btn = document.getElementById('saveCourseBtn');
+            btn.textContent = 'Saving...'; btn.disabled = true;
+
+            const { error } = await supabase.from('courses').insert([{
+                course_name: name,
+                modules: modulesArray,
+                duration: duration,
+                total_fee: fee,
+                capacity: capacity,
+                status: status
+            }]);
+
+            if (error) {
+                alert('Error: ' + error.message);
+            } else {
+                alert('Course added successfully!');
+                document.getElementById('courseForm').reset();
+                updateSelectColor(document.getElementById('courseStatus')); // Reset color
+                
+                document.getElementById('moduleInputsContainer').innerHTML = `
+                    <div class="module-input-row" style="display:flex; gap:10px; margin-bottom:10px;">
+                        <input type="text" class="form-control add-module-input" placeholder="e.g. Basic Electronics" required>
+                        <button type="button" onclick="addModuleInput('moduleInputsContainer', 'add-module-input')" style="background:#10B981; color:#fff; border:none; padding:0 15px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;">+</button>
+                    </div>
+                `;
+                fetchCourses();
+            }
+            btn.textContent = 'Save Course'; btn.disabled = false;
+        });
+
+        window.viewCourse = function(id) {
+            const c = allCourses.find(x => x.id === id);
+            if (!c) return;
+            
+            let modulesHtml = '<li>No modules added</li>';
+            if (Array.isArray(c.modules) && c.modules.length > 0) {
+                modulesHtml = c.modules.map(m => `<li style="margin-bottom:4px;">${m}</li>`).join('');
+            }
+
+            document.getElementById('modalTitle').textContent = "Course Details";
+            document.getElementById('modalContent').innerHTML = `
+                <div style="background:#f8fafc; padding:15px; border-radius:8px; font-size:14px; line-height:1.6;">
+                    <p><b>Course Name:</b> <span style="color:#1e40af; font-weight:700;">${c.course_name}</span></p>
+                    <p><b>Duration:</b> ${c.duration || 'N/A'}</p>
+                    <p><b>Total Fee:</b> ₹ ${c.total_fee || 0}</p>
+                    <p><b>Capacity:</b> ${c.capacity || 'N/A'}</p>
+                    <p><b>Status:</b> ${c.status || 'Active'}</p>
+                    <hr style="border:0; border-top:1px solid #e2e8f0; margin:12px 0;">
+                    <p><b>Modules Covered:</b></p>
+                    <ul style="padding-left:20px; color:#374151;">${modulesHtml}</ul>
+                </div>
+            `;
+            document.getElementById('courseModal').style.display = 'flex';
+        };
+
+        window.editCourse = function(id) {
+            const c = allCourses.find(x => x.id === id);
+            if (!c) return;
+
+            const mods = Array.isArray(c.modules) ? c.modules : [];
+            if(mods.length === 0) mods.push(''); 
+
+            let editModulesHtml = '';
+            mods.forEach((mod, index) => {
+                const btn = index === 0 
+                    ? `<button type="button" onclick="addModuleInput('editModuleInputsContainer', 'edit-module-input')" style="background:#10B981; color:#fff; border:none; padding:0 15px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:18px;">+</button>`
+                    : `<button type="button" onclick="this.parentElement.remove()" style="background:#EF4444; color:#fff; border:none; padding:0 15px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:16px;">X</button>`;
+                
+                editModulesHtml += `
+                    <div class="module-input-row" style="display:flex; gap:10px; margin-bottom:10px;">
+                        <input type="text" class="form-control edit-module-input" value="${mod}" placeholder="Module Name" required>
+                        ${btn}
+                    </div>
+                `;
+            });
+
+            // Set background color for the select based on status
+            const statusBg = c.status === 'Active' ? '#dcfce7' : '#fee2e2';
+            const statusCol = c.status === 'Active' ? '#166534' : '#991b1b';
+
+            document.getElementById('modalTitle').textContent = "Edit Course";
+            document.getElementById('modalContent').innerHTML = `
+                <form id="editCourseForm" onsubmit="saveCourseEdit(event, '${c.id}')">
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:13px; font-weight:600;">Course Name</label>
+                        <input type="text" id="editCourseName" value="${c.course_name}" class="form-control" required>
+                    </div>
+                    
+                    <div style="margin-bottom:12px; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+                        <label style="font-size:13px; font-weight:600; display:block; margin-bottom:8px;">Edit Modules</label>
+                        <div id="editModuleInputsContainer">
+                            ${editModulesHtml}
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:13px; font-weight:600;">Duration</label>
+                        <input type="text" id="editCourseDuration" value="${c.duration || ''}" class="form-control" required>
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:13px; font-weight:600;">Course Fee (₹)</label>
+                        <input type="number" id="editCourseFee" value="${c.total_fee || 0}" class="form-control" required min="0">
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:13px; font-weight:600;">Capacity</label>
+                        <input type="number" id="editCourseCapacity" value="${c.capacity || 1}" class="form-control" required min="1">
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="font-size:13px; font-weight:600;">Status</label>
+                        <select id="editCourseStatus" class="form-control status-select" required onchange="updateSelectColor(this)" style="background-color: ${statusBg}; color: ${statusCol};">
+                            <option value="Active" style="background-color: #dcfce7; color: #166534;" ${c.status === 'Active' ? 'selected' : ''}>Active</option>
+                            <option value="Inactive" style="background-color: #fee2e2; color: #991b1b;" ${c.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                        </select>
+                    </div>
+                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:12px; border-radius:6px; font-weight:700; cursor:pointer;">Update Course</button>
+                </form>
+            `;
+            document.getElementById('courseModal').style.display = 'flex';
+        };
+
+        window.saveCourseEdit = async function(e, id) {
+            e.preventDefault();
+            
+            // MATH CAPTCHA SECURITY
+            let n1 = Math.floor(Math.random() * 10) + 1;
+            let n2 = Math.floor(Math.random() * 10) + 1;
+            let ans = prompt(`Security Verification 🔒\nTo update course details, please solve:\n${n1} + ${n2} = ?`);
+            
+            if (ans === null) {
+                alert('Update cancelled.');
+                return;
+            } else if (parseInt(ans) !== (n1 + n2)) {
+                alert('❌ Incorrect answer! Update aborted.');
+                return;
+            }
+
+            const name = document.getElementById('editCourseName').value.trim();
+            const duration = document.getElementById('editCourseDuration').value.trim();
+            const fee = Number(document.getElementById('editCourseFee').value);
+            const capacity = Number(document.getElementById('editCourseCapacity').value);
+            const status = document.getElementById('editCourseStatus').value;
+
+            const editModuleInputs = document.querySelectorAll('.edit-module-input');
+            const modulesArray = Array.from(editModuleInputs).map(inp => inp.value.trim()).filter(val => val !== '');
+
+            const { error } = await supabase.from('courses').update({
+                course_name: name,
+                modules: modulesArray,
+                duration: duration,
+                total_fee: fee,
+                capacity: capacity,
+                status: status
+            }).eq('id', id);
+
+            if (error) {
+                alert('Error updating: ' + error.message);
+            } else {
+                alert('✅ Course updated successfully!');
+                closeModal();
+                fetchCourses();
+            }
+        };
+
+        window.deleteCourse = async function(id, courseName) {
+            const confirmName = prompt(`⚠️ Are you sure you want to delete this course?\nType the course name "${courseName}" to confirm:`);
+            if (confirmName === courseName) {
+                const { error } = await supabase.from('courses').delete().eq('id', id);
+                if (error) {
+                    alert('Error deleting course (It might be linked to students): ' + error.message);
+                } else {
+                    alert('Course deleted successfully!');
+                    fetchCourses();
+                }
+            } else if (confirmName !== null) {
+                alert('Course name does not match. Deletion cancelled.');
+            }
+        };
+
+        window.closeModal = function() {
+            document.getElementById('courseModal').style.display = 'none';
+        };
+
         checkAuth();
     </script>
 </body>
