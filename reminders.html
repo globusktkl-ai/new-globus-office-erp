@@ -52,8 +52,8 @@
         .time-group { display: flex; align-items: center; background: white; padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #e2e8f0; gap: 10px; flex-wrap: nowrap;}
         .time-input-name { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 700; color: #334155; outline: none; flex: 1; font-size: 14px; min-width: 0;}
         
-        /* Added inputmode to help with some mobile keyboards */
-        .time-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 900; color: #1e3a8a; outline: none; flex: 0 0 130px; font-size: 14px;}
+        /* Time Input (Now styled like a button, Readonly to prevent native picker) */
+        .time-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 900; color: #1e3a8a; outline: none; flex: 0 0 110px; font-size: 14px; text-align: center; background: #eff6ff; cursor: pointer; caret-color: transparent;}
         
         .btn-remove-bell { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 8px; padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;}
         .btn-remove-bell:hover { background: #ef4444; color: white; }
@@ -76,14 +76,20 @@
 
         .empty-state { text-align: center; color: #94a3b8; font-weight: 700; font-size: 14px; padding: 25px; }
 
-        /* NOTIFICATION POPUP (Updated with Stop Button) */
+        /* Notification Popup (With Stop Button) */
         #bellAlert { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fef08a; border: 2px solid #f59e0b; color: #b45309; padding: 15px 25px; border-radius: 12px; font-weight: 900; z-index: 9999; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 90%; max-width: 350px; text-align: center;}
         @keyframes slideDown { from { top: -50px; opacity: 0; transform: translate(-50%, -20px); } to { top: 20px; opacity: 1; transform: translate(-50%, 0); } }
         
         .btn-stop-bell { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 900; margin-top: 15px; cursor: pointer; width: 100%; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3); font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 5px;}
         .btn-stop-bell:active { transform: scale(0.95); }
 
-        /* MOBILE OPTIMIZATION OVERRIDES */
+        /* CUSTOM MODAL CLOCK STYLES */
+        #customTimePickerModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 10000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
+        .time-picker-card { background: white; padding: 25px; border-radius: 16px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .tp-select { padding: 12px 5px; font-size: 20px; font-weight: 900; border-radius: 8px; border: 2px solid #cbd5e1; outline: none; background: #f8fafc; color: #0f172a; text-align: center; width: 70px; appearance: none; -webkit-appearance: none; }
+        .tp-select:focus { border-color: #3b82f6; background: #fff; }
+        .tp-colon { font-size: 24px; font-weight: 900; color: #1e293b; padding: 0 5px; }
+
         @media(max-width: 600px) {
             .panel { padding: 15px; }
             .time-group { flex-wrap: wrap; padding: 12px;}
@@ -96,7 +102,28 @@
 </head>
 <body>
 
-    <!-- UPDATED ALERT BOX WITH STOP BUTTON -->
+    <!-- CUSTOM TIME PICKER MODAL -->
+    <div id="customTimePickerModal">
+        <div class="time-picker-card">
+            <h3 style="margin-top: 0; color: #1e3a8a; font-weight: 900; margin-bottom: 20px;">Set Bell Time</h3>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 25px;">
+                <select id="tp-hour" class="tp-select"></select>
+                <span class="tp-colon">:</span>
+                <select id="tp-minute" class="tp-select"></select>
+                <span class="tp-colon"> </span>
+                <select id="tp-ampm" class="tp-select" style="width: 80px;">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="closeTimePicker()" style="flex: 1; padding: 14px; border-radius: 8px; border: 2px solid #e2e8f0; background: white; font-weight: 800; color: #64748b; cursor: pointer;">Cancel</button>
+                <button onclick="setTimeFromPicker()" style="flex: 1; padding: 14px; border-radius: 8px; border: none; background: #10b981; color: white; font-weight: 900; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);">Set Time</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALERT BOX WITH STOP BUTTON -->
     <div id="bellAlert">
         <div style="font-size: 24px; margin-bottom: 5px;">🔔</div>
         <div style="font-size: 16px; margin-bottom: 5px;">Reminder:</div>
@@ -200,11 +227,71 @@
         async function initAssistant() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-
+            initCustomPicker();
             loadBellTimings();
             fetchStudentAlerts();
         }
 
+        // --- CUSTOM TIME PICKER LOGIC ---
+        let activeTimeInputId = null;
+
+        function initCustomPicker() {
+            const hrSelect = document.getElementById('tp-hour');
+            for(let i=1; i<=12; i++) { hrSelect.add(new Option(String(i).padStart(2,'0'), String(i).padStart(2,'0'))); }
+            const minSelect = document.getElementById('tp-minute');
+            for(let i=0; i<=59; i++) { minSelect.add(new Option(String(i).padStart(2,'0'), String(i).padStart(2,'0'))); }
+        }
+
+        window.openTimePicker = function(inputId) {
+            activeTimeInputId = inputId;
+            const input = document.getElementById(inputId);
+            const val24 = input.getAttribute('data-time24'); // Get 24h internal value
+            
+            let h = "09", m = "30", ampm = "AM";
+            if (val24) {
+                let parts = val24.split(':');
+                let hour24 = parseInt(parts[0]);
+                m = parts[1];
+                ampm = hour24 >= 12 ? "PM" : "AM";
+                let hour12 = hour24 % 12;
+                if(hour12 === 0) hour12 = 12;
+                h = String(hour12).padStart(2, '0');
+            }
+
+            document.getElementById('tp-hour').value = h;
+            document.getElementById('tp-minute').value = m;
+            document.getElementById('tp-ampm').value = ampm;
+            
+            document.getElementById('customTimePickerModal').style.display = 'flex';
+        };
+
+        window.closeTimePicker = function() {
+            document.getElementById('customTimePickerModal').style.display = 'none';
+        };
+
+        window.setTimeFromPicker = function() {
+            let h = document.getElementById('tp-hour').value;
+            let m = document.getElementById('tp-minute').value;
+            let ampm = document.getElementById('tp-ampm').value;
+            
+            // Convert to 24h for saving
+            let hour24 = parseInt(h);
+            if (ampm === "PM" && hour24 !== 12) hour24 += 12;
+            if (ampm === "AM" && hour24 === 12) hour24 = 0;
+            let time24 = String(hour24).padStart(2, '0') + ':' + m;
+            
+            // Format 12h for display
+            let displayTime = h + ':' + m + ' ' + ampm;
+            
+            if (activeTimeInputId) {
+                const input = document.getElementById(activeTimeInputId);
+                input.value = displayTime;
+                input.setAttribute('data-time24', time24);
+            }
+            closeTimePicker();
+        };
+
+        // --- BELL LOGIC ---
         window.previewAudio = function() {
             const audioSrc = document.getElementById('audioSelect').value;
             const audioObj = document.getElementById('bellAudio');
@@ -212,33 +299,42 @@
             audioObj.play().catch(e => console.log("Audio preview blocked."));
         };
 
-        // NEW FUNCTION TO STOP THE BELL MANUALLY
         window.stopRinging = function() {
             const audioObj = document.getElementById('bellAudio');
             audioObj.pause();
-            audioObj.currentTime = 0; // Reset audio to start
+            audioObj.currentTime = 0; 
             document.getElementById('bellAlert').style.display = 'none';
         };
 
-        window.addNewBellRow = function(name = '', time = '') {
+        window.addNewBellRow = function(name = '', time24 = '09:30') {
             const container = document.getElementById('bellListContainer');
             const rowId = 'bell_' + Date.now() + Math.floor(Math.random() * 100);
             
+            // Format time24 to display
+            let parts = time24.split(':');
+            let hour24 = parseInt(parts[0]);
+            let m = parts[1];
+            let ampm = hour24 >= 12 ? "PM" : "AM";
+            let hour12 = hour24 % 12;
+            if(hour12 === 0) hour12 = 12;
+            let h = String(hour12).padStart(2, '0');
+            let displayTime = h + ':' + m + ' ' + ampm;
+
             const trashIcon = `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
 
             const html = `
-                <div class="time-group" id="${rowId}">
+                <div class="time-group" id="${rowId}_group">
                     <input type="text" class="time-input-name bell-name" placeholder="e.g. Morning Bell" value="${name}">
-                    <input type="time" class="time-input bell-time" value="${time}" inputmode="numeric">
-                    <button class="btn-remove-bell" onclick="removeBellRow('${rowId}')" title="Remove Bell">${trashIcon}</button>
+                    <input type="text" class="time-input bell-time" id="${rowId}" value="${displayTime}" data-time24="${time24}" readonly onclick="openTimePicker('${rowId}')" placeholder="Select Time">
+                    <button class="btn-remove-bell" onclick="removeBellRow('${rowId}_group')" title="Remove Bell">${trashIcon}</button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', html);
         };
 
-        window.removeBellRow = function(rowId) {
-            const row = document.getElementById(rowId);
-            if(row) row.remove();
+        window.removeBellRow = function(groupId) {
+            const group = document.getElementById(groupId);
+            if(group) group.remove();
         };
 
         window.toggleMasterBell = function() {
@@ -260,8 +356,9 @@
             const rows = document.querySelectorAll('#bellListContainer .time-group');
             rows.forEach(row => {
                 const name = row.querySelector('.bell-name').value;
-                const time = row.querySelector('.bell-time').value;
-                if (name && time) { bells.push({ name, time }); }
+                const timeInput = row.querySelector('.bell-time');
+                const time24 = timeInput.getAttribute('data-time24');
+                if (name && time24) { bells.push({ name, time: time24 }); }
             });
 
             const duration = document.getElementById('scheduleDuration').value;
@@ -290,7 +387,7 @@
                 audioUrl: audioSrc
             };
             
-            localStorage.setItem('globus_bell_settings_v4', JSON.stringify(bellSettings));
+            localStorage.setItem('globus_bell_settings_v5', JSON.stringify(bellSettings));
             playedToday = {}; 
             
             document.getElementById('bellAudio').src = audioSrc;
@@ -300,7 +397,7 @@
         };
 
         function loadBellTimings() {
-            const saved = localStorage.getItem('globus_bell_settings_v4');
+            const saved = localStorage.getItem('globus_bell_settings_v5');
             if (saved) {
                 bellSettings = JSON.parse(saved);
                 document.getElementById('masterBellToggle').checked = bellSettings.isOn || false;
@@ -392,7 +489,6 @@
                         const audio = document.getElementById('bellAudio');
                         audio.currentTime = 0; 
                         
-                        // Use loop so it rings until dismissed
                         audio.loop = true; 
                         audio.play().catch(e => console.log("Audio play blocked."));
                         
