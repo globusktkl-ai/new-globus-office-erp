@@ -24,6 +24,10 @@
 
         @media (max-width: 600px) {
             .btn-back-dashboard span { display: none; } 
+            
+            /* FIXED TOGGLE CONTAINER FOR MOBILE */
+            .toggle-container { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+            .toggle-label { margin-left: 0 !important; }
         }
 
         /* DISABLE SCROLLING ON NUMBER INPUTS */
@@ -34,7 +38,7 @@
         /* Toggle Switch Styling */
         .toggle-container { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
         .toggle-label { font-size: 13px; font-weight: 700; color: #475569; }
-        .switch { position: relative; display: inline-block; width: 120px; height: 34px; background-color: #cbd5e1; border-radius: 34px; cursor: pointer; }
+        .switch { position: relative; display: inline-block; width: 120px; height: 34px; background-color: #cbd5e1; border-radius: 34px; cursor: pointer; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #3b82f6; border-radius: 34px; transition: .4s; }
         .slider:before { position: absolute; content: "Auto"; height: 26px; width: 54px; left: 4px; bottom: 4px; background-color: white; border-radius: 34px; transition: .4s; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #1e3a8a; }
@@ -107,7 +111,6 @@
                     </select>
                 </div>
                 
-                <!-- OTHER QUALIFICATION INPUT -->
                 <div class="form-group" id="otherQualGroup" style="display: none;">
                     <label class="form-label" style="color: #3b82f6;">Specify Qualification</label>
                     <input type="text" id="otherQualification" class="form-control" placeholder="Enter qualification...">
@@ -125,7 +128,6 @@
                 <div class="form-group"><label class="form-label">Select Course</label><select id="courseSelect" class="form-control" required><option value="">-- Select Course --</option></select></div>
                 <div class="form-group"><label class="form-label">Select Module (Optional)</label><select id="moduleSelect" class="form-control"><option value="">-- Select Module --</option></select></div>
                 
-                <!-- AUTO FILLED TOTAL FEE -->
                 <div class="form-group"><label class="form-label">Total Course Fee (₹)</label><input type="number" id="totalFee" class="form-control" required readonly style="background:#e2e8f0; color:#64748b; cursor:not-allowed;"></div>
                 
                 <div style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 15px; border-radius: 8px; margin-bottom: 24px;">
@@ -165,7 +167,6 @@
         let globalCourses = [];
         let institutePrefix = "GLB"; 
 
-        // PREVENT SCROLL WHEEL ON NUMBER INPUTS
         document.addEventListener('wheel', function(event) {
             if (document.activeElement.type === 'number') { document.activeElement.blur(); }
         });
@@ -176,7 +177,7 @@
             document.getElementById('admissionDate').value = new Date().toISOString().split('T')[0];
             await loadSettings();
             fetchCourses();
-            generateAutoRegNumber(); // Init auto generation
+            generateAutoRegNumber();
         }
 
         async function loadSettings() {
@@ -188,13 +189,11 @@
                     document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
                     if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
                     
-                    // Create prefix: First 3 letters, uppercase. E.g., 'GLOBUS' -> 'GLO'
                     institutePrefix = instName.substring(0, 3).toUpperCase();
                 }
             } catch (e) {}
         }
 
-        // QUALIFICATION LOGIC
         window.checkQualification = function() {
             const select = document.getElementById('qualification');
             const otherGroup = document.getElementById('otherQualGroup');
@@ -210,9 +209,8 @@
             }
         }
 
-        // REGISTRATION NUMBER TOGGLE LOGIC
         window.toggleRegMode = function() {
-            const isManual = document.getElementById('regToggle').checked; // checked = Manual
+            const isManual = document.getElementById('regToggle').checked; 
             const regInput = document.getElementById('regNo');
             
             if (isManual) {
@@ -229,13 +227,12 @@
         }
 
         async function generateAutoRegNumber() {
-            if (document.getElementById('regToggle').checked) return; // Stop if manual
+            if (document.getElementById('regToggle').checked) return; 
 
             const regInput = document.getElementById('regNo');
             regInput.value = "Generating...";
 
             try {
-                // Fetch all register numbers to find the highest one starting with prefix
                 const { data, error } = await supabase
                     .from('students')
                     .select('register_number');
@@ -254,7 +251,7 @@
                     });
                 }
 
-                // Increment and pad to 4 digits (e.g., GLO0001)
+                // Increment Max by 1 (Strict logic to prevent duplicates)
                 const nextNum = maxNum + 1;
                 const paddedNum = nextNum.toString().padStart(4, '0');
                 regInput.value = `${institutePrefix}${paddedNum}`;
@@ -297,16 +294,6 @@
             if (/^\d+$/.test(val) && val.length > 10) this.value = val.slice(0, 10);
         });
 
-        // DATE FORMATTER: Converts YYYY-MM-DD to DD-MM-YYYY
-        function formatDateToDDMMYYYY(dateString) {
-            if (!dateString) return null;
-            const parts = dateString.split('-');
-            if (parts.length === 3) {
-                return `${parts[2]}-${parts[1]}-${parts[0]}`;
-            }
-            return dateString;
-        }
-
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault(); 
             const phoneVal = document.getElementById('phone').value.trim();
@@ -317,17 +304,12 @@
 
             if (admissionFee > totalFee) { alert('❌ Error: Admission fee cannot be greater than Total Course Fee!'); return; }
 
-            // Determine Qualification
             let finalQualification = document.getElementById('qualification').value;
             if (finalQualification === 'Other') {
                 const otherVal = document.getElementById('otherQualification').value.trim();
                 if (!otherVal) { alert('Please specify the qualification.'); return; }
                 finalQualification = otherVal;
             }
-
-            // Format Dates
-            const formattedAdmissionDate = formatDateToDDMMYYYY(document.getElementById('admissionDate').value);
-            const formattedDob = formatDateToDDMMYYYY(document.getElementById('dateOfBirth').value);
 
             const btn = document.getElementById('submitBtn');
             btn.textContent = 'Processing...'; btn.disabled = true;
@@ -343,12 +325,13 @@
                     photoUrl = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl;
                 }
 
+                // FIXED: Using raw value (YYYY-MM-DD) from input fields for database insertion
                 const { error } = await supabase.from('students').insert([{
                     full_name: document.getElementById('fullName').value,
                     register_number: document.getElementById('regNo').value,
                     phone_number: phoneVal,
-                    admission_date: formattedAdmissionDate,
-                    date_of_birth: formattedDob,
+                    admission_date: document.getElementById('admissionDate').value,
+                    date_of_birth: document.getElementById('dateOfBirth').value || null,
                     address: document.getElementById('address').value,
                     qualification: finalQualification, 
                     gender: document.getElementById('gender').value,
