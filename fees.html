@@ -16,7 +16,13 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* Professional Finance Tabs - Mobile Optimized */
+        /* Premium 3D Back to Dashboard Button */
+        .btn-back-dashboard { display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
+        .btn-back-dashboard:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
+        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); }
+
+        /* Finance Module Specific Styles */
         .finance-tabs { display: flex; gap: 10px; margin-bottom: 25px; width: 100%; }
         .tab-btn { flex: 1; padding: 12px 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 800; color: #475569; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .tab-btn svg { width: 18px; height: 18px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
@@ -62,6 +68,7 @@
             .finance-tabs { gap: 6px; }
             .tab-btn { padding: 10px 2px; font-size: 11px; flex-direction: column; gap: 5px; text-align: center; }
             .tab-btn svg { width: 22px; height: 22px; }
+            .btn-back-dashboard span { display: none; } /* Hide text on small screens, keep only icon */
         }
     </style>
 </head>
@@ -74,7 +81,22 @@
                 <span style="font-size: 11px; color: #64748b; font-weight: 600;" id="navSubName">Technical Academy</span>
             </div>
         </div>
-        <div class="header-right"><a href="dashboard.html" style="color: #3b82f6; font-weight: 700; text-decoration: none; margin-right: 15px;">← Dashboard</a> <button class="btn-logout-custom" id="logoutBtn">Logout</button></div>
+        <div class="header-right">
+            <!-- NEW 3D RETURN TO DASHBOARD BUTTON -->
+            <a href="dashboard.html" class="btn-back-dashboard">
+                <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
+                    <defs>
+                        <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#2563eb" />
+                            <stop offset="100%" stop-color="#9333ea" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M9 14L4 9l5-5" />
+                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+                </svg>
+                <span>Dashboard</span>
+            </a>
+        </div>
     </nav>
 
     <main class="main-content">
@@ -586,7 +608,6 @@
             btn.innerHTML = oldText; btn.disabled = false;
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
         checkAuth();
     </script>
 </body>
