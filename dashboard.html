@@ -6,9 +6,10 @@
     <title>Dashboard - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
     
-    <!-- Scripts for PDF Export -->
+    <!-- Scripts for Professional PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         body { background-color: #f8fafc; }
@@ -83,7 +84,6 @@
             <div class="nav-grid">
                 <a href="fees.html" class="nav-btn"><span class="nav-icon">💵</span>Collect Fee</a>
                 <a href="expense.html" class="nav-btn expense-btn"><span class="nav-icon">📓</span>Day Book</a>
-                <!-- FEE REPORT BUTTON (Opens Modal) -->
                 <a href="#" onclick="openFeeReportModal()" class="nav-btn fee-report-btn"><span class="nav-icon">📋</span>Fee Payment Report</a>
                 <a href="report.html" class="nav-btn report-btn"><span class="nav-icon">📊</span>Reports</a>
             </div>
@@ -314,7 +314,7 @@
                     
                     // 4. Current Due (Arrears for the current module)
                     let currentDue = expectedTillNow - (totalPaid + totalDiscount);
-                    if (currentDue < 0) currentDue = 0; // Pre-paid for future modules
+                    if (currentDue < 0) currentDue = 0;
 
                     // 5. Total Course Pending (Remaining balance for the entire course)
                     let totalCoursePending = totalCourseFee - (totalPaid + totalDiscount);
@@ -428,34 +428,71 @@
             a.click();
         }
 
-        // Export to PDF
-        window.exportPDF = async function() {
+        // PROFESSIONAL PDF EXPORT (AutoTable)
+        window.exportPDF = function() {
             if(!window.filteredFeeData || window.filteredFeeData.length === 0) {
                 alert("Warning: No data to export!"); return;
             }
             const btn = document.getElementById('pdfBtn');
             const oldText = btn.innerHTML;
-            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
+            btn.innerHTML = '⏳...'; btn.disabled = true;
+
             try {
-                const tableWrap = document.getElementById('reportTableWrapper');
-                const canvas = await html2canvas(tableWrap, { scale: 2, backgroundColor: '#ffffff' });
-                const imgData = canvas.toDataURL('image/png');
-                
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('l', 'mm', 'a4');
+                // Create A4 Landscape PDF
+                const doc = new jsPDF('landscape', 'mm', 'a4');
+
+                // Header Text
+                doc.setFontSize(16);
+                doc.setTextColor(15, 23, 42);
+                doc.text("Module-wise Fee Payment Report", 14, 15);
                 
-                const imgProps= pdf.getImageProperties(imgData);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                
-                pdf.setFontSize(16);
-                pdf.text("Module-wise Fee Payment Report", 14, 15);
-                
-                pdf.addImage(imgData, 'PNG', 10, 25, pdfWidth-20, pdfHeight-20);
-                pdf.save('Module_wise_Fee_Report.pdf');
+                doc.setFontSize(10);
+                doc.setTextColor(100, 116, 139);
+                doc.text(document.getElementById('navInstName').innerText + " " + document.getElementById('navSubName').innerText, 14, 21);
+
+                // Prepare Data for AutoTable
+                const tableColumn = ["Name", "Course", "Current Module", "Total Fee", "Fee/Module", "Expected", "Total Paid", "Discount", "Current Due", "Pending Bal"];
+                const tableRows = [];
+
+                window.filteredFeeData.forEach(row => {
+                    const rowData = [
+                        row.name,
+                        row.course,
+                        row.module,
+                        row.totalCourseFee.toString(),
+                        row.feePerModule.toString(),
+                        row.expectedTillNow.toString(),
+                        row.totalPaid.toString(),
+                        row.discount.toString(),
+                        row.currentDue.toString(),
+                        row.totalCoursePending.toString()
+                    ];
+                    tableRows.push(rowData);
+                });
+
+                // Generate Table
+                doc.autoTable({
+                    head: [tableColumn],
+                    body: tableRows,
+                    startY: 28,
+                    theme: 'grid',
+                    styles: { fontSize: 8, cellPadding: 3 },
+                    headStyles: { fillColor: [30, 58, 138], textColor: 255, fontStyle: 'bold' },
+                    alternateRowStyles: { fillColor: [248, 250, 252] },
+                    columnStyles: {
+                        5: { fontStyle: 'bold', textColor: [29, 78, 216] }, // Expected
+                        6: { fontStyle: 'bold', textColor: [16, 185, 129] }, // Paid
+                        8: { fontStyle: 'bold', textColor: [220, 38, 38] } // Due
+                    }
+                });
+
+                doc.save('Fee_Payment_Report.pdf');
             } catch (e) {
-                alert('Error generating PDF report.');
+                console.error(e);
+                alert('Error generating PDF report. Check console for details.');
             }
+            
             btn.innerHTML = oldText; btn.disabled = false;
         }
 
