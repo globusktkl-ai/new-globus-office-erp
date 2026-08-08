@@ -10,8 +10,8 @@
         
         .main-content { padding: 15px; max-width: 600px; margin: 0 auto; }
         
-        /* Premium 3D Back to Dashboard Button */
-        .btn-back-dashboard { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
+        /* Premium 3D Back to Dashboard Button (Icon Only) */
+        .btn-back-dashboard { display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
         .btn-back-dashboard:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
         .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); }
@@ -22,7 +22,7 @@
         input[type=number] { -moz-appearance: textfield; }
         
         .form-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
-        .form-title { color: #EF4444; margin-top: 0; font-size: 20px; border-bottom: 2px solid #fef2f2; padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .form-title { color: #1e3a8a; margin-top: 0; font-size: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-weight: 900;}
         
         .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
         .form-group label { font-weight: bold; color: #374151; font-size: 14px; margin-bottom: 5px; }
@@ -36,7 +36,7 @@
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
-            border-color: #EF4444;
+            border-color: #3b82f6;
             background-color: #fff;
         }
         
@@ -48,11 +48,11 @@
             padding: 14px; 
             font-size: 16px; 
             font-weight: bold; 
-            border-radius: 6px; 
+            border-radius: 8px; 
             cursor: pointer; 
             width: 100%; 
             margin-top: 10px;
-            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
             transition: all 0.2s;
         }
         .btn-submit:hover { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
@@ -67,9 +67,7 @@
         #toast.show { visibility: visible; -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         #toast.success { background-color: #10B981; }
         #toast.error { background-color: #EF4444; }
-        @-webkit-keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @-webkit-keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
@@ -79,13 +77,12 @@
         <div class="header-left" style="display: flex; align-items: center; gap: 10px; flex: 1;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <div style="display: flex; flex-direction: column;">
-                <span class="brand-top" style="font-size: 16px;">Globus</span>
+                <span class="brand-top" style="font-size: 16px; font-weight: 900;">Globus</span>
                 <span class="brand-bottom">Technical Academy</span>
             </div>
         </div>
         <div class="header-right">
-            <!-- Premium 3D Back Button Added Here -->
-            <a href="dashboard.html" class="btn-back-dashboard">
+            <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
                 <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
                     <defs>
                         <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -96,14 +93,12 @@
                     <path d="M9 14L4 9l5-5" />
                     <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
                 </svg>
-                <span>Dashboard</span>
             </a>
         </div>
     </nav>
 
     <div class="main-content">
         <div class="form-card">
-            <!-- Emoji Removed -->
             <h2 class="form-title">Add New Expense</h2>
             
             <form id="expenseForm">
