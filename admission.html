@@ -226,7 +226,7 @@
             }
         }
 
-        // --- UPDATED STRICT REGISTRATION NUMBER GENERATION ---
+        // --- UPDATED STRICT REGISTRATION NUMBER GENERATION WITH HYPHEN ---
         async function generateAutoRegNumber() {
             if (document.getElementById('regToggle').checked) return; 
 
@@ -241,18 +241,22 @@
                 if (error) throw error;
 
                 let maxNum = 0;
-                const existingRegNos = new Set(); // Store all existing numbers for strict checking
+                const existingRegNos = new Set(); 
 
                 if (data && data.length > 0) {
                     const prefixUpper = institutePrefix.toUpperCase();
                     data.forEach(student => {
                         if (student.register_number) {
                             const regStr = student.register_number.trim().toUpperCase();
-                            existingRegNos.add(regStr); // Track every single registered number
+                            existingRegNos.add(regStr); 
                             
-                            // Find max numeric value with matching prefix
+                            // Check if it matches PREFIX or PREFIX-
+                            // Example: GLO0001 or GLO-0001
                             if (regStr.startsWith(prefixUpper)) {
-                                const numMatch = regStr.substring(prefixUpper.length).match(/^\d+/);
+                                // Extract only the numeric part, ignoring the hyphen if present
+                                const numericPartStr = regStr.replace(prefixUpper, '').replace('-', '');
+                                const numMatch = numericPartStr.match(/^\d+/);
+                                
                                 if (numMatch) {
                                     const numPart = parseInt(numMatch[0], 10);
                                     if (!isNaN(numPart) && numPart > maxNum) {
@@ -264,14 +268,14 @@
                     });
                 }
 
-                // Increment Max by 1
+                // Increment Max by 1 and format with HYPHEN (e.g. GLO-0001)
                 let nextNum = maxNum + 1;
-                let proposedRegNo = `${institutePrefix}${nextNum.toString().padStart(4, '0')}`;
+                let proposedRegNo = `${institutePrefix}-${nextNum.toString().padStart(4, '0')}`;
 
-                // Strict Validation Loop: Ensure proposed number does not exist AT ALL in database
-                while (existingRegNos.has(proposedRegNo.toUpperCase())) {
+                // Strict Validation Loop: Ensure proposed number does not exist AT ALL
+                while (existingRegNos.has(proposedRegNo.toUpperCase()) || existingRegNos.has(proposedRegNo.replace('-','').toUpperCase())) {
                     nextNum++;
-                    proposedRegNo = `${institutePrefix}${nextNum.toString().padStart(4, '0')}`;
+                    proposedRegNo = `${institutePrefix}-${nextNum.toString().padStart(4, '0')}`;
                 }
 
                 regInput.value = proposedRegNo;
