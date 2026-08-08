@@ -3,403 +3,599 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard - Globus</title>
+    <title>Smart Reminders - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
-
     <style>
-        body { background-color: #f8fafc; }
+        body { background-color: #f8fafc; padding-bottom: 40px; }
         .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
         
-        h2 { font-size: 16px !important; font-weight: 900 !important; margin-bottom: 12px !important; color: #0f172a; text-transform: uppercase; letter-spacing: -0.5px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; display: inline-block;}
+        .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; min-height: 45px;}
+        .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 100%;}
         
-        /* UPCOMING BELL NOTIFICATION BANNER (NEW) */
-        .upcoming-bell-alert {
-            background: linear-gradient(135deg, #fef08a, #fde047);
-            border: 1px solid #f59e0b;
-            color: #b45309;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 900;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            text-decoration: none;
-            animation: pulseAlert 2s infinite;
-            display: none; /* hidden by default */
-            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
-        }
-        .upcoming-bell-alert:active { transform: scale(0.98); }
-        @keyframes pulseAlert {
-            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
-        }
+        .btn-back-dashboard { position: absolute; left: 0; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; z-index: 10;}
+        .btn-back-dashboard:active { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
 
-        /* Compact Stat Grid (Mobile First) */
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .stat-grid-finance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 25px; }
-        
-        .stat-box { background: #ffffff; padding: 12px 10px !important; border-radius: 10px !important; box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important; border: 1px solid #e2e8f0 !important; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .stat-box.finance-box { align-items: flex-start; text-align: left; padding: 15px 12px !important; border-left: 4px solid; }
-        .stat-label { font-size: 10px !important; color: #64748b !important; margin-bottom: 4px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-value { font-size: 18px !important; font-weight: 900 !important; color: #1e293b; line-height: 1; }
-        
-        .module-section { background: #ffffff; border-radius: 12px !important; padding: 15px !important; margin-bottom: 20px !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important; border: 1px solid #f1f5f9; }
-        
-        .module-section .nav-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; margin-top: 15px; }
-        
-        .nav-btn { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px !important; padding: 12px 5px !important; text-decoration: none; color: #334155 !important; font-size: 11px !important; font-weight: 800 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important; min-height: 80px !important; text-align: center; transition: all 0.2s ease;}
-        .nav-btn:active { transform: scale(0.95); }
-        .nav-btn:hover { background: #ffffff; border-color: #cbd5e1; box-shadow: 0 4px 8px rgba(0,0,0,0.05) !important; }
-        
-        .nav-icon { margin-bottom: 8px !important; display: flex; align-items: center; justify-content: center; }
-        .nav-icon svg { width: 28px; height: 28px; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-        
-        .nav-btn.fee-btn { background-color: #f0fdf4 !important; border-color: #bbf7d0 !important; color: #15803d !important; }
-        .nav-btn.expense-btn { background-color: #fef2f2 !important; border-color: #fecaca !important; color: #b91c1c !important; }
-        
-        /* Logged in As & Premium Logout */
-        .header-auth-section { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.8); padding: 4px 4px 4px 12px; border-radius: 30px; border: 1px solid #e2e8f0; }
-        .logged-in-text { font-size: 10px; font-weight: 700; color: #64748b; display: flex; flex-direction: column; text-align: right; line-height: 1.2; }
-        .logged-in-email { color: #1e3a8a; font-weight: 900; font-size: 11px; }
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        @media(max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
 
-        .btn-logout-round {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white; border: none; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); transition: all 0.2s ease; flex-shrink: 0;
+        .panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; position: relative; }
+        .panel-header { display: flex; align-items: center; justify-content: center; gap: 10px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 18px; text-align: center;}
+        .panel-title { font-size: 17px; font-weight: 900; color: #1e293b; margin: 0; }
+        
+        .master-switch-container { display: flex; justify-content: center; align-items: center; gap: 12px; background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px solid #bbf7d0; margin-bottom: 18px; }
+        
+        .schedule-settings-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 10px; margin-bottom: 18px; }
+        .schedule-label { font-size: 12px; font-weight: 900; color: #475569; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
+        .schedule-select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; font-weight: bold; color: #1e3a8a; margin-bottom: 15px; outline: none; background: white;}
+        
+        .days-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 8px; margin-top: 5px; margin-bottom: 15px;}
+        .day-checkbox { display: flex; align-items: center; justify-content: center; gap: 4px; background: white; padding: 8px 5px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; color: #64748b; transition: 0.2s;}
+        .day-checkbox input:checked + span { color: #ef4444; text-decoration: line-through; }
+        .day-checkbox:has(input:checked) { background: #fef2f2; border-color: #fca5a5; }
+
+        .expiry-alert { background: #fef2f2; border: 1px dashed #ef4444; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 800; text-align: center; margin-bottom: 15px; display: none; }
+        
+        .switch { position: relative; display: inline-block; width: 54px; height: 28px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: #10b981; } 
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        .time-group { display: flex; align-items: center; background: white; padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #e2e8f0; gap: 10px; flex-wrap: nowrap;}
+        .time-input-name { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 700; color: #334155; outline: none; flex: 1; font-size: 14px; min-width: 0;}
+        .time-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 900; color: #1e3a8a; outline: none; flex: 0 0 110px; font-size: 14px; text-align: center; background: #eff6ff; cursor: pointer; caret-color: transparent;}
+        
+        .btn-remove-bell { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 8px; padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;}
+        .btn-remove-bell:hover { background: #ef4444; color: white; }
+
+        .btn-add-bell { background: #f8fafc; color: #3b82f6; border: 2px dashed #cbd5e1; padding: 14px; width: 100%; border-radius: 10px; font-weight: 900; cursor: pointer; margin-bottom: 18px; font-size: 14px; transition: 0.2s;}
+        .btn-add-bell:hover { border-color: #3b82f6; background: #eff6ff; }
+
+        .btn-save-bell { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 15px; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); transition: 0.2s; letter-spacing: 0.5px;}
+        .btn-save-bell:active { transform: scale(0.98); }
+
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #f1f5f9; }
+        .list-item:last-child { border-bottom: none; }
+        .item-info h4 { margin: 0 0 5px 0; font-size: 15px; color: #0f172a; font-weight: 900; }
+        .item-info p { margin: 0; font-size: 12px; color: #64748b; font-weight: 700; }
+        .due-amount { color: #ef4444; font-weight: 900; font-size: 16px; }
+        
+        .btn-wa { background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);}
+        .btn-wa:active { transform: scale(0.95); }
+
+        .empty-state { text-align: center; color: #94a3b8; font-weight: 700; font-size: 14px; padding: 25px; }
+
+        #bellAlert { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fef08a; border: 2px solid #f59e0b; color: #b45309; padding: 15px 25px; border-radius: 12px; font-weight: 900; z-index: 9999; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 90%; max-width: 350px; text-align: center;}
+        @keyframes slideDown { from { top: -50px; opacity: 0; transform: translate(-50%, -20px); } to { top: 20px; opacity: 1; transform: translate(-50%, 0); } }
+        
+        .btn-stop-bell { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 900; margin-top: 15px; cursor: pointer; width: 100%; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3); font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 5px;}
+        .btn-stop-bell:active { transform: scale(0.95); }
+
+        #customTimePickerModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 10000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
+        .time-picker-card { background: white; padding: 25px; border-radius: 16px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .tp-select { padding: 12px 5px; font-size: 20px; font-weight: 900; border-radius: 8px; border: 2px solid #cbd5e1; outline: none; background: #f8fafc; color: #0f172a; text-align: center; width: 70px; appearance: none; -webkit-appearance: none; }
+        .tp-select:focus { border-color: #3b82f6; background: #fff; }
+        .tp-colon { font-size: 24px; font-weight: 900; color: #1e293b; padding: 0 5px; }
+
+        @media(max-width: 600px) {
+            .panel { padding: 15px; }
+            .time-group { flex-wrap: wrap; padding: 12px;}
+            .time-input-name { flex: 1 1 100%; margin-bottom: 8px; font-size: 15px; padding: 12px;}
+            .time-input { flex: 1; font-size: 15px; padding: 12px;}
+            .btn-remove-bell { padding: 12px 18px; }
+            .btn-wa { padding: 10px 15px; font-size: 13px; }
         }
-        .btn-logout-round:active { transform: scale(0.92); }
-
-        /* Settings Modal */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
-        .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
-        label { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block; }
     </style>
 </head>
 <body>
-    <nav class="app-header" style="padding: 10px 15px;">
-        <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 8px;">
-            <img src="assets/images/logo.png" id="navLogo" class="logo-small" alt="Logo" style="width: 35px; height: 35px;" onerror="this.style.display='none'">
-            <div style="display: flex; flex-direction: column;">
-                <span id="navInstName" style="font-size: 14px; font-weight: 900; text-transform: uppercase;">GLOBUS</span>
-                <span id="navSubName" style="font-size: 9px; color: #64748b; font-weight: 800;">Technical Academy</span>
+
+    <!-- CUSTOM TIME PICKER MODAL -->
+    <div id="customTimePickerModal">
+        <div class="time-picker-card">
+            <h3 style="margin-top: 0; color: #1e3a8a; font-weight: 900; margin-bottom: 20px;">Set Bell Time</h3>
+            <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 25px;">
+                <select id="tp-hour" class="tp-select"></select>
+                <span class="tp-colon">:</span>
+                <select id="tp-minute" class="tp-select"></select>
+                <span class="tp-colon"> </span>
+                <select id="tp-ampm" class="tp-select" style="width: 80px;">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
             </div>
-        </div>
-        <div class="header-right">
-            <div class="header-auth-section">
-                <div class="logged-in-text">
-                    <span>Admin</span>
-                    <span class="logged-in-email" id="authEmail">Loading...</span>
-                </div>
-                <button class="btn-logout-round" id="logoutBtn" title="Secure Logout">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line>
-                    </svg>
-                </button>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="closeTimePicker()" style="flex: 1; padding: 14px; border-radius: 8px; border: 2px solid #e2e8f0; background: white; font-weight: 800; color: #64748b; cursor: pointer;">Cancel</button>
+                <button onclick="setTimeFromPicker()" style="flex: 1; padding: 14px; border-radius: 8px; border: none; background: #10b981; color: white; font-weight: 900; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);">Set Time</button>
             </div>
-        </div>
-    </nav>
-
-    <main class="main-content">
-        <!-- THE NEW UPCOMING BELL NOTIFICATION -->
-        <a href="reminders.html" id="upcomingBellBanner" class="upcoming-bell-alert">
-            <span id="upcomingBellText">⏳ Upcoming Bell...</span>
-            <span style="font-size: 12px; opacity: 0.8;">Tap to Stop/Edit ⚙️</span>
-        </a>
-
-        <h2>Institute Overview</h2>
-        
-        <div class="stat-grid">
-            <div class="stat-box"><div class="stat-label">Total Students</div><div class="stat-value" id="statTotalStudents" style="color: #64748b;">0</div></div>
-            <div class="stat-box"><div class="stat-label" style="color: #2563eb !important;">Active Students</div><div class="stat-value" id="statActiveStudents" style="color: #1d4ed8;">0</div></div>
-            <div class="stat-box"><div class="stat-label">Active Courses</div><div class="stat-value" id="statCourses">0</div></div>
-        </div>
-
-        <div class="stat-grid-finance">
-            <div class="stat-box finance-box" style="border-left-color: #10B981 !important;">
-                <div class="stat-label">Today's Collection</div>
-                <div class="stat-value" id="statTodayCollection" style="color: #10B981; font-size: 20px !important;">₹ 0</div>
-            </div>
-            <div class="stat-box finance-box" style="border-left-color: #EF4444 !important;">
-                <div class="stat-label">Total Pending Dues</div>
-                <div class="stat-value" id="statPendingFees" style="color: #EF4444; font-size: 20px !important;">₹ 0</div>
-            </div>
-        </div>
-
-        <div class="module-section">
-            <h2 style="font-size: 14px !important; color: #1e3a8a; border-bottom: none; display: flex; align-items: center; gap: 5px; margin:0 !important;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Academic & Admin</h2>
-            <div class="nav-grid">
-                <a href="admission.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-adm); stroke:none;"><defs><linearGradient id="grad-adm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" opacity="0.3"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" style="stroke: #1e3a8a; fill:none;"/></svg></span>
-                    Admission
-                </a>
-                
-                <a href="students.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-dir); stroke:none;"><defs><linearGradient id="grad-dir" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#6d28d9"/></linearGradient></defs><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" opacity="0.3"/><circle cx="9" cy="7" r="4" opacity="0.3"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" style="stroke: #4c1d95; fill:none;"/><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" style="stroke: #4c1d95; fill:none;"/><circle cx="9" cy="7" r="4" style="stroke: #4c1d95; fill:none;"/></svg></span>
-                    Directory
-                </a>
-
-                <a href="courses.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-crs); stroke:none;"><defs><linearGradient id="grad-crs" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" opacity="0.3"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" opacity="0.3"/><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" style="stroke: #78350f; fill:none;"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" style="stroke: #78350f; fill:none;"/></svg></span>
-                    Courses
-                </a>
-
-                <a href="exams.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-exm); stroke:none;"><defs><linearGradient id="grad-exm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#b91c1c"/></linearGradient></defs><circle cx="12" cy="8" r="7" opacity="0.3"/><circle cx="12" cy="8" r="7" style="stroke: #7f1d1d; fill:none;"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" style="stroke: #7f1d1d; fill:none;"/></svg></span>
-                    Exams
-                </a>
-
-                <a href="admission-report.html" class="nav-btn">
-                    <span class="nav-icon">
-                        <svg viewBox="0 0 24 24" style="fill:none; stroke:url(#grad-pie);">
-                            <defs>
-                                <linearGradient id="grad-pie" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#0ea5e9"/>
-                                    <stop offset="100%" stop-color="#0369a1"/>
-                                </linearGradient>
-                                <linearGradient id="grad-pie-fill" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3"/>
-                                    <stop offset="100%" stop-color="#0284c7" stop-opacity="0.3"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M22 12A10 10 0 0 0 12 2v10z" style="fill:url(#grad-pie-fill);" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </span>
-                    Adm Report
-                </a>
-
-                <a href="reminders.html" class="nav-btn" style="background-color: #fffbeb !important; border-color: #fde68a !important; color: #b45309 !important;">
-                    <span class="nav-icon">
-                        <svg viewBox="0 0 24 24" width="28" height="28" style="fill:none; stroke: #d97706;">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            <circle cx="18" cy="6" r="3" fill="#ef4444" stroke="none"></circle>
-                        </svg>
-                    </span>
-                    Smart Alerts
-                </a>
-            </div>
-        </div>
-
-        <div class="module-section">
-            <h2 style="font-size: 14px !important; color: #064e3b; border-bottom: none; display: flex; align-items: center; gap: 5px; margin:0 !important;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Finance & Accounts</h2>
-            <div class="nav-grid" style="grid-template-columns: repeat(3, 1fr) !important;">
-                <a href="fees.html" class="nav-btn fee-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-fee); stroke:none;"><defs><linearGradient id="grad-fee" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#047857"/></linearGradient></defs><rect x="2" y="5" width="20" height="14" rx="2" opacity="0.3"/><rect x="2" y="5" width="20" height="14" rx="2" style="stroke: #064e3b; fill:none;"/><line x1="2" y1="10" x2="22" y2="10" style="stroke: #064e3b; fill:none;"/></svg></span>
-                    Fee Collect
-                </a>
-                
-                <a href="expense.html" class="nav-btn expense-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-exp); stroke:none;"><defs><linearGradient id="grad-exp" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#be185d"/></linearGradient></defs><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" opacity="0.3"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" opacity="0.3"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" style="stroke: #831843; fill:none;"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" style="stroke: #831843; fill:none;"/></svg></span>
-                    Day Book
-                </a>
-
-                <a href="report.html" class="nav-btn">
-                    <span class="nav-icon">
-                        <svg viewBox="0 0 24 24" style="fill:url(#grad-rpt); stroke:none;">
-                            <defs><linearGradient id="grad-rpt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#14b8a6"/><stop offset="100%" stop-color="#0f766e"/></linearGradient></defs>
-                            <line x1="18" y1="20" x2="18" y2="10" style="stroke: #134e4a; fill:none;"/>
-                            <line x1="12" y1="20" x2="12" y2="4" style="stroke: #134e4a; fill:none;"/>
-                            <line x1="6" y1="20" x2="6" y2="14" style="stroke: #134e4a; fill:none;"/>
-                        </svg>
-                    </span>
-                    Other Reports
-                </a>
-            </div>
-        </div>
-    </main>
-
-    <!-- SETTINGS MODAL -->
-    <div id="settingsModal" class="modal-overlay">
-        <!-- Rest of the settings modal HTML remains identical -->
-        <div class="modal-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
-                <button onclick="document.getElementById('settingsModal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
-            </div>
-            <form id="settingsForm" onsubmit="saveSettings(event)">
-                <label>Institute Main Name (Brand)</label>
-                <input type="text" id="set_name" class="form-control" required>
-                
-                <label>Sub Name / Tagline</label>
-                <input type="text" id="set_sub" class="form-control">
-                
-                <label>Full Address</label>
-                <input type="text" id="set_address" class="form-control" placeholder="City, State, PIN">
-                
-                <div style="display: flex; gap: 10px;">
-                    <div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10);"></div>
-                    <div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div>
-                </div>
-                
-                <label>Logo URL (Leave blank to use default)</label>
-                <input type="text" id="set_logo" class="form-control" placeholder="https://example.com/logo.png">
-                
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
-                    <button type="button" onclick="confirmReset()" style="flex:1; background: #ef4444; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">🗑️ Reset</button>
-                </div>
-            </form>
         </div>
     </div>
+
+    <!-- ALERT BOX WITH STOP BUTTON -->
+    <div id="bellAlert">
+        <div style="font-size: 24px; margin-bottom: 5px;">🔔</div>
+        <div style="font-size: 16px; margin-bottom: 5px;">Reminder:</div>
+        <span id="bellAlertMsg" style="font-size: 20px; color: #78350f;">Time's Up!</span>
+        <button class="btn-stop-bell" onclick="stopRinging()">🔕 Stop Bell</button>
+    </div>
+    
+    <audio id="bellAudio" preload="auto"></audio>
+
+    <main class="main-content">
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
+                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <h1 class="page-title">Smart Assistant</h1>
+        </div>
+
+        <div class="grid-container">
+            <div class="panel">
+                <div class="panel-header">
+                    <span style="font-size: 22px;">⏰</span>
+                    <h2 class="panel-title">Automated Office Bell</h2>
+                </div>
+                
+                <div id="scheduleExpiryAlert" class="expiry-alert"></div>
+
+                <div class="master-switch-container">
+                    <label class="switch">
+                        <input type="checkbox" id="masterBellToggle" onchange="toggleMasterBell()">
+                        <span class="slider"></span>
+                    </label>
+                    <span id="masterBellStatus" style="font-weight: 900; font-size: 14px; color: #64748b;">System is OFF</span>
+                </div>
+
+                <div class="schedule-settings-box">
+                    <!-- NEW: Upcoming Alert Duration -->
+                    <label class="schedule-label" style="color: #ea580c;">Dashboard Notification Setup</label>
+                    <select id="warningDuration" class="schedule-select" style="border-color: #fbd38d; margin-bottom: 15px;">
+                        <option value="15">Show Alert 15 Min Before Bell</option>
+                        <option value="30">Show Alert 30 Min Before Bell</option>
+                        <option value="60">Show Alert 1 Hour Before Bell</option>
+                        <option value="0">Do Not Show Alert on Dashboard</option>
+                    </select>
+
+                    <label class="schedule-label">Active Schedule Duration</label>
+                    <select id="scheduleDuration" class="schedule-select">
+                        <option value="forever">Always Active (Forever)</option>
+                        <option value="1week">Active for Next 1 Week</option>
+                        <option value="1month">Active for Next 1 Month</option>
+                    </select>
+                    
+                    <label class="schedule-label">Notification Tune</label>
+                    <select id="audioSelect" class="schedule-select" onchange="previewAudio()">
+                        <option value="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">Short Beep (Default)</option>
+                        <option value="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">Gentle Chime</option>
+                        <option value="https://actions.google.com/sounds/v1/alarms/mechanical_clock_ring.ogg">School Bell</option>
+                    </select>
+
+                    <label class="schedule-label">Exclude Days (Mute Bell)</label>
+                    <div class="days-grid">
+                        <label class="day-checkbox"><input type="checkbox" value="0" class="exclude-day" style="display:none;"> <span>Sun</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="1" class="exclude-day" style="display:none;"> <span>Mon</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="2" class="exclude-day" style="display:none;"> <span>Tue</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="3" class="exclude-day" style="display:none;"> <span>Wed</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="4" class="exclude-day" style="display:none;"> <span>Thu</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="5" class="exclude-day" style="display:none;"> <span>Fri</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="6" class="exclude-day" style="display:none;"> <span>Sat</span></label>
+                    </div>
+                </div>
+
+                <div id="bellListContainer">
+                    <!-- Dynamic Bells appended here -->
+                </div>
+                
+                <button class="btn-add-bell" onclick="addNewBellRow()">+ Add New Bell</button>
+                <button class="btn-save-bell" onclick="saveBellTimings()">💾 Save Bell Settings</button>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span style="font-size: 22px;">🎂</span>
+                    <h2 class="panel-title">Today's Birthdays</h2>
+                </div>
+                <div id="birthdayList">
+                    <div class="empty-state">Checking records...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-bottom: 30px;">
+            <div class="panel-header">
+                <h2 class="panel-title">Pending Fee Alerts</h2>
+            </div>
+            <p style="font-size: 13px; color: #64748b; margin-top: -10px; margin-bottom: 20px; text-align: center; font-weight: 600;">List of active students with pending fees. Click WhatsApp to send a polite reminder automatically.</p>
+            
+            <div id="feeList">
+                <div class="empty-state">Loading financial records...</div>
+            </div>
+        </div>
+
+    </main>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
-        async function checkAuth() {
+        let bellTimer = null;
+        let playedToday = {}; 
+        let bellSettings = { isOn: false, expiryDate: null, excludedDays: [], bells: [], audioUrl: '', warningDuration: 15 };
+
+        async function initAssistant() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            
-            const emailSpan = document.getElementById('authEmail');
-            if(session.user && session.user.email) {
-                emailSpan.innerText = session.user.email.split('@')[0];
-            }
-            
-            loadSettings();
-            loadDashboardData();
-            checkUpcomingBell(); // CHECK BELL
+            initCustomPicker();
+            loadBellTimings();
+            fetchStudentAlerts();
         }
 
-        // --- DASHBOARD UPCOMING BELL LOGIC ---
-        function checkUpcomingBell() {
-            const saved = localStorage.getItem('globus_bell_settings_v6'); // Must match reminders.html version
-            const banner = document.getElementById('upcomingBellBanner');
-            
-            if(!saved) { banner.style.display = 'none'; return; }
-            const settings = JSON.parse(saved);
-            
-            // If system is OFF or alert is disabled (0)
-            if(!settings.isOn || settings.warningDuration == 0) { 
-                banner.style.display = 'none'; 
-                return; 
-            }
-            
-            const now = new Date();
-            // Check Excluded Days
-            if(settings.excludedDays && settings.excludedDays.includes(now.getDay())) {
-                banner.style.display = 'none'; 
-                return;
-            }
-            
-            const currentMinutes = now.getHours() * 60 + now.getMinutes();
-            let nextBell = null;
-            let minDiff = Infinity;
+        // --- CUSTOM TIME PICKER LOGIC ---
+        let activeTimeInputId = null;
 
-            settings.bells.forEach(bell => {
-                const [bH, bM] = bell.time.split(':').map(Number);
-                const bellMinutes = bH * 60 + bM;
-                const diff = bellMinutes - currentMinutes;
-                
-                // If the bell is coming up within the set warning duration
-                if(diff > 0 && diff <= settings.warningDuration && diff < minDiff) {
-                    minDiff = diff;
-                    nextBell = bell;
-                }
-            });
+        function initCustomPicker() {
+            const hrSelect = document.getElementById('tp-hour');
+            for(let i=1; i<=12; i++) { hrSelect.add(new Option(String(i).padStart(2,'0'), String(i).padStart(2,'0'))); }
+            const minSelect = document.getElementById('tp-minute');
+            for(let i=0; i<=59; i++) { minSelect.add(new Option(String(i).padStart(2,'0'), String(i).padStart(2,'0'))); }
+        }
 
-            if(nextBell) {
-                // Convert to 12h AM/PM for display
-                let parts = nextBell.time.split(':');
-                let h = parseInt(parts[0]);
-                let ampm = h >= 12 ? 'PM' : 'AM';
-                h = h % 12 || 12;
-                let displayTime = String(h).padStart(2, '0') + ':' + parts[1] + ' ' + ampm;
-                
-                document.getElementById('upcomingBellText').innerHTML = `🔔 Upcoming: <b>${nextBell.name}</b> at ${displayTime}`;
-                banner.style.display = 'flex';
+        window.openTimePicker = function(inputId) {
+            activeTimeInputId = inputId;
+            const input = document.getElementById(inputId);
+            const val24 = input.getAttribute('data-time24'); 
+            
+            let h = "09", m = "30", ampm = "AM";
+            if (val24) {
+                let parts = val24.split(':');
+                let hour24 = parseInt(parts[0]);
+                m = parts[1];
+                ampm = hour24 >= 12 ? "PM" : "AM";
+                let hour12 = hour24 % 12;
+                if(hour12 === 0) hour12 = 12;
+                h = String(hour12).padStart(2, '0');
+            }
+
+            document.getElementById('tp-hour').value = h;
+            document.getElementById('tp-minute').value = m;
+            document.getElementById('tp-ampm').value = ampm;
+            
+            document.getElementById('customTimePickerModal').style.display = 'flex';
+        };
+
+        window.closeTimePicker = function() {
+            document.getElementById('customTimePickerModal').style.display = 'none';
+        };
+
+        window.setTimeFromPicker = function() {
+            let h = document.getElementById('tp-hour').value;
+            let m = document.getElementById('tp-minute').value;
+            let ampm = document.getElementById('tp-ampm').value;
+            
+            let hour24 = parseInt(h);
+            if (ampm === "PM" && hour24 !== 12) hour24 += 12;
+            if (ampm === "AM" && hour24 === 12) hour24 = 0;
+            let time24 = String(hour24).padStart(2, '0') + ':' + m;
+            
+            let displayTime = h + ':' + m + ' ' + ampm;
+            
+            if (activeTimeInputId) {
+                const input = document.getElementById(activeTimeInputId);
+                input.value = displayTime;
+                input.setAttribute('data-time24', time24);
+            }
+            closeTimePicker();
+        };
+
+        // --- AUDIO PREVIEW (Max 2 Seconds) ---
+        window.previewAudio = function() {
+            const audioSrc = document.getElementById('audioSelect').value;
+            const audioObj = document.getElementById('bellAudio');
+            audioObj.src = audioSrc;
+            audioObj.loop = false; // Prevent looping during preview
+            audioObj.play().catch(e => console.log("Audio preview blocked."));
+
+            // Stop automatically after 2 seconds
+            setTimeout(() => {
+                audioObj.pause();
+                audioObj.currentTime = 0;
+            }, 2000);
+        };
+
+        window.stopRinging = function() {
+            const audioObj = document.getElementById('bellAudio');
+            audioObj.pause();
+            audioObj.currentTime = 0; 
+            document.getElementById('bellAlert').style.display = 'none';
+        };
+
+        window.addNewBellRow = function(name = '', time24 = '09:30') {
+            const container = document.getElementById('bellListContainer');
+            const rowId = 'bell_' + Date.now() + Math.floor(Math.random() * 100);
+            
+            let parts = time24.split(':');
+            let hour24 = parseInt(parts[0]);
+            let m = parts[1];
+            let ampm = hour24 >= 12 ? "PM" : "AM";
+            let hour12 = hour24 % 12;
+            if(hour12 === 0) hour12 = 12;
+            let h = String(hour12).padStart(2, '0');
+            let displayTime = h + ':' + m + ' ' + ampm;
+
+            const trashIcon = `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+
+            const html = `
+                <div class="time-group" id="${rowId}_group">
+                    <input type="text" class="time-input-name bell-name" placeholder="e.g. Morning Bell" value="${name}">
+                    <input type="text" class="time-input bell-time" id="${rowId}" value="${displayTime}" data-time24="${time24}" readonly onclick="openTimePicker('${rowId}')" placeholder="Select Time">
+                    <button class="btn-remove-bell" onclick="removeBellRow('${rowId}_group')" title="Remove Bell">${trashIcon}</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        };
+
+        window.removeBellRow = function(groupId) {
+            const group = document.getElementById(groupId);
+            if(group) group.remove();
+        };
+
+        window.toggleMasterBell = function() {
+            const isOn = document.getElementById('masterBellToggle').checked;
+            const statusText = document.getElementById('masterBellStatus');
+            if (isOn) {
+                statusText.innerText = "System is ON (Monitoring)";
+                statusText.style.color = "#10b981";
+                startBellService();
             } else {
-                banner.style.display = 'none';
-            }
-        }
-        
-        // Run bell check every 30 seconds on the dashboard
-        setInterval(checkUpcomingBell, 30000);
-
-        async function loadSettings() {
-            try {
-                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
-                if (data) {
-                    document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
-                    document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
-                    if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
-                    
-                    document.getElementById('set_name').value = data.institute_name || '';
-                    document.getElementById('set_sub').value = data.sub_name || '';
-                    document.getElementById('set_address').value = data.address || '';
-                    document.getElementById('set_phone').value = data.phone || '';
-                    document.getElementById('set_email').value = data.email || '';
-                    document.getElementById('set_logo').value = data.logo_url || '';
-                }
-            } catch (e) {}
-        }
-
-        window.saveSettings = async function(e) {
-            e.preventDefault();
-            let phoneVal = document.getElementById('set_phone').value;
-            if (phoneVal && phoneVal.length !== 10) { alert('Error: Phone number must strictly be 10 digits!'); return; }
-
-            const payload = {
-                id: 1, institute_name: document.getElementById('set_name').value, sub_name: document.getElementById('set_sub').value,
-                address: document.getElementById('set_address').value, phone: phoneVal, email: document.getElementById('set_email').value, logo_url: document.getElementById('set_logo').value
-            };
-            const { error } = await supabase.from('institute_settings').upsert([payload]);
-            if(error) alert('Error saving: ' + error.message);
-            else { alert('Settings Saved! Will reflect across all print formats.'); document.getElementById('settingsModal').style.display='none'; loadSettings(); }
-        }
-
-        window.confirmReset = function() {
-            let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
-            let userInput = prompt(`Security Verification\nTo clear settings data, please solve this math question:\n${num1} + ${num2} = ?`);
-            if (userInput !== null) {
-                if (parseInt(userInput) === (num1+num2)) { document.getElementById('settingsForm').reset(); alert('Reset Complete!'); } 
-                else { alert('Incorrect answer!'); }
+                statusText.innerText = "System is OFF";
+                statusText.style.color = "#ef4444";
+                if(bellTimer) clearInterval(bellTimer);
             }
         };
 
-        async function loadDashboardData() {
-            try {
-                const [stuRes, crsRes, payRes] = await Promise.all([
-                    supabase.from('students').select('*'), supabase.from('courses').select('*'), supabase.from('fee_payments').select('*')
-                ]);
+        window.saveBellTimings = function() {
+            let bells = [];
+            const rows = document.querySelectorAll('#bellListContainer .time-group');
+            rows.forEach(row => {
+                const name = row.querySelector('.bell-name').value;
+                const timeInput = row.querySelector('.bell-time');
+                const time24 = timeInput.getAttribute('data-time24');
+                if (name && time24) { bells.push({ name, time: time24 }); }
+            });
+
+            const duration = document.getElementById('scheduleDuration').value;
+            let expiryDate = null;
+            if (duration === '1week') {
+                let d = new Date(); d.setDate(d.getDate() + 7);
+                expiryDate = d.getTime();
+            } else if (duration === '1month') {
+                let d = new Date(); d.setMonth(d.getMonth() + 1);
+                expiryDate = d.getTime();
+            }
+
+            let excludedDays = [];
+            document.querySelectorAll('.exclude-day:checked').forEach(cb => {
+                excludedDays.push(parseInt(cb.value));
+            });
+
+            const masterOn = document.getElementById('masterBellToggle').checked;
+            const audioSrc = document.getElementById('audioSelect').value;
+            const warningDur = parseInt(document.getElementById('warningDuration').value);
+            
+            bellSettings = {
+                isOn: masterOn,
+                expiryDate: expiryDate,
+                excludedDays: excludedDays,
+                bells: bells,
+                audioUrl: audioSrc,
+                warningDuration: warningDur
+            };
+            
+            localStorage.setItem('globus_bell_settings_v6', JSON.stringify(bellSettings));
+            playedToday = {}; 
+            
+            document.getElementById('bellAudio').src = audioSrc;
+            
+            checkExpiryAndStart();
+            alert("Smart Calendar Schedule & Settings Saved!");
+        };
+
+        function loadBellTimings() {
+            const saved = localStorage.getItem('globus_bell_settings_v6');
+            if (saved) {
+                bellSettings = JSON.parse(saved);
+                document.getElementById('masterBellToggle').checked = bellSettings.isOn || false;
                 
-                const studentsData = stuRes.data || []; const coursesData = crsRes.data || []; const paymentsData = payRes.data || [];
+                if(bellSettings.warningDuration !== undefined) {
+                    document.getElementById('warningDuration').value = bellSettings.warningDuration;
+                }
 
-                const totalStudentsCount = studentsData.length;
-                const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
+                if(bellSettings.audioUrl) {
+                    document.getElementById('audioSelect').value = bellSettings.audioUrl;
+                    document.getElementById('bellAudio').src = bellSettings.audioUrl;
+                } else {
+                    document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
+                }
+
+                if (bellSettings.excludedDays) {
+                    document.querySelectorAll('.exclude-day').forEach(cb => {
+                        if(bellSettings.excludedDays.includes(parseInt(cb.value))) cb.checked = true;
+                    });
+                }
                 
-                document.getElementById('statTotalStudents').textContent = totalStudentsCount;
-                document.getElementById('statActiveStudents').textContent = activeStudents.length;
+                if (!bellSettings.expiryDate) document.getElementById('scheduleDuration').value = 'forever';
+                else {
+                    let diffDays = Math.ceil((bellSettings.expiryDate - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                    if (diffDays <= 7 && diffDays > 0) document.getElementById('scheduleDuration').value = '1week';
+                    else if (diffDays > 7) document.getElementById('scheduleDuration').value = '1month';
+                }
 
-                const activeCourses = coursesData.filter(c => c.status === 'Active');
-                document.getElementById('statCourses').textContent = activeCourses.length;
+                if(bellSettings.bells && bellSettings.bells.length > 0) {
+                    bellSettings.bells.forEach(b => addNewBellRow(b.name, b.time));
+                } else {
+                    addNewBellRow('Morning Bell', '09:30');
+                    addNewBellRow('Lunch Break', '13:00');
+                    addNewBellRow('Closing Bell', '16:00');
+                }
 
-                const todayDate = new Date().toISOString().split('T')[0];
-                const paymentsToday = paymentsData.filter(p => p.payment_date === todayDate).reduce((sum, p) => sum + Number(p.amount_paid), 0);
-                const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
-                document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
-
-                let totalPendingSum = 0;
-                activeStudents.forEach(s => {
-                    const totalCourseFee = Number(s.total_fee) || 0; const admissionFee = Number(s.admission_fee) || 0;
-                    const stuPayments = paymentsData.filter(p => p.student_id === s.id);
-                    const totalPaidPayments = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
-                    const totalDiscount = stuPayments.reduce((sum, p) => sum + (Number(p.discount_amount) || 0), 0);
-                    let totalCoursePending = totalCourseFee - (admissionFee + totalPaidPayments + totalDiscount);
-                    if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
-                });
-                document.getElementById('statPendingFees').textContent = '₹ ' + totalPendingSum;
-
-            } catch (err) { console.error("Dashboard Loading Error:", err); }
+                checkExpiryAndStart();
+            } else {
+                addNewBellRow('Morning Bell', '09:30');
+                addNewBellRow('Lunch Break', '13:00');
+                addNewBellRow('Closing Bell', '16:00');
+                document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
+            }
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
-        checkAuth();
+        function checkExpiryAndStart() {
+            const alertBox = document.getElementById('scheduleExpiryAlert');
+            alertBox.style.display = 'none';
+
+            if (!bellSettings.isOn) {
+                toggleMasterBell();
+                return;
+            }
+
+            if (bellSettings.expiryDate) {
+                const now = new Date().getTime();
+                const timeLeft = bellSettings.expiryDate - now;
+                const daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
+
+                if (timeLeft <= 0) {
+                    alertBox.innerHTML = "⚠️ <b>Schedule Expired!</b> The preset time duration for your bell schedule has ended. The system has been paused. Please set a new schedule.";
+                    alertBox.style.display = 'block';
+                    document.getElementById('masterBellToggle').checked = false;
+                    toggleMasterBell();
+                    return;
+                } else if (daysLeft <= 2) {
+                    alertBox.innerHTML = `⚠️ <b>Schedule Ending Soon!</b> Your bell schedule will expire in <b>${daysLeft} day(s)</b>.`;
+                    alertBox.style.display = 'block';
+                }
+            }
+
+            toggleMasterBell();
+        }
+
+        function startBellService() {
+            if(bellTimer) clearInterval(bellTimer);
+            
+            bellTimer = setInterval(() => {
+                const now = new Date();
+                
+                if (bellSettings.excludedDays && bellSettings.excludedDays.includes(now.getDay())) {
+                    return; 
+                }
+
+                const currentHour = String(now.getHours()).padStart(2, '0');
+                const currentMin = String(now.getMinutes()).padStart(2, '0');
+                const currentTime = `${currentHour}:${currentMin}`;
+
+                bellSettings.bells.forEach((bell, index) => {
+                    const uniqueId = bell.name + '_' + index;
+                    if (bell.time === currentTime && !playedToday[uniqueId]) {
+                        
+                        const audio = document.getElementById('bellAudio');
+                        audio.currentTime = 0; 
+                        audio.loop = true; // Ring continuously until stopped
+                        audio.play().catch(e => console.log("Audio play blocked."));
+                        
+                        const alertBox = document.getElementById('bellAlert');
+                        document.getElementById('bellAlertMsg').innerText = bell.name;
+                        alertBox.style.display = 'block';
+                        
+                        playedToday[uniqueId] = true;
+                    }
+                });
+            }, 30000); 
+        }
+
+        // --- FETCH ALERTS LOGIC ---
+        async function fetchStudentAlerts() {
+            try {
+                const [stuRes, payRes] = await Promise.all([
+                    supabase.from('students').select('*').eq('status', 'active'),
+                    supabase.from('fee_payments').select('*')
+                ]);
+                
+                const students = stuRes.data || [];
+                const payments = payRes.data || [];
+                
+                const today = new Date();
+                const tMonth = today.getMonth() + 1;
+                const tDay = today.getDate();
+
+                let birthdayHTML = '';
+                let hasBirthdays = false;
+                let feeDuesData = [];
+
+                students.forEach(s => {
+                    if (s.date_of_birth) {
+                        const dob = new Date(s.date_of_birth);
+                        if (dob.getMonth() + 1 === tMonth && dob.getDate() === tDay) {
+                            hasBirthdays = true;
+                            const waMsg = `Happy Birthday ${s.full_name}! 🎉 Wishing you a fantastic year ahead from the Management and Staff of Globus Technical Academy.`;
+                            const waLink = `https://wa.me/91${s.phone_number}?text=${encodeURIComponent(waMsg)}`;
+                            
+                            birthdayHTML += `
+                                <div class="list-item">
+                                    <div class="item-info"><h4>${s.full_name}</h4><p>Reg: ${s.register_number || '-'}</p></div>
+                                    <a href="${waLink}" target="_blank" class="btn-wa">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                                        Wishes
+                                    </a>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    const totalFee = Number(s.total_fee) || 0; 
+                    const admFee = Number(s.admission_fee) || 0;
+                    const stuPayments = payments.filter(p => p.student_id === s.id);
+                    const paidOther = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0), 0);
+                    const totalPaid = admFee + paidOther;
+                    const balance = totalFee - totalPaid;
+
+                    if (balance > 0) {
+                        feeDuesData.push({ student: s, balance: balance });
+                    }
+                });
+
+                if (hasBirthdays) document.getElementById('birthdayList').innerHTML = birthdayHTML;
+                else document.getElementById('birthdayList').innerHTML = '<div class="empty-state">No birthdays today.</div>';
+
+                feeDuesData.sort((a, b) => b.balance - a.balance);
+                let feeHTML = '';
+                if (feeDuesData.length > 0) {
+                    feeDuesData.forEach(item => {
+                        const s = item.student;
+                        const waMsg = `Dear ${s.full_name}, this is a gentle reminder from Globus Technical Academy regarding your pending course fee of Rs. ${item.balance}. Please clear the dues at the earliest. Ignore this message if you have already paid. Thank you.`;
+                        const waLink = `https://wa.me/91${s.phone_number}?text=${encodeURIComponent(waMsg)}`;
+
+                        feeHTML += `
+                            <div class="list-item">
+                                <div class="item-info">
+                                    <h4>${s.full_name}</h4>
+                                    <p>Reg: ${s.register_number || '-'} | Phone: ${s.phone_number}</p>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div class="due-amount">₹ ${item.balance}</div>
+                                    <a href="${waLink}" target="_blank" class="btn-wa">
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                                        WhatsApp
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    feeHTML = '<div class="empty-state">No pending fees found.</div>';
+                }
+                document.getElementById('feeList').innerHTML = feeHTML;
+
+            } catch(e) { console.error("Error loading alerts", e); }
+        }
+
+        document.addEventListener('DOMContentLoaded', initAssistant);
     </script>
 </body>
 </html>
