@@ -9,14 +9,16 @@
         body { background-color: #f8fafc; padding-bottom: 40px; }
         .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
         
+        /* Perfectly Centered Header */
         .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; min-height: 45px;}
         .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 100%;}
         
+        /* 3D Back Button */
         .btn-back-dashboard { position: absolute; left: 0; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; z-index: 10;}
         .btn-back-dashboard:active { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
 
-        /* AUDIO UNLOCK BUTTON (CRITICAL FOR MOBILE) */
+        /* AUDIO UNLOCK BUTTON */
         .audio-unlock-btn { background: #10b981; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 900; font-size: 16px; margin-bottom: 20px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4); cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; animation: pulseBtn 2s infinite;}
         @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
@@ -29,7 +31,6 @@
         
         .master-switch-container { display: flex; justify-content: center; align-items: center; gap: 12px; background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px solid #bbf7d0; margin-bottom: 18px; }
         
-        /* RE-DESIGNED CLEAN SETTINGS BOX */
         .schedule-settings-box { background: #ffffff; border: 1px solid #e2e8f0; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .setting-group { margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
         .setting-group:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
@@ -83,12 +84,14 @@
 
         .empty-state { text-align: center; color: #94a3b8; font-weight: 700; font-size: 14px; padding: 25px; }
 
+        /* Notification Popup */
         #bellAlert { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fef08a; border: 2px solid #f59e0b; color: #b45309; padding: 15px 25px; border-radius: 12px; font-weight: 900; z-index: 9999; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 90%; max-width: 350px; text-align: center;}
         @keyframes slideDown { from { top: -50px; opacity: 0; transform: translate(-50%, -20px); } to { top: 20px; opacity: 1; transform: translate(-50%, 0); } }
         
         .btn-stop-bell { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 900; margin-top: 15px; cursor: pointer; width: 100%; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3); font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 5px;}
         .btn-stop-bell:active { transform: scale(0.95); }
 
+        /* CUSTOM MODAL CLOCK STYLES */
         #customTimePickerModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 10000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
         .time-picker-card { background: white; padding: 25px; border-radius: 16px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .tp-select { padding: 12px 5px; font-size: 20px; font-weight: 900; border-radius: 8px; border: 2px solid #cbd5e1; outline: none; background: #f8fafc; color: #0f172a; text-align: center; width: 70px; appearance: none; -webkit-appearance: none; }
@@ -253,25 +256,17 @@
         let playedToday = {}; 
         let bellSettings = { isOn: false, expiryDate: null, excludedDays: [], bells: [], audioUrl: '', warningDuration: 15 };
 
-        async function initAssistant() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
-            initCustomPicker();
-            loadBellTimings();
-            fetchStudentAlerts();
-        }
+        // --- GLOBAL FUNCTIONS DEFINED FIRST TO PREVENT CRASHES ---
 
-        // --- AUDIO UNLOCK SYSTEM (FOR MOBILE CHROME FIX) ---
+        // 1. Audio Unlock (Mobile Fix)
         window.unlockAudioSystem = function() {
             const audioObj = document.getElementById('bellAudio');
             audioObj.src = document.getElementById('audioSelect').value;
-            // Play and immediately pause to unlock the audio context for the browser
             audioObj.play().then(() => {
                 audioObj.pause();
                 audioObj.currentTime = 0;
                 document.getElementById('audioUnlockBtn').style.display = 'none';
                 
-                // Alert the user that the system is ready
                 const btnSave = document.querySelector('.btn-save-bell');
                 const origText = btnSave.innerHTML;
                 btnSave.innerHTML = "✅ System Unlocked! Ready to ring.";
@@ -286,15 +281,17 @@
             });
         };
 
-        // --- CUSTOM TIME PICKER LOGIC ---
+        // 2. Custom Time Picker Logic
         let activeTimeInputId = null;
 
-        function initCustomPicker() {
+        window.initCustomPicker = function() {
             const hrSelect = document.getElementById('tp-hour');
+            hrSelect.innerHTML = '';
             for(let i=1; i<=12; i++) { hrSelect.add(new Option(String(i).padStart(2,'0'), String(i).padStart(2,'0'))); }
             const minSelect = document.getElementById('tp-minute');
+            minSelect.innerHTML = '';
             for(let i=0; i<=59; i++) { minSelect.add(new Option(String(i).padStart(2,'0'), String(i).padStart(2,'0'))); }
-        }
+        };
 
         window.openTimePicker = function(inputId) {
             activeTimeInputId = inputId;
@@ -302,7 +299,7 @@
             const val24 = input.getAttribute('data-time24'); 
             
             let h = "09", m = "30", ampm = "AM";
-            if (val24) {
+            if (val24 && val24.includes(':')) {
                 let parts = val24.split(':');
                 let hour24 = parseInt(parts[0]);
                 m = parts[1];
@@ -332,7 +329,6 @@
             if (ampm === "PM" && hour24 !== 12) hour24 += 12;
             if (ampm === "AM" && hour24 === 12) hour24 = 0;
             let time24 = String(hour24).padStart(2, '0') + ':' + m;
-            
             let displayTime = h + ':' + m + ' ' + ampm;
             
             if (activeTimeInputId) {
@@ -340,21 +336,24 @@
                 input.value = displayTime;
                 input.setAttribute('data-time24', time24);
             }
-            closeTimePicker();
+            window.closeTimePicker();
         };
 
-        // --- AUDIO LOGIC ---
+        // 3. Audio & Bell Controls
         window.previewAudio = function() {
             const audioSrc = document.getElementById('audioSelect').value;
             const audioObj = document.getElementById('bellAudio');
             audioObj.src = audioSrc;
             audioObj.loop = false; 
-            audioObj.play().catch(e => console.log("Audio preview blocked. Use Unlock Button first."));
-
-            setTimeout(() => {
-                audioObj.pause();
-                audioObj.currentTime = 0;
-            }, 2000);
+            
+            let playPromise = audioObj.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    setTimeout(() => { audioObj.pause(); audioObj.currentTime = 0; }, 2000);
+                }).catch(e => {
+                    console.log("Audio preview blocked. Tap green unlock button first.");
+                });
+            }
         };
 
         window.stopRinging = function() {
@@ -364,11 +363,12 @@
             document.getElementById('bellAlert').style.display = 'none';
         };
 
-        // --- BELL ROW LOGIC ---
         window.addNewBellRow = function(name = '', time24 = '09:30') {
             const container = document.getElementById('bellListContainer');
             const rowId = 'bell_' + Date.now() + Math.floor(Math.random() * 100);
             
+            if(!time24 || !time24.includes(':')) time24 = '09:30';
+
             let parts = time24.split(':');
             let hour24 = parseInt(parts[0]);
             let m = parts[1];
@@ -383,8 +383,8 @@
             const html = `
                 <div class="time-group" id="${rowId}_group">
                     <input type="text" class="time-input-name bell-name" placeholder="e.g. Morning Bell" value="${name}">
-                    <input type="text" class="time-input bell-time" id="${rowId}" value="${displayTime}" data-time24="${time24}" readonly onclick="openTimePicker('${rowId}')" placeholder="Select Time">
-                    <button class="btn-remove-bell" onclick="removeBellRow('${rowId}_group')" title="Remove Bell">${trashIcon}</button>
+                    <input type="text" class="time-input bell-time" id="${rowId}" value="${displayTime}" data-time24="${time24}" readonly onclick="window.openTimePicker('${rowId}')" placeholder="Select Time">
+                    <button class="btn-remove-bell" onclick="window.removeBellRow('${rowId}_group')" title="Remove Bell">${trashIcon}</button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', html);
@@ -447,68 +447,22 @@
                 warningDuration: warningDur
             };
             
-            localStorage.setItem('globus_bell_settings_v6', JSON.stringify(bellSettings));
+            // Version bump to clear any old corrupt data
+            localStorage.setItem('globus_bell_settings_v8', JSON.stringify(bellSettings));
             playedToday = {}; 
             
             document.getElementById('bellAudio').src = audioSrc;
             
-            checkExpiryAndStart();
+            window.checkExpiryAndStart();
             alert("Smart Calendar Schedule & Settings Saved!");
         };
 
-        function loadBellTimings() {
-            const saved = localStorage.getItem('globus_bell_settings_v6');
-            if (saved) {
-                bellSettings = JSON.parse(saved);
-                document.getElementById('masterBellToggle').checked = bellSettings.isOn || false;
-                
-                if(bellSettings.warningDuration !== undefined) {
-                    document.getElementById('warningDuration').value = bellSettings.warningDuration;
-                }
-
-                if(bellSettings.audioUrl) {
-                    document.getElementById('audioSelect').value = bellSettings.audioUrl;
-                    document.getElementById('bellAudio').src = bellSettings.audioUrl;
-                } else {
-                    document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
-                }
-
-                if (bellSettings.excludedDays) {
-                    document.querySelectorAll('.exclude-day').forEach(cb => {
-                        if(bellSettings.excludedDays.includes(parseInt(cb.value))) cb.checked = true;
-                    });
-                }
-                
-                if (!bellSettings.expiryDate) document.getElementById('scheduleDuration').value = 'forever';
-                else {
-                    let diffDays = Math.ceil((bellSettings.expiryDate - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                    if (diffDays <= 7 && diffDays > 0) document.getElementById('scheduleDuration').value = '1week';
-                    else if (diffDays > 7) document.getElementById('scheduleDuration').value = '1month';
-                }
-
-                if(bellSettings.bells && bellSettings.bells.length > 0) {
-                    bellSettings.bells.forEach(b => addNewBellRow(b.name, b.time));
-                } else {
-                    addNewBellRow('Morning Bell', '09:30');
-                    addNewBellRow('Lunch Break', '13:00');
-                    addNewBellRow('Closing Bell', '16:00');
-                }
-
-                checkExpiryAndStart();
-            } else {
-                addNewBellRow('Morning Bell', '09:30');
-                addNewBellRow('Lunch Break', '13:00');
-                addNewBellRow('Closing Bell', '16:00');
-                document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
-            }
-        }
-
-        function checkExpiryAndStart() {
+        window.checkExpiryAndStart = function() {
             const alertBox = document.getElementById('scheduleExpiryAlert');
             alertBox.style.display = 'none';
 
             if (!bellSettings.isOn) {
-                toggleMasterBell();
+                window.toggleMasterBell();
                 return;
             }
 
@@ -521,7 +475,7 @@
                     alertBox.innerHTML = "⚠️ <b>Schedule Expired!</b> The preset time duration for your bell schedule has ended. The system has been paused. Please set a new schedule.";
                     alertBox.style.display = 'block';
                     document.getElementById('masterBellToggle').checked = false;
-                    toggleMasterBell();
+                    window.toggleMasterBell();
                     return;
                 } else if (daysLeft <= 2) {
                     alertBox.innerHTML = `⚠️ <b>Schedule Ending Soon!</b> Your bell schedule will expire in <b>${daysLeft} day(s)</b>.`;
@@ -529,8 +483,8 @@
                 }
             }
 
-            toggleMasterBell();
-        }
+            window.toggleMasterBell();
+        };
 
         function startBellService() {
             if(bellTimer) clearInterval(bellTimer);
@@ -548,22 +502,16 @@
 
                 bellSettings.bells.forEach((bell, index) => {
                     const uniqueId = bell.name + '_' + index;
-                    // Check if it's the exact minute AND hasn't played today
                     if (bell.time === currentTime && !playedToday[uniqueId]) {
                         
                         const audio = document.getElementById('bellAudio');
                         audio.currentTime = 0; 
-                        
                         audio.loop = true; 
-                        // We use a promise here and log any errors
-                        const playPromise = audio.play();
+                        
+                        let playPromise = audio.play();
                         if (playPromise !== undefined) {
-                            playPromise.then(_ => {
-                                // Automatic playback started!
-                                console.log("Bell playing successfully.");
-                            }).catch(error => {
-                                // Auto-play was prevented.
-                                console.log("Autoplay prevented. Make sure to click the green Unlock button first.");
+                            playPromise.catch(e => {
+                                console.log("Auto-play prevented. User needs to tap the green unlock button.");
                             });
                         }
                         
@@ -574,10 +522,10 @@
                         playedToday[uniqueId] = true;
                     }
                 });
-            }, 10000); // Check every 10 seconds to ensure we don't miss the minute
+            }, 10000); 
         }
 
-        // --- FETCH ALERTS LOGIC ---
+        // --- FETCH ALERTS LOGIC (SUPABASE) ---
         async function fetchStudentAlerts() {
             try {
                 const [stuRes, payRes] = await Promise.all([
@@ -615,6 +563,17 @@
                             </div>
                         `;
                     }
+
+                    const totalFee = Number(s.total_fee) || 0; 
+                    const admFee = Number(s.admission_fee) || 0;
+                    const stuPayments = payments.filter(p => p.student_id === s.id);
+                    const paidOther = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0), 0);
+                    const totalPaid = admFee + paidOther;
+                    const balance = totalFee - totalPaid;
+
+                    if (balance > 0) {
+                        feeDuesData.push({ student: s, balance: balance });
+                    }
                 });
 
                 if (hasBirthdays) document.getElementById('birthdayList').innerHTML = birthdayHTML;
@@ -649,10 +608,75 @@
                 }
                 document.getElementById('feeList').innerHTML = feeHTML;
 
-            } catch(e) { console.error("Error loading alerts", e); }
+            } catch(e) { 
+                console.error("Error loading alerts", e); 
+                document.getElementById('feeList').innerHTML = '<div class="empty-state" style="color:red;">Error connecting to database.</div>';
+            }
         }
 
-        document.addEventListener('DOMContentLoaded', initAssistant);
+        // --- SAFE INITIALIZATION ---
+        function loadSettingsSafe() {
+            const saved = localStorage.getItem('globus_bell_settings_v8'); // Version bumped to clear any corrupt old data
+            let loadedSettings = null;
+            try {
+                if (saved) loadedSettings = JSON.parse(saved);
+            } catch(e) { console.error("Error parsing settings"); }
+
+            if (loadedSettings) {
+                bellSettings = loadedSettings;
+                document.getElementById('masterBellToggle').checked = bellSettings.isOn || false;
+                
+                if(bellSettings.warningDuration !== undefined) {
+                    document.getElementById('warningDuration').value = bellSettings.warningDuration;
+                }
+
+                if(bellSettings.audioUrl) {
+                    document.getElementById('audioSelect').value = bellSettings.audioUrl;
+                    document.getElementById('bellAudio').src = bellSettings.audioUrl;
+                } else {
+                    document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
+                }
+
+                if (bellSettings.excludedDays) {
+                    document.querySelectorAll('.exclude-day').forEach(cb => {
+                        if(bellSettings.excludedDays.includes(parseInt(cb.value))) cb.checked = true;
+                    });
+                }
+                
+                if (!bellSettings.expiryDate) document.getElementById('scheduleDuration').value = 'forever';
+                else {
+                    let diffDays = Math.ceil((bellSettings.expiryDate - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                    if (diffDays <= 7 && diffDays > 0) document.getElementById('scheduleDuration').value = '1week';
+                    else if (diffDays > 7) document.getElementById('scheduleDuration').value = '1month';
+                }
+
+                if(bellSettings.bells && bellSettings.bells.length > 0) {
+                    bellSettings.bells.forEach(b => window.addNewBellRow(b.name, b.time));
+                } else {
+                    window.addNewBellRow('Morning Bell', '09:30');
+                    window.addNewBellRow('Lunch Break', '13:00');
+                    window.addNewBellRow('Closing Bell', '16:00');
+                }
+
+                window.checkExpiryAndStart();
+            } else {
+                window.addNewBellRow('Morning Bell', '09:30');
+                window.addNewBellRow('Lunch Break', '13:00');
+                window.addNewBellRow('Closing Bell', '16:00');
+                document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
+                window.toggleMasterBell();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.initCustomPicker();
+            loadSettingsSafe();
+            
+            // Fetch DB async without blocking UI
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session) fetchStudentAlerts();
+            });
+        });
     </script>
 </body>
 </html>
