@@ -20,9 +20,7 @@
         .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); }
 
-        @media (max-width: 600px) {
-            .btn-back-dashboard span { display: none; } 
-        }
+        @media (max-width: 600px) { .btn-back-dashboard span { display: none; } }
 
         /* Stacked Search & Filter */
         .search-filter-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
@@ -37,15 +35,21 @@
         .smc-name { font-size: 19px; font-weight: 900; color: #0f172a; margin-bottom: 4px; line-height: 1.2; }
         .smc-reg { font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Updated: Perfect Circle Avatar */
         .smc-header-center img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 3px solid #eff6ff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        .smc-row { display: flex; align-items: flex-start; margin-bottom: 10px; font-size: 14px; }
+        .smc-row { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 14px; }
         .smc-label { width: 110px; color: #64748b; font-weight: 700; flex-shrink: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
         .smc-value { flex: 1; color: #1e293b; font-weight: 600; }
 
+        /* --- NEW PROGRESS BAR STYLES --- */
+        .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 10px; height: 16px; margin: 10px 0 15px; position: relative; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+        .progress-fill { height: 100%; border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 10px; font-weight: 900; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: width 0.5s ease-in-out; }
+        .progress-fill.active { background: linear-gradient(90deg, #3b82f6, #6366f1); }
+        .progress-fill.completed { background: linear-gradient(90deg, #10b981, #059669); }
+        .progress-text-out { position: absolute; width: 100%; text-align: center; top: 0; left: 0; font-size: 10px; font-weight: 800; color: #475569; line-height: 16px; z-index: 1; mix-blend-mode: overlay;}
+
         /* NEW PROFESSIONAL BUTTON STYLES */
-        .card-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px; }
+        .card-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
         .btn-card { border: none; padding: 12px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 13px; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 5px; }
         
         .btn-view { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #fff; }
@@ -54,7 +58,6 @@
         .btn-id { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; }
         .btn-id:hover { background: linear-gradient(135deg, #0284c7, #0369a1); transform: translateY(-2px); box-shadow: 0 8px 12px -2px rgba(14,165,233,0.3); }
         
-        /* Updated: Smart Outline Delete Button */
         .btn-del-full { background: transparent; color: #ef4444; border: 1px solid #fca5a5; width: 100%; padding: 12px; margin-top: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 14px; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
         .btn-del-full:hover { background: #fef2f2; border-color: #ef4444; }
         .btn-del-full svg { width: 18px; height: 18px; stroke-width: 2.5; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
@@ -81,15 +84,9 @@
             body.print-id .card-edit-col, body.print-id .close-modal-btn, body.print-id .no-print { display: none !important; }
             
             body.print-id #smartCardContent { 
-                position: absolute !important;
-                top: 15mm !important;
-                left: 15mm !important;
-                transform: none !important; 
-                border: 1px dashed #ccc !important; 
-                box-shadow: none !important; 
-                margin: 0 !important;
-                -webkit-print-color-adjust: exact !important; 
-                print-color-adjust: exact !important;
+                position: absolute !important; top: 15mm !important; left: 15mm !important; transform: none !important; 
+                border: 1px dashed #ccc !important; box-shadow: none !important; margin: 0 !important;
+                -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
             }
             @page { size: auto; margin: 10mm; }
         }
@@ -128,7 +125,6 @@
         
         <div class="search-filter-container">
             <input type="text" id="searchInput" class="search-box-pill" placeholder="🔍 Search Name, Reg No, Phone...">
-            <!-- Restored Emojis in Dropdown -->
             <select id="statusFilter" class="filter-dropdown-pill">
                 <option value="active" selected>🟢 Active Students</option>
                 <option value="completed">🎓 Completed Students</option>
@@ -282,10 +278,6 @@
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
-                    if(document.getElementById('navInstName')) document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
-                    if(document.getElementById('navSubName')) document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
-                    if(data.logo_url && document.getElementById('navLogo')) document.getElementById('navLogo').src = data.logo_url;
-                    
                     if(document.getElementById('cardInstName')) document.getElementById('cardInstName').innerText = data.institute_name || 'GLOBUS';
                     if(document.getElementById('cardSubName')) document.getElementById('cardSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
                     if(data.logo_url && document.getElementById('cardInstLogo')) document.getElementById('cardInstLogo').src = data.logo_url;
@@ -295,7 +287,7 @@
                     if(document.getElementById('sealAddress')) document.getElementById('sealAddress').innerText = data.address || '';
                     if(document.getElementById('cardReturnPhone') && data.phone) document.getElementById('cardReturnPhone').innerText = '+91 ' + data.phone;
                 }
-            } catch (e) { console.log("No settings found yet."); }
+            } catch (e) {}
         }
 
         async function fetchStudents() {
@@ -348,10 +340,43 @@
                 const balColor = bal > 0 ? '#EF4444' : '#10B981';
                 const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
                 
-                // Fallback avatars (using stable UI faces, no external links to avoid 502)
                 let avatarUrl = s.photo_url || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${s.gender === "Female" ? "%23ec4899" : "%233b82f6"}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
-
                 let qualBadge = `<span style="background: #F3F4F6; color: #374151; padding: 2px 6px; border-radius: 4px; font-weight: 700; border: 1px solid #cbd5e1;">${s.qualification || 'N/A'}</span>`;
+
+                // --- PROGRESS BAR CALCULATION LOGIC ---
+                let progressPercent = 0;
+                let progressClass = 'active';
+                let progressText = '0%';
+                
+                if (s.status && s.status.toLowerCase() === 'completed') {
+                    progressPercent = 100;
+                    progressClass = 'completed';
+                    progressText = 'Course Completed';
+                } else {
+                    const course = globalCourses.find(c => c.id == s.course_id);
+                    if (course && course.modules && Array.isArray(course.modules)) {
+                        const totalMods = course.modules.length;
+                        const currentModIndex = course.modules.indexOf(s.module) + 1; // 1-based index
+                        
+                        if (totalMods > 0 && currentModIndex > 0) {
+                            progressPercent = Math.round((currentModIndex / totalMods) * 100);
+                            progressText = `${progressPercent}% (Mod ${currentModIndex}/${totalMods})`;
+                        } else if (totalMods > 0) {
+                            // Student is enrolled but module not strictly matching (e.g. newly admitted)
+                            progressPercent = 5; 
+                            progressText = 'Just Started';
+                        }
+                    }
+                }
+                
+                // Construct Progress Bar HTML
+                let progressBarHtml = `
+                    <div class="progress-container">
+                        <div class="progress-fill ${progressClass}" style="width: ${progressPercent}%;"></div>
+                        <div class="progress-text-out">${progressText}</div>
+                    </div>
+                `;
+                // -------------------------------------
 
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
@@ -377,8 +402,11 @@
                     </div>
                     <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
                     <div class="smc-row"><span class="smc-label">Qualification:</span> <span class="smc-value">${qualBadge}</span></div>
-                    <div class="smc-row"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:700; color:#1e3a8a;">${s.display_course_name}</span></div>
-                    <div class="smc-row"><span class="smc-label">Module:</span> <span class="smc-value">${s.module || '-'}</span></div>
+                    <div class="smc-row" style="margin-bottom: 2px;"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:800; color:#1e3a8a;">${s.display_course_name}</span></div>
+                    
+                    ${progressBarHtml}
+                    
+                    <div class="smc-row"><span class="smc-label">Current Module:</span> <span class="smc-value">${s.module || '-'}</span></div>
                     <div class="smc-row"><span class="smc-label">Fee Status:</span> <span class="smc-value" style="color:${balColor}; font-weight:800;">${balText}</span></div>
                     ${actionBtnsHTML}
                 `;
@@ -715,7 +743,6 @@
             document.getElementById('profileCardContainer').style.display = 'none';
         };
 
-        checkAuth();
     </script>
 </body>
 </html>
