@@ -8,12 +8,14 @@
     
     <!-- Chart.js for Live Graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2pdf for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         body { background-color: #f8fafc; padding-bottom: 40px; }
         .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
         
-        /* Fixed Header Spacing */
+        /* Clean Header */
         .top-nav { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; }
         
         /* Premium 3D Back Button (Icon Only) */
@@ -21,7 +23,7 @@
         .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
 
-        .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
         
         /* Filter Section */
         .filter-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; margin-bottom: 20px; }
@@ -35,13 +37,13 @@
         .btn-primary { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-size: 15px; box-shadow: 0 4px 6px rgba(2, 132, 199, 0.3); transition: all 0.2s ease; margin-top: 5px;}
         .btn-primary:active { transform: scale(0.98); }
 
-        /* Charts Section (Mobile Optimized) */
+        /* Charts Section (Strict Mobile Optimization) */
         .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .chart-box { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .chart-box { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; }
         .chart-title { font-size: 13px; font-weight: 800; color: #334155; margin-bottom: 15px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px;}
         
-        /* Crucial constraint for Chart.js responsiveness */
-        .chart-wrapper { position: relative; width: 100%; flex-grow: 1; min-height: 250px; }
+        /* Strict wrapper to prevent Chart.js from overflowing on mobile */
+        .chart-wrapper { position: relative; width: 100%; height: 260px; margin: 0 auto; }
 
         /* Table Section */
         .table-card { background: white; padding: 0; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 20px;}
@@ -64,9 +66,9 @@
 
         /* Media Queries for Mobile Screens */
         @media (max-width: 768px) {
-            .page-title { font-size: 15px; } /* Smaller text on mobile */
+            .page-title { font-size: 16px; } 
             .charts-container { grid-template-columns: 1fr; } /* Stack charts vertically */
-            .chart-wrapper { min-height: 280px; } /* Give charts enough room to breathe on mobile */
+            .chart-wrapper { height: 280px; } /* Slightly taller on mobile for labels */
             .export-btns { width: 100%; }
             .btn-export { flex: 1; justify-content: center; padding: 10px;}
         }
@@ -88,7 +90,7 @@
             <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
                 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
-            <h1 class="page-title">📊 Admission Analytics</h1>
+            <h1 class="page-title">Admission Analytics</h1>
         </div>
 
         <!-- Smart Filter Section -->
@@ -192,7 +194,7 @@
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session) { window.location.href = 'login.html'; return; }
 
-                // Fetch Courses for Dropdown
+                // Fetch Courses
                 const { data: cData } = await supabase.from('courses').select('id, course_name');
                 if (cData) {
                     allCourses = cData;
@@ -200,22 +202,20 @@
                     cData.forEach(c => cSelect.add(new Option(c.course_name, c.id)));
                 }
 
-                // Fetch All Students
+                // Fetch Students
                 const { data: sData } = await supabase.from('students').select('*').order('admission_date', { ascending: false });
                 if (sData) {
                     allStudents = sData;
-                    // Map course names
                     allStudents.forEach(s => {
                         const c = allCourses.find(xc => xc.id == s.course_id);
                         s.course_name_display = c ? c.course_name : (s.course_name || 'N/A');
                     });
                 }
                 
-                // Initial Generation
                 window.generateReport();
 
             } catch(e) { 
-                console.error("Error loading data", e); 
+                console.error("Error", e); 
                 document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error connecting to database.</td></tr>';
             }
         }
@@ -258,7 +258,6 @@
             const fromVal = document.getElementById('fromDate').value;
             const toVal = document.getElementById('toDate').value;
 
-            // 1. Filter Data
             let filtered = allStudents.filter(s => {
                 let matchCourse = (courseVal === 'all' || s.course_id == courseVal);
                 let matchDate = true;
@@ -270,7 +269,6 @@
                 return matchCourse && matchDate;
             });
 
-            // 2. Update Table
             document.getElementById('totalCountBadge').innerText = filtered.length;
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
@@ -292,7 +290,6 @@
                 });
             }
 
-            // 3. Prepare Chart Data
             const courseCounts = {};
             filtered.forEach(s => { courseCounts[s.course_name_display] = (courseCounts[s.course_name_display] || 0) + 1; });
             const pieLabels = Object.keys(courseCounts);
@@ -309,7 +306,6 @@
             const sortedMonths = Object.keys(monthCounts).sort((a, b) => new Date('01 ' + a) - new Date('01 ' + b));
             const barData = sortedMonths.map(m => monthCounts[m]);
 
-            // 4. Render
             renderPieChart(pieLabels, pieData);
             renderBarChart(sortedMonths, barData);
         };
@@ -320,7 +316,6 @@
             
             if(data.length === 0) return;
 
-            // DYNAMIC LEGEND POSITION BASED ON SCREEN SIZE
             const isMobile = window.innerWidth <= 768;
 
             pieChartInstance = new Chart(ctx, {
@@ -336,12 +331,13 @@
                 options: {
                     responsive: true, 
                     maintainAspectRatio: false,
+                    layout: { padding: isMobile ? 5 : 15 },
                     plugins: { 
                         legend: { 
-                            position: isMobile ? 'bottom' : 'right', // Moves legend below chart on mobile
+                            position: isMobile ? 'bottom' : 'right',
                             labels: {
-                                font:{size: 11, family:'Arial'},
-                                boxWidth: 15
+                                boxWidth: 12,
+                                font: { size: 10, family: 'Arial' }
                             } 
                         } 
                     }
@@ -375,10 +371,9 @@
             });
         }
 
-        // Re-render chart on window resize to fix legend position
+        // Handle resize dynamically
         window.addEventListener('resize', function() {
             if(pieChartInstance || barChartInstance) {
-                // simple debounce to prevent lag
                 clearTimeout(window.resizeTimer);
                 window.resizeTimer = setTimeout(window.generateReport, 250);
             }
