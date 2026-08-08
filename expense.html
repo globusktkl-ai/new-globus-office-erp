@@ -9,7 +9,17 @@
         body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, sans-serif; padding-bottom: 30px; }
         
         .main-content { padding: 15px; max-width: 600px; margin: 0 auto; }
-        .back-btn { display: inline-block; margin-bottom: 15px; text-decoration: none; color: #3498db; font-weight: bold; }
+        
+        /* Premium 3D Back to Dashboard Button */
+        .btn-back-dashboard { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
+        .btn-back-dashboard:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
+        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); }
+
+        /* DISABLE SCROLLING ON NUMBER INPUTS */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
         
         .form-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
         .form-title { color: #EF4444; margin-top: 0; font-size: 20px; border-bottom: 2px solid #fef2f2; padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
@@ -30,8 +40,9 @@
             background-color: #fff;
         }
         
+        /* Updated Blue Submit Button */
         .btn-submit { 
-            background: linear-gradient(135deg, #EF4444, #DC2626); 
+            background: linear-gradient(135deg, #3b82f6, #2563eb); 
             color: white; 
             border: none; 
             padding: 14px; 
@@ -41,9 +52,10 @@
             cursor: pointer; 
             width: 100%; 
             margin-top: 10px;
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            transition: all 0.2s;
         }
-        .btn-submit:hover { background: linear-gradient(135deg, #DC2626, #B91C1C); }
+        .btn-submit:hover { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
         .btn-submit:disabled { background: #9CA3AF; cursor: not-allowed; box-shadow: none; }
 
         /* Notification Toast */
@@ -64,20 +76,35 @@
 <body>
 
     <nav class="app-header">
-        <div class="header-left" style="display: flex; align-items: center; gap: 10px;">
+        <div class="header-left" style="display: flex; align-items: center; gap: 10px; flex: 1;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
             <div style="display: flex; flex-direction: column;">
                 <span class="brand-top" style="font-size: 16px;">Globus</span>
                 <span class="brand-bottom">Technical Academy</span>
             </div>
         </div>
+        <div class="header-right">
+            <!-- Premium 3D Back Button Added Here -->
+            <a href="dashboard.html" class="btn-back-dashboard">
+                <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
+                    <defs>
+                        <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#2563eb" />
+                            <stop offset="100%" stop-color="#9333ea" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M9 14L4 9l5-5" />
+                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+                </svg>
+                <span>Dashboard</span>
+            </a>
+        </div>
     </nav>
 
     <div class="main-content">
-        <a href="dashboard.html" class="back-btn">⬅ Back to Dashboard</a>
-
         <div class="form-card">
-            <h2 class="form-title">💸 Add New Expense</h2>
+            <!-- Emoji Removed -->
+            <h2 class="form-title">Add New Expense</h2>
             
             <form id="expenseForm">
                 <div class="form-group">
@@ -137,6 +164,11 @@
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
+
+        // PREVENT SCROLL WHEEL ON NUMBER INPUTS
+        document.addEventListener('wheel', function(event) {
+            if (document.activeElement.type === 'number') { document.activeElement.blur(); }
+        });
 
         // Set default date to today
         document.getElementById('expense_date').value = new Date().toISOString().split('T')[0];
