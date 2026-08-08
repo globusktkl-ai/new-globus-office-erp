@@ -6,12 +6,16 @@
     <title>Finance & Fees - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
     
-    <!-- Scripts for Professional PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <style>
+        /* DISABLE SCROLLING ON NUMBER INPUTS */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
         /* Finance Module Specific Styles */
         .finance-tabs { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
         .tab-btn { flex: 1; min-width: 150px; padding: 12px 15px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 800; color: #475569; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -39,6 +43,11 @@
         .summary-box { display: flex; flex-direction: column; }
         .summary-label { font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
         .summary-value { font-size: 16px; font-weight: 900; color: #0f172a; }
+
+        /* Modal Overlay for Confirmation */
+        .modal-overlay-confirm { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 9999; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); }
+        .confirm-box { background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: zoomIn 0.3s ease; }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -54,7 +63,6 @@
     </nav>
 
     <main class="main-content">
-        <!-- FINANCE TABS -->
         <div class="finance-tabs">
             <button class="tab-btn active" onclick="switchTab('collect')"><span>💵</span> Collect Fee</button>
             <button class="tab-btn" onclick="switchTab('ledger')"><span>🧾</span> Individual Ledger</button>
@@ -114,8 +122,24 @@
                         <input type="date" id="paymentDate" class="form-control" required>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" id="submitBtn">Submit Payment</button>
+                    <button type="button" class="btn btn-primary" id="preSubmitBtn" onclick="triggerConfirmation()">Submit Payment</button>
                 </form>
+            </div>
+        </div>
+
+        <!-- PAYMENT CONFIRMATION MODAL -->
+        <div id="confirmModal" class="modal-overlay-confirm">
+            <div class="confirm-box">
+                <div style="font-size: 50px; line-height: 1; margin-bottom: 10px;">⚠️</div>
+                <h2 style="color: #0f172a; margin-top: 0; margin-bottom: 10px; font-size: 20px; text-transform: uppercase;">Confirm Payment</h2>
+                <p style="color: #64748b; font-size: 15px; margin-bottom: 5px;">You are about to process a payment of</p>
+                <h1 id="confirmAmtDisplay" style="color: #10b981; font-size: 42px; margin: 10px 0; font-weight: 900;">₹ 0</h1>
+                <p id="confirmStudentDisplay" style="font-weight: bold; color: #1e3a8a; font-size: 16px; margin-bottom: 25px;"></p>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="closeConfirmation()" style="flex: 1; padding: 14px; border-radius: 8px; border: none; font-weight: bold; background: #e2e8f0; color: #475569; cursor: pointer; font-size: 15px;">Cancel</button>
+                    <button id="finalSubmitBtn" onclick="processFinalPayment()" style="flex: 1.5; padding: 14px; border-radius: 8px; border: none; font-weight: bold; background: #10b981; color: white; cursor: pointer; font-size: 15px; box-shadow: 0 4px 10px rgba(16,185,129,0.3);">Confirm & Pay</button>
+                </div>
             </div>
         </div>
 
@@ -150,9 +174,7 @@
                                     <th style="color: #10b981;">Amount Paid</th>
                                 </tr>
                             </thead>
-                            <tbody id="ledgerTableBody">
-                                <!-- Transactions will load here -->
-                            </tbody>
+                            <tbody id="ledgerTableBody"></tbody>
                         </table>
                     </div>
                     
@@ -207,35 +229,26 @@
                 </table>
             </div>
         </div>
-
     </main>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
-        let studentsData = [];
-        let paymentsData = [];
-        let coursesData = [];
-        let globalUniqueModules = [];
-        
-        let selectedStudentId = null;
-        let currentBalance = 0;
-        
-        // Ledger Variables
-        let ledgerStudentId = null;
-        let ledgerStudentData = null;
-        let ledgerTransactions = [];
+        let studentsData = [], paymentsData = [], coursesData = [], globalUniqueModules = [];
+        let selectedStudentId = null, currentBalance = 0;
+        let ledgerStudentId = null, ledgerStudentData = null, ledgerTransactions = [];
+        window.feeReportData = []; window.filteredFeeData = [];
 
-        // Report Variables
-        window.feeReportData = [];
-        window.filteredFeeData = [];
+        // PREVENT SCROLL WHEEL ON NUMBER INPUTS
+        document.addEventListener('wheel', function(event) {
+            if (document.activeElement.type === 'number') { document.activeElement.blur(); }
+        });
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
             document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
-            loadSettings();
-            fetchData();
+            loadSettings(); fetchData();
         }
 
         async function loadSettings() {
@@ -246,13 +259,12 @@
                     document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
                     if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
                 }
-            } catch (e) { console.log("No settings found yet."); }
+            } catch (e) {}
         }
 
         window.switchTab = function(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
             event.currentTarget.classList.add('active');
             document.getElementById('tab-' + tabId).classList.add('active');
         }
@@ -264,15 +276,9 @@
                     supabase.from('fee_payments').select('*').order('payment_date', {ascending: true}),
                     supabase.from('courses').select('*')
                 ]);
-                
-                studentsData = studentsRes.data || [];
-                paymentsData = paymentsRes.data || [];
-                coursesData = coursesRes.data || [];
-
+                studentsData = studentsRes.data || []; paymentsData = paymentsRes.data || []; coursesData = coursesRes.data || [];
                 buildOverallReportData();
-            } catch (err) {
-                console.error("Error fetching data:", err);
-            }
+            } catch (err) { console.error("Error fetching data:", err); }
         }
 
         // ==========================================
@@ -280,8 +286,7 @@
         // ==========================================
         document.getElementById('studentSearchInput').addEventListener('input', function() {
             let query = this.value.trim().toLowerCase();
-            const select = document.getElementById('studentSelect');
-            select.innerHTML = '';
+            const select = document.getElementById('studentSelect'); select.innerHTML = '';
             if (query.length === 0) { select.style.display = 'none'; return; }
             const filtered = studentsData.filter(s => s.full_name?.toLowerCase().includes(query) || s.register_number?.toLowerCase().includes(query) || s.phone_number?.toLowerCase().includes(query));
             if (filtered.length > 0) {
@@ -300,17 +305,15 @@
             const newBalance = currentBalance - totalDeduction;
             
             const pEl = document.getElementById('txtPending');
-            const submitBtn = document.getElementById('submitBtn');
+            const preBtn = document.getElementById('preSubmitBtn');
             
             if (newBalance < 0) {
                 pEl.textContent = `₹ ${newBalance} (Amount exceeds pending balance!)`;
-                pEl.style.color = "#EF4444"; submitBtn.disabled = true;
+                pEl.style.color = "#EF4444"; preBtn.disabled = true;
             } else if (newBalance === 0) {
-                pEl.textContent = "Fully Paid (₹ 0)";
-                pEl.style.color = "#10B981"; submitBtn.disabled = false;
+                pEl.textContent = "Fully Paid (₹ 0)"; pEl.style.color = "#10B981"; preBtn.disabled = false;
             } else {
-                pEl.textContent = `₹ ${newBalance}`;
-                pEl.style.color = "#EF4444"; submitBtn.disabled = false;
+                pEl.textContent = `₹ ${newBalance}`; pEl.style.color = "#EF4444"; preBtn.disabled = false;
             }
         }
 
@@ -326,12 +329,9 @@
             if (s) {
                 document.getElementById('studentSearchInput').value = `${s.full_name} (${s.register_number || 'N/A'})`;
                 this.style.display = 'none';
-                document.getElementById('amountPaid').value = '';
-                document.getElementById('discountAmount').value = '';
+                document.getElementById('amountPaid').value = ''; document.getElementById('discountAmount').value = '';
 
-                const tFee = Number(s.total_fee) || 0;
-                const aFee = Number(s.admission_fee) || 0;
-                
+                const tFee = Number(s.total_fee) || 0; const aFee = Number(s.admission_fee) || 0;
                 const pay = paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => sum + (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0), 0);
                 
                 currentBalance = tFee - (aFee + pay);
@@ -342,29 +342,45 @@
                 const pEl = document.getElementById('txtPending');
                 if (currentBalance <= 0) {
                     pEl.textContent = "Fully Paid (₹ 0)"; pEl.style.color = "#10B981";
-                    document.getElementById('amountPaid').disabled = true; document.getElementById('discountAmount').disabled = true; document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('amountPaid').disabled = true; document.getElementById('discountAmount').disabled = true; document.getElementById('preSubmitBtn').disabled = true;
                 } else {
                     pEl.textContent = `₹ ${currentBalance}`; pEl.style.color = "#EF4444";
-                    document.getElementById('amountPaid').disabled = false; document.getElementById('discountAmount').disabled = false; document.getElementById('submitBtn').disabled = false;
+                    document.getElementById('amountPaid').disabled = false; document.getElementById('discountAmount').disabled = false; document.getElementById('preSubmitBtn').disabled = false;
                 }
                 div.style.display = 'block';
             }
         });
 
-        document.getElementById('feeForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); 
+        // CONFIRMATION POPUP LOGIC
+        window.triggerConfirmation = function() {
             if (!selectedStudentId) { alert('Warning: Please select a student.'); return; }
-
             const amountPaid = Number(document.getElementById('amountPaid').value) || 0;
             const discountAmount = Number(document.getElementById('discountAmount').value) || 0;
             const totalDeduction = amountPaid + discountAmount;
-
+            
+            // Validation
             if (totalDeduction === 0) { alert('Warning: Please enter a valid payment or discount amount.'); return; }
             if (totalDeduction > currentBalance) { alert(`Error: Cannot exceed pending balance!`); return; }
 
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').textContent = 'Processing...';
+            const s = studentsData.find(x => x.id === selectedStudentId);
+            document.getElementById('confirmAmtDisplay').textContent = `₹ ${amountPaid}`;
+            document.getElementById('confirmStudentDisplay').textContent = `For: ${s.full_name}`;
             
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        window.closeConfirmation = function() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        // FINAL SUBMISSION LOGIC
+        window.processFinalPayment = async function() {
+            const finalBtn = document.getElementById('finalSubmitBtn');
+            finalBtn.disabled = true; finalBtn.textContent = 'Processing...';
+
+            const amountPaid = Number(document.getElementById('amountPaid').value) || 0;
+            const discountAmount = Number(document.getElementById('discountAmount').value) || 0;
+
             const { error } = await supabase.from('fee_payments').insert([{
                 student_id: selectedStudentId, amount_paid: amountPaid, discount_amount: discountAmount,
                 payment_mode: document.getElementById('paymentMode').value, receipt_no: document.getElementById('txnId').value, 
@@ -373,20 +389,20 @@
 
             if (error) {
                 alert('Error processing payment: ' + error.message);
-                document.getElementById('submitBtn').disabled = false; document.getElementById('submitBtn').textContent = 'Submit Payment';
+                finalBtn.disabled = false; finalBtn.textContent = 'Confirm & Pay';
+                closeConfirmation();
             } else { 
                 alert('Payment recorded successfully!'); 
                 window.location.reload(); 
             }
-        });
+        };
 
         // ==========================================
         // TAB 2: INDIVIDUAL LEDGER LOGIC
         // ==========================================
         document.getElementById('ledgerSearchInput').addEventListener('input', function() {
             let query = this.value.trim().toLowerCase();
-            const select = document.getElementById('ledgerStudentSelect');
-            select.innerHTML = '';
+            const select = document.getElementById('ledgerStudentSelect'); select.innerHTML = '';
             if (query.length === 0) { select.style.display = 'none'; return; }
             const filtered = studentsData.filter(s => s.full_name?.toLowerCase().includes(query) || s.register_number?.toLowerCase().includes(query) || s.phone_number?.toLowerCase().includes(query));
             if (filtered.length > 0) {
@@ -426,186 +442,99 @@
                 document.getElementById('l_paid').textContent = `₹ ${totalPaidAndDisc}`;
                 document.getElementById('l_pending').textContent = `₹ ${pending > 0 ? pending : 0}`;
 
-                const tbody = document.getElementById('ledgerTableBody');
-                tbody.innerHTML = '';
+                const tbody = document.getElementById('ledgerTableBody'); tbody.innerHTML = '';
                 
-                // Add Admission Fee Row
                 if(aFee > 0) {
                     tbody.innerHTML += `<tr>
                         <td>${ledgerStudentData.admission_date ? ledgerStudentData.admission_date.split('T')[0] : '-'}</td>
-                        <td>Admission Fee</td>
-                        <td>-</td>
-                        <td>-</td>
-                        <td style="font-weight:bold; color:#10b981;">₹ ${aFee}</td>
+                        <td>Admission Fee</td><td>-</td><td>-</td><td style="font-weight:bold; color:#10b981;">₹ ${aFee}</td>
                     </tr>`;
                 }
-
                 if(ledgerTransactions.length === 0 && aFee === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">No payment history found.</td></tr>';
                 } else {
                     ledgerTransactions.forEach(p => {
                         tbody.innerHTML += `<tr>
-                            <td>${p.payment_date || '-'}</td>
-                            <td>Fee Payment (${p.payment_mode || 'Cash'})</td>
-                            <td>${p.receipt_no || '-'}</td>
-                            <td style="color:#d97706;">${p.discount_amount > 0 ? '₹ '+p.discount_amount : '-'}</td>
-                            <td style="font-weight:bold; color:#10b981;">₹ ${p.amount_paid}</td>
+                            <td>${p.payment_date || '-'}</td><td>Fee Payment (${p.payment_mode || 'Cash'})</td><td>${p.receipt_no || '-'}</td>
+                            <td style="color:#d97706;">${p.discount_amount > 0 ? '₹ '+p.discount_amount : '-'}</td><td style="font-weight:bold; color:#10b981;">₹ ${p.amount_paid}</td>
                         </tr>`;
                     });
                 }
-                
                 container.style.display = 'block';
             }
         });
 
         window.downloadLedgerPDF = function() {
             if(!ledgerStudentData) return;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            
-            const instName = document.getElementById('navInstName').innerText;
-            const subName = document.getElementById('navSubName').innerText;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
+            const instName = document.getElementById('navInstName').innerText; const subName = document.getElementById('navSubName').innerText;
             
             doc.setFontSize(18); doc.setTextColor(30, 58, 138); doc.text(instName, 14, 20);
             doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text(subName, 14, 25);
             doc.setFontSize(14); doc.setTextColor(15, 23, 42); doc.text("Student Payment Statement", 14, 35);
             
-            doc.setFontSize(10);
-            doc.text(`Name: ${ledgerStudentData.full_name}`, 14, 45);
-            doc.text(`Reg No: ${ledgerStudentData.register_number || 'N/A'}`, 100, 45);
-            doc.text(`Course: ${document.getElementById('l_course').textContent}`, 14, 52);
-            
-            doc.setFontSize(11); doc.setTextColor(16, 185, 129); doc.text(`Total Paid: ${document.getElementById('l_paid').textContent}`, 14, 62);
-            doc.setTextColor(220, 38, 38); doc.text(`Pending Balance: ${document.getElementById('l_pending').textContent}`, 100, 62);
+            doc.setFontSize(10); doc.text(`Name: ${ledgerStudentData.full_name}`, 14, 45); doc.text(`Reg No: ${ledgerStudentData.register_number || 'N/A'}`, 100, 45); doc.text(`Course: ${document.getElementById('l_course').textContent}`, 14, 52);
+            doc.setFontSize(11); doc.setTextColor(16, 185, 129); doc.text(`Total Paid: ${document.getElementById('l_paid').textContent}`, 14, 62); doc.setTextColor(220, 38, 38); doc.text(`Pending Balance: ${document.getElementById('l_pending').textContent}`, 100, 62);
 
-            const tableRows = [];
-            const aFee = Number(ledgerStudentData.admission_fee) || 0;
-            if(aFee > 0) {
-                tableRows.push([ledgerStudentData.admission_date ? ledgerStudentData.admission_date.split('T')[0] : '-', "Admission Fee", "-", "-", `Rs. ${aFee}`]);
-            }
-            ledgerTransactions.forEach(p => {
-                tableRows.push([p.payment_date || '-', `Fee Payment (${p.payment_mode || 'Cash'})`, p.receipt_no || '-', p.discount_amount > 0 ? `Rs. ${p.discount_amount}` : '-', `Rs. ${p.amount_paid}`]);
-            });
+            const tableRows = []; const aFee = Number(ledgerStudentData.admission_fee) || 0;
+            if(aFee > 0) { tableRows.push([ledgerStudentData.admission_date ? ledgerStudentData.admission_date.split('T')[0] : '-', "Admission Fee", "-", "-", `Rs. ${aFee}`]); }
+            ledgerTransactions.forEach(p => { tableRows.push([p.payment_date || '-', `Fee Payment (${p.payment_mode || 'Cash'})`, p.receipt_no || '-', p.discount_amount > 0 ? `Rs. ${p.discount_amount}` : '-', `Rs. ${p.amount_paid}`]); });
 
-            doc.autoTable({
-                head: [["Date", "Description", "Receipt No", "Discount", "Amount Paid"]],
-                body: tableRows,
-                startY: 70,
-                theme: 'grid',
-                headStyles: { fillColor: [30, 58, 138], fontStyle: 'bold' },
-                columnStyles: { 4: { fontStyle: 'bold', textColor: [16, 185, 129] } }
-            });
-
+            doc.autoTable({ head: [["Date", "Description", "Receipt No", "Discount", "Amount Paid"]], body: tableRows, startY: 70, theme: 'grid', headStyles: { fillColor: [30, 58, 138], fontStyle: 'bold' }, columnStyles: { 4: { fontStyle: 'bold', textColor: [16, 185, 129] } } });
             doc.save(`Statement_${ledgerStudentData.full_name}.pdf`);
         }
 
-
         // ==========================================
-        // TAB 3: OVERALL REPORT LOGIC (Pay As You Enter)
+        // TAB 3: OVERALL REPORT LOGIC
         // ==========================================
         function buildOverallReportData() {
             const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
-            
-            // Extract All Modules
             const allModulesSet = new Set();
-            coursesData.forEach(course => {
-                if (course.status === 'Active' && Array.isArray(course.modules)) {
-                    course.modules.forEach(m => allModulesSet.add(m));
-                }
-            });
-            activeStudents.forEach(s => {
-                if (s.module && s.module !== 'Not Started' && s.module !== 'Course Completed') { allModulesSet.add(s.module); }
-            });
+            coursesData.forEach(course => { if (course.status === 'Active' && Array.isArray(course.modules)) { course.modules.forEach(m => allModulesSet.add(m)); } });
+            activeStudents.forEach(s => { if (s.module && s.module !== 'Not Started' && s.module !== 'Course Completed') { allModulesSet.add(s.module); } });
             window.globalUniqueModules = [...allModulesSet].sort();
 
-            // Populate Dropdown
-            const modSelect = document.getElementById('filterModule');
-            modSelect.innerHTML = '<option value="all">All Modules</option>';
-            window.globalUniqueModules.forEach(mod => {
-                const opt = document.createElement('option'); opt.value = mod; opt.textContent = mod; modSelect.appendChild(opt);
-            });
+            const modSelect = document.getElementById('filterModule'); modSelect.innerHTML = '<option value="all">All Modules</option>';
+            window.globalUniqueModules.forEach(mod => { const opt = document.createElement('option'); opt.value = mod; opt.textContent = mod; modSelect.appendChild(opt); });
 
-            // Build Logic
             window.feeReportData = activeStudents.map(s => {
-                const course = coursesData.find(c => c.id == s.course_id);
-                const courseName = course ? course.course_name : (s.course_name || 'N/A');
+                const course = coursesData.find(c => c.id == s.course_id); const courseName = course ? course.course_name : (s.course_name || 'N/A');
                 const totalModules = (course && Array.isArray(course.modules) && course.modules.length > 0) ? course.modules.length : 1;
+                const totalCourseFee = Number(s.total_fee) || 0; const admissionFee = Number(s.admission_fee) || 0;
                 
-                const totalCourseFee = Number(s.total_fee) || 0;
-                const admissionFee = Number(s.admission_fee) || 0;
-                
-                // 1. Fee Per Module
                 const feePerModule = totalCourseFee / totalModules;
-                
-                // 2. Expected Till Now (Based on Current Module Index)
                 let currentModIndex = 1;
-                if (s.status === 'completed' || s.module === 'Course Completed') {
-                    currentModIndex = totalModules;
-                } else if (course && Array.isArray(course.modules)) {
-                    let idx = course.modules.indexOf(s.module);
-                    currentModIndex = idx >= 0 ? idx + 1 : 1;
-                }
-                let expectedTillNow = feePerModule * currentModIndex;
-                if (expectedTillNow > totalCourseFee) expectedTillNow = totalCourseFee;
+                if (s.status === 'completed' || s.module === 'Course Completed') { currentModIndex = totalModules; } 
+                else if (course && Array.isArray(course.modules)) { let idx = course.modules.indexOf(s.module); currentModIndex = idx >= 0 ? idx + 1 : 1; }
                 
-                // 3. Payments & Discount
+                let expectedTillNow = feePerModule * currentModIndex; if (expectedTillNow > totalCourseFee) expectedTillNow = totalCourseFee;
+                
                 const stuPayments = paymentsData.filter(p => p.student_id === s.id);
                 const totalPaidPayments = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
                 const totalDiscount = stuPayments.reduce((sum, p) => sum + (Number(p.discount_amount) || 0), 0);
                 const totalPaid = admissionFee + totalPaidPayments;
                 
-                // 4. Current Due (Arrears for the current module)
-                let currentDue = expectedTillNow - (totalPaid + totalDiscount);
-                if (currentDue < 0) currentDue = 0;
+                let currentDue = expectedTillNow - (totalPaid + totalDiscount); if (currentDue < 0) currentDue = 0;
+                let totalCoursePending = totalCourseFee - (totalPaid + totalDiscount); if (totalCoursePending < 0) totalCoursePending = 0;
 
-                // 5. Total Course Pending
-                let totalCoursePending = totalCourseFee - (totalPaid + totalDiscount);
-                if (totalCoursePending < 0) totalCoursePending = 0;
-
-                return {
-                    id: s.id, name: s.full_name, course: courseName, module: s.module || 'Not Started',
-                    totalCourseFee: totalCourseFee, feePerModule: Math.round(feePerModule), expectedTillNow: Math.round(expectedTillNow),
-                    totalPaid: totalPaid, discount: totalDiscount, currentDue: Math.round(currentDue), totalCoursePending: Math.round(totalCoursePending)
-                };
+                return { id: s.id, name: s.full_name, course: courseName, module: s.module || 'Not Started', totalCourseFee: totalCourseFee, feePerModule: Math.round(feePerModule), expectedTillNow: Math.round(expectedTillNow), totalPaid: totalPaid, discount: totalDiscount, currentDue: Math.round(currentDue), totalCoursePending: Math.round(totalCoursePending) };
             });
-
             applyFeeFilter();
         }
 
         window.applyFeeFilter = function() {
-            const moduleFilter = document.getElementById('filterModule').value;
-            const statusFilter = document.getElementById('filterFeeStatus').value;
+            const moduleFilter = document.getElementById('filterModule').value; const statusFilter = document.getElementById('filterFeeStatus').value;
             let filtered = window.feeReportData || [];
-            
-            // Filter by Module
             if (moduleFilter !== 'all') { filtered = filtered.filter(r => r.module === moduleFilter); }
-            // Filter by Current Due Status
-            if (statusFilter === 'completed') { filtered = filtered.filter(r => r.currentDue <= 0); } 
-            else if (statusFilter === 'pending') { filtered = filtered.filter(r => r.currentDue > 0); }
+            if (statusFilter === 'completed') { filtered = filtered.filter(r => r.currentDue <= 0); } else if (statusFilter === 'pending') { filtered = filtered.filter(r => r.currentDue > 0); }
             
             window.filteredFeeData = filtered; 
-            
             const tbody = document.getElementById('feeReportBody'); tbody.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 40px; color: #64748b; font-size: 14px; font-weight: bold;">No active students found for this selection.</td></tr>';
-                return;
-            }
+            if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 40px; color: #64748b; font-size: 14px; font-weight: bold;">No active students found for this selection.</td></tr>'; return; }
             
             filtered.forEach(row => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="font-weight: 800; color: #0f172a;">${row.name}</td>
-                    <td style="font-weight: 600;">${row.course}</td>
-                    <td style="font-weight: 700; color: #334155;">${row.module}</td>
-                    <td>₹ ${row.totalCourseFee}</td>
-                    <td style="font-weight: 800; color: #1d4ed8;">₹ ${row.feePerModule}</td>
-                    <td style="font-weight: 800; color: #8b5cf6;">₹ ${row.expectedTillNow}</td>
-                    <td style="font-weight: bold; color: #10b981;">₹ ${row.totalPaid}</td>
-                    <td style="color: #d97706; font-weight: bold;">₹ ${row.discount}</td>
-                    <td style="font-weight: 900; font-size: 13px; color: ${row.currentDue > 0 ? '#ef4444' : '#10b981'};">₹ ${row.currentDue}</td>
-                    <td style="font-weight: 700; color: #64748b;">₹ ${row.totalCoursePending}</td>
-                `;
+                tr.innerHTML = `<td style="font-weight: 800; color: #0f172a;">${row.name}</td><td style="font-weight: 600;">${row.course}</td><td style="font-weight: 700; color: #334155;">${row.module}</td><td>₹ ${row.totalCourseFee}</td><td style="font-weight: 800; color: #1d4ed8;">₹ ${row.feePerModule}</td><td style="font-weight: 800; color: #8b5cf6;">₹ ${row.expectedTillNow}</td><td style="font-weight: bold; color: #10b981;">₹ ${row.totalPaid}</td><td style="color: #d97706; font-weight: bold;">₹ ${row.discount}</td><td style="font-weight: 900; font-size: 13px; color: ${row.currentDue > 0 ? '#ef4444' : '#10b981'};">₹ ${row.currentDue}</td><td style="font-weight: 700; color: #64748b;">₹ ${row.totalCoursePending}</td>`;
                 tbody.appendChild(tr);
             });
         }
@@ -613,51 +542,27 @@
         window.exportCSV = function() {
             if(!window.filteredFeeData || window.filteredFeeData.length === 0) { alert("Warning: No data to export!"); return; }
             let csv = "Name,Course,Current Module,Total Course Fee,Fee Per Module,Expected Till Now,Total Paid,Discount,Current Due,Total Course Pending\n";
-            window.filteredFeeData.forEach(row => {
-                csv += `"${row.name}","${row.course}","${row.module}",${row.totalCourseFee},${row.feePerModule},${row.expectedTillNow},${row.totalPaid},${row.discount},${row.currentDue},${row.totalCoursePending}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = 'Module_wise_Fee_Report.csv'; a.click();
+            window.filteredFeeData.forEach(row => { csv += `"${row.name}","${row.course}","${row.module}",${row.totalCourseFee},${row.feePerModule},${row.expectedTillNow},${row.totalPaid},${row.discount},${row.currentDue},${row.totalCoursePending}\n`; });
+            const blob = new Blob([csv], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'Module_wise_Fee_Report.csv'; a.click();
         }
 
         window.exportOverallPDF = function() {
             if(!window.filteredFeeData || window.filteredFeeData.length === 0) { alert("Warning: No data to export!"); return; }
             const btn = document.getElementById('pdfBtn'); const oldText = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
-
             try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('landscape', 'mm', 'a4');
-
+                const { jsPDF } = window.jspdf; const doc = new jsPDF('landscape', 'mm', 'a4');
                 doc.setFontSize(16); doc.setTextColor(15, 23, 42); doc.text("Module-wise Fee Payment Report", 14, 15);
                 doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text(document.getElementById('navInstName').innerText + " " + document.getElementById('navSubName').innerText, 14, 21);
-
                 const tableColumn = ["Name", "Course", "Current Module", "Total Fee", "Fee/Module", "Expected", "Total Paid", "Discount", "Current Due", "Pending Bal"];
                 const tableRows = [];
-
-                window.filteredFeeData.forEach(row => {
-                    tableRows.push([
-                        row.name, row.course, row.module, row.totalCourseFee.toString(), row.feePerModule.toString(), row.expectedTillNow.toString(),
-                        row.totalPaid.toString(), row.discount.toString(), row.currentDue.toString(), row.totalCoursePending.toString()
-                    ]);
-                });
-
-                doc.autoTable({
-                    head: [tableColumn], body: tableRows, startY: 28, theme: 'grid', styles: { fontSize: 8, cellPadding: 3 },
-                    headStyles: { fillColor: [30, 58, 138], textColor: 255, fontStyle: 'bold' }, alternateRowStyles: { fillColor: [248, 250, 252] },
-                    columnStyles: { 5: { fontStyle: 'bold', textColor: [29, 78, 216] }, 6: { fontStyle: 'bold', textColor: [16, 185, 129] }, 8: { fontStyle: 'bold', textColor: [220, 38, 38] } }
-                });
-
+                window.filteredFeeData.forEach(row => { tableRows.push([row.name, row.course, row.module, row.totalCourseFee.toString(), row.feePerModule.toString(), row.expectedTillNow.toString(), row.totalPaid.toString(), row.discount.toString(), row.currentDue.toString(), row.totalCoursePending.toString()]); });
+                doc.autoTable({ head: [tableColumn], body: tableRows, startY: 28, theme: 'grid', styles: { fontSize: 8, cellPadding: 3 }, headStyles: { fillColor: [30, 58, 138], textColor: 255, fontStyle: 'bold' }, alternateRowStyles: { fillColor: [248, 250, 252] }, columnStyles: { 5: { fontStyle: 'bold', textColor: [29, 78, 216] }, 6: { fontStyle: 'bold', textColor: [16, 185, 129] }, 8: { fontStyle: 'bold', textColor: [220, 38, 38] } } });
                 doc.save('Fee_Payment_Report.pdf');
             } catch (e) { alert('Error generating PDF report. Check console for details.'); }
-            
             btn.innerHTML = oldText; btn.disabled = false;
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); 
-        });
-        
+        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
         checkAuth();
     </script>
 </body>
