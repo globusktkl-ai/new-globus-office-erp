@@ -21,7 +21,7 @@
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); }
 
         @media (max-width: 600px) {
-            .btn-back-dashboard span { display: none; }
+            .btn-back-dashboard span { display: none; } /* Hide text on small screens, keep only icon */
         }
 
         .search-filter-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
@@ -370,7 +370,7 @@
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-        let allStudents = [], allCourses = [], allPayments = [], activeStudentData = null, currentZoom = 0.55;
+        let allStudents = [], allCourses = [], activeStudentData = null, currentZoom = 0.55;
 
         // Helper function: Generate deterministic secure Serial Number
         function generateSerialNumber(student) {
@@ -419,15 +419,9 @@
 
         async function fetchData() {
             try {
-                const [studentsRes, coursesRes, paymentsRes] = await Promise.all([
-                    supabase.from('students').select('*').order('created_at', { ascending: false }),
-                    supabase.from('courses').select('*'),
-                    supabase.from('fee_payments').select('student_id, amount_paid, discount_amount')
-                ]);
-                
-                allStudents = studentsRes.data || []; 
-                allCourses = coursesRes.data || [];
-                allPayments = paymentsRes.data || [];
+                const { data: students } = await supabase.from('students').select('*').order('created_at', { ascending: false });
+                const { data: courses } = await supabase.from('courses').select('*');
+                allStudents = students || []; allCourses = courses || [];
                 
                 applyFilters();
             } catch (err) { console.error(err); alert("Error loading data!"); }
@@ -483,9 +477,6 @@
             let selectedOption = selectEl.options[selectEl.selectedIndex];
             let isLocked = selectedOption.getAttribute('data-locked') === 'true';
             let prevVal = selectEl.getAttribute('data-prev');
-            
-            const student = allStudents.find(s => s.id === studentId);
-            const isCompleted = student && student.status === 'completed';
 
             if(isLocked) {
                 let n1 = Math.floor(Math.random() * 10) + 1;
@@ -505,17 +496,13 @@
                     
                     const promBtn = document.getElementById(`prom_${studentId}`);
                     if(promBtn) {
-                        if (isCompleted) {
-                            promBtn.style.display = 'none'; // Keep it hidden for completed students
-                        } else {
-                            promBtn.style.display = 'block';
-                            promBtn.disabled = true;
-                            promBtn.style.opacity = '0.5';
-                        }
+                        promBtn.style.display = 'block';
+                        promBtn.disabled = true;
+                        promBtn.style.opacity = '0.5';
                     }
 
                     const mlBtn = document.getElementById(`ml_btn_${studentId}`);
-                    if(mlBtn) mlBtn.style.gridColumn = isCompleted ? 'span 2' : 'span 1';
+                    if(mlBtn) mlBtn.style.gridColumn = 'span 1';
 
                     document.getElementById(`marks_${studentId}`).value = '';
                     document.getElementById(`perc_${studentId}`).value = '';
@@ -531,24 +518,6 @@
                 if (selectEl.value !== 'Course Completed') {
                      const inputArea = document.getElementById(`input_area_${studentId}`);
                      if(inputArea) inputArea.style.display = 'block';
-                     
-                     const updBtn = document.getElementById(`upd_btn_${studentId}`);
-                     if(updBtn) updBtn.style.display = 'block';
-                     
-                     const promBtn = document.getElementById(`prom_${studentId}`);
-                     if(promBtn && !isCompleted) {
-                         promBtn.style.display = 'block';
-                     }
-                     
-                     const mlBtn = document.getElementById(`ml_btn_${studentId}`);
-                     if(mlBtn) mlBtn.style.gridColumn = isCompleted ? 'span 2' : 'span 1';
-                } else {
-                     const inputArea = document.getElementById(`input_area_${studentId}`);
-                     if(inputArea) inputArea.style.display = 'none';
-                     const updBtn = document.getElementById(`upd_btn_${studentId}`);
-                     if(updBtn) updBtn.style.display = 'none';
-                     const mlBtn = document.getElementById(`ml_btn_${studentId}`);
-                     if(mlBtn) mlBtn.style.gridColumn = 'span 3';
                 }
             }
         };
@@ -624,10 +593,8 @@
 
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
                         <button id="upd_btn_${student.id}" class="action-btn" style="background:#3b82f6; margin:0; font-size:11px; padding:10px 2px; display: ${displayActionArea};" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
-                        
-                        <button id="prom_${student.id}" class="action-btn" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px; display: ${isCompleted ? 'none' : displayActionArea};" disabled onclick="execPromote('${student.id}', '${course.id}')">${btnText}</button>
-                        
-                        <button id="ml_btn_${student.id}" class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px; ${isCompleted ? 'grid-column: span 2;' : ''}" onclick="showMarklist('${student.id}', '${course.id}')">${isCompleted ? 'View Marklist' : '3. Marklist'}</button>
+                        <button id="prom_${student.id}" class="action-btn" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px; display: ${displayActionArea};" disabled onclick="execPromote('${student.id}', '${course.id}')">${btnText}</button>
+                        <button id="ml_btn_${student.id}" class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px; ${isCompleted ? 'grid-column: span 3;' : ''}" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
                     </div>
                     <button class="action-btn" style="background:#f59e0b; margin-top:8px; width:100%; font-size:13px;" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
                 `;
@@ -644,22 +611,16 @@
             
             await supabase.from('exam_results').insert([{ student_id: studentId, course_id: courseId, module_name: mod, marks: Number(marks), attendance: Number(att) }]);
             
-            const student = allStudents.find(s => s.id === studentId);
-            const isCompleted = student && student.status === 'completed';
-
-            if (isCompleted) {
-                alert('Marks Updated Successfully! The marklist has been updated with the new score.');
-            } else {
-                alert('Marks Saved! Promotion/Finish is now enabled.');
-                const promBtn = document.getElementById(`prom_${studentId}`);
-                const course = allCourses.find(c => c.id == courseId);
-                
-                if(promBtn && course) {
-                    promBtn.disabled = false;
-                    promBtn.style.opacity = '1';
-                    let isLastModule = (mod.toLowerCase() === 'job training' || mod === course.modules[course.modules.length - 1]);
-                    promBtn.innerText = isLastModule ? '2. Finish' : '2. Promotion';
-                }
+            alert('Marks Saved! Promotion/Finish is now enabled.');
+            
+            const promBtn = document.getElementById(`prom_${studentId}`);
+            const course = allCourses.find(c => c.id == courseId);
+            
+            if(promBtn && course) {
+                promBtn.disabled = false;
+                promBtn.style.opacity = '1';
+                let isLastModule = (mod.toLowerCase() === 'job training' || mod === course.modules[course.modules.length - 1]);
+                promBtn.innerText = isLastModule ? '2. Finish' : '2. Promotion';
             }
         };
 
@@ -903,7 +864,7 @@
             }
         };
 
-        // ====== CERTIFICATE FEE VALIDATION ======
+        // ====== NEW: CERTIFICATE FEE VALIDATION ======
         window.validateAndOpenCert = async function(studentId, courseId) {
             const student = allStudents.find(s => s.id === studentId);
             const course = allCourses.find(c => c.id == courseId);
@@ -913,13 +874,17 @@
 
             // 1. Fee Payment Validation Check
             try {
-                const stuPayments = allPayments.filter(p => p.student_id === studentId);
+                const { data: payments } = await supabase
+                    .from('fee_payments')
+                    .select('amount_paid, discount_amount')
+                    .eq('student_id', studentId);
+                
                 const totalFee = Number(student.total_fee) || 0;
                 const admissionFee = Number(student.admission_fee) || 0;
                 
                 let otherPaid = 0;
-                if (stuPayments) {
-                    otherPaid = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0), 0);
+                if (payments) {
+                    otherPaid = payments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0), 0);
                 }
                 
                 const totalPaid = admissionFee + otherPaid;
@@ -1090,15 +1055,6 @@
             document.getElementById('certModal').style.display = 'none'; 
             document.getElementById('marklistStudioModal').style.display = 'none'; 
         };
-
-        let allPayments = [];
-        async function fetchPaymentsForValidation() {
-            try {
-                const { data } = await supabase.from('fee_payments').select('student_id, amount_paid, discount_amount');
-                allPayments = data || [];
-            } catch(e) {}
-        }
-        fetchPaymentsForValidation();
 
         checkAuth();
     </script>
