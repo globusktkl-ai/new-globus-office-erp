@@ -14,6 +14,16 @@
         .main-content { padding: 15px; max-width: 900px; margin: 0 auto; }
         .page-title { text-align: center; font-size: 20px; font-weight: 900; color: #1e3a8a; margin-bottom: 20px; text-transform: uppercase; }
         
+        /* Premium 3D Back to Dashboard Button */
+        .btn-back-dashboard { display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
+        .btn-back-dashboard:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
+        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); }
+
+        @media (max-width: 600px) {
+            .btn-back-dashboard span { display: none; } /* Hide text on small screens, keep only icon */
+        }
+
         .search-filter-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
         .search-box-pill { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; outline: none; font-size: 15px; color: #333; transition: border-color 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); box-sizing: border-box; }
         .search-box-pill:focus { border-color: #3b82f6; }
@@ -112,7 +122,22 @@
                 <span style="font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</span>
             </div>
         </div>
-        <div class="header-right"><a href="dashboard.html" style="color: #3b82f6; text-decoration: none; font-weight: 700;">← Back</a></div>
+        <div class="header-right">
+            <!-- NEW 3D RETURN TO DASHBOARD BUTTON -->
+            <a href="dashboard.html" class="btn-back-dashboard">
+                <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
+                    <defs>
+                        <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#2563eb" />
+                            <stop offset="100%" stop-color="#9333ea" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M9 14L4 9l5-5" />
+                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+                </svg>
+                <span>Dashboard</span>
+            </a>
+        </div>
     </nav>
 
     <main class="main-content no-print">
@@ -839,12 +864,43 @@
             }
         };
 
+        // ====== NEW: CERTIFICATE FEE VALIDATION ======
         window.validateAndOpenCert = async function(studentId, courseId) {
+            const student = allStudents.find(s => s.id === studentId);
             const course = allCourses.find(c => c.id == courseId);
             if (!course || !course.modules || course.modules.length === 0) {
                 alert("Error: No modules found for this course."); return;
             }
 
+            // 1. Fee Payment Validation Check
+            try {
+                const { data: payments } = await supabase
+                    .from('fee_payments')
+                    .select('amount_paid, discount_amount')
+                    .eq('student_id', studentId);
+                
+                const totalFee = Number(student.total_fee) || 0;
+                const admissionFee = Number(student.admission_fee) || 0;
+                
+                let otherPaid = 0;
+                if (payments) {
+                    otherPaid = payments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0), 0);
+                }
+                
+                const totalPaid = admissionFee + otherPaid;
+                const pendingBalance = totalFee - totalPaid;
+
+                if (pendingBalance > 0) {
+                    alert(`⚠️ Cannot generate certificate!\n\nThe student has a pending fee balance of ₹ ${pendingBalance}. Please clear all dues before generating the certificate.`);
+                    return; // Stop execution if fee is pending
+                }
+            } catch (err) {
+                console.error("Fee validation error:", err);
+                alert("Error validating fee status. Please try again.");
+                return;
+            }
+
+            // 2. Exam Completion Validation Check
             const { data: pastResults, error } = await supabase
                 .from('exam_results')
                 .select('module_name')
