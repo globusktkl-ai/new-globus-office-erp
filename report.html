@@ -9,9 +9,18 @@
     <style>
         body { padding: 15px; background-color: #f4f7f6; color: #333; font-family: 'Segoe UI', Tahoma, sans-serif; padding-bottom: 40px; }
         
+        /* Premium 3D Back to Dashboard Button */
+        .btn-back-dashboard { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
+        .btn-back-dashboard:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
+        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); }
+
+        @media (max-width: 600px) {
+            .btn-back-dashboard span { display: none; } 
+        }
+
         /* Top Navigation */
         .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .back-btn { text-decoration: none; color: #3498db; font-weight: bold; font-size: 15px; }
         .btn-all-data { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .btn-all-data:hover { filter: brightness(1.1); }
         
@@ -43,7 +52,7 @@
         /* Fixed Alignment Issue Here */
         .date-inputs-container { display: none; gap: 10px; width: 100%; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px; box-sizing: border-box; }
         .date-inputs-container.active { display: flex; }
-        .date-col { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; } /* min-width: 0 forces flex items to stay inside the parent container */
+        .date-col { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; } 
         .date-col label { font-size: 12px; color: #64748b; font-weight: bold; }
         .date-col input { padding: 10px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; width: 100%; box-sizing: border-box; min-width: 0; }
 
@@ -87,7 +96,20 @@
 <body>
     
     <div class="top-nav">
-        <a href="dashboard.html" class="back-btn">⬅ Back to Dashboard</a>
+        <!-- 3D RETURN TO DASHBOARD BUTTON ADDED HERE -->
+        <a href="dashboard.html" class="btn-back-dashboard">
+            <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
+                <defs>
+                    <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#2563eb" />
+                        <stop offset="100%" stop-color="#9333ea" />
+                    </linearGradient>
+                </defs>
+                <path d="M9 14L4 9l5-5" />
+                <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+            </svg>
+            <span>Dashboard</span>
+        </a>
         <button class="btn-all-data" onclick="window.fetchReports('all')">All Data</button>
     </div>
 
@@ -406,3 +428,5 @@
     </script>
 </body>
 </html>
+
+http://googleusercontent.com/action_card_content/8b17cc47-7243-4c06-a15e-2ef28f771f00
