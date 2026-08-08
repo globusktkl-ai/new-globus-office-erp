@@ -3,107 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Assistant - Globus</title>
+    <title>Dashboard - Globus</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+
     <style>
-        body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; padding-bottom: 50px; }
-        .main-content { padding: 15px; max-width: 600px; margin: 0 auto; }
+        body { background-color: #f8fafc; }
+        .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
         
-        .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px; background: white; padding: 15px; border-bottom: 1px solid #e2e8f0; }
-        .page-title { font-size: 16px; font-weight: 900; color: #1e293b; text-transform: uppercase; margin: 0;}
-        .btn-back-dashboard { position: absolute; left: 15px; background: #f1f5f9; padding: 8px 12px; border-radius: 8px; text-decoration: none; color: #475569; font-weight: bold; }
+        h2 { font-size: 16px !important; font-weight: 900 !important; margin-bottom: 12px !important; color: #0f172a; text-transform: uppercase; letter-spacing: -0.5px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; display: inline-block;}
+        
+        /* UPCOMING BELL NOTIFICATION BANNER (NEW) */
+        .upcoming-bell-alert {
+            background: linear-gradient(135deg, #fef08a, #fde047);
+            border: 1px solid #f59e0b;
+            color: #b45309;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 900;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            text-decoration: none;
+            animation: pulseAlert 2s infinite;
+            display: none; /* hidden by default */
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
+        }
+        .upcoming-bell-alert:active { transform: scale(0.98); }
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        }
 
-        .panel { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .section-header { font-size: 14px; font-weight: 900; color: #64748b; margin-bottom: 15px; border-left: 4px solid #3b82f6; padding-left: 10px; text-transform: uppercase;}
+        /* Compact Stat Grid (Mobile First) */
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .stat-grid-finance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 25px; }
         
-        /* Bell System Styling */
-        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f8fafc; }
-        .label-text { font-size: 14px; font-weight: 700; color: #334155; }
+        .stat-box { background: #ffffff; padding: 12px 10px !important; border-radius: 10px !important; box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important; border: 1px solid #e2e8f0 !important; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .stat-box.finance-box { align-items: flex-start; text-align: left; padding: 15px 12px !important; border-left: 4px solid; }
+        .stat-label { font-size: 10px !important; color: #64748b !important; margin-bottom: 4px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 18px !important; font-weight: 900 !important; color: #1e293b; line-height: 1; }
         
-        .bell-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; margin-bottom: 10px; }
-        .input-box { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 600; margin-top: 5px; box-sizing: border-box; }
+        .module-section { background: #ffffff; border-radius: 12px !important; padding: 15px !important; margin-bottom: 20px !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important; border: 1px solid #f1f5f9; }
         
-        .btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; font-weight: 900; font-size: 14px; cursor: pointer; margin-top: 10px; }
-        .btn-save { background: #3b82f6; color: white; }
-        .btn-add { background: #ecfdf5; color: #059669; border: 1px dashed #059669; }
+        .module-section .nav-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; margin-top: 15px; }
+        
+        .nav-btn { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px !important; padding: 12px 5px !important; text-decoration: none; color: #334155 !important; font-size: 11px !important; font-weight: 800 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important; min-height: 80px !important; text-align: center; transition: all 0.2s ease;}
+        .nav-btn:active { transform: scale(0.95); }
+        .nav-btn:hover { background: #ffffff; border-color: #cbd5e1; box-shadow: 0 4px 8px rgba(0,0,0,0.05) !important; }
+        
+        .nav-icon { margin-bottom: 8px !important; display: flex; align-items: center; justify-content: center; }
+        .nav-icon svg { width: 28px; height: 28px; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+        
+        .nav-btn.fee-btn { background-color: #f0fdf4 !important; border-color: #bbf7d0 !important; color: #15803d !important; }
+        .nav-btn.expense-btn { background-color: #fef2f2 !important; border-color: #fecaca !important; color: #b91c1c !important; }
+        
+        /* Logged in As & Premium Logout */
+        .header-auth-section { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.8); padding: 4px 4px 4px 12px; border-radius: 30px; border: 1px solid #e2e8f0; }
+        .logged-in-text { font-size: 10px; font-weight: 700; color: #64748b; display: flex; flex-direction: column; text-align: right; line-height: 1.2; }
+        .logged-in-email { color: #1e3a8a; font-weight: 900; font-size: 11px; }
 
-        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #10b981; } 
-        input:checked + .slider:before { transform: translateX(22px); }
+        .btn-logout-round {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white; border: none; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); transition: all 0.2s ease; flex-shrink: 0;
+        }
+        .btn-logout-round:active { transform: scale(0.92); }
 
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
-        .list-info h4 { margin: 0; font-size: 14px; font-weight: 800; }
-        .list-info p { margin: 2px 0 0; font-size: 12px; color: #64748b; }
+        /* Settings Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
+        .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
+        label { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block; }
     </style>
 </head>
 <body>
+    <nav class="app-header" style="padding: 10px 15px;">
+        <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 8px;">
+            <img src="assets/images/logo.png" id="navLogo" class="logo-small" alt="Logo" style="width: 35px; height: 35px;" onerror="this.style.display='none'">
+            <div style="display: flex; flex-direction: column;">
+                <span id="navInstName" style="font-size: 14px; font-weight: 900; text-transform: uppercase;">GLOBUS</span>
+                <span id="navSubName" style="font-size: 9px; color: #64748b; font-weight: 800;">Technical Academy</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="header-auth-section">
+                <div class="logged-in-text">
+                    <span>Admin</span>
+                    <span class="logged-in-email" id="authEmail">Loading...</span>
+                </div>
+                <button class="btn-logout-round" id="logoutBtn" title="Secure Logout">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
 
     <main class="main-content">
-        <div class="top-nav">
-            <a href="dashboard.html" class="btn-back-dashboard">⬅</a>
-            <h1 class="page-title">Smart Assistant</h1>
+        <!-- THE NEW UPCOMING BELL NOTIFICATION -->
+        <a href="reminders.html" id="upcomingBellBanner" class="upcoming-bell-alert">
+            <span id="upcomingBellText">⏳ Upcoming Bell...</span>
+            <span style="font-size: 12px; opacity: 0.8;">Tap to Stop/Edit ⚙️</span>
+        </a>
+
+        <h2>Institute Overview</h2>
+        
+        <div class="stat-grid">
+            <div class="stat-box"><div class="stat-label">Total Students</div><div class="stat-value" id="statTotalStudents" style="color: #64748b;">0</div></div>
+            <div class="stat-box"><div class="stat-label" style="color: #2563eb !important;">Active Students</div><div class="stat-value" id="statActiveStudents" style="color: #1d4ed8;">0</div></div>
+            <div class="stat-box"><div class="stat-label">Active Courses</div><div class="stat-value" id="statCourses">0</div></div>
         </div>
 
-        <div class="panel">
-            <h2 class="section-header">Automated Office Bell</h2>
-            <div class="setting-row">
-                <span class="label-text">Enable System</span>
-                <label class="switch"><input type="checkbox" id="masterBellToggle" onchange="toggleMasterBell()"><span class="slider"></span></label>
+        <div class="stat-grid-finance">
+            <div class="stat-box finance-box" style="border-left-color: #10B981 !important;">
+                <div class="stat-label">Today's Collection</div>
+                <div class="stat-value" id="statTodayCollection" style="color: #10B981; font-size: 20px !important;">₹ 0</div>
             </div>
-            
-            <div id="bellListContainer">
-                <!-- Bells here -->
+            <div class="stat-box finance-box" style="border-left-color: #EF4444 !important;">
+                <div class="stat-label">Total Pending Dues</div>
+                <div class="stat-value" id="statPendingFees" style="color: #EF4444; font-size: 20px !important;">₹ 0</div>
             </div>
-            <button class="btn-action btn-add" onclick="addNewBellRow()">+ Add New Bell</button>
-            <button class="btn-action btn-save" onclick="saveBellSettings()">Save All Settings</button>
         </div>
 
-        <div class="panel">
-            <h2 class="section-header">Pending Fee Alerts</h2>
-            <div id="feeList"></div>
+        <div class="module-section">
+            <h2 style="font-size: 14px !important; color: #1e3a8a; border-bottom: none; display: flex; align-items: center; gap: 5px; margin:0 !important;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Academic & Admin</h2>
+            <div class="nav-grid">
+                <a href="admission.html" class="nav-btn">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-adm); stroke:none;"><defs><linearGradient id="grad-adm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" opacity="0.3"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" style="stroke: #1e3a8a; fill:none;"/></svg></span>
+                    Admission
+                </a>
+                
+                <a href="students.html" class="nav-btn">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-dir); stroke:none;"><defs><linearGradient id="grad-dir" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#6d28d9"/></linearGradient></defs><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" opacity="0.3"/><circle cx="9" cy="7" r="4" opacity="0.3"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" style="stroke: #4c1d95; fill:none;"/><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" style="stroke: #4c1d95; fill:none;"/><circle cx="9" cy="7" r="4" style="stroke: #4c1d95; fill:none;"/></svg></span>
+                    Directory
+                </a>
+
+                <a href="courses.html" class="nav-btn">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-crs); stroke:none;"><defs><linearGradient id="grad-crs" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" opacity="0.3"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" opacity="0.3"/><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" style="stroke: #78350f; fill:none;"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" style="stroke: #78350f; fill:none;"/></svg></span>
+                    Courses
+                </a>
+
+                <a href="exams.html" class="nav-btn">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-exm); stroke:none;"><defs><linearGradient id="grad-exm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#b91c1c"/></linearGradient></defs><circle cx="12" cy="8" r="7" opacity="0.3"/><circle cx="12" cy="8" r="7" style="stroke: #7f1d1d; fill:none;"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" style="stroke: #7f1d1d; fill:none;"/></svg></span>
+                    Exams
+                </a>
+
+                <a href="admission-report.html" class="nav-btn">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" style="fill:none; stroke:url(#grad-pie);">
+                            <defs>
+                                <linearGradient id="grad-pie" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#0ea5e9"/>
+                                    <stop offset="100%" stop-color="#0369a1"/>
+                                </linearGradient>
+                                <linearGradient id="grad-pie-fill" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3"/>
+                                    <stop offset="100%" stop-color="#0284c7" stop-opacity="0.3"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M22 12A10 10 0 0 0 12 2v10z" style="fill:url(#grad-pie-fill);" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    Adm Report
+                </a>
+
+                <a href="reminders.html" class="nav-btn" style="background-color: #fffbeb !important; border-color: #fde68a !important; color: #b45309 !important;">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" width="28" height="28" style="fill:none; stroke: #d97706;">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <circle cx="18" cy="6" r="3" fill="#ef4444" stroke="none"></circle>
+                        </svg>
+                    </span>
+                    Smart Alerts
+                </a>
+            </div>
+        </div>
+
+        <div class="module-section">
+            <h2 style="font-size: 14px !important; color: #064e3b; border-bottom: none; display: flex; align-items: center; gap: 5px; margin:0 !important;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Finance & Accounts</h2>
+            <div class="nav-grid" style="grid-template-columns: repeat(3, 1fr) !important;">
+                <a href="fees.html" class="nav-btn fee-btn">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-fee); stroke:none;"><defs><linearGradient id="grad-fee" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#047857"/></linearGradient></defs><rect x="2" y="5" width="20" height="14" rx="2" opacity="0.3"/><rect x="2" y="5" width="20" height="14" rx="2" style="stroke: #064e3b; fill:none;"/><line x1="2" y1="10" x2="22" y2="10" style="stroke: #064e3b; fill:none;"/></svg></span>
+                    Fee Collect
+                </a>
+                
+                <a href="expense.html" class="nav-btn expense-btn">
+                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-exp); stroke:none;"><defs><linearGradient id="grad-exp" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#be185d"/></linearGradient></defs><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" opacity="0.3"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" opacity="0.3"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" style="stroke: #831843; fill:none;"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" style="stroke: #831843; fill:none;"/></svg></span>
+                    Day Book
+                </a>
+
+                <a href="report.html" class="nav-btn">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" style="fill:url(#grad-rpt); stroke:none;">
+                            <defs><linearGradient id="grad-rpt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#14b8a6"/><stop offset="100%" stop-color="#0f766e"/></linearGradient></defs>
+                            <line x1="18" y1="20" x2="18" y2="10" style="stroke: #134e4a; fill:none;"/>
+                            <line x1="12" y1="20" x2="12" y2="4" style="stroke: #134e4a; fill:none;"/>
+                            <line x1="6" y1="20" x2="6" y2="14" style="stroke: #134e4a; fill:none;"/>
+                        </svg>
+                    </span>
+                    Other Reports
+                </a>
+            </div>
         </div>
     </main>
 
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="modal-overlay">
+        <!-- Rest of the settings modal HTML remains identical -->
+        <div class="modal-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
+                <button onclick="document.getElementById('settingsModal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
+            </div>
+            <form id="settingsForm" onsubmit="saveSettings(event)">
+                <label>Institute Main Name (Brand)</label>
+                <input type="text" id="set_name" class="form-control" required>
+                
+                <label>Sub Name / Tagline</label>
+                <input type="text" id="set_sub" class="form-control">
+                
+                <label>Full Address</label>
+                <input type="text" id="set_address" class="form-control" placeholder="City, State, PIN">
+                
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10);"></div>
+                    <div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div>
+                </div>
+                
+                <label>Logo URL (Leave blank to use default)</label>
+                <input type="text" id="set_logo" class="form-control" placeholder="https://example.com/logo.png">
+                
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
+                    <button type="button" onclick="confirmReset()" style="flex:1; background: #ef4444; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">🗑️ Reset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-
-        // Initial Data Load
-        window.addNewBellRow = function(name = '', time = '09:30') {
-            const container = document.getElementById('bellListContainer');
-            const rowId = 'bell_' + Date.now();
-            container.innerHTML += `
-                <div class="bell-card" id="${rowId}">
-                    <input type="text" class="input-box bell-name" placeholder="Bell Name" value="${name}">
-                    <input type="time" class="input-box bell-time" value="${time}">
-                </div>
-            `;
-        };
-
-        window.saveBellSettings = function() {
-            let bells = [];
-            document.querySelectorAll('.bell-card').forEach(card => {
-                bells.push({ name: card.querySelector('.bell-name').value, time: card.querySelector('.bell-time').value });
-            });
-            localStorage.setItem('globus_bells', JSON.stringify({
-                active: document.getElementById('masterBellToggle').checked,
-                list: bells
-            }));
-            alert("Settings Saved!");
-        };
-
-        function loadSettings() {
-            const data = JSON.parse(localStorage.getItem('globus_bells'));
-            if (data) {
-                document.getElementById('masterBellToggle').checked = data.active;
-                data.list.forEach(b => addNewBellRow(b.name, b.time));
-            } else {
-                addNewBellRow('Morning Bell', '09:30');
+        
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            
+            const emailSpan = document.getElementById('authEmail');
+            if(session.user && session.user.email) {
+                emailSpan.innerText = session.user.email.split('@')[0];
             }
+            
+            loadSettings();
+            loadDashboardData();
+            checkUpcomingBell(); // CHECK BELL
         }
 
-        document.addEventListener('DOMContentLoaded', loadSettings);
+        // --- DASHBOARD UPCOMING BELL LOGIC ---
+        function checkUpcomingBell() {
+            const saved = localStorage.getItem('globus_bell_settings_v6'); // Must match reminders.html version
+            const banner = document.getElementById('upcomingBellBanner');
+            
+            if(!saved) { banner.style.display = 'none'; return; }
+            const settings = JSON.parse(saved);
+            
+            // If system is OFF or alert is disabled (0)
+            if(!settings.isOn || settings.warningDuration == 0) { 
+                banner.style.display = 'none'; 
+                return; 
+            }
+            
+            const now = new Date();
+            // Check Excluded Days
+            if(settings.excludedDays && settings.excludedDays.includes(now.getDay())) {
+                banner.style.display = 'none'; 
+                return;
+            }
+            
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            let nextBell = null;
+            let minDiff = Infinity;
+
+            settings.bells.forEach(bell => {
+                const [bH, bM] = bell.time.split(':').map(Number);
+                const bellMinutes = bH * 60 + bM;
+                const diff = bellMinutes - currentMinutes;
+                
+                // If the bell is coming up within the set warning duration
+                if(diff > 0 && diff <= settings.warningDuration && diff < minDiff) {
+                    minDiff = diff;
+                    nextBell = bell;
+                }
+            });
+
+            if(nextBell) {
+                // Convert to 12h AM/PM for display
+                let parts = nextBell.time.split(':');
+                let h = parseInt(parts[0]);
+                let ampm = h >= 12 ? 'PM' : 'AM';
+                h = h % 12 || 12;
+                let displayTime = String(h).padStart(2, '0') + ':' + parts[1] + ' ' + ampm;
+                
+                document.getElementById('upcomingBellText').innerHTML = `🔔 Upcoming: <b>${nextBell.name}</b> at ${displayTime}`;
+                banner.style.display = 'flex';
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+        
+        // Run bell check every 30 seconds on the dashboard
+        setInterval(checkUpcomingBell, 30000);
+
+        async function loadSettings() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                if (data) {
+                    document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
+                    document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
+                    if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
+                    
+                    document.getElementById('set_name').value = data.institute_name || '';
+                    document.getElementById('set_sub').value = data.sub_name || '';
+                    document.getElementById('set_address').value = data.address || '';
+                    document.getElementById('set_phone').value = data.phone || '';
+                    document.getElementById('set_email').value = data.email || '';
+                    document.getElementById('set_logo').value = data.logo_url || '';
+                }
+            } catch (e) {}
+        }
+
+        window.saveSettings = async function(e) {
+            e.preventDefault();
+            let phoneVal = document.getElementById('set_phone').value;
+            if (phoneVal && phoneVal.length !== 10) { alert('Error: Phone number must strictly be 10 digits!'); return; }
+
+            const payload = {
+                id: 1, institute_name: document.getElementById('set_name').value, sub_name: document.getElementById('set_sub').value,
+                address: document.getElementById('set_address').value, phone: phoneVal, email: document.getElementById('set_email').value, logo_url: document.getElementById('set_logo').value
+            };
+            const { error } = await supabase.from('institute_settings').upsert([payload]);
+            if(error) alert('Error saving: ' + error.message);
+            else { alert('Settings Saved! Will reflect across all print formats.'); document.getElementById('settingsModal').style.display='none'; loadSettings(); }
+        }
+
+        window.confirmReset = function() {
+            let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
+            let userInput = prompt(`Security Verification\nTo clear settings data, please solve this math question:\n${num1} + ${num2} = ?`);
+            if (userInput !== null) {
+                if (parseInt(userInput) === (num1+num2)) { document.getElementById('settingsForm').reset(); alert('Reset Complete!'); } 
+                else { alert('Incorrect answer!'); }
+            }
+        };
+
+        async function loadDashboardData() {
+            try {
+                const [stuRes, crsRes, payRes] = await Promise.all([
+                    supabase.from('students').select('*'), supabase.from('courses').select('*'), supabase.from('fee_payments').select('*')
+                ]);
+                
+                const studentsData = stuRes.data || []; const coursesData = crsRes.data || []; const paymentsData = payRes.data || [];
+
+                const totalStudentsCount = studentsData.length;
+                const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
+                
+                document.getElementById('statTotalStudents').textContent = totalStudentsCount;
+                document.getElementById('statActiveStudents').textContent = activeStudents.length;
+
+                const activeCourses = coursesData.filter(c => c.status === 'Active');
+                document.getElementById('statCourses').textContent = activeCourses.length;
+
+                const todayDate = new Date().toISOString().split('T')[0];
+                const paymentsToday = paymentsData.filter(p => p.payment_date === todayDate).reduce((sum, p) => sum + Number(p.amount_paid), 0);
+                const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
+                document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
+
+                let totalPendingSum = 0;
+                activeStudents.forEach(s => {
+                    const totalCourseFee = Number(s.total_fee) || 0; const admissionFee = Number(s.admission_fee) || 0;
+                    const stuPayments = paymentsData.filter(p => p.student_id === s.id);
+                    const totalPaidPayments = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
+                    const totalDiscount = stuPayments.reduce((sum, p) => sum + (Number(p.discount_amount) || 0), 0);
+                    let totalCoursePending = totalCourseFee - (admissionFee + totalPaidPayments + totalDiscount);
+                    if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
+                });
+                document.getElementById('statPendingFees').textContent = '₹ ' + totalPendingSum;
+
+            } catch (err) { console.error("Dashboard Loading Error:", err); }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
+        checkAuth();
     </script>
 </body>
 </html>
