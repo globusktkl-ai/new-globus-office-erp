@@ -41,14 +41,14 @@
         .smc-label { width: 110px; color: #64748b; font-weight: 700; flex-shrink: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
         .smc-value { flex: 1; color: #1e293b; font-weight: 600; }
 
-        /* --- NEW PROGRESS BAR STYLES --- */
+        /* --- PROGRESS BAR STYLES --- */
         .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 10px; height: 16px; margin: 10px 0 15px; position: relative; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
         .progress-fill { height: 100%; border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 10px; font-weight: 900; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: width 0.5s ease-in-out; }
         .progress-fill.active { background: linear-gradient(90deg, #3b82f6, #6366f1); }
         .progress-fill.completed { background: linear-gradient(90deg, #10b981, #059669); }
         .progress-text-out { position: absolute; width: 100%; text-align: center; top: 0; left: 0; font-size: 10px; font-weight: 800; color: #475569; line-height: 16px; z-index: 1; mix-blend-mode: overlay;}
 
-        /* NEW PROFESSIONAL BUTTON STYLES */
+        /* PROFESSIONAL BUTTON STYLES */
         .card-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
         .btn-card { border: none; padding: 12px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 13px; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 5px; }
         
@@ -103,7 +103,6 @@
             </div>
         </div>
         <div class="header-right">
-            <!-- 3D RETURN TO DASHBOARD BUTTON -->
             <a href="dashboard.html" class="btn-back-dashboard">
                 <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
                     <defs>
@@ -135,7 +134,6 @@
         <div id="studentsList"><div style="text-align:center; padding:30px; color:#94a3b8; font-weight:bold;">Loading students database...</div></div>
     </main>
 
-    <!-- 1. VIEW & EDIT + ID CARD MODAL -->
     <div id="studentModal" class="modal-overlay">
         
         <div id="viewEditContainer" class="modal-container no-print" style="display:none; max-width:550px;">
@@ -270,7 +268,7 @@
                 loadSettings();
                 fetchStudents();
             } catch(e) {
-                console.log("Supabase not connected. Loading mock data.");
+                console.log("Supabase not connected.");
             }
         }
 
@@ -278,6 +276,10 @@
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
+                    if(document.getElementById('navInstName')) document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
+                    if(document.getElementById('navSubName')) document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
+                    if(data.logo_url && document.getElementById('navLogo')) document.getElementById('navLogo').src = data.logo_url;
+                    
                     if(document.getElementById('cardInstName')) document.getElementById('cardInstName').innerText = data.institute_name || 'GLOBUS';
                     if(document.getElementById('cardSubName')) document.getElementById('cardSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
                     if(data.logo_url && document.getElementById('cardInstLogo')) document.getElementById('cardInstLogo').src = data.logo_url;
@@ -287,7 +289,7 @@
                     if(document.getElementById('sealAddress')) document.getElementById('sealAddress').innerText = data.address || '';
                     if(document.getElementById('cardReturnPhone') && data.phone) document.getElementById('cardReturnPhone').innerText = '+91 ' + data.phone;
                 }
-            } catch (e) {}
+            } catch (e) { console.log("No settings found yet."); }
         }
 
         async function fetchStudents() {
@@ -343,7 +345,6 @@
                 let avatarUrl = s.photo_url || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${s.gender === "Female" ? "%23ec4899" : "%233b82f6"}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
                 let qualBadge = `<span style="background: #F3F4F6; color: #374151; padding: 2px 6px; border-radius: 4px; font-weight: 700; border: 1px solid #cbd5e1;">${s.qualification || 'N/A'}</span>`;
 
-                // --- PROGRESS BAR CALCULATION LOGIC ---
                 let progressPercent = 0;
                 let progressClass = 'active';
                 let progressText = '0%';
@@ -356,27 +357,24 @@
                     const course = globalCourses.find(c => c.id == s.course_id);
                     if (course && course.modules && Array.isArray(course.modules)) {
                         const totalMods = course.modules.length;
-                        const currentModIndex = course.modules.indexOf(s.module) + 1; // 1-based index
+                        const currentModIndex = course.modules.indexOf(s.module) + 1; 
                         
                         if (totalMods > 0 && currentModIndex > 0) {
                             progressPercent = Math.round((currentModIndex / totalMods) * 100);
                             progressText = `${progressPercent}% (Mod ${currentModIndex}/${totalMods})`;
                         } else if (totalMods > 0) {
-                            // Student is enrolled but module not strictly matching (e.g. newly admitted)
                             progressPercent = 5; 
                             progressText = 'Just Started';
                         }
                     }
                 }
                 
-                // Construct Progress Bar HTML
                 let progressBarHtml = `
                     <div class="progress-container">
                         <div class="progress-fill ${progressClass}" style="width: ${progressPercent}%;"></div>
                         <div class="progress-text-out">${progressText}</div>
                     </div>
                 `;
-                // -------------------------------------
 
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
@@ -712,7 +710,7 @@
                     }
                     btn.innerHTML = originalText; btn.disabled = false;
                 }, 'image/png');
-            } catch (error) { alert("Could not generate image."); btn.innerHTML = originalText; btn.disabled = false; }
+            } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
         };
 
         window.deleteStudent = async function(id, regNo, status) {
@@ -743,6 +741,8 @@
             document.getElementById('profileCardContainer').style.display = 'none';
         };
 
+        // കൃത്യമായി ഇവിടെ ചേർത്തിരിക്കുന്നു
+        checkAuth();
     </script>
 </body>
 </html>
