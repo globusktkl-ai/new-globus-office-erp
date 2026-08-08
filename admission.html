@@ -226,6 +226,7 @@
             }
         }
 
+        // --- UPDATED STRICT REGISTRATION NUMBER GENERATION ---
         async function generateAutoRegNumber() {
             if (document.getElementById('regToggle').checked) return; 
 
@@ -240,21 +241,40 @@
                 if (error) throw error;
 
                 let maxNum = 0;
+                const existingRegNos = new Set(); // Store all existing numbers for strict checking
+
                 if (data && data.length > 0) {
+                    const prefixUpper = institutePrefix.toUpperCase();
                     data.forEach(student => {
-                        if (student.register_number && student.register_number.startsWith(institutePrefix)) {
-                            const numPart = parseInt(student.register_number.replace(institutePrefix, ''), 10);
-                            if (!isNaN(numPart) && numPart > maxNum) {
-                                maxNum = numPart;
+                        if (student.register_number) {
+                            const regStr = student.register_number.trim().toUpperCase();
+                            existingRegNos.add(regStr); // Track every single registered number
+                            
+                            // Find max numeric value with matching prefix
+                            if (regStr.startsWith(prefixUpper)) {
+                                const numMatch = regStr.substring(prefixUpper.length).match(/^\d+/);
+                                if (numMatch) {
+                                    const numPart = parseInt(numMatch[0], 10);
+                                    if (!isNaN(numPart) && numPart > maxNum) {
+                                        maxNum = numPart;
+                                    }
+                                }
                             }
                         }
                     });
                 }
 
-                // Increment Max by 1 (Strict logic to prevent duplicates)
-                const nextNum = maxNum + 1;
-                const paddedNum = nextNum.toString().padStart(4, '0');
-                regInput.value = `${institutePrefix}${paddedNum}`;
+                // Increment Max by 1
+                let nextNum = maxNum + 1;
+                let proposedRegNo = `${institutePrefix}${nextNum.toString().padStart(4, '0')}`;
+
+                // Strict Validation Loop: Ensure proposed number does not exist AT ALL in database
+                while (existingRegNos.has(proposedRegNo.toUpperCase())) {
+                    nextNum++;
+                    proposedRegNo = `${institutePrefix}${nextNum.toString().padStart(4, '0')}`;
+                }
+
+                regInput.value = proposedRegNo;
 
             } catch (err) {
                 console.error("Error generating reg number:", err);
@@ -262,6 +282,7 @@
                 regInput.placeholder = "Error! Switch to Manual.";
             }
         }
+        // --------------------------------------------------------
 
         async function fetchCourses() {
             const { data } = await supabase.from('courses').select('id, course_name, modules, total_fee').eq('status', 'Active');
@@ -325,7 +346,6 @@
                     photoUrl = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl;
                 }
 
-                // FIXED: Using raw value (YYYY-MM-DD) from input fields for database insertion
                 const { error } = await supabase.from('students').insert([{
                     full_name: document.getElementById('fullName').value,
                     register_number: document.getElementById('regNo').value,
