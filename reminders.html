@@ -9,11 +9,12 @@
         body { background-color: #f8fafc; padding-bottom: 40px; }
         .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
         
-        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;}
-        .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;}
+        /* Centered Header */
+        .top-nav { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; position: relative;}
+        .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; flex: 1; text-align: center; padding-right: 40px; }
         
         /* 3D Back Button */
-        .btn-back-dashboard { display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; flex-shrink: 0;}
+        .btn-back-dashboard { display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; flex-shrink: 0; position: absolute; left: 0;}
         .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
 
@@ -21,17 +22,42 @@
         @media(max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
 
         /* Panels */
-        .panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; }
-        .panel-header { display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 15px; }
+        .panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; position: relative; }
+        .panel-header { display: flex; align-items: center; justify-content: center; gap: 10px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 15px; text-align: center;}
         .panel-title { font-size: 16px; font-weight: 900; color: #1e293b; margin: 0; }
         
-        /* Bell System */
-        .time-group { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0; }
-        .time-label { font-weight: 700; color: #475569; font-size: 14px; }
+        /* ADVANCED BELL SYSTEM STYLES */
+        .master-switch-container { display: flex; justify-content: center; align-items: center; gap: 10px; background: #f0fdf4; padding: 10px; border-radius: 8px; border: 1px solid #bbf7d0; margin-bottom: 15px; }
+        
+        /* Schedule Settings Box */
+        .schedule-settings-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .schedule-label { font-size: 12px; font-weight: 800; color: #475569; margin-bottom: 5px; display: block; text-transform: uppercase; }
+        .schedule-select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-weight: bold; color: #1e3a8a; margin-bottom: 15px; outline: none; }
+        
+        .days-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
+        .day-checkbox { display: flex; align-items: center; gap: 4px; background: white; padding: 5px 10px; border: 1px solid #cbd5e1; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; color: #64748b;}
+        .day-checkbox input:checked + span { color: #ef4444; text-decoration: line-through; }
+
+        .expiry-alert { background: #fef2f2; border: 1px dashed #ef4444; color: #b91c1c; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 800; text-align: center; margin-bottom: 15px; display: none; }
+        
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: #10b981; } 
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        .time-group { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0; gap: 10px;}
+        .time-input-name { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-weight: 600; color: #334155; outline: none; flex: 1; font-size: 13px;}
         .time-input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; font-weight: bold; color: #1e3a8a; outline: none; }
-        .btn-save-bell { background: #3b82f6; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.2s; }
-        .btn-save-bell:hover { background: #2563eb; }
-        .bell-status { text-align: center; font-size: 12px; margin-top: 10px; font-weight: bold; color: #10b981; }
+        .btn-remove-bell { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; font-size: 12px;}
+        
+        .btn-add-bell { background: #f1f5f9; color: #334155; border: 1px dashed #cbd5e1; padding: 10px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 13px;}
+        .btn-add-bell:hover { background: #e2e8f0; }
+
+        .btn-save-bell { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2); transition: 0.2s;}
+        .btn-save-bell:active { transform: scale(0.98); }
 
         /* Lists */
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f1f5f9; }
@@ -53,11 +79,10 @@
 <body>
 
     <div id="bellAlert">🔔 Reminder: <span id="bellAlertMsg">Time's Up!</span></div>
-    
-    <!-- Hidden Audio Element for Bell -->
     <audio id="bellAudio" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
     <main class="main-content">
+        <!-- Centered Header -->
         <div class="top-nav">
             <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
                 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -66,29 +91,50 @@
         </div>
 
         <div class="grid-container">
-            <!-- 1. Automatic Bell System -->
+            <!-- 1. Advanced Automatic Bell System -->
             <div class="panel">
                 <div class="panel-header">
                     <span style="font-size: 20px;">⏰</span>
                     <h2 class="panel-title">Automated Office Bell</h2>
                 </div>
-                <p style="font-size: 12px; color: #64748b; margin-top: -10px; margin-bottom: 15px;">Set timings to receive an automatic alarm sound when this dashboard is open.</p>
                 
-                <div class="time-group">
-                    <span class="time-label">Morning Bell</span>
-                    <input type="time" id="bellMorning" class="time-input">
+                <div id="scheduleExpiryAlert" class="expiry-alert"></div>
+
+                <div class="master-switch-container">
+                    <label class="switch">
+                        <input type="checkbox" id="masterBellToggle" onchange="toggleMasterBell()">
+                        <span class="slider"></span>
+                    </label>
+                    <span id="masterBellStatus" style="font-weight: 800; font-size: 13px; color: #64748b;">System is OFF</span>
                 </div>
-                <div class="time-group">
-                    <span class="time-label">Lunch Break</span>
-                    <input type="time" id="bellLunch" class="time-input">
+
+                <!-- Schedule Settings (NEW) -->
+                <div class="schedule-settings-box">
+                    <label class="schedule-label">Active Schedule Duration</label>
+                    <select id="scheduleDuration" class="schedule-select">
+                        <option value="forever">Always Active (Forever)</option>
+                        <option value="1week">Active for Next 1 Week</option>
+                        <option value="1month">Active for Next 1 Month</option>
+                    </select>
+
+                    <label class="schedule-label">Exclude Days (Mute Bell)</label>
+                    <div class="days-grid">
+                        <label class="day-checkbox"><input type="checkbox" value="0" class="exclude-day"> <span>Sun</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="1" class="exclude-day"> <span>Mon</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="2" class="exclude-day"> <span>Tue</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="3" class="exclude-day"> <span>Wed</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="4" class="exclude-day"> <span>Thu</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="5" class="exclude-day"> <span>Fri</span></label>
+                        <label class="day-checkbox"><input type="checkbox" value="6" class="exclude-day"> <span>Sat</span></label>
+                    </div>
                 </div>
-                <div class="time-group">
-                    <span class="time-label">Closing Bell</span>
-                    <input type="time" id="bellClosing" class="time-input">
+
+                <div id="bellListContainer">
+                    <!-- Dynamic Bells appended here -->
                 </div>
                 
-                <button class="btn-save-bell" onclick="saveBellTimings()">Save Settings & Activate</button>
-                <div id="bellStatus" class="bell-status">⚫ Bell System Inactive</div>
+                <button class="btn-add-bell" onclick="addNewBellRow()">+ Add New Bell</button>
+                <button class="btn-save-bell" onclick="saveBellTimings()">Save Settings & Schedule</button>
             </div>
 
             <!-- 2. Birthday Alerts -->
@@ -106,10 +152,9 @@
         <!-- 3. Fee Due Reminders -->
         <div class="panel">
             <div class="panel-header">
-                <span style="font-size: 20px;">💸</span>
                 <h2 class="panel-title">Pending Fee Alerts</h2>
             </div>
-            <p style="font-size: 12px; color: #64748b; margin-top: -10px; margin-bottom: 15px;">List of active students with pending fees. Click WhatsApp to send a polite reminder automatically.</p>
+            <p style="font-size: 12px; color: #64748b; margin-top: -10px; margin-bottom: 15px; text-align: center;">List of active students with pending fees. Click WhatsApp to send a polite reminder automatically.</p>
             
             <div id="feeList">
                 <div class="empty-state">Loading financial records...</div>
@@ -122,7 +167,8 @@
         import { supabase } from './assets/js/supabase-config.js';
         
         let bellTimer = null;
-        let playedToday = { morning: false, lunch: false, closing: false };
+        let playedToday = {}; 
+        let bellSettings = { isOn: false, expiryDate: null, excludedDays: [], bells: [] };
 
         async function initAssistant() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -132,62 +178,178 @@
             fetchStudentAlerts();
         }
 
-        // --- BELL SYSTEM LOGIC ---
+        // --- DYNAMIC & SCHEDULED BELL SYSTEM LOGIC ---
+        window.addNewBellRow = function(name = '', time = '') {
+            const container = document.getElementById('bellListContainer');
+            const rowId = 'bell_' + Date.now();
+            const html = `
+                <div class="time-group" id="${rowId}">
+                    <input type="text" class="time-input-name bell-name" placeholder="e.g. Morning Bell" value="${name}">
+                    <input type="time" class="time-input bell-time" value="${time}">
+                    <button class="btn-remove-bell" onclick="removeBellRow('${rowId}')">X</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        };
+
+        window.removeBellRow = function(rowId) {
+            document.getElementById(rowId).remove();
+        };
+
+        window.toggleMasterBell = function() {
+            const isOn = document.getElementById('masterBellToggle').checked;
+            const statusText = document.getElementById('masterBellStatus');
+            if (isOn) {
+                statusText.innerText = "System is ON (Monitoring)";
+                statusText.style.color = "#10b981";
+                startBellService();
+            } else {
+                statusText.innerText = "System is OFF";
+                statusText.style.color = "#ef4444";
+                if(bellTimer) clearInterval(bellTimer);
+            }
+        };
+
         window.saveBellTimings = function() {
-            const timings = {
-                morning: document.getElementById('bellMorning').value,
-                lunch: document.getElementById('bellLunch').value,
-                closing: document.getElementById('bellClosing').value
+            let bells = [];
+            const rows = document.querySelectorAll('#bellListContainer .time-group');
+            rows.forEach(row => {
+                const name = row.querySelector('.bell-name').value;
+                const time = row.querySelector('.bell-time').value;
+                if (name && time) { bells.push({ name, time }); }
+            });
+
+            // Calculate Expiry Date
+            const duration = document.getElementById('scheduleDuration').value;
+            let expiryDate = null;
+            if (duration === '1week') {
+                let d = new Date(); d.setDate(d.getDate() + 7);
+                expiryDate = d.getTime();
+            } else if (duration === '1month') {
+                let d = new Date(); d.setMonth(d.getMonth() + 1);
+                expiryDate = d.getTime();
+            }
+
+            // Get Excluded Days
+            let excludedDays = [];
+            document.querySelectorAll('.exclude-day:checked').forEach(cb => {
+                excludedDays.push(parseInt(cb.value));
+            });
+
+            const masterOn = document.getElementById('masterBellToggle').checked;
+            
+            bellSettings = {
+                isOn: masterOn,
+                expiryDate: expiryDate,
+                excludedDays: excludedDays,
+                bells: bells
             };
-            localStorage.setItem('globus_bell_timings', JSON.stringify(timings));
             
-            // Reset play state
-            playedToday = { morning: false, lunch: false, closing: false };
+            localStorage.setItem('globus_bell_settings_v2', JSON.stringify(bellSettings));
+            playedToday = {}; 
             
-            startBellService(timings);
-            alert("Bell Settings Saved! Keep this page or dashboard open to hear the alarm.");
+            checkExpiryAndStart();
+            alert("Smart Calendar Schedule & Settings Saved!");
         };
 
         function loadBellTimings() {
-            const saved = localStorage.getItem('globus_bell_timings');
+            const saved = localStorage.getItem('globus_bell_settings_v2');
             if (saved) {
-                const timings = JSON.parse(saved);
-                document.getElementById('bellMorning').value = timings.morning || '';
-                document.getElementById('bellLunch').value = timings.lunch || '';
-                document.getElementById('bellClosing').value = timings.closing || '';
-                startBellService(timings);
+                bellSettings = JSON.parse(saved);
+                document.getElementById('masterBellToggle').checked = bellSettings.isOn || false;
+                
+                // Set UI for Excluded Days
+                if (bellSettings.excludedDays) {
+                    document.querySelectorAll('.exclude-day').forEach(cb => {
+                        if(bellSettings.excludedDays.includes(parseInt(cb.value))) cb.checked = true;
+                    });
+                }
+                
+                // Set UI for Duration
+                if (!bellSettings.expiryDate) document.getElementById('scheduleDuration').value = 'forever';
+                else {
+                    let diffDays = Math.ceil((bellSettings.expiryDate - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                    if (diffDays <= 7 && diffDays > 0) document.getElementById('scheduleDuration').value = '1week';
+                    else if (diffDays > 7) document.getElementById('scheduleDuration').value = '1month';
+                }
+
+                // Load Bells
+                if(bellSettings.bells && bellSettings.bells.length > 0) {
+                    bellSettings.bells.forEach(b => addNewBellRow(b.name, b.time));
+                } else {
+                    addNewBellRow('Morning Bell', '09:30');
+                    addNewBellRow('Lunch Break', '13:00');
+                    addNewBellRow('Closing Bell', '16:00');
+                }
+
+                checkExpiryAndStart();
+            } else {
+                addNewBellRow('Morning Bell', '09:30');
+                addNewBellRow('Lunch Break', '13:00');
+                addNewBellRow('Closing Bell', '16:00');
             }
         }
 
-        function startBellService(timings) {
+        function checkExpiryAndStart() {
+            const alertBox = document.getElementById('scheduleExpiryAlert');
+            alertBox.style.display = 'none';
+
+            if (!bellSettings.isOn) {
+                toggleMasterBell();
+                return;
+            }
+
+            if (bellSettings.expiryDate) {
+                const now = new Date().getTime();
+                const timeLeft = bellSettings.expiryDate - now;
+                const daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
+
+                if (timeLeft <= 0) {
+                    alertBox.innerHTML = "⚠️ <b>Schedule Expired!</b> The preset time duration for your bell schedule has ended. The system has been paused. Please set a new schedule.";
+                    alertBox.style.display = 'block';
+                    document.getElementById('masterBellToggle').checked = false;
+                    toggleMasterBell();
+                    return;
+                } else if (daysLeft <= 2) {
+                    alertBox.innerHTML = `⚠️ <b>Schedule Ending Soon!</b> Your bell schedule will expire in <b>${daysLeft} day(s)</b>.`;
+                    alertBox.style.display = 'block';
+                }
+            }
+
+            toggleMasterBell(); // Starts service if ON and not expired
+        }
+
+        function startBellService() {
             if(bellTimer) clearInterval(bellTimer);
-            document.getElementById('bellStatus').innerHTML = "🟢 Active (Monitoring Time...)";
             
             bellTimer = setInterval(() => {
                 const now = new Date();
+                
+                // 1. Check Excluded Days (e.g. Sunday)
+                if (bellSettings.excludedDays && bellSettings.excludedDays.includes(now.getDay())) {
+                    return; // Do nothing today
+                }
+
                 const currentHour = String(now.getHours()).padStart(2, '0');
                 const currentMin = String(now.getMinutes()).padStart(2, '0');
                 const currentTime = `${currentHour}:${currentMin}`;
 
-                checkAndRing(currentTime, timings.morning, 'morning', 'Morning Class Starting!');
-                checkAndRing(currentTime, timings.lunch, 'lunch', 'Lunch Break!');
-                checkAndRing(currentTime, timings.closing, 'closing', 'Office Closing Time!');
-
-            }, 30000); // Check every 30 seconds
-        }
-
-        function checkAndRing(currentTime, targetTime, phase, msg) {
-            if (targetTime && currentTime === targetTime && !playedToday[phase]) {
-                const audio = document.getElementById('bellAudio');
-                audio.play().catch(e => console.log("Audio play blocked by browser. User interaction needed first."));
-                
-                const alertBox = document.getElementById('bellAlert');
-                document.getElementById('bellAlertMsg').innerText = msg;
-                alertBox.style.display = 'block';
-                
-                setTimeout(() => { alertBox.style.display = 'none'; }, 10000);
-                playedToday[phase] = true;
-            }
+                bellSettings.bells.forEach((bell, index) => {
+                    const uniqueId = bell.name + '_' + index;
+                    if (bell.time === currentTime && !playedToday[uniqueId]) {
+                        
+                        const audio = document.getElementById('bellAudio');
+                        audio.play().catch(e => console.log("Audio play blocked. Click anywhere on page first."));
+                        
+                        const alertBox = document.getElementById('bellAlert');
+                        document.getElementById('bellAlertMsg').innerText = bell.name;
+                        alertBox.style.display = 'block';
+                        
+                        setTimeout(() => { alertBox.style.display = 'none'; }, 10000);
+                        playedToday[uniqueId] = true;
+                    }
+                });
+            }, 30000); 
         }
 
         // --- FETCH ALERTS LOGIC ---
@@ -205,15 +367,11 @@
                 const tMonth = today.getMonth() + 1;
                 const tDay = today.getDate();
 
-                // 1. Process Birthdays
                 let birthdayHTML = '';
                 let hasBirthdays = false;
-
-                // 2. Process Pending Fees
                 let feeDuesData = [];
 
                 students.forEach(s => {
-                    // Check Birthday
                     if (s.date_of_birth) {
                         const dob = new Date(s.date_of_birth);
                         if (dob.getMonth() + 1 === tMonth && dob.getDate() === tDay) {
@@ -230,7 +388,6 @@
                         }
                     }
 
-                    // Check Fees
                     const totalFee = Number(s.total_fee) || 0; 
                     const admFee = Number(s.admission_fee) || 0;
                     const stuPayments = payments.filter(p => p.student_id === s.id);
@@ -243,11 +400,9 @@
                     }
                 });
 
-                // Render Birthdays
                 if (hasBirthdays) document.getElementById('birthdayList').innerHTML = birthdayHTML;
                 else document.getElementById('birthdayList').innerHTML = '<div class="empty-state">No birthdays today.</div>';
 
-                // Render Fees (Sorted highest due first)
                 feeDuesData.sort((a, b) => b.balance - a.balance);
                 let feeHTML = '';
                 if (feeDuesData.length > 0) {
