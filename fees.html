@@ -16,14 +16,22 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* Finance Module Specific Styles */
-        .finance-tabs { display: flex; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
-        .tab-btn { flex: 1; min-width: 150px; padding: 12px 15px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 800; color: #475569; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        /* Professional Finance Tabs - Mobile Optimized */
+        .finance-tabs { display: flex; gap: 10px; margin-bottom: 25px; width: 100%; }
+        .tab-btn { flex: 1; padding: 12px 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 800; color: #475569; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .tab-btn svg { width: 18px; height: 18px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
         .tab-btn:hover { background: #f8fafc; border-color: #94a3b8; }
         .tab-btn.active { background: #1e3a8a; color: #ffffff; border-color: #1e3a8a; box-shadow: 0 4px 10px rgba(30,58,138,0.2); }
+        
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Submit Button Professional Styling */
+        #preSubmitBtn { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; width: 100%; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
+        #preSubmitBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3); }
+        #preSubmitBtn:active { transform: scale(0.98); }
+        #preSubmitBtn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
 
         /* Report Table Styling */
         .report-table-wrapper { overflow-x: auto; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; }
@@ -48,6 +56,13 @@
         .modal-overlay-confirm { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 9999; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); }
         .confirm-box { background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: zoomIn 0.3s ease; }
         @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Mobile specific adjustments for tabs */
+        @media (max-width: 600px) {
+            .finance-tabs { gap: 6px; }
+            .tab-btn { padding: 10px 2px; font-size: 11px; flex-direction: column; gap: 5px; text-align: center; }
+            .tab-btn svg { width: 22px; height: 22px; }
+        }
     </style>
 </head>
 <body>
@@ -64,9 +79,18 @@
 
     <main class="main-content">
         <div class="finance-tabs">
-            <button class="tab-btn active" onclick="switchTab('collect')"><span>💵</span> Collect Fee</button>
-            <button class="tab-btn" onclick="switchTab('ledger')"><span>🧾</span> Individual Ledger</button>
-            <button class="tab-btn" onclick="switchTab('report')"><span>📊</span> Overall Report</button>
+            <button class="tab-btn active" onclick="switchTab('collect')">
+                <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Collect Fee
+            </button>
+            <button class="tab-btn" onclick="switchTab('ledger')">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Individual Ledger
+            </button>
+            <button class="tab-btn" onclick="switchTab('report')">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                Overall Report
+            </button>
         </div>
 
         <!-- TAB 1: COLLECT FEE -->
@@ -122,7 +146,7 @@
                         <input type="date" id="paymentDate" class="form-control" required>
                     </div>
 
-                    <button type="button" class="btn btn-primary" id="preSubmitBtn" onclick="triggerConfirmation()">Submit Payment</button>
+                    <button type="button" id="preSubmitBtn" onclick="triggerConfirmation()">Submit Payment</button>
                 </form>
             </div>
         </div>
