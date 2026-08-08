@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Reminders - Globus</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body { background-color: #f8fafc; padding-bottom: 40px; }
+        .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
+        
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;}
+        .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        /* 3D Back Button */
+        .btn-back-dashboard { display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; flex-shrink: 0;}
+        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
+
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        @media(max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
+
+        /* Panels */
+        .panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; }
+        .panel-header { display: flex; align-items: center; gap: 10px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 15px; }
+        .panel-title { font-size: 16px; font-weight: 900; color: #1e293b; margin: 0; }
+        
+        /* Bell System */
+        .time-group { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0; }
+        .time-label { font-weight: 700; color: #475569; font-size: 14px; }
+        .time-input { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; font-weight: bold; color: #1e3a8a; outline: none; }
+        .btn-save-bell { background: #3b82f6; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.2s; }
+        .btn-save-bell:hover { background: #2563eb; }
+        .bell-status { text-align: center; font-size: 12px; margin-top: 10px; font-weight: bold; color: #10b981; }
+
+        /* Lists */
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        .list-item:last-child { border-bottom: none; }
+        .item-info h4 { margin: 0 0 4px 0; font-size: 14px; color: #0f172a; font-weight: 800; }
+        .item-info p { margin: 0; font-size: 12px; color: #64748b; font-weight: 600; }
+        .due-amount { color: #ef4444; font-weight: 900; font-size: 15px; }
+        
+        .btn-wa { background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; text-decoration: none; }
+        .btn-wa:hover { background: #059669; }
+
+        .empty-state { text-align: center; color: #94a3b8; font-weight: 600; font-size: 13px; padding: 20px; }
+
+        /* Notification Popup */
+        #bellAlert { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fef08a; border: 2px solid #f59e0b; color: #b45309; padding: 15px 25px; border-radius: 10px; font-weight: 900; z-index: 9999; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3); animation: slideDown 0.5s ease; }
+        @keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 20px; opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="bellAlert">🔔 Reminder: <span id="bellAlertMsg">Time's Up!</span></div>
+    
+    <!-- Hidden Audio Element for Bell -->
+    <audio id="bellAudio" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+
+    <main class="main-content">
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
+                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <h1 class="page-title">Smart Assistant</h1>
+        </div>
+
+        <div class="grid-container">
+            <!-- 1. Automatic Bell System -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span style="font-size: 20px;">⏰</span>
+                    <h2 class="panel-title">Automated Office Bell</h2>
+                </div>
+                <p style="font-size: 12px; color: #64748b; margin-top: -10px; margin-bottom: 15px;">Set timings to receive an automatic alarm sound when this dashboard is open.</p>
+                
+                <div class="time-group">
+                    <span class="time-label">Morning Bell</span>
+                    <input type="time" id="bellMorning" class="time-input">
+                </div>
+                <div class="time-group">
+                    <span class="time-label">Lunch Break</span>
+                    <input type="time" id="bellLunch" class="time-input">
+                </div>
+                <div class="time-group">
+                    <span class="time-label">Closing Bell</span>
+                    <input type="time" id="bellClosing" class="time-input">
+                </div>
+                
+                <button class="btn-save-bell" onclick="saveBellTimings()">Save Settings & Activate</button>
+                <div id="bellStatus" class="bell-status">⚫ Bell System Inactive</div>
+            </div>
+
+            <!-- 2. Birthday Alerts -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span style="font-size: 20px;">🎂</span>
+                    <h2 class="panel-title">Today's Birthdays</h2>
+                </div>
+                <div id="birthdayList">
+                    <div class="empty-state">Checking records...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Fee Due Reminders -->
+        <div class="panel">
+            <div class="panel-header">
+                <span style="font-size: 20px;">💸</span>
+                <h2 class="panel-title">Pending Fee Alerts</h2>
+            </div>
+            <p style="font-size: 12px; color: #64748b; margin-top: -10px; margin-bottom: 15px;">List of active students with pending fees. Click WhatsApp to send a polite reminder automatically.</p>
+            
+            <div id="feeList">
+                <div class="empty-state">Loading financial records...</div>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+        
+        let bellTimer = null;
+        let playedToday = { morning: false, lunch: false, closing: false };
+
+        async function initAssistant() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+
+            loadBellTimings();
+            fetchStudentAlerts();
+        }
+
+        // --- BELL SYSTEM LOGIC ---
+        window.saveBellTimings = function() {
+            const timings = {
+                morning: document.getElementById('bellMorning').value,
+                lunch: document.getElementById('bellLunch').value,
+                closing: document.getElementById('bellClosing').value
+            };
+            localStorage.setItem('globus_bell_timings', JSON.stringify(timings));
+            
+            // Reset play state
+            playedToday = { morning: false, lunch: false, closing: false };
+            
+            startBellService(timings);
+            alert("Bell Settings Saved! Keep this page or dashboard open to hear the alarm.");
+        };
+
+        function loadBellTimings() {
+            const saved = localStorage.getItem('globus_bell_timings');
+            if (saved) {
+                const timings = JSON.parse(saved);
+                document.getElementById('bellMorning').value = timings.morning || '';
+                document.getElementById('bellLunch').value = timings.lunch || '';
+                document.getElementById('bellClosing').value = timings.closing || '';
+                startBellService(timings);
+            }
+        }
+
+        function startBellService(timings) {
+            if(bellTimer) clearInterval(bellTimer);
+            document.getElementById('bellStatus').innerHTML = "🟢 Active (Monitoring Time...)";
+            
+            bellTimer = setInterval(() => {
+                const now = new Date();
+                const currentHour = String(now.getHours()).padStart(2, '0');
+                const currentMin = String(now.getMinutes()).padStart(2, '0');
+                const currentTime = `${currentHour}:${currentMin}`;
+
+                checkAndRing(currentTime, timings.morning, 'morning', 'Morning Class Starting!');
+                checkAndRing(currentTime, timings.lunch, 'lunch', 'Lunch Break!');
+                checkAndRing(currentTime, timings.closing, 'closing', 'Office Closing Time!');
+
+            }, 30000); // Check every 30 seconds
+        }
+
+        function checkAndRing(currentTime, targetTime, phase, msg) {
+            if (targetTime && currentTime === targetTime && !playedToday[phase]) {
+                const audio = document.getElementById('bellAudio');
+                audio.play().catch(e => console.log("Audio play blocked by browser. User interaction needed first."));
+                
+                const alertBox = document.getElementById('bellAlert');
+                document.getElementById('bellAlertMsg').innerText = msg;
+                alertBox.style.display = 'block';
+                
+                setTimeout(() => { alertBox.style.display = 'none'; }, 10000);
+                playedToday[phase] = true;
+            }
+        }
+
+        // --- FETCH ALERTS LOGIC ---
+        async function fetchStudentAlerts() {
+            try {
+                const [stuRes, payRes] = await Promise.all([
+                    supabase.from('students').select('*').eq('status', 'active'),
+                    supabase.from('fee_payments').select('*')
+                ]);
+                
+                const students = stuRes.data || [];
+                const payments = payRes.data || [];
+                
+                const today = new Date();
+                const tMonth = today.getMonth() + 1;
+                const tDay = today.getDate();
+
+                // 1. Process Birthdays
+                let birthdayHTML = '';
+                let hasBirthdays = false;
+
+                // 2. Process Pending Fees
+                let feeDuesData = [];
+
+                students.forEach(s => {
+                    // Check Birthday
+                    if (s.date_of_birth) {
+                        const dob = new Date(s.date_of_birth);
+                        if (dob.getMonth() + 1 === tMonth && dob.getDate() === tDay) {
+                            hasBirthdays = true;
+                            const waMsg = `Happy Birthday ${s.full_name}! 🎉 Wishing you a fantastic year ahead from the Management and Staff of Globus Technical Academy.`;
+                            const waLink = `https://wa.me/91${s.phone_number}?text=${encodeURIComponent(waMsg)}`;
+                            
+                            birthdayHTML += `
+                                <div class="list-item">
+                                    <div class="item-info"><h4>${s.full_name}</h4><p>Reg: ${s.register_number || '-'}</p></div>
+                                    <a href="${waLink}" target="_blank" class="btn-wa">Wishes</a>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    // Check Fees
+                    const totalFee = Number(s.total_fee) || 0; 
+                    const admFee = Number(s.admission_fee) || 0;
+                    const stuPayments = payments.filter(p => p.student_id === s.id);
+                    const paidOther = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0), 0);
+                    const totalPaid = admFee + paidOther;
+                    const balance = totalFee - totalPaid;
+
+                    if (balance > 0) {
+                        feeDuesData.push({ student: s, balance: balance });
+                    }
+                });
+
+                // Render Birthdays
+                if (hasBirthdays) document.getElementById('birthdayList').innerHTML = birthdayHTML;
+                else document.getElementById('birthdayList').innerHTML = '<div class="empty-state">No birthdays today.</div>';
+
+                // Render Fees (Sorted highest due first)
+                feeDuesData.sort((a, b) => b.balance - a.balance);
+                let feeHTML = '';
+                if (feeDuesData.length > 0) {
+                    feeDuesData.forEach(item => {
+                        const s = item.student;
+                        const waMsg = `Dear ${s.full_name}, this is a gentle reminder from Globus Technical Academy regarding your pending course fee of Rs. ${item.balance}. Please clear the dues at the earliest. Ignore this message if you have already paid. Thank you.`;
+                        const waLink = `https://wa.me/91${s.phone_number}?text=${encodeURIComponent(waMsg)}`;
+
+                        feeHTML += `
+                            <div class="list-item">
+                                <div class="item-info">
+                                    <h4>${s.full_name}</h4>
+                                    <p>Reg: ${s.register_number || '-'} | Phone: ${s.phone_number}</p>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:15px;">
+                                    <div class="due-amount">₹ ${item.balance}</div>
+                                    <a href="${waLink}" target="_blank" class="btn-wa">WhatsApp</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    feeHTML = '<div class="empty-state">No pending fees found.</div>';
+                }
+                document.getElementById('feeList').innerHTML = feeHTML;
+
+            } catch(e) { console.error("Error loading alerts", e); }
+        }
+
+        document.addEventListener('DOMContentLoaded', initAssistant);
+    </script>
+</body>
+</html>
