@@ -9,11 +9,9 @@
         body { background-color: #f8fafc; padding-bottom: 40px; }
         .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
         
-        /* Perfectly Centered Header */
         .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; min-height: 45px;}
         .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 100%;}
         
-        /* 3D Back Button */
         .btn-back-dashboard { position: absolute; left: 0; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; z-index: 10;}
         .btn-back-dashboard:active { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
@@ -48,7 +46,6 @@
 
         .expiry-alert { background: #fef2f2; border: 1px dashed #ef4444; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 800; text-align: center; margin-bottom: 15px; display: none; }
         
-        /* Toggle Switch */
         .switch { position: relative; display: inline-block; width: 54px; height: 28px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
@@ -56,7 +53,6 @@
         input:checked + .slider { background-color: #10b981; } 
         input:checked + .slider:before { transform: translateX(26px); }
 
-        /* Dynamic Bell Rows */
         .bell-list-title { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase; }
         
         .time-group { display: flex; align-items: center; background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; gap: 10px; flex-wrap: nowrap;}
@@ -72,7 +68,6 @@
         .btn-save-bell { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); transition: 0.2s; letter-spacing: 0.5px;}
         .btn-save-bell:active { transform: scale(0.98); }
 
-        /* Lists */
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #f1f5f9; }
         .list-item:last-child { border-bottom: none; }
         .item-info h4 { margin: 0 0 5px 0; font-size: 15px; color: #0f172a; font-weight: 900; }
@@ -84,14 +79,12 @@
 
         .empty-state { text-align: center; color: #94a3b8; font-weight: 700; font-size: 14px; padding: 25px; }
 
-        /* Notification Popup */
         #bellAlert { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fef08a; border: 2px solid #f59e0b; color: #b45309; padding: 15px 25px; border-radius: 12px; font-weight: 900; z-index: 9999; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 90%; max-width: 350px; text-align: center;}
         @keyframes slideDown { from { top: -50px; opacity: 0; transform: translate(-50%, -20px); } to { top: 20px; opacity: 1; transform: translate(-50%, 0); } }
         
         .btn-stop-bell { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 900; margin-top: 15px; cursor: pointer; width: 100%; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3); font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 5px;}
         .btn-stop-bell:active { transform: scale(0.95); }
 
-        /* CUSTOM MODAL CLOCK STYLES */
         #customTimePickerModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 10000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
         .time-picker-card { background: white; padding: 25px; border-radius: 16px; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .tp-select { padding: 12px 5px; font-size: 20px; font-weight: 900; border-radius: 8px; border: 2px solid #cbd5e1; outline: none; background: #f8fafc; color: #0f172a; text-align: center; width: 70px; appearance: none; -webkit-appearance: none; }
@@ -139,7 +132,6 @@
         <button class="btn-stop-bell" onclick="stopRinging()">🔕 Stop Bell</button>
     </div>
     
-    <!-- Hidden Audio Element -->
     <audio id="bellAudio" preload="auto"></audio>
 
     <main class="main-content">
@@ -150,7 +142,7 @@
             <h1 class="page-title">Smart Assistant</h1>
         </div>
 
-        <!-- NEW AUDIO UNLOCK BUTTON FOR MOBILE BROWSER POLICY FIX -->
+        <!-- NEW AUDIO UNLOCK BUTTON -->
         <button id="audioUnlockBtn" class="audio-unlock-btn" onclick="unlockAudioSystem()">
             <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
             Tap here to Activate Sound System
@@ -246,7 +238,6 @@
                 <div class="empty-state">Loading financial records...</div>
             </div>
         </div>
-
     </main>
 
     <script type="module">
@@ -255,8 +246,6 @@
         let bellTimer = null;
         let playedToday = {}; 
         let bellSettings = { isOn: false, expiryDate: null, excludedDays: [], bells: [], audioUrl: '', warningDuration: 15 };
-
-        // --- GLOBAL FUNCTIONS DEFINED FIRST TO PREVENT CRASHES ---
 
         // 1. Audio Unlock (Mobile Fix)
         window.unlockAudioSystem = function() {
@@ -312,7 +301,6 @@
             document.getElementById('tp-hour').value = h;
             document.getElementById('tp-minute').value = m;
             document.getElementById('tp-ampm').value = ampm;
-            
             document.getElementById('customTimePickerModal').style.display = 'flex';
         };
 
@@ -351,7 +339,7 @@
                 playPromise.then(() => {
                     setTimeout(() => { audioObj.pause(); audioObj.currentTime = 0; }, 2000);
                 }).catch(e => {
-                    console.log("Audio preview blocked. Tap green unlock button first.");
+                    console.log("Preview blocked.");
                 });
             }
         };
@@ -401,7 +389,7 @@
             if (isOn) {
                 statusText.innerText = "System is ON (Monitoring)";
                 statusText.style.color = "#10b981";
-                startBellService();
+                window.startBellService();
             } else {
                 statusText.innerText = "System is OFF";
                 statusText.style.color = "#ef4444";
@@ -447,7 +435,6 @@
                 warningDuration: warningDur
             };
             
-            // Version bump to clear any old corrupt data
             localStorage.setItem('globus_bell_settings_v8', JSON.stringify(bellSettings));
             playedToday = {}; 
             
@@ -486,15 +473,12 @@
             window.toggleMasterBell();
         };
 
-        function startBellService() {
+        window.startBellService = function() {
             if(bellTimer) clearInterval(bellTimer);
             
             bellTimer = setInterval(() => {
                 const now = new Date();
-                
-                if (bellSettings.excludedDays && bellSettings.excludedDays.includes(now.getDay())) {
-                    return; 
-                }
+                if (bellSettings.excludedDays && bellSettings.excludedDays.includes(now.getDay())) { return; }
 
                 const currentHour = String(now.getHours()).padStart(2, '0');
                 const currentMin = String(now.getMinutes()).padStart(2, '0');
@@ -511,7 +495,7 @@
                         let playPromise = audio.play();
                         if (playPromise !== undefined) {
                             playPromise.catch(e => {
-                                console.log("Auto-play prevented. User needs to tap the green unlock button.");
+                                console.log("Auto-play prevented.");
                             });
                         }
                         
@@ -523,7 +507,7 @@
                     }
                 });
             }, 10000); 
-        }
+        };
 
         // --- FETCH ALERTS LOGIC (SUPABASE) ---
         async function fetchStudentAlerts() {
@@ -616,7 +600,7 @@
 
         // --- SAFE INITIALIZATION ---
         function loadSettingsSafe() {
-            const saved = localStorage.getItem('globus_bell_settings_v8'); // Version bumped to clear any corrupt old data
+            const saved = localStorage.getItem('globus_bell_settings_v8');
             let loadedSettings = null;
             try {
                 if (saved) loadedSettings = JSON.parse(saved);
@@ -672,7 +656,6 @@
             window.initCustomPicker();
             loadSettingsSafe();
             
-            // Fetch DB async without blocking UI
             supabase.auth.getSession().then(({ data: { session } }) => {
                 if (session) fetchStudentAlerts();
             });
