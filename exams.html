@@ -24,11 +24,6 @@
             .btn-back-dashboard span { display: none; } /* Hide text on small screens, keep only icon */
         }
 
-        /* DISABLE SCROLLING ON NUMBER INPUTS */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-
         .search-filter-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
         .search-box-pill { width: 100%; border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 20px; outline: none; font-size: 15px; color: #333; transition: border-color 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); box-sizing: border-box; }
         .search-box-pill:focus { border-color: #3b82f6; }
@@ -45,6 +40,11 @@
         .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; box-sizing: border-box; transition: 0.2s; }
         .input-group input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
         
+        /* DISABLE SCROLLING ON NUMBER INPUTS */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
         .action-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.2s; color: white; margin-top: 10px; }
         .action-btn:active { transform: scale(0.98); }
         .empty-state { text-align: center; padding: 30px; color: #64748b; font-weight: 600; }
@@ -220,7 +220,7 @@
                                     <p style="margin:5px 0 0; font-size:12px; color:#64748b; font-weight:600;"><span id="mlPhone">Ph: </span> | <span id="mlEmail">Email: </span></p>
                                 </div>
                                 <div style="text-align: right; font-size: 12px; color: #64748b; margin-bottom: 10px;">
-                                    <strong>Serial No:</strong> <span id="ml_c_serial">GM0000000</span>
+                                    <strong>Serial No:</strong> <span id="ml_c_serial">GM-0000000</span>
                                 </div>
                             </div>
                             
@@ -328,7 +328,7 @@
                                 <div class="cert-corner cc-tl"></div><div class="cert-corner cc-tr"></div>
                                 <div class="cert-corner cc-bl"></div><div class="cert-corner cc-br"></div>
                                 
-                                <div class="cert-top-row"><span>Serial # <span id="c-serial">GM 0000000</span></span><span>Reg # <span id="c-reg">MP 000000</span></span></div>
+                                <div class="cert-top-row"><span>Serial # <span id="c-serial">GM-0000000</span></span><span>Reg # <span id="c-reg">MP 000000</span></span></div>
                                 
                                 <div class="cert-logo-section">
                                     <img id="certInstLogo" src="assets/images/logo.png" alt="Logo" onerror="this.style.display='none'">
@@ -377,7 +377,7 @@
         import { supabase } from './assets/js/supabase-config.js';
         let allStudents = [], allCourses = [], allPayments = [], activeStudentData = null, currentZoom = 0.55;
 
-        // Helper function: Generate deterministic secure Serial Number
+        // FIXED: New function with hyphen to prevent visual confusion (e.g., GM-0123456)
         function generateSerialNumber(student) {
             let hash = 0;
             let str = student.id + (student.register_number || '000');
@@ -385,13 +385,8 @@
                 hash = (hash << 5) - hash + str.charCodeAt(i);
                 hash |= 0;
             }
-            return 'GM' + Math.abs(hash).toString().padStart(7, '0').substring(0, 7);
+            return 'GM-' + Math.abs(hash).toString().padStart(7, '0').substring(0, 7);
         }
-
-        // PREVENT SCROLL WHEEL ON NUMBER INPUTS
-        document.addEventListener('wheel', function(event) {
-            if (document.activeElement.type === 'number') { document.activeElement.blur(); }
-        });
 
         async function checkAuth() {
             try {
@@ -537,7 +532,6 @@
             const container = document.getElementById('studentsList'); container.innerHTML = '';
             if (studentsToRender.length === 0) { container.innerHTML = '<div class="empty-state">No students found matching your criteria.</div>'; return; }
 
-            // Premium Color Palette for Modules
             const colorPalette = ['#1d4ed8', '#b45309', '#047857', '#be185d', '#4338ca', '#0f766e', '#b91c1c', '#0f172a'];
 
             studentsToRender.forEach(student => {
@@ -549,7 +543,6 @@
                 
                 const avatar = student.photo_url || (student.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
 
-                // Calculate Fee Status for Display
                 const totalCourseFee = Number(student.total_fee) || 0;
                 const admissionFee = Number(student.admission_fee) || 0;
                 const stuPayments = allPayments.filter(p => p.student_id === student.id);
@@ -584,7 +577,6 @@
                 let isLastModule = (!isCompleted && (currentModule.toLowerCase() === 'job training' || currentModule === course.modules[course.modules.length - 1]));
                 let btnText = isLastModule ? '2. Finish' : '2. Promotion';
 
-                // Determine Buttons HTML based on Completion Status
                 let buttonsHtml = '';
                 if (isCompleted) {
                     buttonsHtml = `
