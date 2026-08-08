@@ -123,7 +123,7 @@
             </div>
         </div>
         <div class="header-right">
-            <!-- NEW 3D RETURN TO DASHBOARD BUTTON -->
+            <!-- 3D RETURN TO DASHBOARD BUTTON -->
             <a href="dashboard.html" class="btn-back-dashboard">
                 <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
                     <defs>
@@ -370,7 +370,7 @@
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-        let allStudents = [], allCourses = [], activeStudentData = null, currentZoom = 0.55;
+        let allStudents = [], allCourses = [], allPayments = [], activeStudentData = null, currentZoom = 0.55;
 
         // Helper function: Generate deterministic secure Serial Number
         function generateSerialNumber(student) {
@@ -390,12 +390,7 @@
                 loadSettings(); 
                 fetchData();
             } catch(e) {
-                console.log("Supabase not connected. Loading mock data.");
-                allStudents = [
-                    { id: '1', full_name: 'Jabir', register_number: 'Yyt7765', phone_number: '3326653320', gender: 'Male', qualification: 'SSLC', course_id: 'c1', course_name: 'Mobile Phone Technician', module: 'Course Completed', total_fee: 2000, status: 'completed' }
-                ];
-                allCourses = [{id:'c1', course_name: 'Mobile Phone Technician', modules: ['Module 1', 'Job Training']}];
-                applyFilters();
+                console.log("Supabase not connected.");
             }
         }
 
@@ -419,9 +414,15 @@
 
         async function fetchData() {
             try {
-                const { data: students } = await supabase.from('students').select('*').order('created_at', { ascending: false });
-                const { data: courses } = await supabase.from('courses').select('*');
-                allStudents = students || []; allCourses = courses || [];
+                const [studentsRes, coursesRes, paymentsRes] = await Promise.all([
+                    supabase.from('students').select('*').order('created_at', { ascending: false }),
+                    supabase.from('courses').select('*'),
+                    supabase.from('fee_payments').select('*')
+                ]);
+                
+                allStudents = studentsRes.data || []; 
+                allCourses = coursesRes.data || [];
+                allPayments = paymentsRes.data || [];
                 
                 applyFilters();
             } catch (err) { console.error(err); alert("Error loading data!"); }
@@ -494,11 +495,15 @@
                     const updBtn = document.getElementById(`upd_btn_${studentId}`);
                     if(updBtn) updBtn.style.display = 'block';
                     
-                    const promBtn = document.getElementById(`prom_${studentId}`);
-                    if(promBtn) {
-                        promBtn.style.display = 'block';
-                        promBtn.disabled = true;
-                        promBtn.style.opacity = '0.5';
+                    // If course is completed, keep promotion button hidden even after unlocking
+                    const student = allStudents.find(s => s.id === studentId);
+                    if (student && student.status !== 'completed') {
+                        const promBtn = document.getElementById(`prom_${studentId}`);
+                        if(promBtn) {
+                            promBtn.style.display = 'block';
+                            promBtn.disabled = true;
+                            promBtn.style.opacity = '0.5';
+                        }
                     }
 
                     const mlBtn = document.getElementById(`ml_btn_${studentId}`);
@@ -535,6 +540,15 @@
                 
                 const avatar = student.photo_url || (student.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
 
+                // Calculate Fee Status for Display
+                const totalCourseFee = Number(student.total_fee) || 0;
+                const admissionFee = Number(student.admission_fee) || 0;
+                const stuPayments = allPayments.filter(p => p.student_id === student.id);
+                const otherPaid = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0), 0);
+                const totalPaid = admissionFee + otherPaid;
+                let totalCoursePending = totalCourseFee - totalPaid;
+                if (totalCoursePending < 0) totalCoursePending = 0;
+
                 let moduleOptions = '';
                 if (isCompleted) {
                     moduleOptions += `<option value="Course Completed" selected disabled style="color: #10b981; font-weight: bold;">🏆 Course Completed</option>`;
@@ -565,9 +579,14 @@
                 card.innerHTML = `
                     <div class="exam-header">
                         <img src="${avatar}" class="exam-avatar">
-                        <div class="exam-info">
+                        <div class="exam-info" style="flex:1;">
                             <h4>${student.full_name}</h4><p>Reg: ${student.register_number || 'N/A'} | Course: ${course.course_name}</p>
-                            <p style="color: ${student.status === 'completed' ? '#10b981' : '#3b82f6'}; font-weight: 800;">Status: ${(student.status || 'Active').toUpperCase()}</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                                <span style="color: ${student.status === 'completed' ? '#10b981' : '#3b82f6'}; font-weight: 800; font-size: 13px;">Status: ${(student.status || 'Active').toUpperCase()}</span>
+                                <span style="font-size: 11px; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; color: #475569;">
+                                    Fee: <span style="color: #10b981; font-weight: bold;">Paid ₹${totalPaid}</span> | <span style="color: ${totalCoursePending > 0 ? '#ef4444' : '#10b981'}; font-weight: bold;">Due ₹${totalCoursePending}</span>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     
@@ -592,9 +611,9 @@
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                        <button id="upd_btn_${student.id}" class="action-btn" style="background:#3b82f6; margin:0; font-size:11px; padding:10px 2px; display: ${displayActionArea};" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
-                        <button id="prom_${student.id}" class="action-btn" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px; display: ${displayActionArea};" disabled onclick="execPromote('${student.id}', '${course.id}')">${btnText}</button>
-                        <button id="ml_btn_${student.id}" class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px; ${isCompleted ? 'grid-column: span 3;' : ''}" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
+                        <button id="upd_btn_${student.id}" class="action-btn" style="background:#3b82f6; margin:0; font-size:11px; padding:10px 2px; display: ${displayActionArea}; ${isCompleted ? 'grid-column: span 2;' : ''}" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
+                        ${!isCompleted ? `<button id="prom_${student.id}" class="action-btn" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px; display: ${displayActionArea};" disabled onclick="execPromote('${student.id}', '${course.id}')">${btnText}</button>` : ''}
+                        <button id="ml_btn_${student.id}" class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px; ${isCompleted ? 'grid-column: span 1;' : ''}" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
                     </div>
                     <button class="action-btn" style="background:#f59e0b; margin-top:8px; width:100%; font-size:13px;" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
                 `;
@@ -611,16 +630,20 @@
             
             await supabase.from('exam_results').insert([{ student_id: studentId, course_id: courseId, module_name: mod, marks: Number(marks), attendance: Number(att) }]);
             
-            alert('Marks Saved! Promotion/Finish is now enabled.');
-            
-            const promBtn = document.getElementById(`prom_${studentId}`);
-            const course = allCourses.find(c => c.id == courseId);
-            
-            if(promBtn && course) {
-                promBtn.disabled = false;
-                promBtn.style.opacity = '1';
-                let isLastModule = (mod.toLowerCase() === 'job training' || mod === course.modules[course.modules.length - 1]);
-                promBtn.innerText = isLastModule ? '2. Finish' : '2. Promotion';
+            const student = allStudents.find(s => s.id === studentId);
+            if (student && student.status === 'completed') {
+                alert('Marks Updated Successfully!');
+            } else {
+                alert('Marks Saved! Promotion/Finish is now enabled.');
+                const promBtn = document.getElementById(`prom_${studentId}`);
+                const course = allCourses.find(c => c.id == courseId);
+                
+                if(promBtn && course) {
+                    promBtn.disabled = false;
+                    promBtn.style.opacity = '1';
+                    let isLastModule = (mod.toLowerCase() === 'job training' || mod === course.modules[course.modules.length - 1]);
+                    promBtn.innerText = isLastModule ? '2. Finish' : '2. Promotion';
+                }
             }
         };
 
@@ -864,7 +887,7 @@
             }
         };
 
-        // ====== NEW: CERTIFICATE FEE VALIDATION ======
+        // ====== CERTIFICATE FEE VALIDATION ======
         window.validateAndOpenCert = async function(studentId, courseId) {
             const student = allStudents.find(s => s.id === studentId);
             const course = allCourses.find(c => c.id == courseId);
