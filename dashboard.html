@@ -279,6 +279,8 @@
             box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
             flex-shrink: 0;
         }
+        .btn-settings-round { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3); flex-shrink: 0; transition: 0.2s; margin-right: 12px; }
+        .btn-settings-round:active { transform: scale(0.95); }
         
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
         .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
@@ -301,6 +303,12 @@
                     <span>Admin</span>
                     <span class="logged-in-email" id="authEmail">Loading...</span>
                 </div>
+                <button class="btn-settings-round" onclick="window.triggerSettingsSecurity()" title="Institute Core Settings">
+                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
                 <button class="btn-logout-round" id="logoutBtn" title="Secure Logout">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line>
@@ -634,6 +642,59 @@
 
             } catch (err) { console.error("Dashboard Loading Error:", err); }
         }
+
+        window.triggerSettingsSecurity = function() {
+            let warn1 = confirm("⚠️ WARNING 1: This section contains critical core settings of the institute. Any wrong changes will break the receipts and reports. Do you want to proceed?");
+            if (!warn1) return;
+            
+            let warn2 = confirm("🛑 WARNING 2: Are you strictly authorized by the Admin to alter the Institute Name, Address, and Contact details?");
+            if (!warn2) return;
+            
+            let warn3 = prompt("🚨 FINAL WARNING 3: Type 'ADMIN' to unlock the settings panel:");
+            if (warn3 === "ADMIN" || warn3 === "admin") {
+                window.openSettings();
+            } else {
+                alert("❌ Security Verification Failed! Access denied.");
+            }
+        };
+
+        window.openSettings = async function() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                if (data) {
+                    document.getElementById('set_name').value = data.institute_name || '';
+                    document.getElementById('set_sub').value = data.sub_name || '';
+                    document.getElementById('set_address').value = data.address || '';
+                    document.getElementById('set_phone').value = data.phone || '';
+                    document.getElementById('set_email').value = data.email || '';
+                }
+            } catch (e) {}
+            document.getElementById('settingsModal').style.display = 'flex';
+        };
+
+        window.saveSettings = async function(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const oldText = btn.innerHTML;
+            btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
+            
+            const updates = {
+                institute_name: document.getElementById('set_name').value,
+                sub_name: document.getElementById('set_sub').value,
+                address: document.getElementById('set_address').value,
+                phone: document.getElementById('set_phone').value,
+                email: document.getElementById('set_email').value
+            };
+            
+            const { error } = await supabase.from('institute_settings').update(updates).eq('id', 1);
+            if(error) { alert("Error saving settings."); } 
+            else { 
+                alert("Settings Saved Successfully!"); 
+                document.getElementById('settingsModal').style.display = 'none';
+                loadSettings(); 
+            }
+            btn.innerHTML = oldText; btn.disabled = false;
+        };
 
         async function loadSettings() {
             try {
