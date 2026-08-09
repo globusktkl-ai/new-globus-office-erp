@@ -30,31 +30,31 @@
         @media (max-width: 600px) { .btn-back-dashboard span { display: none; } .btn-back-dashboard { padding: 10px; } }
 
         /* --------------------------------------------------- */
-        /* COMPACT SMART FILTER UI (Height reduced, no arrows) */
+        /* PERFECT ADVANCED FILTER UI                          */
         /* --------------------------------------------------- */
         .search-container { background: white; border-radius: 12px; padding: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; width: 100%;}
         
         .main-search-box { width: 100%; padding: 10px 12px 10px 35px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 10px center; margin-bottom: 10px; transition: 0.2s;}
         .main-search-box:focus { border-color: #4c1d95; background-color: #fff; box-shadow: 0 0 0 3px rgba(76, 29, 149, 0.1); }
 
-        .filter-layout { display: grid; grid-template-columns: 1fr 120px; gap: 8px; align-items: stretch; }
+        /* FIX 1: Width constraint fix for mobile - minmax(0, 1fr) prevents long text from pushing the layout */
+        .filter-layout { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 8px; align-items: stretch; width: 100%; }
         
-        .filter-left { display: flex; flex-direction: column; gap: 6px; }
-        .filter-row { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 8px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .filter-left { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .filter-row { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 8px; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 0; }
         
         .filter-checkbox { width: 18px; height: 18px; accent-color: #4c1d95; cursor: pointer; flex-shrink: 0; margin: 0; }
         
-        /* Removed arrows, added invalid state for placeholder styling */
-        .filter-select { flex: 1; min-width: 0; padding: 4px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #1e293b; appearance: none; -webkit-appearance: none; outline: none; transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;}
+        .filter-select { flex: 1; min-width: 0; max-width: 100%; padding: 4px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #1e293b; appearance: none; -webkit-appearance: none; outline: none; transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;}
         .filter-select:invalid { color: #94a3b8; font-weight: 600; }
 
-        /* Right Status Box */
-        .filter-right { display: flex; }
-        .status-select { width: 100%; padding: 8px 5px; border: 2px solid #bbf7d0; border-radius: 8px; font-size: 13px; font-weight: 800; background: #f0fdf4; color: #15803d; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; text-align: center; }
+        .filter-right { display: flex; min-width: 0; }
+        .status-select { width: 100%; min-width: 0; padding: 8px 5px; border: 2px solid #bbf7d0; border-radius: 8px; font-size: 13px; font-weight: 800; background: #f0fdf4; color: #15803d; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .status-select option { font-weight: 700; }
 
         @media(max-width: 450px) {
-            .filter-layout { grid-template-columns: 1fr 105px; }
+            /* Mobile adjustment for filter grid */
+            .filter-layout { grid-template-columns: minmax(0, 1fr) 100px; }
             .filter-select { font-size: 12px; }
             .status-select { font-size: 12px; }
         }
@@ -123,32 +123,27 @@
             <h1 class="page-title">Student Directory</h1>
         </div>
         
-        <!-- NEW ADVANCED FILTER UI (COMPACT) -->
         <div class="search-container">
-            <!-- Search triggers filter on every key press -->
             <input type="text" id="searchInput" class="main-search-box" placeholder="Search Name, Reg No, Phone..." oninput="window.applyFilters()">
             
             <div class="filter-layout">
                 <div class="filter-left">
                     <div class="filter-row">
-                        <!-- Auto-checks when dropdown is changed -->
+                        <!-- FIX 2: updateFilterModules added here so Module dropdown updates immediately -->
                         <input type="checkbox" id="chkCourse" class="filter-checkbox" onchange="window.applyFilters()">
-                        <select id="courseSelect" class="filter-select" required onchange="document.getElementById('chkCourse').checked = true; window.applyFilters();">
+                        <select id="courseSelect" class="filter-select" required onchange="document.getElementById('chkCourse').checked = true; window.updateFilterModules(); window.applyFilters();">
                             <option value="" disabled selected hidden>Select Course</option>
-                            <!-- Dynamically loaded -->
                         </select>
                     </div>
                     <div class="filter-row">
                         <input type="checkbox" id="chkModule" class="filter-checkbox" onchange="window.applyFilters()">
                         <select id="moduleSelect" class="filter-select" required onchange="document.getElementById('chkModule').checked = true; window.applyFilters();">
                             <option value="" disabled selected hidden>Select Module</option>
-                            <!-- Dynamically loaded -->
                         </select>
                     </div>
                 </div>
                 
                 <div class="filter-right">
-                    <!-- OLD EMOJIS RESTORED -->
                     <select id="statusFilter" class="status-select" onchange="window.updateStatusColor(this); window.applyFilters();">
                         <option value="active" selected>🟢 Active</option>
                         <option value="completed">🎓 Completed</option>
@@ -297,6 +292,10 @@
             } catch(e) { console.log("Supabase not connected."); }
         }
 
+        window.toggleFilter = function(selectId, isChecked) {
+            document.getElementById(selectId).disabled = !isChecked;
+        };
+
         window.updateStatusColor = function(select) {
             if(select.value === 'active') { select.style.color = '#15803d'; select.style.borderColor = '#bbf7d0'; select.style.backgroundColor = '#f0fdf4'; }
             else if(select.value === 'completed') { select.style.color = '#1d4ed8'; select.style.borderColor = '#bfdbfe'; select.style.backgroundColor = '#eff6ff'; }
@@ -345,21 +344,41 @@
             } catch (err) { console.error("Database Error:", err); }
         }
 
+        // FIX 2: Added function to filter modules based on selected course
+        window.updateFilterModules = function() {
+            const courseValue = document.getElementById('courseSelect').value;
+            const moduleSelect = document.getElementById('moduleSelect');
+            const currentMod = moduleSelect.value;
+            
+            moduleSelect.innerHTML = '<option value="" disabled selected hidden>Select Module</option>';
+            
+            let modulesList = new Set();
+            if (courseValue) {
+                const course = globalCourses.find(c => c.course_name === courseValue);
+                if (course && course.modules && Array.isArray(course.modules)) {
+                    course.modules.forEach(m => modulesList.add(m));
+                }
+            } else {
+                globalCourses.forEach(c => {
+                    if (c.modules && Array.isArray(c.modules)) c.modules.forEach(m => modulesList.add(m));
+                });
+            }
+            
+            modulesList.forEach(m => { moduleSelect.add(new Option(m, m)); });
+            
+            if (currentMod && Array.from(moduleSelect.options).some(opt => opt.value === currentMod)) {
+                moduleSelect.value = currentMod;
+            } else if (courseValue) {
+                moduleSelect.value = '';
+            }
+        };
+
         function populateDropdowns() {
             const courseSelect = document.getElementById('courseSelect');
             courseSelect.innerHTML = '<option value="" disabled selected hidden>Select Course</option>';
             globalCourses.forEach(c => { courseSelect.add(new Option(c.course_name, c.course_name)); });
 
-            let modulesList = new Set();
-            // Fetch all modules from courses database, not just from active students
-            globalCourses.forEach(c => {
-                if (c.modules && Array.isArray(c.modules)) {
-                    c.modules.forEach(m => modulesList.add(m));
-                }
-            });
-            const moduleSelect = document.getElementById('moduleSelect');
-            moduleSelect.innerHTML = '<option value="" disabled selected hidden>Select Module</option>';
-            modulesList.forEach(m => { moduleSelect.add(new Option(m, m)); });
+            window.updateFilterModules(); // Call the new function
         }
 
         window.applyFilters = function() {
@@ -669,7 +688,7 @@
             const btn = document.getElementById('sharePdfBtn'); const originalText = btn.innerHTML; 
             btn.innerHTML = '⏳ Generating PDF...'; btn.disabled = true;
             try {
-                const { jsPDF } = window.jspdf;
+                const { jsPOS } = window.jspdf;
                 const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] });
