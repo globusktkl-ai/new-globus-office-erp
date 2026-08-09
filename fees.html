@@ -468,7 +468,7 @@
 
         <!-- TAB 3: OVERALL REPORT (PREMIUM REDESIGNED) -->
         <div id="tab-report" class="tab-content">
-            <h2 style="font-size: 18px; margin-bottom: 15px; color: #0f172a; text-transform: uppercase; font-weight: 900;">Module-wise Fee Payment Report</h2>
+            <h2 id="reportDynamicTitle" style="font-size: 18px; margin-bottom: 15px; color: #0f172a; text-transform: uppercase; font-weight: 900;">Overall Fee Payment Report</h2>
             
             <!-- PREMIUM FILTER CARD -->
             <div class="filter-group">
@@ -1207,6 +1207,35 @@
             }
         };
 
+        // ============================================================
+        // DYNAMIC TITLE GENERATOR (Shared by Screen / PDF / CSV)
+        // ============================================================
+        window.generateDynamicReportTitle = function() {
+            const courseVal = document.getElementById('filterCourse').value;
+            const moduleVal = document.getElementById('filterModule').value;
+            
+            const courseText = (courseVal && courseVal !== 'all') ? courseVal : '';
+            const moduleText = (moduleVal && moduleVal !== 'all') ? moduleVal : '';
+            
+            let title = '';
+            if (!courseText && !moduleText) {
+                title = 'Overall Fee Payment Report';
+            } else if (courseText && !moduleText) {
+                title = `${courseText} - Fee Payment Report`;
+            } else if (courseText && moduleText) {
+                title = `${courseText} : ${moduleText} - Fee Report`;
+            } else if (!courseText && moduleText) {
+                // Edge case: only module selected (rare, but handle)
+                title = `${moduleText} - Fee Payment Report`;
+            }
+            return title;
+        };
+
+        // Convert title into a safe filename (no special characters, spaces → underscore)
+        window.generateSafeFilename = function(title) {
+            return title.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+        };
+
         window.applyFeeFilter = function() {
             const courseFilter = document.getElementById('filterCourse').value;
             const moduleFilter = document.getElementById('filterModule').value; 
@@ -1225,6 +1254,12 @@
             else if (statusFilter === 'pending') { filtered = filtered.filter(r => r.currentDue > 0); }
             
             window.filteredFeeData = filtered; 
+            
+            // UPDATE DYNAMIC ON-SCREEN HEADING
+            const dynamicTitle = window.generateDynamicReportTitle();
+            const titleEl = document.getElementById('reportDynamicTitle');
+            if (titleEl) titleEl.textContent = dynamicTitle;
+            
             const tbody = document.getElementById('feeReportBody'); tbody.innerHTML = '';
             if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 40px; color: #64748b; font-size: 14px; font-weight: bold;">No active students found for this selection.</td></tr>'; return; }
             
@@ -1237,23 +1272,32 @@
 
         window.exportCSV = function() {
             if(!window.filteredFeeData || window.filteredFeeData.length === 0) { alert("Warning: No data to export!"); return; }
+            
+            // Dynamic filename
+            const dynamicTitle = window.generateDynamicReportTitle();
+            const safeFilename = window.generateSafeFilename(dynamicTitle);
+            
             let csv = "Name,Course,Current Module,Total Course Fee,Fee Per Module,Expected Till Now,Total Paid,Discount,Current Due,Total Course Pending\n";
             window.filteredFeeData.forEach(row => { csv += `"${row.name}","${row.course}","${row.module}",${row.totalCourseFee},${row.feePerModule},${row.expectedTillNow},${row.totalPaid},${row.discount},${row.currentDue},${row.totalCoursePending}\n`; });
-            const blob = new Blob([csv], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'Module_wise_Fee_Report.csv'; a.click();
+            const blob = new Blob([csv], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `${safeFilename}.csv`; a.click();
         }
 
         window.exportOverallPDF = function() {
             if(!window.filteredFeeData || window.filteredFeeData.length === 0) { alert("Warning: No data to export!"); return; }
             const btn = document.getElementById('pdfBtn'); const oldText = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
             try {
+                // Dynamic title & filename
+                const dynamicTitle = window.generateDynamicReportTitle();
+                const safeFilename = window.generateSafeFilename(dynamicTitle);
+                
                 const { jsPDF } = window.jspdf; const doc = new jsPDF('landscape', 'mm', 'a4');
-                doc.setFontSize(16); doc.setTextColor(15, 23, 42); doc.text("Module-wise Fee Payment Report", 14, 15);
+                doc.setFontSize(16); doc.setTextColor(15, 23, 42); doc.text(dynamicTitle, 14, 15);
                 doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text(document.getElementById('navInstName').innerText + " " + document.getElementById('navSubName').innerText, 14, 21);
                 const tableColumn = ["Name", "Course", "Current Module", "Total Fee", "Fee/Module", "Expected", "Total Paid", "Discount", "Current Due", "Pending Bal"];
                 const tableRows = [];
                 window.filteredFeeData.forEach(row => { tableRows.push([row.name, row.course, row.module, row.totalCourseFee.toString(), row.feePerModule.toString(), row.expectedTillNow.toString(), row.totalPaid.toString(), row.discount.toString(), row.currentDue.toString(), row.totalCoursePending.toString()]); });
                 doc.autoTable({ head: [tableColumn], body: tableRows, startY: 28, theme: 'grid', styles: { fontSize: 8, cellPadding: 3 }, headStyles: { fillColor: [30, 58, 138], textColor: 255, fontStyle: 'bold' }, alternateRowStyles: { fillColor: [248, 250, 252] }, columnStyles: { 5: { fontStyle: 'bold', textColor: [29, 78, 216] }, 6: { fontStyle: 'bold', textColor: [16, 185, 129] }, 8: { fontStyle: 'bold', textColor: [220, 38, 38] } } });
-                doc.save('Fee_Payment_Report.pdf');
+                doc.save(`${safeFilename}.pdf`);
             } catch (e) { alert('Error generating PDF report. Check console for details.'); }
             btn.innerHTML = oldText; btn.disabled = false;
         }
