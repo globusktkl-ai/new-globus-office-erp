@@ -10,14 +10,29 @@
         body { background-color: #f8fafc; }
         .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
         
-        h2 { font-size: 16px !important; font-weight: 900 !important; margin-bottom: 12px !important; color: #0f172a; text-transform: uppercase; letter-spacing: -0.5px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; display: inline-block;}
-        
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .stat-grid-finance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 25px; }
+        
         .stat-box { background: #ffffff; padding: 12px 10px !important; border-radius: 10px !important; box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important; border: 1px solid #e2e8f0 !important; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .stat-box.finance-box { align-items: flex-start; text-align: left; padding: 12px !important; border-left: 4px solid; min-height: 85px; }
         .stat-label { font-size: 10px !important; color: #64748b !important; margin-bottom: 4px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-value { font-size: 18px !important; font-weight: 900 !important; color: #1e293b; line-height: 1; }
+        
+        /* ------------------------------------------- */
+        /* PREMIUM UNIFIED FINANCE CARD                */
+        /* ------------------------------------------- */
+        .unified-finance-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .uf-left { flex: 1; display: flex; flex-direction: column; align-items: flex-start; padding-right: 10px; }
+        .uf-right { flex: 1; display: flex; flex-direction: column; align-items: flex-end; padding-left: 10px; text-align: right; }
+        .uf-divider { width: 1px; height: 45px; background: #cbd5e1; margin: 0 10px; border-radius: 2px;}
         
         /* ------------------------------------------- */
         /* HORIZONTAL SCROLLING SMART ALERT TICKER     */
@@ -102,7 +117,10 @@
 
     <main class="main-content">
         
-        <h2>Institute Overview</h2>
+        <!-- NEW CLEAN HEADING -->
+        <h2 style="font-size: 14px !important; color: #1e3a8a; border-bottom: none; display: flex; align-items: center; gap: 6px; margin: 0 0 15px 0 !important;">
+            <span style="font-size: 18px;">📊</span> Institute Overview
+        </h2>
         
         <div class="stat-grid">
             <div class="stat-box"><div class="stat-label">Total Students</div><div class="stat-value" id="statTotalStudents" style="color: #64748b;">0</div></div>
@@ -110,24 +128,24 @@
             <div class="stat-box"><div class="stat-label">Active Courses</div><div class="stat-value" id="statCourses">0</div></div>
         </div>
 
-        <!-- PERFECTLY BALANCED FINANCE CARDS -->
-        <div class="stat-grid-finance">
-            <!-- GREEN CARD: TODAY'S COLLECTION -->
-            <div class="stat-box finance-box" style="border-left-color: #10B981 !important; display: flex; flex-direction: column; justify-content: center; min-height: 85px;">
-                <div class="stat-label">Today's Collection</div>
-                <div class="stat-value" id="statTodayCollection" style="color: #10B981; font-size: 22px !important;">₹ 0</div>
+        <!-- NEW UNIFIED FINANCE BANNER -->
+        <div class="unified-finance-card">
+            <!-- Left: Today's Collection -->
+            <div class="uf-left">
+                <div style="font-size: 10px; font-weight: 800; color: #10B981; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Today's Collection</div>
+                <div id="statTodayCollection" style="font-size: 24px; font-weight: 900; color: #047857; line-height: 1;">₹ 0</div>
             </div>
-            
-            <!-- RED CARD: CURRENT OVERDUE & TOTAL PENDING -->
-            <div class="stat-box finance-box" style="border-left-color: #EF4444 !important; display: flex; flex-direction: column; justify-content: center; min-height: 85px; padding: 12px 12px !important;">
-                <div style="width: 100%;">
-                    <div class="stat-label" style="color: #b91c1c !important; font-size: 11px !important; margin-bottom: 2px !important;">Current Overdue</div>
-                    <div class="stat-value" id="statCurrentDue" style="color: #EF4444; font-size: 20px !important;">₹ 0</div>
-                </div>
-                <div style="border-top: 1px dashed #fca5a5; width: 100%; margin: 6px 0 4px 0;"></div>
-                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="font-size: 9px !important; color: #ef4444; font-weight: 800; text-transform: uppercase;">Total Pending:</div>
-                    <div id="statPendingFees" style="color: #ef4444; font-size: 12px !important; font-weight: 900;">₹ 0</div>
+
+            <!-- Vertical Divider -->
+            <div class="uf-divider"></div>
+
+            <!-- Right: Dues -->
+            <div class="uf-right">
+                <div style="font-size: 10px; font-weight: 800; color: #EF4444; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Current Overdue</div>
+                <div id="statCurrentDue" style="font-size: 22px; font-weight: 900; color: #b91c1c; line-height: 1; margin-bottom: 4px;">₹ 0</div>
+                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 5px; font-size: 9px; font-weight: 800; color: #f87171; text-transform: uppercase;">
+                    <span>Total Pending:</span>
+                    <span id="statPendingFees" style="font-weight: 900;">₹ 0</span>
                 </div>
             </div>
         </div>
@@ -196,7 +214,6 @@
 
         // --- SCROLLING SMART TICKER LOGIC (NO BIRTHDAY LOGIC) ---
         window.buildSmartTicker = async function() {
-            // Master toggle check: Check if alerts are turned OFF globally
             const eventSet = localStorage.getItem('globus_events_settings');
             let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
             
@@ -204,7 +221,6 @@
             const track = document.getElementById('alertTickerTrack');
 
             if (!masterAlertsOn) {
-                // If OFF, completely hide and clear the ticker
                 wrap.style.display = 'none';
                 track.innerHTML = '';
                 return; 
@@ -242,7 +258,6 @@
                 events.forEach(e => {
                     let evDate = new Date(e.date + 'T' + e.time);
                     let diffMs = evDate - now;
-                    // Show events coming up in the next 24 hours
                     if(diffMs > 0 && diffMs <= (24 * 60 * 60 * 1000)) {
                         let displayTime = evDate.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
                         tickerItems.push(`<a href="reminders.html" class="alert-item ticker-event">📅 Event: ${e.name} (${displayTime})</a>`);
@@ -289,7 +304,7 @@
                 document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
 
                 let totalPendingSum = 0;
-                let currentDueSum = 0; // Up-to-date overdue based on current module
+                let currentDueSum = 0; 
 
                 activeStudents.forEach(s => {
                     const totalCourseFee = Number(s.total_fee) || 0; 
@@ -306,7 +321,6 @@
                     let totalCoursePending = totalCourseFee - totalPaidAndDisc;
                     if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
 
-                    // Calculate module-wise current due
                     const course = coursesData.find(c => c.id == s.course_id);
                     const totalModules = (course && Array.isArray(course.modules) && course.modules.length > 0) ? course.modules.length : 1;
                     const feePerModule = totalCourseFee / totalModules;
@@ -326,7 +340,6 @@
                     if (currentDue > 0) currentDueSum += currentDue;
                 });
                 
-                // Update UI with clean math values
                 document.getElementById('statCurrentDue').textContent = '₹ ' + Math.round(currentDueSum);
                 document.getElementById('statPendingFees').textContent = '₹ ' + Math.round(totalPendingSum);
 
