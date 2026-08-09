@@ -16,24 +16,160 @@
         .stat-label { font-size: 10px !important; color: #64748b !important; margin-bottom: 4px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-value { font-size: 18px !important; font-weight: 900 !important; color: #1e293b; line-height: 1; }
         
-        /* ------------------------------------------- */
-        /* PREMIUM UNIFIED FINANCE CARD                */
-        /* ------------------------------------------- */
+        /* ============================================= */
+        /* PREMIUM PRO FINANCE CARD - REDESIGNED         */
+        /* ============================================= */
         .unified-finance-card {
-            background: linear-gradient(145deg, #ffffff, #f8fafc);
-            border-radius: 12px;
-            padding: 16px 20px;
+            position: relative;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 0;
             margin-bottom: 25px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.03);
             border: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: 1fr 1px 1fr;
+            overflow: hidden;
+        }
+        
+        .uf-panel {
+            padding: 16px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 110px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .uf-left {
+            background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+        }
+        
+        .uf-right {
+            background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+        }
+        
+        .uf-panel::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            opacity: 0.08;
+        }
+        
+        .uf-left::before { background: #10B981; }
+        .uf-right::before { background: #EF4444; }
+        
+        .uf-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .uf-icon-badge {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .uf-icon-green { background: linear-gradient(135deg, #10B981, #047857); box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3); }
+        .uf-icon-red { background: linear-gradient(135deg, #EF4444, #b91c1c); box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); }
+        
+        .uf-icon-badge svg {
+            width: 15px;
+            height: 15px;
+            stroke: #ffffff;
+            stroke-width: 2.5;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        .uf-title {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            line-height: 1;
+        }
+        
+        .uf-title-green { color: #047857; }
+        .uf-title-red { color: #b91c1c; }
+        
+        .uf-amount {
+            font-size: 24px;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: baseline;
+            gap: 3px;
+        }
+        
+        .uf-amount-green { color: #047857; }
+        .uf-amount-red { color: #b91c1c; }
+        
+        .uf-currency {
+            font-size: 14px;
+            font-weight: 700;
+            opacity: 0.7;
+        }
+        
+        .uf-footer {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(148, 163, 184, 0.4);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 4px;
         }
-        .uf-left { flex: 1; display: flex; flex-direction: column; align-items: flex-start; padding-right: 10px; }
-        .uf-right { flex: 1; display: flex; flex-direction: column; align-items: flex-end; padding-left: 10px; text-align: right; }
-        .uf-divider { width: 1px; height: 45px; background: #cbd5e1; margin: 0 10px; border-radius: 2px;}
         
+        .uf-footer-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        
+        .uf-footer-value {
+            font-size: 12px;
+            font-weight: 900;
+            color: #334155;
+        }
+        
+        .uf-status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 4px;
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+        
+        .uf-dot-green { background: #10B981; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+        .uf-dot-red { background: #EF4444; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+        
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+        
+        .uf-divider-line {
+            background: linear-gradient(180deg, transparent 0%, #cbd5e1 20%, #cbd5e1 80%, transparent 100%);
+        }
+        /* ============================================= */
+
         /* ------------------------------------------- */
         /* HORIZONTAL SCROLLING SMART ALERT TICKER     */
         /* ------------------------------------------- */
@@ -46,7 +182,7 @@
             padding: 10px 5px;
             white-space: nowrap;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            display: none; /* hidden if no alerts */
+            display: none;
         }
         .alert-ticker-track {
             display: inline-block;
@@ -68,7 +204,6 @@
             0% { transform: translateX(100%); } 
             100% { transform: translateX(-100%); } 
         }
-        /* ------------------------------------------- */
 
         .module-section { background: #ffffff; border-radius: 12px !important; padding: 15px !important; margin-bottom: 20px !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important; border: 1px solid #f1f5f9; }
         .module-section .nav-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; margin-top: 15px; }
@@ -117,7 +252,6 @@
 
     <main class="main-content">
         
-        <!-- NEW CLEAN HEADING -->
         <h2 style="font-size: 14px !important; color: #1e3a8a; border-bottom: none; display: flex; align-items: center; gap: 6px; margin: 0 0 15px 0 !important;">
             <span style="font-size: 18px;">📊</span> Institute Overview
         </h2>
@@ -128,32 +262,57 @@
             <div class="stat-box"><div class="stat-label">Active Courses</div><div class="stat-value" id="statCourses">0</div></div>
         </div>
 
-        <!-- NEW UNIFIED FINANCE BANNER -->
+        <!-- ========== PREMIUM PRO FINANCE CARD ========== -->
         <div class="unified-finance-card">
-            <!-- Left: Today's Collection -->
-            <div class="uf-left">
-                <div style="font-size: 10px; font-weight: 800; color: #10B981; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Today's Collection</div>
-                <div id="statTodayCollection" style="font-size: 24px; font-weight: 900; color: #047857; line-height: 1;">₹ 0</div>
+            <!-- LEFT: Today's Collection -->
+            <div class="uf-panel uf-left">
+                <div>
+                    <div class="uf-header">
+                        <div class="uf-icon-badge uf-icon-green">
+                            <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <div class="uf-title uf-title-green">Today's Collection</div>
+                    </div>
+                    <div class="uf-amount uf-amount-green">
+                        <span class="uf-currency">₹</span>
+                        <span id="statTodayCollection">0</span>
+                    </div>
+                </div>
+                <div class="uf-footer">
+                    <span class="uf-footer-label">
+                        <span class="uf-status-dot uf-dot-green"></span>Live Today
+                    </span>
+                    <span class="uf-footer-value" style="color: #047857;">↑ Active</span>
+                </div>
             </div>
 
-            <!-- Vertical Divider -->
-            <div class="uf-divider"></div>
+            <!-- Divider -->
+            <div class="uf-divider-line"></div>
 
-            <!-- Right: Dues -->
-            <div class="uf-right">
-                <div style="font-size: 10px; font-weight: 800; color: #EF4444; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Current Overdue</div>
-                <div id="statCurrentDue" style="font-size: 22px; font-weight: 900; color: #b91c1c; line-height: 1; margin-bottom: 4px;">₹ 0</div>
-                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 5px; font-size: 9px; font-weight: 800; color: #f87171; text-transform: uppercase;">
-                    <span>Total Pending:</span>
-                    <span id="statPendingFees" style="font-weight: 900;">₹ 0</span>
+            <!-- RIGHT: Dues -->
+            <div class="uf-panel uf-right">
+                <div>
+                    <div class="uf-header">
+                        <div class="uf-icon-badge uf-icon-red">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        </div>
+                        <div class="uf-title uf-title-red">Current Overdue</div>
+                    </div>
+                    <div class="uf-amount uf-amount-red">
+                        <span class="uf-currency">₹</span>
+                        <span id="statCurrentDue">0</span>
+                    </div>
+                </div>
+                <div class="uf-footer">
+                    <span class="uf-footer-label">Total Pending</span>
+                    <span class="uf-footer-value" style="color: #b91c1c;">₹ <span id="statPendingFees">0</span></span>
                 </div>
             </div>
         </div>
+        <!-- ========== END FINANCE CARD ========== -->
 
-        <!-- ALERT TICKER (Hidden if Master Toggle is OFF) -->
         <div class="alert-ticker-wrap" id="alertTickerWrap">
             <div class="alert-ticker-track" id="alertTickerTrack">
-                <!-- Alerts injected here -->
             </div>
         </div>
 
@@ -179,7 +338,6 @@
         </div>
     </main>
 
-    <!-- SETTINGS MODAL -->
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -208,11 +366,10 @@
             
             loadSettings();
             loadDashboardData();
-            buildSmartTicker(); // Initialize Ticker
+            buildSmartTicker();
             setInterval(buildSmartTicker, 30000); 
         }
 
-        // --- SCROLLING SMART TICKER LOGIC (NO BIRTHDAY LOGIC) ---
         window.buildSmartTicker = async function() {
             const eventSet = localStorage.getItem('globus_events_settings');
             let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
@@ -229,7 +386,6 @@
             let tickerItems = [];
             const now = new Date();
 
-            // 1. Bell Alerts
             const savedBell = localStorage.getItem('globus_bell_settings_final'); 
             if(savedBell) {
                 const bSettings = JSON.parse(savedBell);
@@ -251,7 +407,6 @@
                 }
             }
 
-            // 2. Event Alerts
             const savedEvents = localStorage.getItem('globus_events');
             if(savedEvents) {
                 const events = JSON.parse(savedEvents);
@@ -265,7 +420,6 @@
                 });
             }
 
-            // Update DOM
             if(tickerItems.length > 0) {
                 let htmlStr = tickerItems.join('');
                 if(tickerItems.length < 3) htmlStr += htmlStr; 
@@ -278,7 +432,6 @@
             }
         };
 
-        // --- DASHBOARD DATA FETCHING (ADVANCED ACCURATE FEE LOGIC) ---
         async function loadDashboardData() {
             try {
                 const [stuRes, crsRes, payRes] = await Promise.all([
@@ -301,7 +454,7 @@
                 const todayDate = new Date().toISOString().split('T')[0];
                 const paymentsToday = paymentsData.filter(p => p.payment_date === todayDate).reduce((sum, p) => sum + Number(p.amount_paid), 0);
                 const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
-                document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
+                document.getElementById('statTodayCollection').textContent = (paymentsToday + admissionsToday).toLocaleString('en-IN');
 
                 let totalPendingSum = 0;
                 let currentDueSum = 0; 
@@ -340,8 +493,8 @@
                     if (currentDue > 0) currentDueSum += currentDue;
                 });
                 
-                document.getElementById('statCurrentDue').textContent = '₹ ' + Math.round(currentDueSum);
-                document.getElementById('statPendingFees').textContent = '₹ ' + Math.round(totalPendingSum);
+                document.getElementById('statCurrentDue').textContent = Math.round(currentDueSum).toLocaleString('en-IN');
+                document.getElementById('statPendingFees').textContent = Math.round(totalPendingSum).toLocaleString('en-IN');
 
             } catch (err) { console.error("Dashboard Loading Error:", err); }
         }
