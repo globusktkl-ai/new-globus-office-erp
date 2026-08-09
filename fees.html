@@ -63,14 +63,53 @@
         .confirm-box { background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: zoomIn 0.3s ease; margin: auto; }
         @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* Receipt Print Specific Styles */
+        /* Receipt Print Specific Styles - BLANK PAGE FIX APPLIED HERE */
         @media print {
-            body * { visibility: hidden; }
-            body.print-receipt #receiptModal, body.print-receipt #receiptRenderArea, body.print-receipt #receiptRenderArea * { visibility: visible; }
-            body.print-receipt #receiptModal { position: absolute; left: 0; top: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
-            body.print-receipt .no-print { display: none !important; }
-            body.print-receipt #receiptRenderArea { position: absolute !important; top: 0 !important; left: 0 !important; transform: scale(1) !important; margin: 0 !important; box-shadow: none !important; border: 1px dashed #ccc !important;}
-            @page { size: A5 portrait; margin: 5mm; }
+            /* Hide non-essential elements */
+            body.print-receipt nav, 
+            body.print-receipt main,
+            body.print-receipt #confirmModal,
+            body.print-receipt #ledgerPrintWrapper,
+            body.print-receipt .no-print { 
+                display: none !important; 
+            }
+
+            /* Reset body and modal layout so it doesn't shift or scale */
+            body.print-receipt,
+            body.print-receipt #receiptModal,
+            body.print-receipt .confirm-box,
+            body.print-receipt #rcptViewport,
+            body.print-receipt .receipt-scroll-container {
+                display: block !important;
+                position: static !important;
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                max-width: none !important;
+                transform: none !important;
+                box-shadow: none !important;
+                overflow: visible !important;
+            }
+
+            /* Format the actual receipt to fit A5 */
+            body.print-receipt #receiptRenderArea {
+                width: 100% !important; 
+                max-width: 148mm !important; /* Maximum width of A5 */
+                margin: 0 auto !important; 
+                padding: 10mm !important; /* Proper margin inside paper */
+                border: none !important;
+                box-shadow: none !important;
+                background: white !important;
+                height: auto !important;
+                box-sizing: border-box !important;
+            }
+
+            @page { 
+                size: A5 portrait; 
+                margin: 0mm; /* Browser handles margins better when set to 0 and we pad the div */
+            }
         }
 
         /* Mobile specific adjustments for tabs */
@@ -235,7 +274,8 @@
                     <button id="rcptPngBtn" onclick="window.shareReceiptPNG()" style="flex:1; padding:12px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📲 WhatsApp</button>
                 </div>
 
-                <div style="width: 100%; overflow-x: auto; background: #e2e8f0; padding: 15px 5px; border-radius: 8px; display: flex; justify-content: center;">
+                <!-- NEW: Added class receipt-scroll-container to remove scroll restrictions during print -->
+                <div class="receipt-scroll-container" style="width: 100%; overflow-x: auto; background: #e2e8f0; padding: 15px 5px; border-radius: 8px; display: flex; justify-content: center;">
                     <div id="rcptViewport" style="transform-origin: top center; transition: transform 0.2s;">
                         <div class="receipt-wrapper" id="receiptRenderArea" style="width: 550px; height: 780px; background: white; padding: 25px; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; position: relative; flex-shrink: 0;">
                             <div style="border: 2px solid #cbd5e1; height: 100%; padding: 20px; box-sizing: border-box; border-radius: 8px; position: relative;">
@@ -634,9 +674,6 @@
             document.getElementById('confirmModal').style.display = 'none';
         }
 
-        // ==========================================
-        // NEW ERROR LOGIC WITH ADVANCED TRACKING
-        // ==========================================
         window.processFinalPayment = async function() {
             const finalBtn = document.getElementById('finalSubmitBtn');
             finalBtn.disabled = true; finalBtn.textContent = 'Processing...';
@@ -647,9 +684,9 @@
             let pTxnId = document.getElementById('txnId').value.trim();
             const pDate = document.getElementById('paymentDate').value;
 
-            // FIX: Guaranteed highly unique ID (Timestamp + Random) to bypass any length or cache issues
             if(!pTxnId || pTxnId === "") {
-                pTxnId = "GL-" + Math.floor(Date.now() / 1000).toString() + Math.floor(Math.random() * 99);
+                const randomPart = Math.floor(Math.random() * 90000) + 10000;
+                pTxnId = 'TXN-' + Date.now().toString().slice(-5) + '-' + randomPart;
             }
 
             const { data: newPayment, error } = await supabase.from('fee_payments').insert([{
@@ -659,7 +696,6 @@
             }]).select();
 
             if (error) {
-                // EXPLICIT DATABASE ERROR ALERT
                 if (error.message.includes("duplicate") || error.code === '23505') {
                      alert(`❌ Supabase Database Error:\n\nThe system generated a new 100% Unique Receipt ID: "${pTxnId}", but your database rejected it as a 'duplicate'.\n\nREASON: Check your Supabase database. The unique constraint "receipts_receipt_number_key" is likely accidentally placed on the wrong column (like student_id) OR you have a broken database trigger transferring data.`);
                 } else {
@@ -667,7 +703,7 @@
                 }
                 finalBtn.disabled = false; finalBtn.textContent = 'Confirm & Pay';
                 window.closeConfirmation();
-                return; // STOP execution
+                return;
             } 
             
             alert('Payment recorded successfully!'); 
@@ -723,13 +759,10 @@
             if (window.reloadOnReceiptClose) { window.location.reload(); }
         };
 
+        // NEW SIMPLIFIED JS FOR RELIABLE PRINTING
         window.printReceiptNative = function() {
             document.body.classList.add('print-receipt');
-            const vp = document.getElementById('rcptViewport');
-            const oldTransform = vp.style.transform; const oldHeight = vp.style.height;
-            vp.style.transform = 'scale(1)'; vp.style.height = '780px';
             window.print();
-            vp.style.transform = oldTransform; vp.style.height = oldHeight;
             document.body.classList.remove('print-receipt');
         };
 
