@@ -9,16 +9,13 @@
         body { background-color: #f8fafc; padding-bottom: 40px; }
         .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
         
-        /* Centered Header */
         .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; min-height: 45px;}
         .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 100%;}
         
-        /* 3D Back Button */
         .btn-back-dashboard { position: absolute; left: 0; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; z-index: 10;}
         .btn-back-dashboard:active { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
 
-        /* AUDIO UNLOCK BUTTON FOR MOBILE */
         .audio-unlock-btn { background: #10b981; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 900; font-size: 16px; margin-bottom: 20px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4); cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; animation: pulseBtn 2s infinite;}
         @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
@@ -38,7 +35,7 @@
         .schedule-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
         .schedule-label.highlight { color: #ea580c; }
         
-        .schedule-select { width: 100%; padding: 12px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700; color: #1e293b; outline: none; background: #f8fafc; }
+        .schedule-select { width: 100%; padding: 12px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700; color: #1e293b; outline: none; background: #f8fafc; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 18px auto; }
         .schedule-select:focus { border-color: #3b82f6; background-color: #fff; }
         
         .days-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 8px; margin-top: 5px;}
@@ -58,10 +55,10 @@
         .bell-list-title { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase; }
         
         .time-group { display: flex; align-items: center; background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; gap: 10px; flex-wrap: nowrap;}
-        .time-input-name { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 700; color: #0f172a; outline: none; flex: 1; font-size: 14px; min-width: 0; background: white;}
-        .time-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-weight: 900; color: #1e3a8a; outline: none; flex: 0 0 110px; font-size: 14px; text-align: center; background: #eff6ff; cursor: pointer; caret-color: transparent;}
+        .time-input-name { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-weight: 700; color: #0f172a; outline: none; flex: 1; font-size: 14px; min-width: 0; background: white;}
+        .time-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-weight: 900; color: #1e3a8a; outline: none; flex: 0 0 110px; font-size: 14px; text-align: center; background: #eff6ff; cursor: pointer; caret-color: transparent;}
         
-        .btn-remove-bell { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 8px; padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; font-weight: 900;}
+        .btn-remove-bell { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 8px; padding: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0;}
         .btn-remove-bell:hover { background: #ef4444; color: white; }
 
         .btn-add-bell { background: #ffffff; color: #3b82f6; border: 2px dashed #93c5fd; padding: 12px; width: 100%; border-radius: 10px; font-weight: 800; cursor: pointer; margin-bottom: 20px; font-size: 14px; transition: 0.2s;}
@@ -96,8 +93,8 @@
         @media(max-width: 600px) {
             .panel { padding: 15px; }
             .time-group { flex-wrap: wrap; padding: 12px;}
-            .time-input-name { flex: 1 1 100%; margin-bottom: 8px; font-size: 15px; padding: 12px;}
-            .time-input { flex: 1; font-size: 15px; padding: 12px;}
+            .time-input-name { flex: 1 1 100%; margin-bottom: 8px; font-size: 15px;}
+            .time-input { flex: 1; font-size: 15px;}
             .btn-remove-bell { padding: 12px 18px; }
             .btn-wa { padding: 10px 15px; font-size: 13px; }
         }
@@ -145,12 +142,13 @@
             <h1 class="page-title">Smart Assistant</h1>
         </div>
 
-        <!-- NEW AUDIO UNLOCK BUTTON FOR MOBILE BROWSER POLICY FIX -->
+        <!-- AUDIO UNLOCK BUTTON -->
         <button id="audioUnlockBtn" class="audio-unlock-btn" onclick="window.unlockAudioSystem()">
             🔊 Tap here to Activate Sound System
         </button>
 
         <div class="grid-container">
+            <!-- PANEL 1: BELL SYSTEM -->
             <div class="panel">
                 <div class="panel-header">
                     <span style="font-size: 22px;">⏰</span>
@@ -211,14 +209,35 @@
                 </div>
 
                 <div class="bell-list-title">Set Daily Bell Timings</div>
-                <div id="bellListContainer">
-                    <!-- Dynamic Bells appended here -->
-                </div>
+                <div id="bellListContainer"></div>
                 
                 <button class="btn-add-bell" onclick="window.addNewBellRow()">+ Add New Bell</button>
                 <button class="btn-save-bell" onclick="window.saveBellTimings()">💾 Save Bell Settings</button>
             </div>
 
+            <!-- PANEL 2: NEW EVENT SCHEDULER -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span style="font-size: 22px;">📅</span>
+                    <h2 class="panel-title">Meeting & Event Scheduler</h2>
+                </div>
+                
+                <div class="time-group" style="flex-wrap: wrap; margin-bottom: 15px;">
+                    <input type="text" id="eventName" class="time-input-name" placeholder="Event Name (e.g. Staff Meeting)" style="flex: 1 1 100%;">
+                    <input type="date" id="eventDate" class="time-input-name" style="flex: 1;">
+                    <input type="time" id="eventTime" class="time-input-name" style="flex: 1;">
+                </div>
+                <button class="btn-save-bell" onclick="window.saveNewEvent()" style="margin-bottom: 25px; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);">+ Add Event</button>
+
+                <div class="bell-list-title">Upcoming Scheduled Events</div>
+                <div id="eventListContainer">
+                    <div class="empty-state">No upcoming events.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-container">
+            <!-- PANEL 3: BIRTHDAYS -->
             <div class="panel">
                 <div class="panel-header">
                     <span style="font-size: 22px;">🎂</span>
@@ -228,16 +247,17 @@
                     <div class="empty-state">Checking records...</div>
                 </div>
             </div>
-        </div>
 
-        <div class="panel" style="margin-bottom: 30px;">
-            <div class="panel-header">
-                <h2 class="panel-title">Pending Fee Alerts</h2>
-            </div>
-            <p style="font-size: 13px; color: #64748b; margin-top: -10px; margin-bottom: 20px; text-align: center; font-weight: 600;">List of active students with pending fees. Click WhatsApp to send a polite reminder automatically.</p>
-            
-            <div id="feeList">
-                <div class="empty-state">Loading financial records...</div>
+            <!-- PANEL 4: FEE ALERTS -->
+            <div class="panel" style="margin-bottom: 30px;">
+                <div class="panel-header">
+                    <h2 class="panel-title">Pending Fee Alerts</h2>
+                </div>
+                <p style="font-size: 13px; color: #64748b; margin-top: -10px; margin-bottom: 20px; text-align: center; font-weight: 600;">List of active students with pending fees. Click WhatsApp to send a polite reminder automatically.</p>
+                
+                <div id="feeList">
+                    <div class="empty-state">Loading financial records...</div>
+                </div>
             </div>
         </div>
 
@@ -254,25 +274,23 @@
         window.unlockAudioSystem = function() {
             const audioObj = document.getElementById('bellAudio');
             audioObj.src = document.getElementById('audioSelect').value;
-            let playPromise = audioObj.play();
-            if(playPromise !== undefined) {
-                playPromise.then(() => {
-                    audioObj.pause();
-                    audioObj.currentTime = 0;
-                    document.getElementById('audioUnlockBtn').style.display = 'none';
-                    
-                    const btnSave = document.querySelector('.btn-save-bell');
-                    const origText = btnSave.innerHTML;
-                    btnSave.innerHTML = "✅ System Unlocked! Ready to ring.";
-                    btnSave.style.background = "#10b981";
-                    setTimeout(() => {
-                        btnSave.innerHTML = origText;
-                        btnSave.style.background = "";
-                    }, 3000);
-                }).catch(e => {
-                    alert("Please tap the button again to unlock audio.");
-                });
-            }
+            audioObj.play().then(() => {
+                audioObj.pause();
+                audioObj.currentTime = 0;
+                document.getElementById('audioUnlockBtn').style.display = 'none';
+                
+                const btnSave = document.querySelector('.btn-save-bell');
+                const origText = btnSave.innerHTML;
+                btnSave.innerHTML = "✅ System Unlocked! Ready to ring.";
+                btnSave.style.background = "#10b981";
+                setTimeout(() => {
+                    btnSave.innerHTML = origText;
+                    btnSave.style.background = "";
+                }, 3000);
+            }).catch(e => {
+                console.error("Audio unlock failed:", e);
+                alert("Please tap the button again to unlock audio.");
+            });
         };
 
         // 2. Custom Time Picker Logic
@@ -344,7 +362,7 @@
                 playPromise.then(() => {
                     setTimeout(() => { audioObj.pause(); audioObj.currentTime = 0; }, 2000);
                 }).catch(e => {
-                    console.log("Preview blocked.");
+                    console.log("Audio preview blocked.");
                 });
             }
         };
@@ -371,11 +389,13 @@
             let h = String(hour12).padStart(2, '0');
             let displayTime = h + ':' + m + ' ' + ampm;
 
+            const trashIcon = `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+
             const html = `
                 <div class="time-group" id="${rowId}_group">
                     <input type="text" class="time-input-name bell-name" placeholder="e.g. Morning Bell" value="${name}">
                     <input type="text" class="time-input bell-time" id="${rowId}" value="${displayTime}" data-time24="${time24}" readonly onclick="window.openTimePicker('${rowId}')" placeholder="Select Time">
-                    <button class="btn-remove-bell" onclick="window.removeBellRow('${rowId}_group')" title="Remove Bell">X</button>
+                    <button class="btn-remove-bell" onclick="window.removeBellRow('${rowId}_group')" title="Remove Bell">${trashIcon}</button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', html);
@@ -499,7 +519,7 @@
                         let playPromise = audio.play();
                         if (playPromise !== undefined) {
                             playPromise.catch(e => {
-                                console.log("Auto-play prevented. Tap the green unlock button first.");
+                                console.log("Auto-play prevented.");
                             });
                         }
                         
@@ -511,6 +531,76 @@
                     }
                 });
             }, 10000); 
+        };
+
+        // --- EVENT SCHEDULER LOGIC (NEW) ---
+        window.saveNewEvent = function() {
+            let name = document.getElementById('eventName').value;
+            let date = document.getElementById('eventDate').value;
+            let time = document.getElementById('eventTime').value;
+            
+            if(!name || !date || !time) {
+                alert("Please enter Event Name, Date, and Time!");
+                return;
+            }
+            
+            let events = JSON.parse(localStorage.getItem('globus_events') || '[]');
+            events.push({ id: Date.now(), name: name, date: date, time: time });
+            
+            events.sort((a,b) => new Date(a.date+'T'+a.time) - new Date(b.date+'T'+b.time));
+            localStorage.setItem('globus_events', JSON.stringify(events));
+            
+            document.getElementById('eventName').value = '';
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventTime').value = '';
+            
+            window.renderEvents();
+            alert("Event Saved Successfully!");
+        };
+
+        window.renderEvents = function() {
+            let events = JSON.parse(localStorage.getItem('globus_events') || '[]');
+            let container = document.getElementById('eventListContainer');
+            container.innerHTML = '';
+            
+            let now = new Date();
+            let futureEvents = events.filter(e => new Date(e.date+'T'+e.time) >= now);
+            
+            if(futureEvents.length !== events.length) {
+                localStorage.setItem('globus_events', JSON.stringify(futureEvents));
+                events = futureEvents;
+            }
+
+            if(events.length === 0) {
+                container.innerHTML = '<div class="empty-state">No upcoming events scheduled.</div>';
+                return;
+            }
+
+            events.forEach(e => {
+                let d = new Date(e.date+'T'+e.time);
+                let displayDate = d.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+                let displayTime = d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
+                
+                const trashIcon = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+
+                let html = `
+                    <div class="list-item" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; margin-bottom:10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <div class="item-info">
+                            <h4 style="color:#2563eb; font-size: 15px;">${e.name}</h4>
+                            <p style="font-weight:800; color:#475569; margin-top:4px;">${displayDate} &nbsp;|&nbsp; ${displayTime}</p>
+                        </div>
+                        <button onclick="window.deleteEvent(${e.id})" style="background:#fee2e2; color:#ef4444; border:none; padding:10px; border-radius:8px; cursor:pointer; display:flex; align-items:center;">${trashIcon}</button>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        };
+
+        window.deleteEvent = function(id) {
+            let events = JSON.parse(localStorage.getItem('globus_events') || '[]');
+            events = events.filter(e => e.id !== id);
+            localStorage.setItem('globus_events', JSON.stringify(events));
+            window.renderEvents();
         };
 
         // --- FETCH ALERTS LOGIC (SUPABASE) ---
@@ -654,6 +744,9 @@
                 document.getElementById('bellAudio').src = document.getElementById('audioSelect').value;
                 window.toggleMasterBell();
             }
+            
+            // Render the new events list
+            window.renderEvents();
         };
 
         document.addEventListener('DOMContentLoaded', () => {
