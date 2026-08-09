@@ -33,22 +33,16 @@
         .setting-group { margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; width: 100%; }
         .setting-group:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
         
-        .schedule-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
+        .schedule-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
         .schedule-label.highlight { color: #ea580c; }
         
         .schedule-select { width: 100%; padding: 12px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700; color: #1e293b; outline: none; background: #f8fafc; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 18px auto; }
         .schedule-select:focus { border-color: #3b82f6; background-color: #fff; }
         
-        /* --------------------------------------------------- */
-        /* 1. EXCLUDE DAYS FIX (PERFECT SINGLE ROW)            */
-        /* --------------------------------------------------- */
-        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 5px; width: 100%; }
-        .day-checkbox { display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 10px 0; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; transition: 0.2s;}
-        .day-checkbox span { font-size: 11px; font-weight: 800; color: #475569; }
+        .days-grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px; margin-top: 5px; width: 100%; }
+        .day-checkbox { flex: 1 1 calc(14% - 4px); min-width: 32px; display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 10px 0; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; color: #475569; transition: 0.2s;}
         .day-checkbox input:checked + span { color: #ef4444; text-decoration: line-through; }
         .day-checkbox:has(input:checked) { background: #fef2f2; border-color: #fca5a5; }
-        @media(max-width: 400px) { .day-checkbox span { font-size: 9px; } .day-checkbox { padding: 8px 0; border-radius: 6px; } }
-        /* --------------------------------------------------- */
 
         .expiry-alert { background: #fef2f2; border: 1px dashed #ef4444; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 800; text-align: center; margin-bottom: 15px; display: none; width: 100%; }
         
@@ -59,14 +53,12 @@
         input:checked + .slider { background-color: #10b981; } 
         input:checked + .slider:before { transform: translateX(26px); }
 
-        .bell-list-title { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 12px; text-transform: uppercase; }
+        .bell-list-title { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase; }
         
-        /* --------------------------------------------------- */
-        /* 2. BELL ROW UI (DESKTOP)                            */
-        /* --------------------------------------------------- */
-        .time-group { display: flex; align-items: center; background: #f8fafc; padding: 10px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; gap: 10px; width: 100%;}
+        /* BELL ROW UI (DESKTOP) */
+        .time-group { display: flex; align-items: center; background: #f8fafc; padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #e2e8f0; gap: 10px; width: 100%;}
         .time-input-name { flex: 1 1 auto; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-weight: 700; color: #0f172a; outline: none; font-size: 14px; background: white;}
-        .time-input { flex: 0 0 120px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-weight: 900; color: #1e3a8a; outline: none; font-size: 14px; text-align: left; background: #eff6ff; cursor: pointer; caret-color: transparent;}
+        .time-input { flex: 0 0 120px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-weight: 900; color: #1e3a8a; outline: none; font-size: 14px; text-align: center; background: #eff6ff; cursor: pointer; caret-color: transparent;}
         .btn-remove-bell { flex: 0 0 45px; height: 45px; background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 8px; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-weight: 900; font-size: 16px;}
         .btn-remove-bell:hover { background: #ef4444; color: white; }
 
@@ -75,6 +67,16 @@
 
         .btn-save-bell { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); transition: 0.2s; letter-spacing: 0.5px;}
         .btn-save-bell:active { transform: scale(0.98); }
+
+        /* --------------------------------------------------- */
+        /* PERFECT COMPACT EVENT INPUTS UI                     */
+        /* --------------------------------------------------- */
+        .event-form-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; width: 100%; }
+        .event-form-row { display: flex; gap: 10px; width: 100%; }
+        .event-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-weight: 700; color: #0f172a; outline: none; font-size: 14px; width: 100%; background: white; font-family: inherit;}
+        .event-input.time-pick { color: #1e3a8a; background: #eff6ff; cursor: pointer; caret-color: transparent; text-align: center; font-weight: 900;}
+        .event-input::placeholder { color: #94a3b8; font-weight: 600; }
+        /* --------------------------------------------------- */
 
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #f1f5f9; width: 100%;}
         .list-item:last-child { border-bottom: none; }
@@ -98,53 +100,38 @@
         .tp-select { padding: 12px 5px; font-size: 20px; font-weight: 900; border-radius: 8px; border: 2px solid #cbd5e1; outline: none; background: #f8fafc; color: #0f172a; text-align: center; width: 70px; appearance: none; -webkit-appearance: none; }
         .tp-select:focus { border-color: #3b82f6; background: #fff; }
         .tp-colon { font-size: 24px; font-weight: 900; color: #1e293b; padding: 0 5px; }
-        
-        .event-input-wrapper { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; width: 100%; }
 
-        /* --------------------------------------------------- */
-        /* 3. USER'S EXACT MOBILE LAYOUT DESIGN (CSS GRID)     */
-        /* --------------------------------------------------- */
         @media(max-width: 600px) {
             .panel { padding: 15px; }
             
             /* Two-Row layout for Bells */
             .time-group { 
                 display: grid; 
-                grid-template-columns: 1fr 50px; /* Time takes 1fr, Del takes 50px */
-                grid-template-rows: auto auto;   /* 2 Rows */
+                grid-template-columns: 1fr 50px; 
+                grid-template-rows: auto auto; 
                 gap: 10px; 
                 padding: 12px;
             }
             .time-input-name { 
-                grid-column: 1 / -1; /* Spans full width on Row 1 */
+                grid-column: 1 / -1; 
                 margin: 0; 
                 font-size: 15px; 
                 padding: 12px;
             }
             .time-input { 
-                grid-column: 1 / 2; /* Left side on Row 2 */
+                grid-column: 1 / 2; 
                 width: 100%; 
                 font-size: 15px; 
                 padding: 12px; 
-                text-align: left; /* Aligned left as requested */
+                text-align: left; 
             }
             .btn-remove-bell { 
-                grid-column: 2 / 3; /* Right side on Row 2 */
+                grid-column: 2 / 3; 
                 width: 100%; 
                 height: 100%; 
                 font-size: 18px; 
             }
-
-            /* Event Inputs Mobile Fix */
-            .event-input-wrapper {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-            #eventName { grid-column: 1 / -1; }
-            .event-row-split { display: contents; }
         }
-        /* --------------------------------------------------- */
     </style>
 </head>
 <body>
@@ -263,15 +250,16 @@
                     <span id="masterEventStatus" style="font-weight: 900; font-size: 14px; color: #ef4444;">Dashboard Alerts OFF</span>
                 </div>
 
-                <div class="event-input-wrapper">
-                    <input type="text" id="eventName" class="time-input-name" placeholder="Event Name (e.g. Staff Meeting)">
-                    <div class="event-row-split">
-                        <input type="date" id="eventDate" class="time-input-name">
-                        <input type="text" id="eventTime" class="time-input" readonly onclick="window.openTimePicker('eventTime')" placeholder="Set Time">
+                <!-- NEW COMPACT EVENT INPUTS -->
+                <div class="event-form-container">
+                    <input type="text" id="eventName" class="event-input" placeholder="Event Name (e.g. Staff Meeting)">
+                    <div class="event-form-row">
+                        <input type="date" id="eventDate" class="event-input" style="flex: 1;">
+                        <input type="text" id="eventTime" class="event-input time-pick" style="flex: 1;" readonly onclick="window.openTimePicker('eventTime')" placeholder="Set Time">
                     </div>
                 </div>
                 
-                <button class="btn-save-bell" onclick="window.saveNewEvent()" style="margin-bottom: 25px; background: linear-gradient(135deg, #3b82f6, #2563eb);">+ Add Event</button>
+                <button class="btn-save-bell" onclick="window.saveNewEvent()" style="margin-bottom: 25px; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);">+ Add Event</button>
 
                 <div class="bell-list-title">Upcoming Scheduled Events</div>
                 <div id="eventListContainer">
@@ -322,7 +310,6 @@
             }).catch(e => { alert("Please tap again to unlock audio."); });
         };
 
-        // --- CUSTOM TIME PICKER LOGIC ---
         let activeTimeInputId = null;
 
         window.initCustomPicker = function() {
@@ -377,7 +364,6 @@
             window.closeTimePicker();
         };
 
-        // --- BELL LOGIC ---
         window.previewAudio = function() {
             const audioObj = document.getElementById('bellAudio');
             audioObj.src = document.getElementById('audioSelect').value;
@@ -496,12 +482,11 @@
             }, 10000); 
         };
 
-        // --- EVENT SCHEDULER LOGIC ---
         window.saveNewEvent = function() {
             let name = document.getElementById('eventName').value;
             let date = document.getElementById('eventDate').value;
             let timeInput = document.getElementById('eventTime');
-            let time24 = timeInput.getAttribute('data-time24'); // Using 24h format for logic
+            let time24 = timeInput.getAttribute('data-time24'); 
             
             if(!name || !date || !time24) {
                 alert("Please enter Event Name, Date, and Time!");
@@ -562,7 +547,6 @@
             window.renderEvents();
         };
 
-        // --- FETCH DB ALERTS ---
         window.fetchStudentAlerts = async function() {
             try {
                 const [stuRes, payRes] = await Promise.all([
