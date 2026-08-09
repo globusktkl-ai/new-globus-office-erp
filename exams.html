@@ -354,7 +354,7 @@
                 <hr style="border:1px dashed #cbd5e1; margin: 15px 0;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <button id="certPdfBtn" onclick="sendCertPDF()" style="padding:12px; background:#4f46e5; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📄 Send PDF</button>
-                    <button id="shareCertBtn" onclick="shareCertificate()" style="padding:12px; background:#059669; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📲 Send PNG</button>
+                    <button id="shareCertBtn" onclick="shareCertificate()" style="padding:12px; background:#059669; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📲 Send JPG</button>
                 </div>
             </div>
             
@@ -855,18 +855,18 @@
             const oldShadow = modal.style.boxShadow;
             modal.style.boxShadow = 'none';
             try {
-                const canvas = await html2canvas(modal, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+                const canvas = await html2canvas(modal, { scale: 1.5, backgroundColor: '#ffffff', useCORS: true });
                 canvas.toBlob(async (blob) => {
-                    const file = new File([blob], `Marklist.png`, { type: 'image/png' });
+                    const file = new File([blob], `Marklist.jpg`, { type: 'image/jpeg' });
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         try { await navigator.share({ files: [file], title: 'Marklist' }); } catch (err) {}
                     } else {
-                        const link = document.createElement('a'); link.download = 'Marklist.png'; link.href = canvas.toDataURL(); link.click();
+                        const link = document.createElement('a'); link.download = 'Marklist.jpg'; link.href = canvas.toDataURL('image/jpeg', 0.9); link.click();
                     }
                     modal.style.boxShadow = oldShadow;
-                }, 'image/png');
+                }, 'image/jpeg', 0.9);
             } catch(e) {
-                alert('Error generating PNG');
+                alert('Error generating image');
                 modal.style.boxShadow = oldShadow;
             }
         };
@@ -982,13 +982,13 @@
                 wrapper.style.transform = 'scale(1)'; 
                 
                 const { jsPDF } = window.jspdf;
-                const canvas = await html2canvas(wrapper, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
                 wrapper.style.transform = oldTransform; 
                 
-                const imgData = canvas.toDataURL('image/png');
+                const imgData = canvas.toDataURL('image/jpeg', 0.8);
                 
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [210, 297] });
-                pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
                 
                 const name = document.getElementById('ml_f_name').value.trim() || 'Student';
                 const filename = `Marklist_${name}.pdf`;
@@ -1139,10 +1139,10 @@
                 wrapper.style.transform = 'scale(1)'; 
                 
                 const { jsPDF } = window.jspdf;
-                const canvas = await html2canvas(wrapper, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
                 wrapper.style.transform = oldTransform; 
                 
-                const imgData = canvas.toDataURL('image/png');
+                const imgData = canvas.toDataURL('image/jpeg', 0.8);
                 
                 const pdf = new jsPDF({
                     orientation: 'portrait',
@@ -1150,7 +1150,7 @@
                     format: [210, 297]
                 });
                 
-                pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
                 
                 const name = document.getElementById('f-name').value.trim() || 'Student';
                 const filename = `Certificate_${name}.pdf`;
@@ -1177,19 +1177,19 @@
             try {
                 const wrapper = document.getElementById('certificateRenderArea'), oldTransform = wrapper.style.transform;
                 wrapper.style.transform = 'scale(1)'; 
-                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
                 wrapper.style.transform = oldTransform; 
 
                 canvas.toBlob(async (blob) => {
                     const name = document.getElementById('f-name').value.trim() || 'Student';
-                    const file = new File([blob], `Certificate_${name}.png`, { type: 'image/png' });
+                    const file = new File([blob], `Certificate_${name}.jpg`, { type: 'image/jpeg' });
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         try { await navigator.share({ files: [file], title: 'Certificate', text: `Certificate for ${name}` }); } catch (err) {}
                     } else {
-                        const link = document.createElement('a'); link.download = `Certificate_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+                        const link = document.createElement('a'); link.download = `Certificate_${name}.jpg`; link.href = canvas.toDataURL('image/jpeg', 0.9); link.click();
                     }
                     btn.innerHTML = originalText; btn.disabled = false;
-                }, 'image/png');
+                }, 'image/jpeg', 0.9);
             } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
         };
 
