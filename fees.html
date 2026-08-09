@@ -63,18 +63,6 @@
         .confirm-box { background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: zoomIn 0.3s ease; margin: auto; }
         @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* Receipt Print Specific Styles - BLANK PAGE FIX APPLIED HERE */
-        @media print {
-            body.print-receipt > *:not(#receiptModal) { display: none !important; }
-            body.print-receipt { background: white !important; }
-            body.print-receipt #receiptModal { position: static !important; display: block !important; background: white !important; }
-            body.print-receipt .confirm-box { margin: 0 !important; padding: 0 !important; box-shadow: none !important; max-width: 100% !important; border: none !important;}
-            body.print-receipt .no-print { display: none !important; }
-            body.print-receipt #rcptViewport { transform: none !important; height: auto !important; width: 100% !important;}
-            body.print-receipt #receiptRenderArea { width: 148mm !important; height: auto !important; padding: 5mm !important; margin: 0 auto !important; border: none !important; box-shadow: none !important; }
-            @page { size: A5 portrait; margin: 5mm; }
-        }
-
         /* Mobile specific adjustments for tabs */
         @media (max-width: 600px) {
             .finance-tabs { gap: 6px; }
@@ -223,7 +211,7 @@
             </div>
         </div>
 
-        <!-- NEW A5 RECEIPT MODAL (Smart Print) -->
+        <!-- NEW A5 RECEIPT MODAL (Smart Download) -->
         <div id="receiptModal" class="modal-overlay-confirm">
             <div class="confirm-box" style="max-width: 620px; padding: 20px; text-align: left; display: flex; flex-direction: column;">
                 <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
@@ -231,15 +219,16 @@
                     <button onclick="window.closeReceiptModal()" style="background:#ef4444; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-weight:bold;">X Close</button>
                 </div>
                 
+                <!-- NEW SHARE AND DIRECT DOWNLOAD BUTTONS -->
                 <div class="no-print" style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <button onclick="window.printReceiptNative()" style="flex:1; padding:12px; background:#1e3a8a; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">🖨️ Print (A5)</button>
-                    <!-- UPDATED: DIRECT DOWNLOAD BUTTONS -->
+                    <button id="rcptShareBtn" onclick="window.shareReceiptNative()" style="flex:1; padding:12px; background:#1e3a8a; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">🔗 Share</button>
                     <button id="rcptPdfBtn" onclick="window.shareReceiptPDF()" style="flex:1; padding:12px; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📄 Download PDF</button>
                     <button id="rcptPngBtn" onclick="window.shareReceiptPNG()" style="flex:1; padding:12px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">🖼️ Download Image</button>
                 </div>
 
                 <div style="width: 100%; overflow-x: auto; background: #e2e8f0; padding: 15px 5px; border-radius: 8px; display: flex; justify-content: center;">
                     <div id="rcptViewport" style="transform-origin: top center; transition: transform 0.2s;">
+                        <!-- RECEIPT AREA - NO BLANK SPACES -->
                         <div class="receipt-wrapper" id="receiptRenderArea" style="width: 550px; height: 780px; background: white; padding: 25px; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; position: relative; flex-shrink: 0;">
                             <div style="border: 2px solid #cbd5e1; height: 100%; padding: 20px; box-sizing: border-box; border-radius: 8px; position: relative;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 20px;">
@@ -278,7 +267,8 @@
                                             <td style="padding: 15px 12px; border: 1px solid #cbd5e1; font-weight: 700;">Fee Payment (<span id="rcptMode">Cash</span>)</td>
                                             <td style="padding: 15px 12px; border: 1px solid #cbd5e1; text-align: right; font-weight: 900; font-size: 16px; color: #0f172a;" id="rcptAmount">0</td>
                                         </tr>
-                                        <tr>
+                                        <!-- DISCOUNT ROW (WILL BE HIDDEN IF 0) -->
+                                        <tr id="rcptDiscRow">
                                             <td style="padding: 15px 12px; border: 1px solid #cbd5e1; font-weight: 700; color: #d97706;">Discount / Adjustment</td>
                                             <td style="padding: 15px 12px; border: 1px solid #cbd5e1; text-align: right; font-weight: 900; color: #d97706;" id="rcptDisc">0</td>
                                         </tr>
@@ -302,6 +292,12 @@
                                         <div style="border-bottom: 1px solid #1e293b; width: 160px; height: 50px; margin-bottom: 8px;"></div>
                                         <div style="font-size: 13px; font-weight: 800; color: #1e293b;">Authorized Signature</div>
                                     </div>
+                                </div>
+                                <!-- NEW OVAL SEAL ON RECEIPT -->
+                                <div id="rcptSeal" style="position: absolute; right: 40px; bottom: 130px; width: 140px; height: 75px; border: 3px solid #16a34a; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-15deg); color: #16a34a; background: rgba(22, 163, 74, 0.03); box-shadow: inset 0 0 10px rgba(22,163,74,0.1); mix-blend-mode: multiply;">
+                                    <span id="rcptSealInst" style="font-size: 8px; font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1.1; padding: 0 5px;">GLOBUS</span>
+                                    <span style="font-size: 16px; font-weight: 900; margin: 2px 0;">FEE PAID</span>
+                                    <span style="font-size: 7px; font-weight: 700;">Digitally Signed</span>
                                 </div>
                             </div>
                         </div>
@@ -327,7 +323,8 @@
                         <div class="summary-box"><span class="summary-label">Phone</span><span class="summary-value" id="l_phone" style="color: #2563eb;">-</span></div>
                         <div class="summary-box"><span class="summary-label">Course</span><span class="summary-value" id="l_course">-</span></div>
                         <div class="summary-box"><span class="summary-label">Total Fee</span><span class="summary-value" id="l_total" style="color: #1e3a8a;">₹ 0</span></div>
-                        <div class="summary-box"><span class="summary-label">Total Paid + Disc</span><span class="summary-value" id="l_paid" style="color: #10b981;">₹ 0</span></div>
+                        <!-- LABEL WILL DYNAMICALLY CHANGE BASED ON DISCOUNT -->
+                        <div class="summary-box"><span class="summary-label" id="l_paid_label">Total Paid</span><span class="summary-value" id="l_paid" style="color: #10b981;">₹ 0</span></div>
                         <div class="summary-box"><span class="summary-label">Total Pending</span><span class="summary-value" id="l_pending" style="color: #ef4444;">₹ 0</span></div>
                     </div>
 
@@ -443,7 +440,8 @@
                             <span id="lpTotal" style="font-weight: 900;"></span>
                         </div>
                         <div style="display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #cbd5e1; font-size: 15px; background: #f0fdf4;">
-                            <span style="font-weight: 700; color: #15803d;">Total Paid + Disc:</span>
+                            <!-- LABEL DYNAMICALLY CHANGED -->
+                            <span id="lpPaidLabel" style="font-weight: 700; color: #15803d;">Total Paid:</span>
                             <span id="lpPaid" style="font-weight: 900; color: #15803d;"></span>
                         </div>
                         <div style="display: flex; justify-content: space-between; padding: 12px 15px; font-size: 15px; background: #fef2f2; border: none;">
@@ -508,6 +506,7 @@
                     document.getElementById('rcptSubName').innerText = data.sub_name || 'Technical Academy';
                     document.getElementById('rcptAddress').innerText = data.address || '';
                     document.getElementById('rcptContact').innerText = data.phone ? 'Ph: +91 ' + data.phone : '';
+                    document.getElementById('rcptSealInst').innerText = data.institute_name || 'GLOBUS';
 
                     document.getElementById('lpInstName').innerText = data.institute_name || 'GLOBUS';
                     document.getElementById('lpSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
@@ -648,7 +647,8 @@
             const pDate = document.getElementById('paymentDate').value;
 
             if(!pTxnId || pTxnId === "") {
-                pTxnId = "GL-" + Math.floor(Date.now() / 1000).toString() + Math.floor(Math.random() * 99);
+                const randomPart = Math.floor(Math.random() * 90000) + 10000;
+                pTxnId = 'TXN-' + Date.now().toString().slice(-5) + '-' + randomPart;
             }
 
             const { data: newPayment, error } = await supabase.from('fee_payments').insert([{
@@ -705,7 +705,15 @@
             
             document.getElementById('rcptMode').innerText = data.mode;
             document.getElementById('rcptAmount').innerText = data.amount;
-            document.getElementById('rcptDisc').innerText = data.discount;
+            
+            // HIDE OR SHOW DISCOUNT ROW
+            if (data.discount <= 0) {
+                document.getElementById('rcptDiscRow').style.display = 'none';
+            } else {
+                document.getElementById('rcptDiscRow').style.display = 'table-row';
+                document.getElementById('rcptDisc').innerText = data.discount;
+            }
+            
             document.getElementById('rcptTotal').innerText = data.amount + data.discount;
             document.getElementById('rcptPending').innerText = data.pending;
 
@@ -721,23 +729,31 @@
             if (window.reloadOnReceiptClose) { window.location.reload(); }
         };
 
-        // --- NEW: PRINT FIX - PREVENT BLANK PAGES ---
-        window.printReceiptNative = function() {
-            document.body.classList.add('print-receipt');
-            const vp = document.getElementById('rcptViewport');
-            const oldTransform = vp.style.transform; 
-            const oldHeight = vp.style.height;
-            vp.style.transform = 'scale(1)'; 
-            vp.style.height = 'auto'; // Let it flow naturally for print
-            
-            window.print();
-            
-            vp.style.transform = oldTransform; 
-            vp.style.height = oldHeight;
-            document.body.classList.remove('print-receipt');
+        // --- DIRECT SHARE NATIVE (For WhatsApp on mobile) ---
+        window.shareReceiptNative = async function() {
+            const btn = document.getElementById('rcptShareBtn'); const old = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
+            try {
+                const wrapper = document.getElementById('receiptRenderArea');
+                const vp = document.getElementById('rcptViewport');
+                const oldTransform = vp.style.transform; vp.style.transform = 'scale(1)';
+                
+                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                vp.style.transform = oldTransform;
+                
+                canvas.toBlob(async (blob) => {
+                    const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
+                    const file = new File([blob], `Fee_Receipt_${name}.jpg`, { type: 'image/jpeg' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try { await navigator.share({ files: [file], title: 'Fee Receipt' }); } catch (err) {}
+                    } else {
+                        alert("Sharing directly is not supported on this device. Please use the Download buttons.");
+                    }
+                    btn.innerHTML = old; btn.disabled = false;
+                }, 'image/jpeg', 0.9);
+            } catch (error) { alert("Error sharing image."); btn.innerHTML = old; btn.disabled = false; }
         };
 
-        // --- NEW: DIRECT DOWNLOAD PDF WITH VERY SMALL SIZE ---
+        // --- DIRECT DOWNLOAD PDF (Strict A5, No margins) ---
         window.shareReceiptPDF = async function() {
             const btn = document.getElementById('rcptPdfBtn'); const old = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
             try {
@@ -746,24 +762,21 @@
                 const oldTransform = vp.style.transform; 
                 vp.style.transform = 'scale(1)';
                 
-                // Reduced scale to 1.5, Changed format to JPEG to save MBs
-                const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
+                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
                 vp.style.transform = oldTransform;
                 
-                const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                const imgData = canvas.toDataURL('image/jpeg', 0.8); // JPEG for smaller file size
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
-                pdf.addImage(imgData, 'JPEG', 0, 0, 148, 210);
+                pdf.addImage(imgData, 'JPEG', 0, 0, 148, 210); // Strict A5 sizing
                 
                 const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
                 const filename = `Fee_Receipt_${name}.pdf`;
-                
-                // Direct Download (Removed navigator.share)
-                pdf.save(filename); 
+                pdf.save(filename); // DIRECT DOWNLOAD 
             } catch (e) { alert("Error generating PDF."); } finally { btn.innerHTML = old; btn.disabled = false; }
         };
 
-        // --- NEW: DIRECT DOWNLOAD IMAGE ---
+        // --- DIRECT DOWNLOAD IMAGE (Strict receipt size, No margins) ---
         window.shareReceiptPNG = async function() {
             const btn = document.getElementById('rcptPngBtn'); const old = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
             try {
@@ -772,15 +785,14 @@
                 const oldTransform = vp.style.transform; 
                 vp.style.transform = 'scale(1)';
                 
-                // Reduced scale and changed to JPG to save MBs
                 const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
                 vp.style.transform = oldTransform;
                 
                 const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
                 const link = document.createElement('a'); 
                 link.download = `Fee_Receipt_${name}.jpg`; 
-                link.href = canvas.toDataURL('image/jpeg', 0.9); 
-                link.click(); // Direct Download (Removed navigator.share)
+                link.href = canvas.toDataURL('image/jpeg', 0.9); // JPEG for smaller file size
+                link.click(); // DIRECT DOWNLOAD
                 
                 btn.innerHTML = old; btn.disabled = false;
             } catch (error) { alert("Error generating image."); btn.innerHTML = old; btn.disabled = false; }
@@ -824,9 +836,13 @@
                 const aFee = Number(ledgerStudentData.admission_fee) || 0;
                 
                 ledgerTransactions = paymentsData.filter(p => p.student_id === ledgerStudentId);
-                const otherPays = ledgerTransactions.reduce((sum, p) => sum + (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0), 0);
-                const totalPaidAndDisc = aFee + otherPays;
+                const otherPays = ledgerTransactions.reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
+                const totalDiscount = ledgerTransactions.reduce((sum, p) => sum + (Number(p.discount_amount) || 0), 0);
+                const totalPaidAndDisc = aFee + otherPays + totalDiscount;
                 const pending = tFee - totalPaidAndDisc;
+
+                // UPDATE LABEL BASED ON DISCOUNT VISIBILITY
+                document.getElementById('l_paid_label').textContent = totalDiscount > 0 ? "Total Paid + Disc" : "Total Paid";
 
                 document.getElementById('l_total').textContent = `₹ ${tFee}`;
                 document.getElementById('l_paid').textContent = `₹ ${totalPaidAndDisc}`;
@@ -835,8 +851,9 @@
                 const tbody = document.getElementById('ledgerTableBody'); tbody.innerHTML = '';
                 
                 if(aFee > 0) {
+                    let dateStr = ledgerStudentData.admission_date ? ledgerStudentData.admission_date.split('T')[0] : '-';
                     tbody.innerHTML += `<tr>
-                        <td>${ledgerStudentData.admission_date ? ledgerStudentData.admission_date.split('T')[0] : '-'}</td>
+                        <td>${dateStr}</td>
                         <td>Admission Fee</td><td>-</td><td>-</td><td style="font-weight:bold; color:#10b981;">₹ ${aFee}</td>
                     </tr>`;
                 }
@@ -844,9 +861,11 @@
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">No payment history found.</td></tr>';
                 } else {
                     ledgerTransactions.forEach(p => {
-                        // PRINT BUTTON IN LEDGER TABLE
+                        let dateStr = p.payment_date || '-';
+                        if (dateStr.includes('T')) dateStr = dateStr.split('T')[0]; // Format fix
+                        
                         tbody.innerHTML += `<tr>
-                            <td>${p.payment_date || '-'}</td><td>Fee Payment (${p.payment_mode || 'Cash'})</td><td>${p.receipt_no || '-'}</td>
+                            <td>${dateStr}</td><td>Fee Payment (${p.payment_mode || 'Cash'})</td><td>${p.receipt_no || '-'}</td>
                             <td style="color:#d97706;">${p.discount_amount > 0 ? '₹ '+p.discount_amount : '-'}</td>
                             <td style="font-weight:bold; color:#10b981; display:flex; justify-content:space-between; align-items:center;">
                                 ₹ ${p.amount_paid}
@@ -878,7 +897,6 @@
             });
         };
 
-        // --- NEW: DIRECT DOWNLOAD LEDGER PDF WITH VERY SMALL SIZE ---
         window.downloadLedgerPDF = async function() {
             if(!ledgerStudentData) return;
             const btn = document.querySelector('.btn-statement');
@@ -895,6 +913,9 @@
                 document.getElementById('lpPhone').textContent = ledgerStudentData.phone_number || 'N/A';
 
                 document.getElementById('lpTotal').textContent = document.getElementById('l_total').textContent;
+                
+                const totalDisc = ledgerTransactions.reduce((sum, p) => sum + (Number(p.discount_amount) || 0), 0);
+                document.getElementById('lpPaidLabel').textContent = totalDisc > 0 ? "Total Paid + Disc:" : "Total Paid:";
                 document.getElementById('lpPaid').textContent = document.getElementById('l_paid').textContent;
                 document.getElementById('lpPending').textContent = document.getElementById('l_pending').textContent;
 
@@ -908,15 +929,17 @@
                 }
 
                 ledgerTransactions.forEach(p => {
+                    let dateStr = p.payment_date || '-';
+                    if (dateStr.includes('T')) dateStr = dateStr.split('T')[0]; // Format fix
+                    
                     let desc = `Fee Payment (${p.payment_mode || 'Cash'})`;
                     if(p.discount_amount > 0) desc += `<br><span style="font-size:10px; color:#d97706;">Includes Discount: ₹ ${p.discount_amount}</span>`;
-                    tbody.innerHTML += `<tr><td style="padding:12px; border:1px solid #cbd5e1;">${p.payment_date || '-'}</td><td style="padding:12px; border:1px solid #cbd5e1;">${desc}</td><td style="padding:12px; border:1px solid #cbd5e1;">${p.receipt_no || '-'}</td><td style="padding:12px; border:1px solid #cbd5e1; text-align:right; font-weight:bold;">₹ ${p.amount_paid}</td></tr>`;
+                    tbody.innerHTML += `<tr><td style="padding:12px; border:1px solid #cbd5e1;">${dateStr}</td><td style="padding:12px; border:1px solid #cbd5e1;">${desc}</td><td style="padding:12px; border:1px solid #cbd5e1;">${p.receipt_no || '-'}</td><td style="padding:12px; border:1px solid #cbd5e1; text-align:right; font-weight:bold;">₹ ${p.amount_paid}</td></tr>`;
                 });
 
                 const wrapper = document.getElementById('ledgerPrintWrapper');
                 wrapper.style.zIndex = "-100"; 
                 
-                // Reduced scale and changed to JPEG to save MBs
                 const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
                 
                 const imgData = canvas.toDataURL('image/jpeg', 0.8);
@@ -929,7 +952,7 @@
                 pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
                 
                 const filename = `Statement_${ledgerStudentData.full_name}.pdf`;
-                pdf.save(filename); // Direct Download (Removed navigator.share)
+                pdf.save(filename); // Direct Download
 
             } catch (e) {
                 alert("Error generating professional PDF.");
