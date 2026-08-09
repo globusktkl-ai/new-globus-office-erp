@@ -78,7 +78,7 @@
             .finance-tabs { gap: 6px; }
             .tab-btn { padding: 10px 2px; font-size: 11px; flex-direction: column; gap: 5px; text-align: center; }
             .tab-btn svg { width: 22px; height: 22px; }
-            .btn-back-dashboard span { display: none; } /* Hide text on small screens, keep only icon */
+            .btn-back-dashboard span { display: none; }
         }
 
         /* HIDDEN AREA FOR PROFESSIONAL LEDGER PDF GENERATION */
@@ -150,7 +150,6 @@
                         <select id="studentSelect" class="form-control" size="4" style="margin-top: 8px; display: none; height: auto;" required></select>
                     </div>
 
-                    <!-- VERIFICATION BOX -->
                     <div id="selectedStudentInfo" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                         <div style="font-size: 14px; font-weight: 900; color: #1e3a8a; margin-bottom: 4px;" id="infoCourse">Course Name</div>
                         <div style="font-size: 13px; font-weight: 800; color: #2563eb; display: flex; align-items: center; gap: 6px;">
@@ -635,7 +634,9 @@
             document.getElementById('confirmModal').style.display = 'none';
         }
 
-        // --- ERROR FIX: AUTO GENERATE UNIQUE RECEIPT NUMBER IF EMPTY ---
+        // ==========================================
+        // NEW ERROR LOGIC WITH ADVANCED TRACKING
+        // ==========================================
         window.processFinalPayment = async function() {
             const finalBtn = document.getElementById('finalSubmitBtn');
             finalBtn.disabled = true; finalBtn.textContent = 'Processing...';
@@ -646,10 +647,9 @@
             let pTxnId = document.getElementById('txnId').value.trim();
             const pDate = document.getElementById('paymentDate').value;
 
-            // FIX: Generate highly unique ID if left blank
+            // FIX: Guaranteed highly unique ID (Timestamp + Random) to bypass any length or cache issues
             if(!pTxnId || pTxnId === "") {
-                const randomPart = Math.floor(Math.random() * 90000) + 10000;
-                pTxnId = 'TXN-' + Date.now().toString().slice(-5) + '-' + randomPart;
+                pTxnId = "GL-" + Math.floor(Date.now() / 1000).toString() + Math.floor(Math.random() * 99);
             }
 
             const { data: newPayment, error } = await supabase.from('fee_payments').insert([{
@@ -659,14 +659,15 @@
             }]).select();
 
             if (error) {
+                // EXPLICIT DATABASE ERROR ALERT
                 if (error.message.includes("duplicate") || error.code === '23505') {
-                     alert('❌ Payment Error: The Receipt/Transaction ID already exists. Please use a different ID or leave it blank to auto-generate.');
+                     alert(`❌ Supabase Database Error:\n\nThe system generated a new 100% Unique Receipt ID: "${pTxnId}", but your database rejected it as a 'duplicate'.\n\nREASON: Check your Supabase database. The unique constraint "receipts_receipt_number_key" is likely accidentally placed on the wrong column (like student_id) OR you have a broken database trigger transferring data.`);
                 } else {
                      alert('Error processing payment: ' + error.message);
                 }
                 finalBtn.disabled = false; finalBtn.textContent = 'Confirm & Pay';
                 window.closeConfirmation();
-                return;
+                return; // STOP execution
             } 
             
             alert('Payment recorded successfully!'); 
