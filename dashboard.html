@@ -12,31 +12,52 @@
         
         h2 { font-size: 16px !important; font-weight: 900 !important; margin-bottom: 12px !important; color: #0f172a; text-transform: uppercase; letter-spacing: -0.5px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; display: inline-block;}
         
-        /* UPCOMING BELL NOTIFICATION BANNER (NEW) */
-        .upcoming-bell-alert {
-            background: linear-gradient(135deg, #fef08a, #fde047);
-            border: 1px solid #f59e0b;
-            color: #b45309;
+        /* ------------------------------------------- */
+        /* THE 3 SMART ALERTS (BELL, BIRTHDAY, EVENT)  */
+        /* ------------------------------------------- */
+        .smart-alert {
             padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 900;
+            border-radius: 10px;
+            font-weight: 800;
             font-size: 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
             text-decoration: none;
-            animation: pulseAlert 2s infinite;
             display: none; /* hidden by default */
-            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);
+            transition: all 0.2s ease;
         }
-        .upcoming-bell-alert:active { transform: scale(0.98); }
-        @keyframes pulseAlert {
-            0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+        .smart-alert:active { transform: scale(0.98); }
+        
+        /* 1. Yellow Bell Alert */
+        .alert-bell {
+            background: linear-gradient(135deg, #fef08a, #fde047);
+            border: 1px solid #f59e0b;
+            color: #b45309;
+            animation: pulseBell 2s infinite;
         }
+        @keyframes pulseBell { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); } 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); } }
+
+        /* 2. Pink Birthday Alert */
+        .alert-birthday {
+            background: linear-gradient(135deg, #fbcfe8, #f9a8d4);
+            border: 1px solid #ec4899;
+            color: #be185d;
+            animation: pulseBirthday 2.5s infinite;
+        }
+        @keyframes pulseBirthday { 0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(236, 72, 153, 0); } 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); } }
+
+        /* 3. Blue Event/Meeting Alert */
+        .alert-event {
+            background: linear-gradient(135deg, #bfdbfe, #93c5fd);
+            border: 1px solid #3b82f6;
+            color: #1d4ed8;
+            animation: pulseEvent 2.2s infinite;
+        }
+        @keyframes pulseEvent { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
+        /* ------------------------------------------- */
+
 
         /* Compact Stat Grid (Mobile First) */
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
@@ -106,11 +127,29 @@
     </nav>
 
     <main class="main-content">
-        <!-- THE NEW UPCOMING BELL NOTIFICATION -->
-        <a href="reminders.html" id="upcomingBellBanner" class="upcoming-bell-alert">
-            <span id="upcomingBellText">⏳ Upcoming Bell...</span>
-            <span style="font-size: 12px; opacity: 0.8;">Tap to Stop/Edit ⚙️</span>
-        </a>
+        
+        <!-- SMART ALERTS CONTAINER -->
+        <div id="smartAlertsContainer" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+            
+            <!-- 1. Bell Alert -->
+            <a href="reminders.html" id="alertBell" class="smart-alert alert-bell">
+                <span>⏳ Upcoming Bell: <b id="alertBellText"></b></span>
+                <span style="font-size: 12px; opacity: 0.9;">Tap to View ⚙️</span>
+            </a>
+            
+            <!-- 2. Birthday Alert -->
+            <a href="reminders.html" id="alertBirthday" class="smart-alert alert-birthday">
+                <span>🎂 Happy Birthday: <b id="alertBirthdayText"></b></span>
+                <span style="font-size: 12px; opacity: 0.9;">Send Wishes 💬</span>
+            </a>
+
+            <!-- 3. Event/Meeting Alert -->
+            <a href="reminders.html" id="alertEvent" class="smart-alert alert-event">
+                <span>📅 Upcoming: <b id="alertEventText"></b></span>
+                <span style="font-size: 12px; opacity: 0.9;">View Details 📌</span>
+            </a>
+            
+        </div>
 
         <h2>Institute Overview</h2>
         
@@ -217,7 +256,6 @@
 
     <!-- SETTINGS MODAL -->
     <div id="settingsModal" class="modal-overlay">
-        <!-- Rest of the settings modal HTML remains identical -->
         <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
@@ -263,64 +301,131 @@
             
             loadSettings();
             loadDashboardData();
-            checkUpcomingBell(); // CHECK BELL
+            
+            // Initial call
+            checkAllSmartAlerts();
+            // Check repeatedly every 30 seconds
+            setInterval(checkAllSmartAlerts, 30000); 
         }
 
-        // --- DASHBOARD UPCOMING BELL LOGIC ---
-        function checkUpcomingBell() {
-            const saved = localStorage.getItem('globus_bell_settings_v6'); // Must match reminders.html version
-            const banner = document.getElementById('upcomingBellBanner');
-            
-            if(!saved) { banner.style.display = 'none'; return; }
-            const settings = JSON.parse(saved);
-            
-            // If system is OFF or alert is disabled (0)
-            if(!settings.isOn || settings.warningDuration == 0) { 
-                banner.style.display = 'none'; 
-                return; 
-            }
-            
+        // --- THE MASTER SMART ALERT FUNCTION (Phase 3) ---
+        window.checkAllSmartAlerts = function() {
             const now = new Date();
-            // Check Excluded Days
-            if(settings.excludedDays && settings.excludedDays.includes(now.getDay())) {
-                banner.style.display = 'none'; 
-                return;
-            }
-            
-            const currentMinutes = now.getHours() * 60 + now.getMinutes();
-            let nextBell = null;
-            let minDiff = Infinity;
 
-            settings.bells.forEach(bell => {
-                const [bH, bM] = bell.time.split(':').map(Number);
-                const bellMinutes = bH * 60 + bM;
-                const diff = bellMinutes - currentMinutes;
+            // 1. Check Upcoming Bell (Yellow Alert)
+            const savedBell = localStorage.getItem('globus_bell_settings_final'); 
+            const alertBell = document.getElementById('alertBell');
+            if(savedBell) {
+                const bSettings = JSON.parse(savedBell);
+                if(bSettings.isOn && bSettings.warningDuration > 0 && !(bSettings.excludedDays && bSettings.excludedDays.includes(now.getDay()))) {
+                    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+                    let nextBell = null;
+                    let minDiff = Infinity;
+                    bSettings.bells.forEach(bell => {
+                        const [bH, bM] = bell.time.split(':').map(Number);
+                        const bellMinutes = bH * 60 + bM;
+                        const diff = bellMinutes - currentMinutes;
+                        if(diff > 0 && diff <= bSettings.warningDuration && diff < minDiff) {
+                            minDiff = diff; nextBell = bell;
+                        }
+                    });
+                    if(nextBell) {
+                        let parts = nextBell.time.split(':');
+                        let h = parseInt(parts[0]);
+                        let ampm = h >= 12 ? 'PM' : 'AM';
+                        h = h % 12 || 12;
+                        let displayTime = String(h).padStart(2, '0') + ':' + parts[1] + ' ' + ampm;
+                        document.getElementById('alertBellText').innerText = `${nextBell.name} at ${displayTime}`;
+                        alertBell.style.display = 'flex';
+                    } else { alertBell.style.display = 'none'; }
+                } else { alertBell.style.display = 'none'; }
+            }
+
+            // 2. Check Upcoming Events/Meetings (Blue Alert)
+            const savedEvents = localStorage.getItem('globus_events');
+            const alertEvent = document.getElementById('alertEvent');
+            if(savedEvents) {
+                const events = JSON.parse(savedEvents);
+                let upcomingEvent = null;
                 
-                // If the bell is coming up within the set warning duration
-                if(diff > 0 && diff <= settings.warningDuration && diff < minDiff) {
-                    minDiff = diff;
-                    nextBell = bell;
+                events.forEach(e => {
+                    let evDate = new Date(e.date + 'T' + e.time);
+                    let diffMs = evDate - now;
+                    // If event is today and within next 24 hours
+                    if(diffMs > 0 && diffMs <= (24 * 60 * 60 * 1000)) {
+                        if(!upcomingEvent || diffMs < (new Date(upcomingEvent.date + 'T' + upcomingEvent.time) - now)) {
+                            upcomingEvent = e;
+                        }
+                    }
+                });
+
+                if(upcomingEvent) {
+                    let d = new Date(upcomingEvent.date + 'T' + upcomingEvent.time);
+                    let displayTime = d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
+                    document.getElementById('alertEventText').innerText = `${upcomingEvent.name} (${displayTime})`;
+                    alertEvent.style.display = 'flex';
+                } else { alertEvent.style.display = 'none'; }
+            }
+        };
+
+        // --- DASHBOARD DATA & BIRTHDAY FETCHING ---
+        async function loadDashboardData() {
+            try {
+                const [stuRes, crsRes, payRes] = await Promise.all([
+                    supabase.from('students').select('*'), supabase.from('courses').select('*'), supabase.from('fee_payments').select('*')
+                ]);
+                
+                const studentsData = stuRes.data || []; const coursesData = crsRes.data || []; const paymentsData = payRes.data || [];
+
+                const totalStudentsCount = studentsData.length;
+                const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
+                
+                document.getElementById('statTotalStudents').textContent = totalStudentsCount;
+                document.getElementById('statActiveStudents').textContent = activeStudents.length;
+
+                const activeCourses = coursesData.filter(c => c.status === 'Active');
+                document.getElementById('statCourses').textContent = activeCourses.length;
+
+                const todayDate = new Date().toISOString().split('T')[0];
+                const paymentsToday = paymentsData.filter(p => p.payment_date === todayDate).reduce((sum, p) => sum + Number(p.amount_paid), 0);
+                const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
+                document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
+
+                let totalPendingSum = 0;
+                activeStudents.forEach(s => {
+                    const totalCourseFee = Number(s.total_fee) || 0; const admissionFee = Number(s.admission_fee) || 0;
+                    const stuPayments = paymentsData.filter(p => p.student_id === s.id);
+                    let totalPaidPayments = 0;
+                    stuPayments.forEach(p => totalPaidPayments += (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0));
+                    let totalCoursePending = totalCourseFee - (admissionFee + totalPaidPayments);
+                    if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
+                });
+                document.getElementById('statPendingFees').textContent = '₹ ' + totalPendingSum;
+
+                // 3. Birthdays Alert Logic (Pink Alert)
+                const tMonth = new Date().getMonth() + 1;
+                const tDay = new Date().getDate();
+                let bdayNames = [];
+                activeStudents.forEach(s => {
+                    if (s.date_of_birth) {
+                        const dob = new Date(s.date_of_birth);
+                        if (dob.getMonth() + 1 === tMonth && dob.getDate() === tDay) {
+                            bdayNames.push(s.full_name.split(' ')[0]); // Get first name
+                        }
+                    }
+                });
+                const alertBirthday = document.getElementById('alertBirthday');
+                if(bdayNames.length > 0) {
+                    document.getElementById('alertBirthdayText').innerText = bdayNames.join(', ');
+                    alertBirthday.style.display = 'flex';
+                } else {
+                    alertBirthday.style.display = 'none';
                 }
-            });
 
-            if(nextBell) {
-                // Convert to 12h AM/PM for display
-                let parts = nextBell.time.split(':');
-                let h = parseInt(parts[0]);
-                let ampm = h >= 12 ? 'PM' : 'AM';
-                h = h % 12 || 12;
-                let displayTime = String(h).padStart(2, '0') + ':' + parts[1] + ' ' + ampm;
-                
-                document.getElementById('upcomingBellText').innerHTML = `🔔 Upcoming: <b>${nextBell.name}</b> at ${displayTime}`;
-                banner.style.display = 'flex';
-            } else {
-                banner.style.display = 'none';
-            }
+            } catch (err) { console.error("Dashboard Loading Error:", err); }
         }
-        
-        // Run bell check every 30 seconds on the dashboard
-        setInterval(checkUpcomingBell, 30000);
 
+        // Settings Modal logic...
         async function loadSettings() {
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
@@ -362,43 +467,8 @@
             }
         };
 
-        async function loadDashboardData() {
-            try {
-                const [stuRes, crsRes, payRes] = await Promise.all([
-                    supabase.from('students').select('*'), supabase.from('courses').select('*'), supabase.from('fee_payments').select('*')
-                ]);
-                
-                const studentsData = stuRes.data || []; const coursesData = crsRes.data || []; const paymentsData = payRes.data || [];
-
-                const totalStudentsCount = studentsData.length;
-                const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
-                
-                document.getElementById('statTotalStudents').textContent = totalStudentsCount;
-                document.getElementById('statActiveStudents').textContent = activeStudents.length;
-
-                const activeCourses = coursesData.filter(c => c.status === 'Active');
-                document.getElementById('statCourses').textContent = activeCourses.length;
-
-                const todayDate = new Date().toISOString().split('T')[0];
-                const paymentsToday = paymentsData.filter(p => p.payment_date === todayDate).reduce((sum, p) => sum + Number(p.amount_paid), 0);
-                const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
-                document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
-
-                let totalPendingSum = 0;
-                activeStudents.forEach(s => {
-                    const totalCourseFee = Number(s.total_fee) || 0; const admissionFee = Number(s.admission_fee) || 0;
-                    const stuPayments = paymentsData.filter(p => p.student_id === s.id);
-                    const totalPaidPayments = stuPayments.reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
-                    const totalDiscount = stuPayments.reduce((sum, p) => sum + (Number(p.discount_amount) || 0), 0);
-                    let totalCoursePending = totalCourseFee - (admissionFee + totalPaidPayments + totalDiscount);
-                    if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
-                });
-                document.getElementById('statPendingFees').textContent = '₹ ' + totalPendingSum;
-
-            } catch (err) { console.error("Dashboard Loading Error:", err); }
-        }
-
         document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
+        
         checkAuth();
     </script>
 </body>
