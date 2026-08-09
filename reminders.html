@@ -17,9 +17,6 @@
         .btn-back-dashboard:active { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
 
-        .audio-unlock-btn { background: #10b981; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 900; font-size: 15px; margin-bottom: 20px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4); cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; animation: pulseBtn 2s infinite;}
-        @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-
         .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; width: 100%; }
         @media(max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
 
@@ -33,7 +30,7 @@
         .setting-group { margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; width: 100%; }
         .setting-group:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
         
-        .schedule-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
+        .schedule-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
         .schedule-label.highlight { color: #ea580c; }
         
         .schedule-select { width: 100%; padding: 12px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700; color: #1e293b; outline: none; background: #f8fafc; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 18px auto; }
@@ -55,7 +52,6 @@
 
         .bell-list-title { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase; }
         
-        /* BELL ROW UI (DESKTOP) */
         .time-group { display: flex; align-items: center; background: #f8fafc; padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #e2e8f0; gap: 10px; width: 100%;}
         .time-input-name { flex: 1 1 auto; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-weight: 700; color: #0f172a; outline: none; font-size: 14px; background: white;}
         .time-input { flex: 0 0 120px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-weight: 900; color: #1e3a8a; outline: none; font-size: 14px; text-align: center; background: #eff6ff; cursor: pointer; caret-color: transparent;}
@@ -68,15 +64,11 @@
         .btn-save-bell { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); transition: 0.2s; letter-spacing: 0.5px;}
         .btn-save-bell:active { transform: scale(0.98); }
 
-        /* --------------------------------------------------- */
-        /* PERFECT COMPACT EVENT INPUTS UI                     */
-        /* --------------------------------------------------- */
         .event-form-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; width: 100%; }
         .event-form-row { display: flex; gap: 10px; width: 100%; }
         .event-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-weight: 700; color: #0f172a; outline: none; font-size: 14px; width: 100%; background: white; font-family: inherit;}
         .event-input.time-pick { color: #1e3a8a; background: #eff6ff; cursor: pointer; caret-color: transparent; text-align: center; font-weight: 900;}
         .event-input::placeholder { color: #94a3b8; font-weight: 600; }
-        /* --------------------------------------------------- */
 
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #f1f5f9; width: 100%;}
         .list-item:last-child { border-bottom: none; }
@@ -103,34 +95,14 @@
 
         @media(max-width: 600px) {
             .panel { padding: 15px; }
-            
-            /* Two-Row layout for Bells */
-            .time-group { 
-                display: grid; 
-                grid-template-columns: 1fr 50px; 
-                grid-template-rows: auto auto; 
-                gap: 10px; 
-                padding: 12px;
-            }
-            .time-input-name { 
-                grid-column: 1 / -1; 
-                margin: 0; 
-                font-size: 15px; 
-                padding: 12px;
-            }
-            .time-input { 
-                grid-column: 1 / 2; 
-                width: 100%; 
-                font-size: 15px; 
-                padding: 12px; 
-                text-align: left; 
-            }
-            .btn-remove-bell { 
-                grid-column: 2 / 3; 
-                width: 100%; 
-                height: 100%; 
-                font-size: 18px; 
-            }
+            .time-group { display: grid; grid-template-columns: 1fr 50px; grid-template-rows: auto auto; gap: 10px; padding: 12px;}
+            .time-input-name { grid-column: 1 / -1; margin: 0; font-size: 15px; padding: 12px;}
+            .time-input { grid-column: 1 / 2; width: 100%; font-size: 15px; padding: 12px; text-align: left; }
+            .btn-remove-bell { grid-column: 2 / 3; width: 100%; height: 100%; font-size: 18px; }
+
+            .event-input-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+            #eventName { grid-column: 1 / -1; }
+            .event-row-split { display: contents; }
         }
     </style>
 </head>
@@ -175,10 +147,6 @@
             <h1 class="page-title">Smart Assistant</h1>
         </div>
 
-        <button id="audioUnlockBtn" class="audio-unlock-btn" onclick="window.unlockAudioSystem()">
-            🔊 Tap here to Activate Sound System for Mobile
-        </button>
-
         <div class="grid-container">
             <!-- PANEL 1: BELL SYSTEM -->
             <div class="panel">
@@ -201,6 +169,7 @@
                         <select id="warningDuration" class="schedule-select">
                             <option value="15">Show Alert 15 Min Before Bell</option>
                             <option value="30">Show Alert 30 Min Before Bell</option>
+                            <option value="60">Show Alert 1 Hour Before Bell</option>
                             <option value="0">Do Not Show Dashboard Alert</option>
                         </select>
                     </div>
@@ -250,7 +219,6 @@
                     <span id="masterEventStatus" style="font-weight: 900; font-size: 14px; color: #ef4444;">Dashboard Alerts OFF</span>
                 </div>
 
-                <!-- NEW COMPACT EVENT INPUTS -->
                 <div class="event-form-container">
                     <input type="text" id="eventName" class="event-input" placeholder="Event Name (e.g. Staff Meeting)">
                     <div class="event-form-row">
@@ -291,7 +259,6 @@
 
     </main>
 
-    <!-- JS LOGIC UNTOUCHED - EXACTLY AS BEFORE -->
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
@@ -300,16 +267,22 @@
         let bellSettings = { isOn: false, excludedDays: [], bells: [], audioUrl: '', warningDuration: 15 };
         let eventSettings = { isOn: false };
 
-        window.unlockAudioSystem = function() {
+        // SILENT AUDIO UNLOCK FUNCTION
+        window.silentAudioUnlock = function() {
             const audioObj = document.getElementById('bellAudio');
-            audioObj.src = document.getElementById('audioSelect').value;
-            audioObj.play().then(() => {
-                audioObj.pause();
-                audioObj.currentTime = 0;
-                document.getElementById('audioUnlockBtn').style.display = 'none';
-            }).catch(e => { alert("Please tap again to unlock audio."); });
+            if(!audioObj.src) {
+                audioObj.src = document.getElementById('audioSelect').value || "https://actions.google.com/sounds/v1/alarms/beep_short.ogg";
+            }
+            let playPromise = audioObj.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    audioObj.pause();
+                    audioObj.currentTime = 0;
+                }).catch(e => { /* Ignore silent block */ });
+            }
         };
 
+        // --- CUSTOM TIME PICKER LOGIC ---
         let activeTimeInputId = null;
 
         window.initCustomPicker = function() {
@@ -364,6 +337,7 @@
             window.closeTimePicker();
         };
 
+        // --- BELL LOGIC ---
         window.previewAudio = function() {
             const audioObj = document.getElementById('bellAudio');
             audioObj.src = document.getElementById('audioSelect').value;
@@ -405,6 +379,7 @@
         window.removeBellRow = function(groupId) { document.getElementById(groupId).remove(); };
 
         window.toggleMasterBell = function() {
+            window.silentAudioUnlock(); // Silent unlock on interaction
             const isOn = document.getElementById('masterBellToggle').checked;
             const statusText = document.getElementById('masterBellStatus');
             if (isOn) {
@@ -433,6 +408,7 @@
         };
 
         window.saveBellTimings = function() {
+            window.silentAudioUnlock(); // Silent unlock on interaction
             let bells = [];
             document.querySelectorAll('#bellListContainer .time-group').forEach(row => {
                 const name = row.querySelector('.bell-name').value;
