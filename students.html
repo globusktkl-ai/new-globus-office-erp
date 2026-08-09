@@ -147,6 +147,7 @@
                     <select id="statusFilter" class="status-select" onchange="window.updateStatusColor(this); window.applyFilters();">
                         <option value="active" selected>🟢 Active</option>
                         <option value="completed">🎓 Completed</option>
+                        <option value="archived">🗄️ Archived (Old Students)</option>
                         <option value="all">📁 All Students</option>
                     </select>
                 </div>
@@ -299,6 +300,7 @@
         window.updateStatusColor = function(select) {
             if(select.value === 'active') { select.style.color = '#15803d'; select.style.borderColor = '#bbf7d0'; select.style.backgroundColor = '#f0fdf4'; }
             else if(select.value === 'completed') { select.style.color = '#1d4ed8'; select.style.borderColor = '#bfdbfe'; select.style.backgroundColor = '#eff6ff'; }
+            else if(select.value === 'archived') { select.style.color = '#ea580c'; select.style.borderColor = '#fdba74'; select.style.backgroundColor = '#fff7ed'; }
             else { select.style.color = '#0f172a'; select.style.borderColor = '#cbd5e1'; select.style.backgroundColor = '#ffffff'; }
         };
 
@@ -396,6 +398,7 @@
                 const stuStatus = (s.status || 'active').toLowerCase();
                 if (statusTerm === 'active' && stuStatus !== 'active') return false;
                 if (statusTerm === 'completed' && stuStatus !== 'completed' && stuStatus !== 'inactive') return false;
+                if (statusTerm === 'archived' && stuStatus !== 'archived') return false;
                 
                 if (chkCourse && courseValue && s.display_course_name !== courseValue) return false;
                 if (chkModule && moduleValue && s.module !== moduleValue) return false;
@@ -453,9 +456,9 @@
                         <button onclick="window.viewAndEditStudent('${s.id}')" class="btn-card btn-view"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> View / Edit</button>
                         <button onclick="window.openProfileAndCard('${s.id}')" class="btn-card btn-id"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ID Card</button>
                     </div>
-                    <button onclick="window.deleteStudent('${s.id}', '${s.register_number}', '${s.status}')" class="btn-del-full">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        Delete Student
+                    <button onclick="window.archiveStudent('${s.id}', '${s.register_number}')" class="btn-del-full" style="color: #ea580c; border-color: #fdba74;">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                        Archive Student
                     </button>
                 `;
 
@@ -720,14 +723,20 @@
             } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
         };
 
-        window.deleteStudent = async function(id, regNo, status) {
-            if (status && status.toLowerCase() === 'completed') { alert('⚠️ Deletion Aborted!\nCannot delete a completed student.'); return; }
+        window.archiveStudent = async function(id, regNo) {
             let n1 = Math.floor(Math.random() * 10) + 1; let n2 = Math.floor(Math.random() * 10) + 1;
-            let ans = prompt(`⚠️ Security Verification\nTo permanently delete Reg No: ${regNo}, solve:\n${n1} + ${n2} = ?`);
+            let ans = prompt(`⚠️ Security Verification\nTo Archive (Move to old students) Reg No: ${regNo}, solve:\n${n1} + ${n2} = ?`);
             if (ans !== null && parseInt(ans) === (n1 + n2)) {
-                await supabase.from('fee_payments').delete().eq('student_id', id);
-                await supabase.from('students').delete().eq('id', id);
-                alert('✅ Student successfully deleted.'); fetchStudents(); 
+                // Here we just change the status to 'archived' instead of deleting
+                const { error } = await supabase.from('students').update({ status: 'archived' }).eq('id', id);
+                if (error) {
+                    alert('Error archiving student: ' + error.message);
+                } else {
+                    alert('✅ Student successfully moved to Archives.'); 
+                    fetchStudents(); 
+                }
+            } else {
+                alert('❌ Verification failed! Archiving aborted.');
             }
         };
 
