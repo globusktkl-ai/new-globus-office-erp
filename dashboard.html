@@ -47,7 +47,6 @@
             text-decoration: none;
         }
         .ticker-bell { color: #b45309; }
-        .ticker-bday { color: #be185d; }
         .ticker-event { color: #1d4ed8; }
         
         @keyframes scrollTicker { 
@@ -116,9 +115,12 @@
                 <div class="stat-label">Today's Collection</div>
                 <div class="stat-value" id="statTodayCollection" style="color: #10B981; font-size: 20px !important;">₹ 0</div>
             </div>
-            <div class="stat-box finance-box" style="border-left-color: #EF4444 !important;">
-                <div class="stat-label">Total Pending Dues</div>
-                <div class="stat-value" id="statPendingFees" style="color: #EF4444; font-size: 20px !important;">₹ 0</div>
+            <!-- UPDATED DUES BOX (CURRENT OVERDUE & TOTAL PENDING) -->
+            <div class="stat-box finance-box" style="border-left-color: #EF4444 !important; padding: 10px 12px !important; justify-content: flex-start; gap: 2px;">
+                <div class="stat-label" style="color: #b91c1c !important;">Current Overdue</div>
+                <div class="stat-value" id="statCurrentDue" style="color: #EF4444; font-size: 20px !important;">₹ 0</div>
+                <div class="stat-label" style="font-size: 9px !important; margin-top: 4px !important;">Total Course Pending</div>
+                <div class="stat-value" id="statPendingFees" style="color: #f87171; font-size: 13px !important;">₹ 0</div>
             </div>
         </div>
 
@@ -153,7 +155,6 @@
 
     <!-- SETTINGS MODAL -->
     <div id="settingsModal" class="modal-overlay">
-        <!-- Settings Form Content -->
         <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
@@ -185,8 +186,22 @@
             setInterval(buildSmartTicker, 30000); 
         }
 
-        // --- SCROLLING SMART TICKER LOGIC (Phase 3) ---
+        // --- SCROLLING SMART TICKER LOGIC (FIXED) ---
         window.buildSmartTicker = async function() {
+            // Master toggle check: Check if alerts are turned OFF globally
+            const eventSet = localStorage.getItem('globus_events_settings');
+            let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
+            
+            const wrap = document.getElementById('alertTickerWrap');
+            const track = document.getElementById('alertTickerTrack');
+
+            if (!masterAlertsOn) {
+                // If OFF, completely hide and clear the ticker
+                wrap.style.display = 'none';
+                track.innerHTML = '';
+                return; 
+            }
+
             let tickerItems = [];
             const now = new Date();
 
@@ -214,10 +229,7 @@
 
             // 2. Event Alerts
             const savedEvents = localStorage.getItem('globus_events');
-            const eventSet = localStorage.getItem('globus_events_settings');
-            let evIsOn = eventSet ? JSON.parse(eventSet).isOn : false;
-            
-            if(savedEvents && evIsOn) {
+            if(savedEvents) {
                 const events = JSON.parse(savedEvents);
                 events.forEach(e => {
                     let evDate = new Date(e.date + 'T' + e.time);
@@ -230,28 +242,10 @@
                 });
             }
 
-            // 3. Birthday Alerts (Fetch from DB)
-            try {
-                const { data: students } = await supabase.from('students').select('full_name, date_of_birth').eq('status', 'active');
-                if(students) {
-                    const tMonth = now.getMonth() + 1; const tDay = now.getDate();
-                    students.forEach(s => {
-                        if(s.date_of_birth) {
-                            const dob = new Date(s.date_of_birth);
-                            if(dob.getMonth() + 1 === tMonth && dob.getDate() === tDay) {
-                                tickerItems.push(`<a href="reminders.html" class="alert-item ticker-bday">🎂 Happy Birthday: ${s.full_name}!</a>`);
-                            }
-                        }
-                    });
-                }
-            } catch(e){}
+            // Birthday logic COMPLETELY removed from here to reduce database load.
 
             // Update DOM
-            const wrap = document.getElementById('alertTickerWrap');
-            const track = document.getElementById('alertTickerTrack');
-            
             if(tickerItems.length > 0) {
-                // Duplicate items slightly if there are very few, to make scroll look continuous
                 let htmlStr = tickerItems.join('');
                 if(tickerItems.length < 3) htmlStr += htmlStr; 
                 
@@ -263,14 +257,18 @@
             }
         };
 
-        // --- DASHBOARD DATA FETCHING ---
+        // --- DASHBOARD DATA FETCHING (ADVANCED FEE LOGIC INCLUDED) ---
         async function loadDashboardData() {
             try {
                 const [stuRes, crsRes, payRes] = await Promise.all([
-                    supabase.from('students').select('*'), supabase.from('courses').select('*'), supabase.from('fee_payments').select('*')
+                    supabase.from('students').select('*'), 
+                    supabase.from('courses').select('*'), 
+                    supabase.from('fee_payments').select('*')
                 ]);
                 
-                const studentsData = stuRes.data || []; const coursesData = crsRes.data || []; const paymentsData = payRes.data || [];
+                const studentsData = stuRes.data || []; 
+                const coursesData = crsRes.data || []; 
+                const paymentsData = payRes.data || [];
 
                 document.getElementById('statTotalStudents').textContent = studentsData.length;
                 const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
@@ -285,14 +283,46 @@
                 document.getElementById('statTodayCollection').textContent = '₹ ' + (paymentsToday + admissionsToday);
 
                 let totalPendingSum = 0;
+                let currentDueSum = 0; // New logic for up-to-date overdue
+
                 activeStudents.forEach(s => {
-                    const totalCourseFee = Number(s.total_fee) || 0; const admissionFee = Number(s.admission_fee) || 0;
+                    const totalCourseFee = Number(s.total_fee) || 0; 
+                    const admissionFee = Number(s.admission_fee) || 0;
+                    
                     let totalPaidPayments = 0;
-                    paymentsData.filter(p => p.student_id === s.id).forEach(p => totalPaidPayments += (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0));
-                    let totalCoursePending = totalCourseFee - (admissionFee + totalPaidPayments);
+                    let totalDiscount = 0;
+                    paymentsData.filter(p => p.student_id === s.id).forEach(p => {
+                        totalPaidPayments += (Number(p.amount_paid) || 0);
+                        totalDiscount += (Number(p.discount_amount) || 0);
+                    });
+                    
+                    const totalPaidAndDisc = admissionFee + totalPaidPayments + totalDiscount;
+                    let totalCoursePending = totalCourseFee - totalPaidAndDisc;
                     if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
+
+                    // Calculate module-wise current due
+                    const course = coursesData.find(c => c.id == s.course_id);
+                    const totalModules = (course && Array.isArray(course.modules) && course.modules.length > 0) ? course.modules.length : 1;
+                    const feePerModule = totalCourseFee / totalModules;
+                    
+                    let currentModIndex = 1;
+                    if (s.status === 'completed' || s.module === 'Course Completed') { 
+                        currentModIndex = totalModules; 
+                    } else if (course && Array.isArray(course.modules)) { 
+                        let idx = course.modules.indexOf(s.module); 
+                        currentModIndex = idx >= 0 ? idx + 1 : 1; 
+                    }
+                    
+                    let expectedTillNow = feePerModule * currentModIndex; 
+                    if (expectedTillNow > totalCourseFee) expectedTillNow = totalCourseFee;
+                    
+                    let currentDue = expectedTillNow - totalPaidAndDisc;
+                    if (currentDue > 0) currentDueSum += currentDue;
                 });
-                document.getElementById('statPendingFees').textContent = '₹ ' + totalPendingSum;
+                
+                // Update UI with calculated values
+                document.getElementById('statCurrentDue').textContent = '₹ ' + Math.round(currentDueSum);
+                document.getElementById('statPendingFees').textContent = '₹ ' + Math.round(totalPendingSum);
 
             } catch (err) { console.error("Dashboard Loading Error:", err); }
         }
