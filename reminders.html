@@ -41,8 +41,6 @@
         .day-checkbox input:checked + span { color: #ef4444; text-decoration: line-through; }
         .day-checkbox:has(input:checked) { background: #fef2f2; border-color: #fca5a5; }
 
-        .expiry-alert { background: #fef2f2; border: 1px dashed #ef4444; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 800; text-align: center; margin-bottom: 15px; display: none; width: 100%; }
-        
         .switch { position: relative; display: inline-block; width: 54px; height: 28px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
@@ -236,24 +234,14 @@
             </div>
         </div>
 
-        <div class="grid-container">
-            <div class="panel">
-                <div class="panel-header">
-                    <span style="font-size: 22px;">🎂</span>
-                    <h2 class="panel-title">Today's Birthdays</h2>
-                </div>
-                <div id="birthdayList">
-                    <div class="empty-state">Checking records...</div>
-                </div>
+        <!-- FULL WIDTH PANEL 3: FEE ALERTS (Birthdays Removed completely) -->
+        <div class="panel" style="margin-bottom: 30px;">
+            <div class="panel-header">
+                <span style="font-size: 22px;">💰</span>
+                <h2 class="panel-title">Pending Fee Alerts</h2>
             </div>
-
-            <div class="panel" style="margin-bottom: 30px;">
-                <div class="panel-header">
-                    <h2 class="panel-title">Pending Fee Alerts</h2>
-                </div>
-                <div id="feeList">
-                    <div class="empty-state">Loading financial records...</div>
-                </div>
+            <div id="feeList">
+                <div class="empty-state">Loading financial records...</div>
             </div>
         </div>
 
@@ -523,6 +511,7 @@
             window.renderEvents();
         };
 
+        // EXCLUSIVE FEE ALERT FETCHER (Birthdays stripped out for performance)
         window.fetchStudentAlerts = async function() {
             try {
                 const [stuRes, payRes] = await Promise.all([
@@ -530,27 +519,16 @@
                     supabase.from('fee_payments').select('*')
                 ]);
                 const students = stuRes.data || []; const payments = payRes.data || [];
-                const tMonth = new Date().getMonth() + 1; const tDay = new Date().getDate();
                 
-                let birthdayHTML = ''; let hasBirthdays = false; let feeDuesData = [];
+                let feeDuesData = [];
 
                 students.forEach(s => {
-                    if (s.date_of_birth) {
-                        const dob = new Date(s.date_of_birth);
-                        if (dob.getMonth() + 1 === tMonth && dob.getDate() === tDay) {
-                            hasBirthdays = true;
-                            const waLink = `https://wa.me/91${s.phone_number}?text=${encodeURIComponent('Happy Birthday!')}`;
-                            birthdayHTML += `<div class="list-item"><div class="item-info"><h4>${s.full_name}</h4><p>Reg: ${s.register_number || '-'}</p></div><a href="${waLink}" target="_blank" class="btn-wa">Wishes</a></div>`;
-                        }
-                    }
                     const totalFee = Number(s.total_fee) || 0; const admFee = Number(s.admission_fee) || 0;
                     let paidOther = 0;
                     payments.filter(p => p.student_id === s.id).forEach(p => paidOther += (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0));
                     const balance = totalFee - (admFee + paidOther);
                     if (balance > 0) feeDuesData.push({ student: s, balance: balance });
                 });
-
-                document.getElementById('birthdayList').innerHTML = hasBirthdays ? birthdayHTML : '<div class="empty-state">No birthdays today.</div>';
 
                 feeDuesData.sort((a, b) => b.balance - a.balance);
                 let feeHTML = '';
