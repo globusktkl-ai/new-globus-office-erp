@@ -65,51 +65,14 @@
 
         /* Receipt Print Specific Styles - BLANK PAGE FIX APPLIED HERE */
         @media print {
-            /* Hide non-essential elements */
-            body.print-receipt nav, 
-            body.print-receipt main,
-            body.print-receipt #confirmModal,
-            body.print-receipt #ledgerPrintWrapper,
-            body.print-receipt .no-print { 
-                display: none !important; 
-            }
-
-            /* Reset body and modal layout so it doesn't shift or scale */
-            body.print-receipt,
-            body.print-receipt #receiptModal,
-            body.print-receipt .confirm-box,
-            body.print-receipt #rcptViewport,
-            body.print-receipt .receipt-scroll-container {
-                display: block !important;
-                position: static !important;
-                background: white !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100% !important;
-                height: auto !important;
-                max-width: none !important;
-                transform: none !important;
-                box-shadow: none !important;
-                overflow: visible !important;
-            }
-
-            /* Format the actual receipt to fit A5 */
-            body.print-receipt #receiptRenderArea {
-                width: 100% !important; 
-                max-width: 148mm !important; /* Maximum width of A5 */
-                margin: 0 auto !important; 
-                padding: 10mm !important; /* Proper margin inside paper */
-                border: none !important;
-                box-shadow: none !important;
-                background: white !important;
-                height: auto !important;
-                box-sizing: border-box !important;
-            }
-
-            @page { 
-                size: A5 portrait; 
-                margin: 0mm; /* Browser handles margins better when set to 0 and we pad the div */
-            }
+            body.print-receipt > *:not(#receiptModal) { display: none !important; }
+            body.print-receipt { background: white !important; }
+            body.print-receipt #receiptModal { position: static !important; display: block !important; background: white !important; }
+            body.print-receipt .confirm-box { margin: 0 !important; padding: 0 !important; box-shadow: none !important; max-width: 100% !important; border: none !important;}
+            body.print-receipt .no-print { display: none !important; }
+            body.print-receipt #rcptViewport { transform: none !important; height: auto !important; width: 100% !important;}
+            body.print-receipt #receiptRenderArea { width: 148mm !important; height: auto !important; padding: 5mm !important; margin: 0 auto !important; border: none !important; box-shadow: none !important; }
+            @page { size: A5 portrait; margin: 5mm; }
         }
 
         /* Mobile specific adjustments for tabs */
@@ -270,12 +233,12 @@
                 
                 <div class="no-print" style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <button onclick="window.printReceiptNative()" style="flex:1; padding:12px; background:#1e3a8a; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">🖨️ Print (A5)</button>
-                    <button id="rcptPdfBtn" onclick="window.shareReceiptPDF()" style="flex:1; padding:12px; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📄 PDF</button>
-                    <button id="rcptPngBtn" onclick="window.shareReceiptPNG()" style="flex:1; padding:12px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📲 WhatsApp</button>
+                    <!-- UPDATED: DIRECT DOWNLOAD BUTTONS -->
+                    <button id="rcptPdfBtn" onclick="window.shareReceiptPDF()" style="flex:1; padding:12px; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📄 Download PDF</button>
+                    <button id="rcptPngBtn" onclick="window.shareReceiptPNG()" style="flex:1; padding:12px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">🖼️ Download Image</button>
                 </div>
 
-                <!-- NEW: Added class receipt-scroll-container to remove scroll restrictions during print -->
-                <div class="receipt-scroll-container" style="width: 100%; overflow-x: auto; background: #e2e8f0; padding: 15px 5px; border-radius: 8px; display: flex; justify-content: center;">
+                <div style="width: 100%; overflow-x: auto; background: #e2e8f0; padding: 15px 5px; border-radius: 8px; display: flex; justify-content: center;">
                     <div id="rcptViewport" style="transform-origin: top center; transition: transform 0.2s;">
                         <div class="receipt-wrapper" id="receiptRenderArea" style="width: 550px; height: 780px; background: white; padding: 25px; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; position: relative; flex-shrink: 0;">
                             <div style="border: 2px solid #cbd5e1; height: 100%; padding: 20px; box-sizing: border-box; border-radius: 8px; position: relative;">
@@ -685,8 +648,7 @@
             const pDate = document.getElementById('paymentDate').value;
 
             if(!pTxnId || pTxnId === "") {
-                const randomPart = Math.floor(Math.random() * 90000) + 10000;
-                pTxnId = 'TXN-' + Date.now().toString().slice(-5) + '-' + randomPart;
+                pTxnId = "GL-" + Math.floor(Date.now() / 1000).toString() + Math.floor(Math.random() * 99);
             }
 
             const { data: newPayment, error } = await supabase.from('fee_payments').insert([{
@@ -759,60 +721,68 @@
             if (window.reloadOnReceiptClose) { window.location.reload(); }
         };
 
-        // NEW SIMPLIFIED JS FOR RELIABLE PRINTING
+        // --- NEW: PRINT FIX - PREVENT BLANK PAGES ---
         window.printReceiptNative = function() {
             document.body.classList.add('print-receipt');
+            const vp = document.getElementById('rcptViewport');
+            const oldTransform = vp.style.transform; 
+            const oldHeight = vp.style.height;
+            vp.style.transform = 'scale(1)'; 
+            vp.style.height = 'auto'; // Let it flow naturally for print
+            
             window.print();
+            
+            vp.style.transform = oldTransform; 
+            vp.style.height = oldHeight;
             document.body.classList.remove('print-receipt');
         };
 
+        // --- NEW: DIRECT DOWNLOAD PDF WITH VERY SMALL SIZE ---
         window.shareReceiptPDF = async function() {
             const btn = document.getElementById('rcptPdfBtn'); const old = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
             try {
                 const wrapper = document.getElementById('receiptRenderArea');
                 const vp = document.getElementById('rcptViewport');
-                const oldTransform = vp.style.transform; vp.style.transform = 'scale(1)';
+                const oldTransform = vp.style.transform; 
+                vp.style.transform = 'scale(1)';
                 
-                const { jsPDF } = window.jspdf;
-                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                // Reduced scale to 1.5, Changed format to JPEG to save MBs
+                const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
                 vp.style.transform = oldTransform;
                 
-                const imgData = canvas.toDataURL('image/png');
+                const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
-                pdf.addImage(imgData, 'PNG', 0, 0, 148, 210);
+                pdf.addImage(imgData, 'JPEG', 0, 0, 148, 210);
                 
                 const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
                 const filename = `Fee_Receipt_${name}.pdf`;
                 
-                const pdfBlob = pdf.output('blob');
-                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
-                
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try { await navigator.share({ files: [file], title: 'Fee Receipt' }); } catch (err) { pdf.save(filename); }
-                } else { pdf.save(filename); }
+                // Direct Download (Removed navigator.share)
+                pdf.save(filename); 
             } catch (e) { alert("Error generating PDF."); } finally { btn.innerHTML = old; btn.disabled = false; }
         };
 
+        // --- NEW: DIRECT DOWNLOAD IMAGE ---
         window.shareReceiptPNG = async function() {
             const btn = document.getElementById('rcptPngBtn'); const old = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
             try {
                 const wrapper = document.getElementById('receiptRenderArea');
                 const vp = document.getElementById('rcptViewport');
-                const oldTransform = vp.style.transform; vp.style.transform = 'scale(1)';
+                const oldTransform = vp.style.transform; 
+                vp.style.transform = 'scale(1)';
                 
-                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                // Reduced scale and changed to JPG to save MBs
+                const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
                 vp.style.transform = oldTransform;
                 
-                canvas.toBlob(async (blob) => {
-                    const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
-                    const file = new File([blob], `Fee_Receipt_${name}.png`, { type: 'image/png' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Fee Receipt' }); } catch (err) {}
-                    } else {
-                        const link = document.createElement('a'); link.download = `Fee_Receipt_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
-                    }
-                    btn.innerHTML = old; btn.disabled = false;
-                }, 'image/png');
+                const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
+                const link = document.createElement('a'); 
+                link.download = `Fee_Receipt_${name}.jpg`; 
+                link.href = canvas.toDataURL('image/jpeg', 0.9); 
+                link.click(); // Direct Download (Removed navigator.share)
+                
+                btn.innerHTML = old; btn.disabled = false;
             } catch (error) { alert("Error generating image."); btn.innerHTML = old; btn.disabled = false; }
         };
 
@@ -908,7 +878,7 @@
             });
         };
 
-        // --- PROFESSIONAL PDF STATEMENT GENERATOR ---
+        // --- NEW: DIRECT DOWNLOAD LEDGER PDF WITH VERY SMALL SIZE ---
         window.downloadLedgerPDF = async function() {
             if(!ledgerStudentData) return;
             const btn = document.querySelector('.btn-statement');
@@ -946,25 +916,20 @@
                 const wrapper = document.getElementById('ledgerPrintWrapper');
                 wrapper.style.zIndex = "-100"; 
                 
-                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                // Reduced scale and changed to JPEG to save MBs
+                const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
                 
-                const imgData = canvas.toDataURL('image/png');
+                const imgData = canvas.toDataURL('image/jpeg', 0.8);
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
                 
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
                 
                 const filename = `Statement_${ledgerStudentData.full_name}.pdf`;
-                const pdfBlob = pdf.output('blob');
-                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
-                
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try { await navigator.share({ files: [file], title: 'Payment Statement' }); } 
-                    catch (err) { pdf.save(filename); }
-                } else { pdf.save(filename); }
+                pdf.save(filename); // Direct Download (Removed navigator.share)
 
             } catch (e) {
                 alert("Error generating professional PDF.");
