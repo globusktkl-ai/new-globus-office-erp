@@ -6,8 +6,10 @@
     <title>Smart Reminders - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        body { background-color: #f8fafc; padding-bottom: 40px; }
-        .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; }
+        /* CRITICAL MOBILE UI FIXES ADDED HERE */
+        * { box-sizing: border-box; }
+        body { background-color: #f8fafc; padding-bottom: 40px; overflow-x: hidden; }
+        .main-content { padding: 15px; max-width: 1000px; margin: 0 auto; width: 100%; }
         
         .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; min-height: 45px;}
         .page-title { font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 100%;}
@@ -16,20 +18,20 @@
         .btn-back-dashboard:active { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: #2563eb; }
 
-        .audio-unlock-btn { background: #10b981; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 900; font-size: 16px; margin-bottom: 20px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4); cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; animation: pulseBtn 2s infinite;}
+        .audio-unlock-btn { background: #10b981; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 900; font-size: 15px; margin-bottom: 20px; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4); cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; animation: pulseBtn 2s infinite;}
         @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; width: 100%; }
         @media(max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
 
-        .panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; position: relative; }
+        .panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; position: relative; width: 100%; overflow: hidden; }
         .panel-header { display: flex; align-items: center; justify-content: center; gap: 10px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 12px; margin-bottom: 18px; text-align: center;}
         .panel-title { font-size: 17px; font-weight: 900; color: #1e293b; margin: 0; }
         
-        .master-switch-container { display: flex; justify-content: center; align-items: center; gap: 12px; background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px solid #bbf7d0; margin-bottom: 18px; }
+        .master-switch-container { display: flex; justify-content: center; align-items: center; gap: 12px; background: #f0fdf4; padding: 12px; border-radius: 8px; border: 1px solid #bbf7d0; margin-bottom: 18px; width: 100%; }
         
-        .schedule-settings-box { background: #ffffff; border: 1px solid #e2e8f0; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .setting-group { margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
+        .schedule-settings-box { background: #ffffff; border: 1px solid #e2e8f0; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); width: 100%; }
+        .setting-group { margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; width: 100%; }
         .setting-group:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
         
         .schedule-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
@@ -38,16 +40,13 @@
         .schedule-select { width: 100%; padding: 12px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 700; color: #1e293b; outline: none; background: #f8fafc; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 18px auto; }
         .schedule-select:focus { border-color: #3b82f6; background-color: #fff; }
         
-        /* --------------------------------------------------- */
-        /* COMPACT EXCLUDE DAYS UI (Single Line)               */
-        /* --------------------------------------------------- */
-        .days-grid { display: flex; justify-content: space-between; gap: 4px; margin-top: 5px;}
-        .day-checkbox { flex: 1; display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 10px 0; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; color: #475569; transition: 0.2s;}
+        /* Fixed Exclude Days for Mobile */
+        .days-grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px; margin-top: 5px; width: 100%; }
+        .day-checkbox { flex: 1 1 calc(14% - 4px); min-width: 32px; display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 10px 0; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; color: #475569; transition: 0.2s;}
         .day-checkbox input:checked + span { color: #ef4444; text-decoration: line-through; }
         .day-checkbox:has(input:checked) { background: #fef2f2; border-color: #fca5a5; }
-        /* --------------------------------------------------- */
 
-        .expiry-alert { background: #fef2f2; border: 1px dashed #ef4444; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 800; text-align: center; margin-bottom: 15px; display: none; }
+        .expiry-alert { background: #fef2f2; border: 1px dashed #ef4444; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 800; text-align: center; margin-bottom: 15px; display: none; width: 100%; }
         
         .switch { position: relative; display: inline-block; width: 54px; height: 28px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -58,23 +57,20 @@
 
         .bell-list-title { font-size: 12px; font-weight: 800; color: #64748b; margin-bottom: 10px; text-transform: uppercase; }
         
-        /* --------------------------------------------------- */
-        /* COMPACT BELL ROW UI (Single Line Flex)              */
-        /* --------------------------------------------------- */
-        .time-group { display: flex; align-items: center; background: #f8fafc; padding: 8px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0; gap: 6px; flex-wrap: nowrap;}
-        .time-input-name { flex: 1; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 8px; font-weight: 700; color: #0f172a; outline: none; font-size: 13px; min-width: 50px; background: white;}
+        /* Fixed Compact Bell Row for Mobile */
+        .time-group { display: flex; align-items: center; background: #f8fafc; padding: 8px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0; gap: 6px; width: 100%;}
+        .time-input-name { flex: 1 1 auto; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 8px; font-weight: 700; color: #0f172a; outline: none; font-size: 13px; min-width: 0; background: white;}
         .time-input { flex: 0 0 85px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 4px; font-weight: 900; color: #1e3a8a; outline: none; font-size: 13px; text-align: center; background: #eff6ff; cursor: pointer; caret-color: transparent;}
-        .btn-remove-bell { flex: 0 0 36px; height: 36px; background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-weight: 900; font-size: 16px;}
+        .btn-remove-bell { flex: 0 0 35px; height: 35px; background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-weight: 900; font-size: 16px;}
         .btn-remove-bell:hover { background: #ef4444; color: white; }
-        /* --------------------------------------------------- */
 
-        .btn-add-bell { background: #ffffff; color: #3b82f6; border: 2px dashed #93c5fd; padding: 12px; width: 100%; border-radius: 10px; font-weight: 800; cursor: pointer; margin-bottom: 20px; font-size: 14px; transition: 0.2s;}
+        .btn-add-bell { background: #ffffff; color: #3b82f6; border: 2px dashed #93c5fd; padding: 12px; width: 100%; border-radius: 8px; font-weight: 800; cursor: pointer; margin-bottom: 20px; font-size: 14px; transition: 0.2s;}
         .btn-add-bell:hover { border-color: #3b82f6; background: #eff6ff; }
 
         .btn-save-bell { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); transition: 0.2s; letter-spacing: 0.5px;}
         .btn-save-bell:active { transform: scale(0.98); }
 
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #f1f5f9; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #f1f5f9; width: 100%;}
         .list-item:last-child { border-bottom: none; }
         .item-info h4 { margin: 0 0 5px 0; font-size: 15px; color: #0f172a; font-weight: 900; }
         .item-info p { margin: 0; font-size: 12px; color: #64748b; font-weight: 700; }
@@ -83,7 +79,7 @@
         .btn-wa { background: #10b981; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);}
         .btn-wa:active { transform: scale(0.95); }
 
-        .empty-state { text-align: center; color: #94a3b8; font-weight: 700; font-size: 14px; padding: 25px; }
+        .empty-state { text-align: center; color: #94a3b8; font-weight: 700; font-size: 14px; padding: 25px; width: 100%;}
 
         #bellAlert { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #fef08a; border: 2px solid #f59e0b; color: #b45309; padding: 15px 25px; border-radius: 12px; font-weight: 900; z-index: 9999; box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 90%; max-width: 350px; text-align: center;}
         @keyframes slideDown { from { top: -50px; opacity: 0; transform: translate(-50%, -20px); } to { top: 20px; opacity: 1; transform: translate(-50%, 0); } }
@@ -96,13 +92,18 @@
         .tp-select { padding: 12px 5px; font-size: 20px; font-weight: 900; border-radius: 8px; border: 2px solid #cbd5e1; outline: none; background: #f8fafc; color: #0f172a; text-align: center; width: 70px; appearance: none; -webkit-appearance: none; }
         .tp-select:focus { border-color: #3b82f6; background: #fff; }
         .tp-colon { font-size: 24px; font-weight: 900; color: #1e293b; padding: 0 5px; }
+        
+        /* Event Inputs Fix */
+        .event-input-wrapper { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; width: 100%; }
+        .event-row-split { display: flex; gap: 10px; width: 100%; }
+        .event-row-split > input { flex: 1; min-width: 0; }
 
         @media(max-width: 600px) {
             .panel { padding: 15px; }
-            /* Removed the media query that was forcing the bell items to stack */
-            /* Event scheduler responsive styling */
-            .event-input-row { display: flex; gap: 8px; margin-bottom: 8px; }
-            .event-input-row .time-input-name, .event-input-row .time-input { margin-bottom: 0; }
+            .time-group { padding: 8px; }
+            .time-input-name { font-size: 12px; padding: 10px 6px;}
+            .time-input { flex: 0 0 75px; font-size: 12px; padding: 10px 4px;}
+            .btn-remove-bell { flex: 0 0 32px; height: 32px; font-size: 14px;}
         }
     </style>
 </head>
@@ -169,7 +170,7 @@
 
                 <div class="schedule-settings-box">
                     <div class="setting-group">
-                        <label class="schedule-label" style="color: #ea580c;">Dashboard Alert Timing</label>
+                        <label class="schedule-label highlight">Dashboard Alert Timing</label>
                         <select id="warningDuration" class="schedule-select">
                             <option value="15">Show Alert 15 Min Before Bell</option>
                             <option value="30">Show Alert 30 Min Before Bell</option>
@@ -207,7 +208,7 @@
                 <button class="btn-save-bell" onclick="window.saveBellTimings()">💾 Save Bell Settings</button>
             </div>
 
-            <!-- PANEL 2: EVENT SCHEDULER (COMPACT LAYOUT) -->
+            <!-- PANEL 2: EVENT SCHEDULER -->
             <div class="panel">
                 <div class="panel-header">
                     <span style="font-size: 22px;">📅</span>
@@ -222,16 +223,14 @@
                     <span id="masterEventStatus" style="font-weight: 900; font-size: 14px; color: #ef4444;">Dashboard Alerts OFF</span>
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <div class="event-input-row" style="margin-bottom: 8px;">
-                        <input type="text" id="eventName" class="time-input-name" placeholder="Event Name (e.g. Staff Meeting)" style="width:100%; box-sizing:border-box;">
-                    </div>
-                    <div class="event-input-row" style="display:flex; gap:8px;">
-                        <input type="date" id="eventDate" class="time-input-name" style="flex:1;">
-                        <input type="text" id="eventTime" class="time-input" readonly onclick="window.openTimePicker('eventTime')" placeholder="Set Time" style="flex:1;">
+                <div class="event-input-wrapper">
+                    <input type="text" id="eventName" class="time-input-name" placeholder="Event Name (e.g. Staff Meeting)" style="width: 100%;">
+                    <div class="event-row-split">
+                        <input type="date" id="eventDate" class="time-input-name">
+                        <input type="text" id="eventTime" class="time-input" readonly onclick="window.openTimePicker('eventTime')" placeholder="Set Time">
                     </div>
                 </div>
-
+                
                 <button class="btn-save-bell" onclick="window.saveNewEvent()" style="margin-bottom: 25px; background: linear-gradient(135deg, #3b82f6, #2563eb);">+ Add Event</button>
 
                 <div class="bell-list-title">Upcoming Scheduled Events</div>
@@ -264,7 +263,6 @@
 
     </main>
 
-    <!-- EXACT SAME JAVASCRIPT LOGIC PROVIDED BY USER -->
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
@@ -371,7 +369,7 @@
                 <div class="time-group" id="${rowId}_group">
                     <input type="text" class="time-input-name bell-name" placeholder="e.g. Morning Bell" value="${name}">
                     <input type="text" class="time-input bell-time" id="${rowId}" value="${displayTime}" data-time24="${time24}" readonly onclick="window.openTimePicker('${rowId}')">
-                    <button class="btn-remove-bell" onclick="window.removeBellRow('${rowId}_group')">✖</button>
+                    <button class="btn-remove-bell" onclick="window.removeBellRow('${rowId}_group')">X</button>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', html);
@@ -462,7 +460,7 @@
             let name = document.getElementById('eventName').value;
             let date = document.getElementById('eventDate').value;
             let timeInput = document.getElementById('eventTime');
-            let time24 = timeInput.getAttribute('data-time24'); // Using 24h format for logic
+            let time24 = timeInput.getAttribute('data-time24'); 
             
             if(!name || !date || !time24) {
                 alert("Please enter Event Name, Date, and Time!");
@@ -510,7 +508,7 @@
                             <h4 style="color:#2563eb; font-size:15px;">${e.name}</h4>
                             <p style="color:#475569; font-weight:800;">${displayDate} | ${displayTime}</p>
                         </div>
-                        <button onclick="window.deleteEvent(${e.id})" style="background:#fee2e2; color:#ef4444; border:none; padding:10px 15px; border-radius:8px; font-weight:900; cursor:pointer;">✖</button>
+                        <button onclick="window.deleteEvent(${e.id})" style="background:#fee2e2; color:#ef4444; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">X</button>
                     </div>`;
                 container.insertAdjacentHTML('beforeend', html);
             });
@@ -578,7 +576,6 @@
                     document.querySelectorAll('.exclude-day').forEach(cb => { if(bellSettings.excludedDays.includes(parseInt(cb.value))) cb.checked = true; });
                 }
                 
-                // LOAD EXISTING BELLS
                 if(bellSettings.bells) {
                     bellSettings.bells.forEach(b => window.addNewBellRow(b.name, b.time));
                 }
