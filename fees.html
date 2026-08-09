@@ -73,12 +73,12 @@
             @page { size: A5 portrait; margin: 5mm; }
         }
 
-        /* Mobile specific adjustments */
+        /* Mobile specific adjustments for tabs */
         @media (max-width: 600px) {
             .finance-tabs { gap: 6px; }
             .tab-btn { padding: 10px 2px; font-size: 11px; flex-direction: column; gap: 5px; text-align: center; }
             .tab-btn svg { width: 22px; height: 22px; }
-            .btn-back-dashboard span { display: none; }
+            .btn-back-dashboard span { display: none; } /* Hide text on small screens, keep only icon */
         }
 
         /* HIDDEN AREA FOR PROFESSIONAL LEDGER PDF GENERATION */
@@ -659,33 +659,38 @@
             }]).select();
 
             if (error) {
-                alert('Error processing payment: ' + error.message);
+                if (error.message.includes("duplicate") || error.code === '23505') {
+                     alert('❌ Payment Error: The Receipt/Transaction ID already exists. Please use a different ID or leave it blank to auto-generate.');
+                } else {
+                     alert('Error processing payment: ' + error.message);
+                }
                 finalBtn.disabled = false; finalBtn.textContent = 'Confirm & Pay';
                 window.closeConfirmation();
-            } else { 
-                alert('Payment recorded successfully!'); 
-                window.closeConfirmation();
-                
-                const newPending = currentBalance - (amountPaid + discountAmount);
-                const s = studentsData.find(x => x.id === selectedStudentId);
-                const course = coursesData.find(c => c.id == s.course_id);
-                const cName = course ? course.course_name : (s.course_name || 'N/A');
-                
-                window.reloadOnReceiptClose = true; 
-                
-                window.populateAndShowReceipt({
-                    receiptNo: pTxnId,
-                    date: pDate,
-                    studentName: s.full_name,
-                    regNo: s.register_number || 'N/A',
-                    phone: s.phone_number || 'N/A',
-                    course: cName,
-                    mode: pMode,
-                    amount: amountPaid,
-                    discount: discountAmount,
-                    pending: newPending > 0 ? newPending : 0
-                });
-            }
+                return;
+            } 
+            
+            alert('Payment recorded successfully!'); 
+            window.closeConfirmation();
+            
+            const newPending = currentBalance - (amountPaid + discountAmount);
+            const s = studentsData.find(x => x.id === selectedStudentId);
+            const course = coursesData.find(c => c.id == s.course_id);
+            const cName = course ? course.course_name : (s.course_name || 'N/A');
+            
+            window.reloadOnReceiptClose = true; 
+            
+            window.populateAndShowReceipt({
+                receiptNo: pTxnId,
+                date: pDate,
+                studentName: s.full_name,
+                regNo: s.register_number || 'N/A',
+                phone: s.phone_number || 'N/A',
+                course: cName,
+                mode: pMode,
+                amount: amountPaid,
+                discount: discountAmount,
+                pending: newPending > 0 ? newPending : 0
+            });
         };
 
         window.populateAndShowReceipt = function(data) {
