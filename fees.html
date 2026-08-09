@@ -45,13 +45,131 @@
         .report-table th { padding: 12px 10px; background: #f8fafc; border-bottom: 2px solid #cbd5e1; color: #475569; font-weight: 800; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
         .report-table td { padding: 12px 10px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-weight: 500; }
         .report-table tr:hover { background: #f1f5f9; }
-        .filter-group { display: flex; gap: 15px; flex-wrap: wrap; background: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
         
-        .action-btn { padding: 10px 15px; border-radius: 6px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 5px; border: none; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: 0.2s; }
-        .action-btn:active { transform: scale(0.95); }
-        .btn-excel { background: #10b981; }
-        .btn-pdf { background: #ef4444; }
+        /* ============================================= */
+        /* PREMIUM FILTER CARD - REDESIGNED              */
+        /* ============================================= */
+        .filter-group {
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.02);
+            display: block;
+        }
+        
+        .filter-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        
+        .filter-header-icon {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 6px rgba(30, 58, 138, 0.3);
+        }
+        .filter-header-icon svg { width: 15px; height: 15px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        
+        .filter-header-title {
+            font-size: 13px;
+            font-weight: 900;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-fields-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        
+        .filter-field { display: flex; flex-direction: column; min-width: 0; }
+        
+        .filter-field-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .filter-field-label .dot {
+            width: 6px; height: 6px; border-radius: 50%; display: inline-block;
+        }
+        
+        .filter-select-premium {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1e293b;
+            background: #f8fafc;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+        .filter-select-premium:focus {
+            border-color: #3b82f6;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .filter-select-premium:hover { border-color: #94a3b8; }
+        
+        .filter-export-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 12px;
+            border-top: 1px dashed #e2e8f0;
+        }
+        
+        .action-btn { padding: 10px 18px; border-radius: 9px; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; border: none; color: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: all 0.2s; }
+        .action-btn:active { transform: scale(0.96); }
+        .action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .btn-excel { background: linear-gradient(135deg, #10b981, #059669); }
+        .btn-pdf { background: linear-gradient(135deg, #ef4444, #dc2626); }
         .btn-statement { background: #3b82f6; width: 100%; justify-content: center; padding: 12px; font-size: 14px; margin-top: 15px; }
+        
+        /* Mobile Responsive for Premium Filter */
+        @media (max-width: 600px) {
+            .filter-group { padding: 14px; }
+            .filter-fields-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .filter-export-row {
+                justify-content: stretch;
+                gap: 8px;
+            }
+            .filter-export-row .action-btn {
+                flex: 1;
+                justify-content: center;
+                padding: 11px 8px;
+                font-size: 12px;
+            }
+            .filter-header-title { font-size: 12px; }
+        }
 
         .ledger-summary { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
         .summary-box { display: flex; flex-direction: column; }
@@ -348,27 +466,62 @@
             </div>
         </div>
 
-        <!-- TAB 3: OVERALL REPORT -->
+        <!-- TAB 3: OVERALL REPORT (PREMIUM REDESIGNED) -->
         <div id="tab-report" class="tab-content">
             <h2 style="font-size: 18px; margin-bottom: 15px; color: #0f172a; text-transform: uppercase; font-weight: 900;">Module-wise Fee Payment Report</h2>
+            
+            <!-- PREMIUM FILTER CARD -->
             <div class="filter-group">
-                <div style="flex: 1; min-width: 200px;">
-                    <label>Filter by Module</label>
-                    <select id="filterModule" class="form-control" style="margin-bottom: 0; font-weight: 600; color: #1e293b;" onchange="window.applyFeeFilter()">
-                        <option value="all">All Modules</option>
-                    </select>
+                <div class="filter-header">
+                    <div class="filter-header-icon">
+                        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    </div>
+                    <div class="filter-header-title">Filter & Export Options</div>
                 </div>
-                <div style="flex: 1; min-width: 200px;">
-                    <label>Fee Status (Current Due)</label>
-                    <select id="filterFeeStatus" class="form-control" style="margin-bottom: 0; font-weight: 600; color: #1e293b;" onchange="window.applyFeeFilter()">
-                        <option value="all">All Active Students</option>
-                        <option value="completed">Fee Completed (Current Module)</option>
-                        <option value="pending">Fee Pending (Current Module)</option>
-                    </select>
+                
+                <div class="filter-fields-grid">
+                    <div class="filter-field">
+                        <label class="filter-field-label">
+                            <span class="dot" style="background: #f59e0b;"></span>
+                            Filter by Course
+                        </label>
+                        <select id="filterCourse" class="filter-select-premium" onchange="window.updateModuleDropdown(); window.applyFeeFilter();">
+                            <option value="all">All Courses</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-field">
+                        <label class="filter-field-label">
+                            <span class="dot" style="background: #8b5cf6;"></span>
+                            Filter by Module
+                        </label>
+                        <select id="filterModule" class="filter-select-premium" onchange="window.applyFeeFilter()">
+                            <option value="all">All Modules</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-field">
+                        <label class="filter-field-label">
+                            <span class="dot" style="background: #10b981;"></span>
+                            Fee Status (Current Due)
+                        </label>
+                        <select id="filterFeeStatus" class="filter-select-premium" onchange="window.applyFeeFilter()">
+                            <option value="all">All Active Students</option>
+                            <option value="completed">Fee Completed</option>
+                            <option value="pending">Fee Pending</option>
+                        </select>
+                    </div>
                 </div>
-                <div style="display: flex; align-items: flex-end; gap: 10px;">
-                    <button onclick="window.exportCSV()" class="action-btn btn-excel">📊 Excel</button>
-                    <button id="pdfBtn" onclick="window.exportOverallPDF()" class="action-btn btn-pdf">📄 PDF</button>
+                
+                <div class="filter-export-row">
+                    <button onclick="window.exportCSV()" class="action-btn btn-excel">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Excel
+                    </button>
+                    <button id="pdfBtn" onclick="window.exportOverallPDF()" class="action-btn btn-pdf">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        PDF
+                    </button>
                 </div>
             </div>
             
@@ -972,8 +1125,23 @@
             activeStudents.forEach(s => { if (s.module && s.module !== 'Not Started' && s.module !== 'Course Completed') { allModulesSet.add(s.module); } });
             window.globalUniqueModules = [...allModulesSet].sort();
 
-            const modSelect = document.getElementById('filterModule'); modSelect.innerHTML = '<option value="all">All Modules</option>';
-            window.globalUniqueModules.forEach(mod => { const opt = document.createElement('option'); opt.value = mod; opt.textContent = mod; modSelect.appendChild(opt); });
+            // POPULATE COURSE DROPDOWN (Active Courses Only)
+            const courseSelect = document.getElementById('filterCourse');
+            courseSelect.innerHTML = '<option value="all">All Courses</option>';
+            const uniqueCourses = new Set();
+            coursesData.forEach(c => {
+                if (c.status === 'Active' && c.course_name) {
+                    uniqueCourses.add(c.course_name);
+                }
+            });
+            [...uniqueCourses].sort().forEach(cName => {
+                const opt = document.createElement('option');
+                opt.value = cName; opt.textContent = cName;
+                courseSelect.appendChild(opt);
+            });
+
+            // POPULATE MODULE DROPDOWN (Initially All Modules)
+            window.updateModuleDropdown();
 
             window.feeReportData = activeStudents.map(s => {
                 const course = coursesData.find(c => c.id == s.course_id); const courseName = course ? course.course_name : (s.course_name || 'N/A');
@@ -1000,11 +1168,61 @@
             window.applyFeeFilter();
         }
 
+        // CASCADING MODULE DROPDOWN LOGIC
+        window.updateModuleDropdown = function() {
+            const courseFilter = document.getElementById('filterCourse').value;
+            const moduleSelect = document.getElementById('filterModule');
+            const currentModule = moduleSelect.value;
+            
+            moduleSelect.innerHTML = '<option value="all">All Modules</option>';
+            
+            let modulesToShow = new Set();
+            
+            if (courseFilter === 'all') {
+                // Show all modules across all active courses
+                coursesData.forEach(course => {
+                    if (course.status === 'Active' && Array.isArray(course.modules)) {
+                        course.modules.forEach(m => modulesToShow.add(m));
+                    }
+                });
+            } else {
+                // Show only modules from the selected course
+                const selectedCourse = coursesData.find(c => c.course_name === courseFilter && c.status === 'Active');
+                if (selectedCourse && Array.isArray(selectedCourse.modules)) {
+                    selectedCourse.modules.forEach(m => modulesToShow.add(m));
+                }
+            }
+            
+            [...modulesToShow].sort().forEach(mod => {
+                const opt = document.createElement('option');
+                opt.value = mod; opt.textContent = mod;
+                moduleSelect.appendChild(opt);
+            });
+            
+            // Preserve selection if still available, else reset to "All Modules"
+            if (currentModule && Array.from(moduleSelect.options).some(opt => opt.value === currentModule)) {
+                moduleSelect.value = currentModule;
+            } else {
+                moduleSelect.value = 'all';
+            }
+        };
+
         window.applyFeeFilter = function() {
-            const moduleFilter = document.getElementById('filterModule').value; const statusFilter = document.getElementById('filterFeeStatus').value;
+            const courseFilter = document.getElementById('filterCourse').value;
+            const moduleFilter = document.getElementById('filterModule').value; 
+            const statusFilter = document.getElementById('filterFeeStatus').value;
+            
             let filtered = window.feeReportData || [];
+            
+            // FILTER BY COURSE
+            if (courseFilter !== 'all') { filtered = filtered.filter(r => r.course === courseFilter); }
+            
+            // FILTER BY MODULE
             if (moduleFilter !== 'all') { filtered = filtered.filter(r => r.module === moduleFilter); }
-            if (statusFilter === 'completed') { filtered = filtered.filter(r => r.currentDue <= 0); } else if (statusFilter === 'pending') { filtered = filtered.filter(r => r.currentDue > 0); }
+            
+            // FILTER BY FEE STATUS
+            if (statusFilter === 'completed') { filtered = filtered.filter(r => r.currentDue <= 0); } 
+            else if (statusFilter === 'pending') { filtered = filtered.filter(r => r.currentDue > 0); }
             
             window.filteredFeeData = filtered; 
             const tbody = document.getElementById('feeReportBody'); tbody.innerHTML = '';
