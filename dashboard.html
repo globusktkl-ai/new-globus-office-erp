@@ -12,90 +12,65 @@
         
         h2 { font-size: 16px !important; font-weight: 900 !important; margin-bottom: 12px !important; color: #0f172a; text-transform: uppercase; letter-spacing: -0.5px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; display: inline-block;}
         
-        /* ------------------------------------------- */
-        /* THE 3 SMART ALERTS (BELL, BIRTHDAY, EVENT)  */
-        /* ------------------------------------------- */
-        .smart-alert {
-            padding: 12px 15px;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            text-decoration: none;
-            display: none; /* hidden by default */
-            transition: all 0.2s ease;
-        }
-        .smart-alert:active { transform: scale(0.98); }
-        
-        /* 1. Yellow Bell Alert */
-        .alert-bell {
-            background: linear-gradient(135deg, #fef08a, #fde047);
-            border: 1px solid #f59e0b;
-            color: #b45309;
-            animation: pulseBell 2s infinite;
-        }
-        @keyframes pulseBell { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); } 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); } }
-
-        /* 2. Pink Birthday Alert */
-        .alert-birthday {
-            background: linear-gradient(135deg, #fbcfe8, #f9a8d4);
-            border: 1px solid #ec4899;
-            color: #be185d;
-            animation: pulseBirthday 2.5s infinite;
-        }
-        @keyframes pulseBirthday { 0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(236, 72, 153, 0); } 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); } }
-
-        /* 3. Blue Event/Meeting Alert */
-        .alert-event {
-            background: linear-gradient(135deg, #bfdbfe, #93c5fd);
-            border: 1px solid #3b82f6;
-            color: #1d4ed8;
-            animation: pulseEvent 2.2s infinite;
-        }
-        @keyframes pulseEvent { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
-        /* ------------------------------------------- */
-
-
-        /* Compact Stat Grid (Mobile First) */
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .stat-grid-finance { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 25px; }
-        
         .stat-box { background: #ffffff; padding: 12px 10px !important; border-radius: 10px !important; box-shadow: 0 4px 6px rgba(0,0,0,0.02) !important; border: 1px solid #e2e8f0 !important; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .stat-box.finance-box { align-items: flex-start; text-align: left; padding: 15px 12px !important; border-left: 4px solid; }
         .stat-label { font-size: 10px !important; color: #64748b !important; margin-bottom: 4px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.5px; }
         .stat-value { font-size: 18px !important; font-weight: 900 !important; color: #1e293b; line-height: 1; }
         
-        .module-section { background: #ffffff; border-radius: 12px !important; padding: 15px !important; margin-bottom: 20px !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important; border: 1px solid #f1f5f9; }
+        /* ------------------------------------------- */
+        /* HORIZONTAL SCROLLING SMART ALERT TICKER     */
+        /* ------------------------------------------- */
+        .alert-ticker-wrap {
+            overflow: hidden;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 10px 5px;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: none; /* hidden if no alerts */
+        }
+        .alert-ticker-track {
+            display: inline-block;
+            animation: scrollTicker 15s linear infinite;
+        }
+        .alert-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 40px;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        .ticker-bell { color: #b45309; }
+        .ticker-bday { color: #be185d; }
+        .ticker-event { color: #1d4ed8; }
         
+        @keyframes scrollTicker { 
+            0% { transform: translateX(100%); } 
+            100% { transform: translateX(-100%); } 
+        }
+        /* ------------------------------------------- */
+
+        .module-section { background: #ffffff; border-radius: 12px !important; padding: 15px !important; margin-bottom: 20px !important; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important; border: 1px solid #f1f5f9; }
         .module-section .nav-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 10px !important; margin-top: 15px; }
         
         .nav-btn { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px !important; padding: 12px 5px !important; text-decoration: none; color: #334155 !important; font-size: 11px !important; font-weight: 800 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important; min-height: 80px !important; text-align: center; transition: all 0.2s ease;}
         .nav-btn:active { transform: scale(0.95); }
-        .nav-btn:hover { background: #ffffff; border-color: #cbd5e1; box-shadow: 0 4px 8px rgba(0,0,0,0.05) !important; }
-        
-        .nav-icon { margin-bottom: 8px !important; display: flex; align-items: center; justify-content: center; }
-        .nav-icon svg { width: 28px; height: 28px; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-        
         .nav-btn.fee-btn { background-color: #f0fdf4 !important; border-color: #bbf7d0 !important; color: #15803d !important; }
         .nav-btn.expense-btn { background-color: #fef2f2 !important; border-color: #fecaca !important; color: #b91c1c !important; }
-        
-        /* Logged in As & Premium Logout */
+        .nav-icon { margin-bottom: 8px !important; display: flex; align-items: center; justify-content: center; }
+        .nav-icon svg { width: 28px; height: 28px; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
         .header-auth-section { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.8); padding: 4px 4px 4px 12px; border-radius: 30px; border: 1px solid #e2e8f0; }
         .logged-in-text { font-size: 10px; font-weight: 700; color: #64748b; display: flex; flex-direction: column; text-align: right; line-height: 1.2; }
         .logged-in-email { color: #1e3a8a; font-weight: 900; font-size: 11px; }
-
-        .btn-logout-round {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white; border: none; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); transition: all 0.2s ease; flex-shrink: 0;
-        }
-        .btn-logout-round:active { transform: scale(0.92); }
-
-        /* Settings Modal */
+        .btn-logout-round { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); flex-shrink: 0; }
+        
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
         .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
@@ -128,29 +103,6 @@
 
     <main class="main-content">
         
-        <!-- SMART ALERTS CONTAINER -->
-        <div id="smartAlertsContainer" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-            
-            <!-- 1. Bell Alert -->
-            <a href="reminders.html" id="alertBell" class="smart-alert alert-bell">
-                <span>⏳ Upcoming Bell: <b id="alertBellText"></b></span>
-                <span style="font-size: 12px; opacity: 0.9;">Tap to View ⚙️</span>
-            </a>
-            
-            <!-- 2. Birthday Alert -->
-            <a href="reminders.html" id="alertBirthday" class="smart-alert alert-birthday">
-                <span>🎂 Happy Birthday: <b id="alertBirthdayText"></b></span>
-                <span style="font-size: 12px; opacity: 0.9;">Send Wishes 💬</span>
-            </a>
-
-            <!-- 3. Event/Meeting Alert -->
-            <a href="reminders.html" id="alertEvent" class="smart-alert alert-event">
-                <span>📅 Upcoming: <b id="alertEventText"></b></span>
-                <span style="font-size: 12px; opacity: 0.9;">View Details 📌</span>
-            </a>
-            
-        </div>
-
         <h2>Institute Overview</h2>
         
         <div class="stat-grid">
@@ -170,118 +122,50 @@
             </div>
         </div>
 
+        <!-- NEW ALERT TICKER (Positioned between Stats and Academic Nav) -->
+        <div class="alert-ticker-wrap" id="alertTickerWrap">
+            <div class="alert-ticker-track" id="alertTickerTrack">
+                <!-- Alerts injected here -->
+            </div>
+        </div>
+
         <div class="module-section">
             <h2 style="font-size: 14px !important; color: #1e3a8a; border-bottom: none; display: flex; align-items: center; gap: 5px; margin:0 !important;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Academic & Admin</h2>
             <div class="nav-grid">
-                <a href="admission.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-adm); stroke:none;"><defs><linearGradient id="grad-adm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" opacity="0.3"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" style="stroke: #1e3a8a; fill:none;"/></svg></span>
-                    Admission
-                </a>
-                
-                <a href="students.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-dir); stroke:none;"><defs><linearGradient id="grad-dir" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#6d28d9"/></linearGradient></defs><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" opacity="0.3"/><circle cx="9" cy="7" r="4" opacity="0.3"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" style="stroke: #4c1d95; fill:none;"/><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" style="stroke: #4c1d95; fill:none;"/><circle cx="9" cy="7" r="4" style="stroke: #4c1d95; fill:none;"/></svg></span>
-                    Directory
-                </a>
-
-                <a href="courses.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-crs); stroke:none;"><defs><linearGradient id="grad-crs" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" opacity="0.3"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" opacity="0.3"/><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" style="stroke: #78350f; fill:none;"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" style="stroke: #78350f; fill:none;"/></svg></span>
-                    Courses
-                </a>
-
-                <a href="exams.html" class="nav-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-exm); stroke:none;"><defs><linearGradient id="grad-exm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#b91c1c"/></linearGradient></defs><circle cx="12" cy="8" r="7" opacity="0.3"/><circle cx="12" cy="8" r="7" style="stroke: #7f1d1d; fill:none;"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" style="stroke: #7f1d1d; fill:none;"/></svg></span>
-                    Exams
-                </a>
-
-                <a href="admission-report.html" class="nav-btn">
-                    <span class="nav-icon">
-                        <svg viewBox="0 0 24 24" style="fill:none; stroke:url(#grad-pie);">
-                            <defs>
-                                <linearGradient id="grad-pie" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#0ea5e9"/>
-                                    <stop offset="100%" stop-color="#0369a1"/>
-                                </linearGradient>
-                                <linearGradient id="grad-pie-fill" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3"/>
-                                    <stop offset="100%" stop-color="#0284c7" stop-opacity="0.3"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M22 12A10 10 0 0 0 12 2v10z" style="fill:url(#grad-pie-fill);" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </span>
-                    Adm Report
-                </a>
-
-                <a href="reminders.html" class="nav-btn" style="background-color: #fffbeb !important; border-color: #fde68a !important; color: #b45309 !important;">
-                    <span class="nav-icon">
-                        <svg viewBox="0 0 24 24" width="28" height="28" style="fill:none; stroke: #d97706;">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                            <circle cx="18" cy="6" r="3" fill="#ef4444" stroke="none"></circle>
-                        </svg>
-                    </span>
-                    Smart Alerts
-                </a>
+                <a href="admission.html" class="nav-btn"><span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-adm); stroke:none;"><defs><linearGradient id="grad-adm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient></defs><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" opacity="0.3"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" style="stroke: #1e3a8a; fill:none;"/></svg></span>Admission</a>
+                <a href="students.html" class="nav-btn"><span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-dir); stroke:none;"><defs><linearGradient id="grad-dir" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#8b5cf6"/><stop offset="100%" stop-color="#6d28d9"/></linearGradient></defs><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" opacity="0.3"/><circle cx="9" cy="7" r="4" opacity="0.3"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" style="stroke: #4c1d95; fill:none;"/><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" style="stroke: #4c1d95; fill:none;"/><circle cx="9" cy="7" r="4" style="stroke: #4c1d95; fill:none;"/></svg></span>Directory</a>
+                <a href="courses.html" class="nav-btn"><span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-crs); stroke:none;"><defs><linearGradient id="grad-crs" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/></linearGradient></defs><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" opacity="0.3"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" opacity="0.3"/><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" style="stroke: #78350f; fill:none;"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" style="stroke: #78350f; fill:none;"/></svg></span>Courses</a>
+                <a href="exams.html" class="nav-btn"><span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-exm); stroke:none;"><defs><linearGradient id="grad-exm" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#b91c1c"/></linearGradient></defs><circle cx="12" cy="8" r="7" opacity="0.3"/><circle cx="12" cy="8" r="7" style="stroke: #7f1d1d; fill:none;"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" style="stroke: #7f1d1d; fill:none;"/></svg></span>Exams</a>
+                <a href="admission-report.html" class="nav-btn"><span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:none; stroke:url(#grad-pie);"><defs><linearGradient id="grad-pie" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#0369a1"/></linearGradient><linearGradient id="grad-pie-fill" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3"/><stop offset="100%" stop-color="#0284c7" stop-opacity="0.3"/></linearGradient></defs><path d="M21.21 15.89A10 10 0 1 1 8 2.83" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 12A10 10 0 0 0 12 2v10z" style="fill:url(#grad-pie-fill);" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Adm Report</a>
+                <a href="reminders.html" class="nav-btn" style="background-color: #fffbeb !important; border-color: #fde68a !important; color: #b45309 !important;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="28" height="28" style="fill:none; stroke: #d97706;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="18" cy="6" r="3" fill="#ef4444" stroke="none"></circle></svg></span>Smart Alerts</a>
             </div>
         </div>
 
         <div class="module-section">
             <h2 style="font-size: 14px !important; color: #064e3b; border-bottom: none; display: flex; align-items: center; gap: 5px; margin:0 !important;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Finance & Accounts</h2>
             <div class="nav-grid" style="grid-template-columns: repeat(3, 1fr) !important;">
-                <a href="fees.html" class="nav-btn fee-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-fee); stroke:none;"><defs><linearGradient id="grad-fee" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#047857"/></linearGradient></defs><rect x="2" y="5" width="20" height="14" rx="2" opacity="0.3"/><rect x="2" y="5" width="20" height="14" rx="2" style="stroke: #064e3b; fill:none;"/><line x1="2" y1="10" x2="22" y2="10" style="stroke: #064e3b; fill:none;"/></svg></span>
-                    Fee Collect
-                </a>
-                
-                <a href="expense.html" class="nav-btn expense-btn">
-                    <span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-exp); stroke:none;"><defs><linearGradient id="grad-exp" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#be185d"/></linearGradient></defs><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" opacity="0.3"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" opacity="0.3"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" style="stroke: #831843; fill:none;"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" style="stroke: #831843; fill:none;"/></svg></span>
-                    Day Book
-                </a>
-
-                <a href="report.html" class="nav-btn">
-                    <span class="nav-icon">
-                        <svg viewBox="0 0 24 24" style="fill:url(#grad-rpt); stroke:none;">
-                            <defs><linearGradient id="grad-rpt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#14b8a6"/><stop offset="100%" stop-color="#0f766e"/></linearGradient></defs>
-                            <line x1="18" y1="20" x2="18" y2="10" style="stroke: #134e4a; fill:none;"/>
-                            <line x1="12" y1="20" x2="12" y2="4" style="stroke: #134e4a; fill:none;"/>
-                            <line x1="6" y1="20" x2="6" y2="14" style="stroke: #134e4a; fill:none;"/>
-                        </svg>
-                    </span>
-                    Other Reports
-                </a>
+                <a href="fees.html" class="nav-btn fee-btn"><span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-fee); stroke:none;"><defs><linearGradient id="grad-fee" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#047857"/></linearGradient></defs><rect x="2" y="5" width="20" height="14" rx="2" opacity="0.3"/><rect x="2" y="5" width="20" height="14" rx="2" style="stroke: #064e3b; fill:none;"/><line x1="2" y1="10" x2="22" y2="10" style="stroke: #064e3b; fill:none;"/></svg></span>Fee Collect</a>
+                <a href="expense.html" class="nav-btn expense-btn"><span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-exp); stroke:none;"><defs><linearGradient id="grad-exp" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="#be185d"/></linearGradient></defs><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" opacity="0.3"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" opacity="0.3"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" style="stroke: #831843; fill:none;"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" style="stroke: #831843; fill:none;"/></svg></span>Day Book</a>
+                <a href="report.html" class="nav-btn"><span class="nav-icon"><svg viewBox="0 0 24 24" style="fill:url(#grad-rpt); stroke:none;"><defs><linearGradient id="grad-rpt" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#14b8a6"/><stop offset="100%" stop-color="#0f766e"/></linearGradient></defs><line x1="18" y1="20" x2="18" y2="10" style="stroke: #134e4a; fill:none;"/><line x1="12" y1="20" x2="12" y2="4" style="stroke: #134e4a; fill:none;"/><line x1="6" y1="20" x2="6" y2="14" style="stroke: #134e4a; fill:none;"/></svg></span>Other Reports</a>
             </div>
         </div>
     </main>
 
     <!-- SETTINGS MODAL -->
     <div id="settingsModal" class="modal-overlay">
+        <!-- Settings Form Content -->
         <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
                 <button onclick="document.getElementById('settingsModal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
             </div>
             <form id="settingsForm" onsubmit="saveSettings(event)">
-                <label>Institute Main Name (Brand)</label>
-                <input type="text" id="set_name" class="form-control" required>
-                
-                <label>Sub Name / Tagline</label>
-                <input type="text" id="set_sub" class="form-control">
-                
-                <label>Full Address</label>
-                <input type="text" id="set_address" class="form-control" placeholder="City, State, PIN">
-                
-                <div style="display: flex; gap: 10px;">
-                    <div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10);"></div>
-                    <div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div>
-                </div>
-                
-                <label>Logo URL (Leave blank to use default)</label>
-                <input type="text" id="set_logo" class="form-control" placeholder="https://example.com/logo.png">
-                
+                <label>Institute Main Name</label><input type="text" id="set_name" class="form-control" required>
+                <label>Sub Name / Tagline</label><input type="text" id="set_sub" class="form-control">
+                <label>Full Address</label><input type="text" id="set_address" class="form-control">
+                <div style="display: flex; gap: 10px;"><div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control"></div><div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div></div>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
-                    <button type="button" onclick="confirmReset()" style="flex:1; background: #ef4444; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">🗑️ Reset</button>
+                    <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save</button>
                 </div>
             </form>
         </div>
@@ -293,82 +177,93 @@
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
-            
-            const emailSpan = document.getElementById('authEmail');
-            if(session.user && session.user.email) {
-                emailSpan.innerText = session.user.email.split('@')[0];
-            }
+            document.getElementById('authEmail').innerText = session.user.email.split('@')[0];
             
             loadSettings();
             loadDashboardData();
-            
-            // Initial call
-            checkAllSmartAlerts();
-            // Check repeatedly every 30 seconds
-            setInterval(checkAllSmartAlerts, 30000); 
+            buildSmartTicker(); // Initialize Ticker
+            setInterval(buildSmartTicker, 30000); 
         }
 
-        // --- THE MASTER SMART ALERT FUNCTION (Phase 3) ---
-        window.checkAllSmartAlerts = function() {
+        // --- SCROLLING SMART TICKER LOGIC (Phase 3) ---
+        window.buildSmartTicker = async function() {
+            let tickerItems = [];
             const now = new Date();
 
-            // 1. Check Upcoming Bell (Yellow Alert)
+            // 1. Bell Alerts
             const savedBell = localStorage.getItem('globus_bell_settings_final'); 
-            const alertBell = document.getElementById('alertBell');
             if(savedBell) {
                 const bSettings = JSON.parse(savedBell);
                 if(bSettings.isOn && bSettings.warningDuration > 0 && !(bSettings.excludedDays && bSettings.excludedDays.includes(now.getDay()))) {
                     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-                    let nextBell = null;
-                    let minDiff = Infinity;
-                    bSettings.bells.forEach(bell => {
-                        const [bH, bM] = bell.time.split(':').map(Number);
-                        const bellMinutes = bH * 60 + bM;
-                        const diff = bellMinutes - currentMinutes;
-                        if(diff > 0 && diff <= bSettings.warningDuration && diff < minDiff) {
-                            minDiff = diff; nextBell = bell;
-                        }
-                    });
+                    let nextBell = null; let minDiff = Infinity;
+                    if(bSettings.bells) {
+                        bSettings.bells.forEach(bell => {
+                            const [bH, bM] = bell.time.split(':').map(Number);
+                            const diff = (bH * 60 + bM) - currentMinutes;
+                            if(diff > 0 && diff <= bSettings.warningDuration && diff < minDiff) { minDiff = diff; nextBell = bell; }
+                        });
+                    }
                     if(nextBell) {
                         let parts = nextBell.time.split(':');
-                        let h = parseInt(parts[0]);
-                        let ampm = h >= 12 ? 'PM' : 'AM';
-                        h = h % 12 || 12;
-                        let displayTime = String(h).padStart(2, '0') + ':' + parts[1] + ' ' + ampm;
-                        document.getElementById('alertBellText').innerText = `${nextBell.name} at ${displayTime}`;
-                        alertBell.style.display = 'flex';
-                    } else { alertBell.style.display = 'none'; }
-                } else { alertBell.style.display = 'none'; }
+                        let h = parseInt(parts[0]); let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+                        tickerItems.push(`<a href="reminders.html" class="alert-item ticker-bell">⏳ Upcoming Bell: ${nextBell.name} at ${String(h).padStart(2,'0')}:${parts[1]} ${ampm}</a>`);
+                    }
+                }
             }
 
-            // 2. Check Upcoming Events/Meetings (Blue Alert)
+            // 2. Event Alerts
             const savedEvents = localStorage.getItem('globus_events');
-            const alertEvent = document.getElementById('alertEvent');
-            if(savedEvents) {
+            const eventSet = localStorage.getItem('globus_events_settings');
+            let evIsOn = eventSet ? JSON.parse(eventSet).isOn : false;
+            
+            if(savedEvents && evIsOn) {
                 const events = JSON.parse(savedEvents);
-                let upcomingEvent = null;
-                
                 events.forEach(e => {
                     let evDate = new Date(e.date + 'T' + e.time);
                     let diffMs = evDate - now;
-                    // If event is today and within next 24 hours
+                    // Show events coming up in the next 24 hours
                     if(diffMs > 0 && diffMs <= (24 * 60 * 60 * 1000)) {
-                        if(!upcomingEvent || diffMs < (new Date(upcomingEvent.date + 'T' + upcomingEvent.time) - now)) {
-                            upcomingEvent = e;
-                        }
+                        let displayTime = evDate.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
+                        tickerItems.push(`<a href="reminders.html" class="alert-item ticker-event">📅 Event: ${e.name} (${displayTime})</a>`);
                     }
                 });
+            }
 
-                if(upcomingEvent) {
-                    let d = new Date(upcomingEvent.date + 'T' + upcomingEvent.time);
-                    let displayTime = d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
-                    document.getElementById('alertEventText').innerText = `${upcomingEvent.name} (${displayTime})`;
-                    alertEvent.style.display = 'flex';
-                } else { alertEvent.style.display = 'none'; }
+            // 3. Birthday Alerts (Fetch from DB)
+            try {
+                const { data: students } = await supabase.from('students').select('full_name, date_of_birth').eq('status', 'active');
+                if(students) {
+                    const tMonth = now.getMonth() + 1; const tDay = now.getDate();
+                    students.forEach(s => {
+                        if(s.date_of_birth) {
+                            const dob = new Date(s.date_of_birth);
+                            if(dob.getMonth() + 1 === tMonth && dob.getDate() === tDay) {
+                                tickerItems.push(`<a href="reminders.html" class="alert-item ticker-bday">🎂 Happy Birthday: ${s.full_name}!</a>`);
+                            }
+                        }
+                    });
+                }
+            } catch(e){}
+
+            // Update DOM
+            const wrap = document.getElementById('alertTickerWrap');
+            const track = document.getElementById('alertTickerTrack');
+            
+            if(tickerItems.length > 0) {
+                // Duplicate items slightly if there are very few, to make scroll look continuous
+                let htmlStr = tickerItems.join('');
+                if(tickerItems.length < 3) htmlStr += htmlStr; 
+                
+                track.innerHTML = htmlStr;
+                wrap.style.display = 'block';
+            } else {
+                wrap.style.display = 'none';
+                track.innerHTML = '';
             }
         };
 
-        // --- DASHBOARD DATA & BIRTHDAY FETCHING ---
+        // --- DASHBOARD DATA FETCHING ---
         async function loadDashboardData() {
             try {
                 const [stuRes, crsRes, payRes] = await Promise.all([
@@ -377,10 +272,8 @@
                 
                 const studentsData = stuRes.data || []; const coursesData = crsRes.data || []; const paymentsData = payRes.data || [];
 
-                const totalStudentsCount = studentsData.length;
+                document.getElementById('statTotalStudents').textContent = studentsData.length;
                 const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
-                
-                document.getElementById('statTotalStudents').textContent = totalStudentsCount;
                 document.getElementById('statActiveStudents').textContent = activeStudents.length;
 
                 const activeCourses = coursesData.filter(c => c.status === 'Active');
@@ -394,38 +287,16 @@
                 let totalPendingSum = 0;
                 activeStudents.forEach(s => {
                     const totalCourseFee = Number(s.total_fee) || 0; const admissionFee = Number(s.admission_fee) || 0;
-                    const stuPayments = paymentsData.filter(p => p.student_id === s.id);
                     let totalPaidPayments = 0;
-                    stuPayments.forEach(p => totalPaidPayments += (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0));
+                    paymentsData.filter(p => p.student_id === s.id).forEach(p => totalPaidPayments += (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0));
                     let totalCoursePending = totalCourseFee - (admissionFee + totalPaidPayments);
                     if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
                 });
                 document.getElementById('statPendingFees').textContent = '₹ ' + totalPendingSum;
 
-                // 3. Birthdays Alert Logic (Pink Alert)
-                const tMonth = new Date().getMonth() + 1;
-                const tDay = new Date().getDate();
-                let bdayNames = [];
-                activeStudents.forEach(s => {
-                    if (s.date_of_birth) {
-                        const dob = new Date(s.date_of_birth);
-                        if (dob.getMonth() + 1 === tMonth && dob.getDate() === tDay) {
-                            bdayNames.push(s.full_name.split(' ')[0]); // Get first name
-                        }
-                    }
-                });
-                const alertBirthday = document.getElementById('alertBirthday');
-                if(bdayNames.length > 0) {
-                    document.getElementById('alertBirthdayText').innerText = bdayNames.join(', ');
-                    alertBirthday.style.display = 'flex';
-                } else {
-                    alertBirthday.style.display = 'none';
-                }
-
             } catch (err) { console.error("Dashboard Loading Error:", err); }
         }
 
-        // Settings Modal logic...
         async function loadSettings() {
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
@@ -433,42 +304,11 @@
                     document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
                     document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
                     if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
-                    
-                    document.getElementById('set_name').value = data.institute_name || '';
-                    document.getElementById('set_sub').value = data.sub_name || '';
-                    document.getElementById('set_address').value = data.address || '';
-                    document.getElementById('set_phone').value = data.phone || '';
-                    document.getElementById('set_email').value = data.email || '';
-                    document.getElementById('set_logo').value = data.logo_url || '';
                 }
             } catch (e) {}
         }
 
-        window.saveSettings = async function(e) {
-            e.preventDefault();
-            let phoneVal = document.getElementById('set_phone').value;
-            if (phoneVal && phoneVal.length !== 10) { alert('Error: Phone number must strictly be 10 digits!'); return; }
-
-            const payload = {
-                id: 1, institute_name: document.getElementById('set_name').value, sub_name: document.getElementById('set_sub').value,
-                address: document.getElementById('set_address').value, phone: phoneVal, email: document.getElementById('set_email').value, logo_url: document.getElementById('set_logo').value
-            };
-            const { error } = await supabase.from('institute_settings').upsert([payload]);
-            if(error) alert('Error saving: ' + error.message);
-            else { alert('Settings Saved! Will reflect across all print formats.'); document.getElementById('settingsModal').style.display='none'; loadSettings(); }
-        }
-
-        window.confirmReset = function() {
-            let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
-            let userInput = prompt(`Security Verification\nTo clear settings data, please solve this math question:\n${num1} + ${num2} = ?`);
-            if (userInput !== null) {
-                if (parseInt(userInput) === (num1+num2)) { document.getElementById('settingsForm').reset(); alert('Reset Complete!'); } 
-                else { alert('Incorrect answer!'); }
-            }
-        };
-
         document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
-        
         checkAuth();
     </script>
 </body>
