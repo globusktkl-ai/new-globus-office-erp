@@ -58,22 +58,32 @@
         .summary-label { font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
         .summary-value { font-size: 16px; font-weight: 900; color: #0f172a; }
 
-        /* Modal Overlay for Confirmation */
-        .modal-overlay-confirm { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 9999; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); }
-        .confirm-box { background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: zoomIn 0.3s ease; }
+        /* Modal Overlay for Confirmation & Receipt */
+        .modal-overlay-confirm { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 9999; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); overflow-y: auto;}
+        .confirm-box { background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: zoomIn 0.3s ease; margin: auto; }
         @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* Mobile specific adjustments for tabs */
+        /* Receipt Print Specific Styles */
+        @media print {
+            body * { visibility: hidden; }
+            body.print-receipt #receiptModal, body.print-receipt #receiptRenderArea, body.print-receipt #receiptRenderArea * { visibility: visible; }
+            body.print-receipt #receiptModal { position: absolute; left: 0; top: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
+            body.print-receipt .no-print { display: none !important; }
+            body.print-receipt #receiptRenderArea { position: absolute !important; top: 0 !important; left: 0 !important; transform: scale(1) !important; margin: 0 !important; box-shadow: none !important; border: 1px dashed #ccc !important;}
+            @page { size: A5 portrait; margin: 5mm; }
+        }
+
+        /* Mobile specific adjustments */
         @media (max-width: 600px) {
             .finance-tabs { gap: 6px; }
             .tab-btn { padding: 10px 2px; font-size: 11px; flex-direction: column; gap: 5px; text-align: center; }
             .tab-btn svg { width: 22px; height: 22px; }
-            .btn-back-dashboard span { display: none; } /* Hide text on small screens, keep only icon */
+            .btn-back-dashboard span { display: none; }
         }
     </style>
 </head>
 <body>
-    <nav class="app-header">
+    <nav class="app-header no-print">
         <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 10px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" id="navLogo">
             <div style="display: flex; flex-direction: column;">
@@ -82,7 +92,6 @@
             </div>
         </div>
         <div class="header-right">
-            <!-- NEW 3D RETURN TO DASHBOARD BUTTON -->
             <a href="dashboard.html" class="btn-back-dashboard">
                 <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
                     <defs>
@@ -99,17 +108,17 @@
         </div>
     </nav>
 
-    <main class="main-content">
+    <main class="main-content no-print">
         <div class="finance-tabs">
-            <button class="tab-btn active" onclick="switchTab('collect')">
+            <button class="tab-btn active" onclick="window.switchTab('collect')">
                 <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                 Collect Fee
             </button>
-            <button class="tab-btn" onclick="switchTab('ledger')">
+            <button class="tab-btn" onclick="window.switchTab('ledger')">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                 Individual Ledger
             </button>
-            <button class="tab-btn" onclick="switchTab('report')">
+            <button class="tab-btn" onclick="window.switchTab('report')">
                 <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                 Overall Report
             </button>
@@ -122,11 +131,11 @@
                 <form id="feeForm">
                     <div class="form-group" style="margin-bottom: 12px;">
                         <label class="form-label">Search Student</label>
-                        <input type="text" id="studentSearchInput" class="form-control" placeholder="Name, reg no, or 10-digit phone..." autocomplete="off">
+                        <input type="text" id="studentSearchInput" class="form-control" placeholder="Name, reg no, or phone..." autocomplete="off">
                         <select id="studentSelect" class="form-control" size="4" style="margin-top: 8px; display: none; height: auto;" required></select>
                     </div>
 
-                    <!-- NEW VERIFICATION BOX -->
+                    <!-- VERIFICATION BOX -->
                     <div id="selectedStudentInfo" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                         <div style="font-size: 14px; font-weight: 900; color: #1e3a8a; margin-bottom: 4px;" id="infoCourse">Course Name</div>
                         <div style="font-size: 13px; font-weight: 800; color: #2563eb; display: flex; align-items: center; gap: 6px;">
@@ -177,13 +186,13 @@
                         <input type="date" id="paymentDate" class="form-control" required>
                     </div>
 
-                    <button type="button" id="preSubmitBtn" onclick="triggerConfirmation()">Submit Payment</button>
+                    <button type="button" id="preSubmitBtn" onclick="window.triggerConfirmation()">Submit Payment</button>
                 </form>
             </div>
         </div>
 
         <!-- PAYMENT CONFIRMATION MODAL -->
-        <div id="confirmModal" class="modal-overlay-confirm">
+        <div id="confirmModal" class="modal-overlay-confirm no-print">
             <div class="confirm-box">
                 <div style="font-size: 50px; line-height: 1; margin-bottom: 10px;">⚠️</div>
                 <h2 style="color: #0f172a; margin-top: 0; margin-bottom: 10px; font-size: 20px; text-transform: uppercase;">Confirm Payment</h2>
@@ -192,8 +201,105 @@
                 <p id="confirmStudentDisplay" style="font-weight: bold; color: #1e3a8a; font-size: 16px; margin-bottom: 25px;"></p>
                 
                 <div style="display: flex; gap: 10px;">
-                    <button onclick="closeConfirmation()" style="flex: 1; padding: 14px; border-radius: 8px; border: none; font-weight: bold; background: #e2e8f0; color: #475569; cursor: pointer; font-size: 15px;">Cancel</button>
-                    <button id="finalSubmitBtn" onclick="processFinalPayment()" style="flex: 1.5; padding: 14px; border-radius: 8px; border: none; font-weight: bold; background: #10b981; color: white; cursor: pointer; font-size: 15px; box-shadow: 0 4px 10px rgba(16,185,129,0.3);">Confirm & Pay</button>
+                    <button onclick="window.closeConfirmation()" style="flex: 1; padding: 14px; border-radius: 8px; border: none; font-weight: bold; background: #e2e8f0; color: #475569; cursor: pointer; font-size: 15px;">Cancel</button>
+                    <button id="finalSubmitBtn" onclick="window.processFinalPayment()" style="flex: 1.5; padding: 14px; border-radius: 8px; border: none; font-weight: bold; background: #10b981; color: white; cursor: pointer; font-size: 15px; box-shadow: 0 4px 10px rgba(16,185,129,0.3);">Confirm & Pay</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW A5 RECEIPT MODAL (Smart Print) -->
+        <div id="receiptModal" class="modal-overlay-confirm">
+            <div class="confirm-box" style="max-width: 620px; padding: 20px; text-align: left; display: flex; flex-direction: column;">
+                <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h3 style="margin:0; color:#10b981; font-size: 18px;">✅ Fee Receipt Generated</h3>
+                    <button onclick="window.closeReceiptModal()" style="background:#ef4444; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-weight:bold;">X Close</button>
+                </div>
+                
+                <div class="no-print" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button onclick="window.printReceiptNative()" style="flex:1; padding:12px; background:#1e3a8a; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">🖨️ Print (A5)</button>
+                    <button id="rcptPdfBtn" onclick="window.shareReceiptPDF()" style="flex:1; padding:12px; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📄 PDF</button>
+                    <button id="rcptPngBtn" onclick="window.shareReceiptPNG()" style="flex:1; padding:12px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📲 WhatsApp</button>
+                </div>
+
+                <!-- Scrollable container for mobile view -->
+                <div style="width: 100%; overflow-x: auto; background: #e2e8f0; padding: 15px 5px; border-radius: 8px; display: flex; justify-content: center;">
+                    
+                    <div id="rcptViewport" style="transform-origin: top center; transition: transform 0.2s;">
+                        
+                        <!-- A5 RECEIPT CANVAS (148 x 210 mm ratio approx) -->
+                        <div class="receipt-wrapper" id="receiptRenderArea" style="width: 550px; height: 780px; background: white; padding: 25px; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; position: relative; flex-shrink: 0;">
+                            
+                            <div style="border: 2px solid #cbd5e1; height: 100%; padding: 20px; box-sizing: border-box; border-radius: 8px; position: relative;">
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 20px;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img id="rcptLogo" src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain;" onerror="this.style.display='none'">
+                                        <div>
+                                            <h2 id="rcptInstName" style="margin: 0; font-size: 22px; color: #1e3a8a; text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px;">GLOBUS</h2>
+                                            <p id="rcptSubName" style="margin: 2px 0 0; font-size: 11px; color: #475569; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Technical Academy</p>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <h1 style="margin: 0; font-size: 22px; color: #10b981; font-weight: 900; letter-spacing: 1px;">FEE RECEIPT</h1>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 13px;">
+                                    <div><strong>Receipt No:</strong> <span id="rcptNo">-</span></div>
+                                    <div><strong>Date:</strong> <span id="rcptDate">-</span></div>
+                                </div>
+                                
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 25px;">
+                                    <table style="width: 100%; font-size: 14px; line-height: 2;">
+                                        <tr><td style="width: 120px; color: #64748b; font-weight: 700;">Student Name:</td><td style="font-weight: 900; color: #0f172a; text-transform: uppercase;" id="rcptStuName">-</td></tr>
+                                        <tr><td style="color: #64748b; font-weight: 700;">Register No:</td><td style="font-weight: 800; color: #1e293b;" id="rcptReg">-</td></tr>
+                                        <tr><td style="color: #64748b; font-weight: 700;">Course:</td><td style="font-weight: 900; color: #1d4ed8;" id="rcptCourse">-</td></tr>
+                                        <tr><td style="color: #64748b; font-weight: 700;">Phone No:</td><td style="font-weight: 800; color: #1e293b;" id="rcptPhone">-</td></tr>
+                                    </table>
+                                </div>
+                                
+                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 14px;">
+                                    <thead>
+                                        <tr style="background: #1e3a8a; color: white;">
+                                            <th style="padding: 12px; text-align: left; border: 1px solid #1e3a8a;">Description</th>
+                                            <th style="padding: 12px; text-align: right; border: 1px solid #1e3a8a;">Amount (₹)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="padding: 15px 12px; border: 1px solid #cbd5e1; font-weight: 700;">Fee Payment (<span id="rcptMode">Cash</span>)</td>
+                                            <td style="padding: 15px 12px; border: 1px solid #cbd5e1; text-align: right; font-weight: 900; font-size: 16px; color: #0f172a;" id="rcptAmount">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 15px 12px; border: 1px solid #cbd5e1; font-weight: 700; color: #d97706;">Discount / Adjustment</td>
+                                            <td style="padding: 15px 12px; border: 1px solid #cbd5e1; text-align: right; font-weight: 900; color: #d97706;" id="rcptDisc">0</td>
+                                        </tr>
+                                        <tr style="background: #f0fdf4;">
+                                            <td style="padding: 15px 12px; border: 1px solid #bbf7d0; font-weight: 900; color: #15803d; text-align: right;">TOTAL PAID</td>
+                                            <td style="padding: 15px 12px; border: 1px solid #bbf7d0; text-align: right; font-weight: 900; color: #15803d; font-size: 20px;" id="rcptTotal">0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 8px; padding: 15px; margin-bottom: 40px;">
+                                    <div style="font-weight: 800; color: #b91c1c; font-size: 14px;">Pending Course Fee Balance:</div>
+                                    <div style="font-weight: 900; color: #ef4444; font-size: 20px;">₹ <span id="rcptPending">0</span></div>
+                                </div>
+                                
+                                <div style="position: absolute; bottom: 30px; left: 30px; right: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
+                                    <div style="font-size: 10px; color: #64748b; line-height: 1.6;">
+                                        * This is a computer-generated receipt.<br>
+                                        <span id="rcptAddress" style="font-weight: 600;"></span><br>
+                                        <span id="rcptContact" style="font-weight: 600;"></span>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="border-bottom: 1px solid #1e293b; width: 160px; height: 50px; margin-bottom: 8px;"></div>
+                                        <div style="font-size: 13px; font-weight: 800; color: #1e293b;">Authorized Signature</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -204,7 +310,7 @@
                 <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--primary-dark);">Student Payment Statement</h2>
                 <div class="form-group">
                     <label class="form-label">Search Student</label>
-                    <input type="text" id="ledgerSearchInput" class="form-control" placeholder="Name, reg no, or 10-digit phone..." autocomplete="off">
+                    <input type="text" id="ledgerSearchInput" class="form-control" placeholder="Name, reg no, or phone..." autocomplete="off">
                     <select id="ledgerStudentSelect" class="form-control" size="4" style="margin-top: 8px; display: none; height: auto;"></select>
                 </div>
 
@@ -212,7 +318,7 @@
                     <div class="ledger-summary">
                         <div class="summary-box"><span class="summary-label">Student Name</span><span class="summary-value" id="l_name">-</span></div>
                         <div class="summary-box"><span class="summary-label">Reg No</span><span class="summary-value" id="l_reg">-</span></div>
-                        <!-- NEW PHONE NUMBER BOX IN LEDGER -->
+                        <!-- PHONE NUMBER BOX IN LEDGER -->
                         <div class="summary-box"><span class="summary-label">Phone</span><span class="summary-value" id="l_phone" style="color: #2563eb;">-</span></div>
                         <div class="summary-box"><span class="summary-label">Course</span><span class="summary-value" id="l_course">-</span></div>
                         <div class="summary-box"><span class="summary-label">Total Fee</span><span class="summary-value" id="l_total" style="color: #1e3a8a;">₹ 0</span></div>
@@ -235,7 +341,7 @@
                         </table>
                     </div>
                     
-                    <button class="action-btn btn-statement" onclick="downloadLedgerPDF()">📄 Download Payment Statement (PDF)</button>
+                    <button class="action-btn btn-statement" onclick="window.downloadLedgerPDF()">📄 Download Payment Statement (PDF)</button>
                 </div>
             </div>
         </div>
@@ -246,21 +352,21 @@
             <div class="filter-group">
                 <div style="flex: 1; min-width: 200px;">
                     <label>Filter by Module</label>
-                    <select id="filterModule" class="form-control" style="margin-bottom: 0; font-weight: 600; color: #1e293b;" onchange="applyFeeFilter()">
+                    <select id="filterModule" class="form-control" style="margin-bottom: 0; font-weight: 600; color: #1e293b;" onchange="window.applyFeeFilter()">
                         <option value="all">All Modules</option>
                     </select>
                 </div>
                 <div style="flex: 1; min-width: 200px;">
                     <label>Fee Status (Current Due)</label>
-                    <select id="filterFeeStatus" class="form-control" style="margin-bottom: 0; font-weight: 600; color: #1e293b;" onchange="applyFeeFilter()">
+                    <select id="filterFeeStatus" class="form-control" style="margin-bottom: 0; font-weight: 600; color: #1e293b;" onchange="window.applyFeeFilter()">
                         <option value="all">All Active Students</option>
                         <option value="completed">Fee Completed (Current Module)</option>
                         <option value="pending">Fee Pending (Current Module)</option>
                     </select>
                 </div>
                 <div style="display: flex; align-items: flex-end; gap: 10px;">
-                    <button onclick="exportCSV()" class="action-btn btn-excel">📊 Excel</button>
-                    <button id="pdfBtn" onclick="exportOverallPDF()" class="action-btn btn-pdf">📄 PDF</button>
+                    <button onclick="window.exportCSV()" class="action-btn btn-excel">📊 Excel</button>
+                    <button id="pdfBtn" onclick="window.exportOverallPDF()" class="action-btn btn-pdf">📄 PDF</button>
                 </div>
             </div>
             
@@ -295,11 +401,7 @@
         let selectedStudentId = null, currentBalance = 0;
         let ledgerStudentId = null, ledgerStudentData = null, ledgerTransactions = [];
         window.feeReportData = []; window.filteredFeeData = [];
-
-        // PREVENT SCROLL WHEEL ON NUMBER INPUTS
-        document.addEventListener('wheel', function(event) {
-            if (document.activeElement.type === 'number') { document.activeElement.blur(); }
-        });
+        window.instSettings = null; // Store settings for receipt
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -312,9 +414,17 @@
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
+                    window.instSettings = data;
                     document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
                     document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
                     if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
+                    
+                    // Receipt Settings
+                    document.getElementById('rcptInstName').innerText = data.institute_name || 'GLOBUS';
+                    document.getElementById('rcptSubName').innerText = data.sub_name || 'Technical Academy';
+                    if(data.logo_url) document.getElementById('rcptLogo').src = data.logo_url;
+                    document.getElementById('rcptAddress').innerText = data.address || '';
+                    document.getElementById('rcptContact').innerText = data.phone ? 'Ph: +91 ' + data.phone : '';
                 }
             } catch (e) {}
         }
@@ -394,7 +504,6 @@
                 this.style.display = 'none';
                 document.getElementById('amountPaid').value = ''; document.getElementById('discountAmount').value = '';
 
-                // NEW VERIFICATION BOX UPDATE
                 const course = coursesData.find(c => c.id == s.course_id);
                 const cName = course ? course.course_name : (s.course_name || 'N/A');
                 document.getElementById('infoCourse').textContent = cName;
@@ -428,7 +537,6 @@
             const discountAmount = Number(document.getElementById('discountAmount').value) || 0;
             const totalDeduction = amountPaid + discountAmount;
             
-            // Validation
             if (totalDeduction === 0) { alert('Warning: Please enter a valid payment or discount amount.'); return; }
             if (totalDeduction > currentBalance) { alert(`Error: Cannot exceed pending balance!`); return; }
 
@@ -443,28 +551,146 @@
             document.getElementById('confirmModal').style.display = 'none';
         }
 
-        // FINAL SUBMISSION LOGIC
+        // FINAL SUBMISSION LOGIC & RECEIPT TRIGGER
         window.processFinalPayment = async function() {
             const finalBtn = document.getElementById('finalSubmitBtn');
             finalBtn.disabled = true; finalBtn.textContent = 'Processing...';
 
             const amountPaid = Number(document.getElementById('amountPaid').value) || 0;
             const discountAmount = Number(document.getElementById('discountAmount').value) || 0;
+            const pMode = document.getElementById('paymentMode').value;
+            const pTxnId = document.getElementById('txnId').value;
+            const pDate = document.getElementById('paymentDate').value;
 
-            const { error } = await supabase.from('fee_payments').insert([{
+            const { data: newPayment, error } = await supabase.from('fee_payments').insert([{
                 student_id: selectedStudentId, amount_paid: amountPaid, discount_amount: discountAmount,
-                payment_mode: document.getElementById('paymentMode').value, receipt_no: document.getElementById('txnId').value, 
-                payment_date: document.getElementById('paymentDate').value
-            }]);
+                payment_mode: pMode, receipt_no: pTxnId, 
+                payment_date: pDate
+            }]).select();
 
             if (error) {
                 alert('Error processing payment: ' + error.message);
                 finalBtn.disabled = false; finalBtn.textContent = 'Confirm & Pay';
-                closeConfirmation();
+                window.closeConfirmation();
             } else { 
                 alert('Payment recorded successfully!'); 
-                window.location.reload(); 
+                window.closeConfirmation();
+                
+                const newPending = currentBalance - (amountPaid + discountAmount);
+                const s = studentsData.find(x => x.id === selectedStudentId);
+                const course = coursesData.find(c => c.id == s.course_id);
+                const cName = course ? course.course_name : (s.course_name || 'N/A');
+                
+                window.reloadOnReceiptClose = true; // Reload page when user closes receipt
+                
+                window.populateAndShowReceipt({
+                    receiptNo: pTxnId || (newPayment && newPayment[0] ? newPayment[0].id : 'AUTO'),
+                    date: pDate,
+                    studentName: s.full_name,
+                    regNo: s.register_number || 'N/A',
+                    phone: s.phone_number || 'N/A',
+                    course: cName,
+                    mode: pMode,
+                    amount: amountPaid,
+                    discount: discountAmount,
+                    pending: newPending > 0 ? newPending : 0
+                });
             }
+        };
+
+        // ==========================================
+        // SMART A5 RECEIPT LOGIC
+        // ==========================================
+        window.populateAndShowReceipt = function(data) {
+            document.getElementById('rcptNo').innerText = data.receiptNo;
+            
+            // Format Date (DD-MM-YYYY)
+            let dateObj = new Date(data.date);
+            let formattedDate = !isNaN(dateObj) ? `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth()+1).toString().padStart(2, '0')}-${dateObj.getFullYear()}` : data.date;
+            
+            document.getElementById('rcptDate').innerText = formattedDate;
+            document.getElementById('rcptStuName').innerText = data.studentName;
+            document.getElementById('rcptReg').innerText = data.regNo;
+            document.getElementById('rcptCourse').innerText = data.course;
+            document.getElementById('rcptPhone').innerText = data.phone;
+            
+            document.getElementById('rcptMode').innerText = data.mode;
+            document.getElementById('rcptAmount').innerText = data.amount;
+            document.getElementById('rcptDisc').innerText = data.discount;
+            document.getElementById('rcptTotal').innerText = data.amount + data.discount;
+            
+            document.getElementById('rcptPending').innerText = data.pending;
+
+            // Auto-scale to fit mobile
+            let scale = window.innerWidth < 650 ? ((window.innerWidth - 60) / 550) : 0.8;
+            document.getElementById('rcptViewport').style.transform = `scale(${scale})`;
+            document.getElementById('rcptViewport').style.height = `${780 * scale}px`;
+
+            document.getElementById('receiptModal').style.display = 'flex';
+        };
+
+        window.closeReceiptModal = function() {
+            document.getElementById('receiptModal').style.display = 'none';
+            if (window.reloadOnReceiptClose) { window.location.reload(); }
+        };
+
+        window.printReceiptNative = function() {
+            document.body.classList.add('print-receipt');
+            const vp = document.getElementById('rcptViewport');
+            const oldTransform = vp.style.transform; const oldHeight = vp.style.height;
+            vp.style.transform = 'scale(1)'; vp.style.height = '780px';
+            window.print();
+            vp.style.transform = oldTransform; vp.style.height = oldHeight;
+            document.body.classList.remove('print-receipt');
+        };
+
+        window.shareReceiptPDF = async function() {
+            const btn = document.getElementById('rcptPdfBtn'); const old = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
+            try {
+                const wrapper = document.getElementById('receiptRenderArea');
+                const vp = document.getElementById('rcptViewport');
+                const oldTransform = vp.style.transform; vp.style.transform = 'scale(1)';
+                
+                const { jsPDF } = window.jspdf;
+                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                vp.style.transform = oldTransform;
+                
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
+                pdf.addImage(imgData, 'PNG', 0, 0, 148, 210);
+                
+                const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
+                const filename = `Fee_Receipt_${name}.pdf`;
+                const pdfBlob = pdf.output('blob');
+                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+                
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try { await navigator.share({ files: [file], title: 'Fee Receipt' }); } catch (err) { pdf.save(filename); }
+                } else { pdf.save(filename); }
+            } catch (e) { alert("Error generating PDF."); } finally { btn.innerHTML = old; btn.disabled = false; }
+        };
+
+        window.shareReceiptPNG = async function() {
+            const btn = document.getElementById('rcptPngBtn'); const old = btn.innerHTML; btn.innerHTML = '⏳...'; btn.disabled = true;
+            try {
+                const wrapper = document.getElementById('receiptRenderArea');
+                const vp = document.getElementById('rcptViewport');
+                const oldTransform = vp.style.transform; vp.style.transform = 'scale(1)';
+                
+                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                vp.style.transform = oldTransform;
+                
+                canvas.toBlob(async (blob) => {
+                    const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
+                    const file = new File([blob], `Fee_Receipt_${name}.png`, { type: 'image/png' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try { await navigator.share({ files: [file], title: 'Fee Receipt' }); } catch (err) {}
+                    } else {
+                        const link = document.createElement('a'); link.download = `Fee_Receipt_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+                    }
+                    btn.innerHTML = old; btn.disabled = false;
+                }, 'image/png');
+            } catch (error) { alert("Error generating image."); btn.innerHTML = old; btn.disabled = false; }
         };
 
         // ==========================================
@@ -498,7 +724,7 @@
                 
                 document.getElementById('l_name').textContent = ledgerStudentData.full_name;
                 document.getElementById('l_reg').textContent = ledgerStudentData.register_number || 'N/A';
-                document.getElementById('l_phone').textContent = ledgerStudentData.phone_number || 'N/A'; // NEW PHONE FIELD
+                document.getElementById('l_phone').textContent = ledgerStudentData.phone_number || 'N/A';
                 document.getElementById('l_course').textContent = cName;
                 
                 const tFee = Number(ledgerStudentData.total_fee) || 0;
@@ -525,15 +751,41 @@
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">No payment history found.</td></tr>';
                 } else {
                     ledgerTransactions.forEach(p => {
+                        // NEW PRINT BUTTON IN LEDGER TABLE
                         tbody.innerHTML += `<tr>
                             <td>${p.payment_date || '-'}</td><td>Fee Payment (${p.payment_mode || 'Cash'})</td><td>${p.receipt_no || '-'}</td>
-                            <td style="color:#d97706;">${p.discount_amount > 0 ? '₹ '+p.discount_amount : '-'}</td><td style="font-weight:bold; color:#10b981;">₹ ${p.amount_paid}</td>
+                            <td style="color:#d97706;">${p.discount_amount > 0 ? '₹ '+p.discount_amount : '-'}</td>
+                            <td style="font-weight:bold; color:#10b981; display:flex; justify-content:space-between; align-items:center;">
+                                ₹ ${p.amount_paid}
+                                <button onclick="window.showReceiptFromLedger('${p.id}')" style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; padding:6px 10px; cursor:pointer; font-size:14px; transition:0.2s;" title="Print Receipt" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f1f5f9'">🖨️</button>
+                            </td>
                         </tr>`;
                     });
                 }
                 container.style.display = 'block';
             }
         });
+
+        // Trigger Receipt from Ledger Table
+        window.showReceiptFromLedger = function(pid) {
+            const p = ledgerTransactions.find(x => x.id === pid);
+            if(!p) return;
+            
+            window.reloadOnReceiptClose = false; // Don't reload since we are just viewing history
+            
+            window.populateAndShowReceipt({
+                receiptNo: p.receipt_no || p.id,
+                date: p.payment_date,
+                studentName: ledgerStudentData.full_name,
+                regNo: ledgerStudentData.register_number || 'N/A',
+                phone: ledgerStudentData.phone_number || 'N/A',
+                course: document.getElementById('l_course').textContent,
+                mode: p.payment_mode || 'Cash',
+                amount: p.amount_paid,
+                discount: p.discount_amount || 0,
+                pending: document.getElementById('l_pending').textContent.replace('₹ ', '') // Show current pending
+            });
+        };
 
         window.downloadLedgerPDF = function() {
             if(!ledgerStudentData) return;
@@ -545,7 +797,7 @@
             doc.setFontSize(14); doc.setTextColor(15, 23, 42); doc.text("Student Payment Statement", 14, 35);
             
             doc.setFontSize(10); doc.text(`Name: ${ledgerStudentData.full_name}`, 14, 45); doc.text(`Reg No: ${ledgerStudentData.register_number || 'N/A'}`, 100, 45); 
-            doc.text(`Phone: ${ledgerStudentData.phone_number || 'N/A'}`, 150, 45); // NEW PHONE IN PDF
+            doc.text(`Phone: ${ledgerStudentData.phone_number || 'N/A'}`, 150, 45);
             doc.text(`Course: ${document.getElementById('l_course').textContent}`, 14, 52);
             doc.setFontSize(11); doc.setTextColor(16, 185, 129); doc.text(`Total Paid: ${document.getElementById('l_paid').textContent}`, 14, 62); doc.setTextColor(220, 38, 38); doc.text(`Pending Balance: ${document.getElementById('l_pending').textContent}`, 100, 62);
 
@@ -592,7 +844,7 @@
 
                 return { id: s.id, name: s.full_name, course: courseName, module: s.module || 'Not Started', totalCourseFee: totalCourseFee, feePerModule: Math.round(feePerModule), expectedTillNow: Math.round(expectedTillNow), totalPaid: totalPaid, discount: totalDiscount, currentDue: Math.round(currentDue), totalCoursePending: Math.round(totalCoursePending) };
             });
-            applyFeeFilter();
+            window.applyFeeFilter();
         }
 
         window.applyFeeFilter = function() {
