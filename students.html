@@ -25,44 +25,33 @@
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); stroke: #4c1d95;}
 
         .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; min-height: 45px;}
-        .page-title { font-size: 20px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; text-align: center; width: 100%;}
+        
+        /* FIX 2: Header Overlap Fix - Added padding to prevent overlap with back button */
+        .page-title { font-size: 20px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; text-align: center; width: 100%; padding: 0 45px;}
 
         @media (max-width: 600px) { .btn-back-dashboard span { display: none; } .btn-back-dashboard { padding: 10px; } }
 
         /* --------------------------------------------------- */
-        /* PERFECT ADVANCED FILTER UI (As per User Sketch)     */
+        /* PERFECT ADVANCED FILTER UI (No Extra Search Button) */
         /* --------------------------------------------------- */
         .search-container { background: white; border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; width: 100%;}
         
         .main-search-box { width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 600; outline: none; background: #f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 12px center; margin-bottom: 12px; transition: 0.2s;}
         .main-search-box:focus { border-color: #4c1d95; background-color: #fff; box-shadow: 0 0 0 3px rgba(76, 29, 149, 0.1); }
 
-        .filter-layout { display: grid; grid-template-columns: 1fr 120px; gap: 10px; margin-bottom: 15px; align-items: stretch; }
+        /* FIX 3: Width constraint fix for mobile */
+        .filter-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 10px; align-items: stretch; width: 100%; box-sizing: border-box; }
         
-        .filter-left { display: flex; flex-direction: column; gap: 8px; }
-        .filter-row { display: flex; align-items: center; gap: 8px; }
+        .filter-left-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+        .filter-row { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 0; }
         
-        /* Custom Checkbox */
         .filter-checkbox { width: 20px; height: 20px; accent-color: #4c1d95; cursor: pointer; flex-shrink: 0; margin: 0; }
         
-        /* Custom Select */
-        .filter-select { flex: 1; min-width: 0; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 700; color: #1e293b; background: #f8fafc url('data:image/svg+xml;utf8,<svg fill="%2364748b" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>') no-repeat right 5px center; appearance: none; -webkit-appearance: none; outline: none; transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .filter-select:disabled { opacity: 0.5; background-color: #f1f5f9; cursor: not-allowed; }
-        .filter-select:focus:not(:disabled) { border-color: #4c1d95; background-color: #fff; }
+        .filter-select { flex: 1; min-width: 0; padding: 8px 5px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #334155; outline: none; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%2364748b" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>'); background-repeat: no-repeat; background-position: right 2px center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .filter-select:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Right Status Box */
-        .filter-right { display: flex; }
-        .status-select { width: 100%; padding: 10px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 800; color: #0f172a; background: #ffffff url('data:image/svg+xml;utf8,<svg fill="%2364748b" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>') no-repeat right 5px center; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; text-align: left; }
-        .status-select option { font-weight: 700; }
-
-        .btn-apply-filter { width: 100%; background: linear-gradient(135deg, #4c1d95, #6d28d9); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 6px rgba(76, 29, 149, 0.2); transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;}
-        .btn-apply-filter:active { transform: scale(0.98); }
-
-        @media(max-width: 450px) {
-            .filter-layout { grid-template-columns: 1fr 100px; gap: 8px; }
-            .filter-select { font-size: 12px; padding: 10px 5px; }
-            .status-select { font-size: 12px; padding: 10px 5px; }
-        }
+        .filter-right-col { display: flex; min-width: 0; }
+        .status-select { width: 100%; min-width: 0; padding: 10px; border: 1px solid #bbf7d0; border-radius: 8px; font-size: 13px; font-weight: 800; background: #f0fdf4 url('data:image/svg+xml;utf8,<svg fill="%2315803d" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>') no-repeat right 5px center; color: #15803d; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         /* --------------------------------------------------- */
 
         /* Student Cards */
@@ -127,39 +116,37 @@
             <h1 class="page-title">Student Directory</h1>
         </div>
         
-        <!-- NEW ADVANCED FILTER UI -->
         <div class="search-container">
-            <input type="text" id="searchInput" class="main-search-box" placeholder="Search Name, Reg No, Phone...">
+            <!-- Search triggers filter on every key press -->
+            <input type="text" id="searchInput" class="main-search-box" placeholder="🔍 Search Name, Reg No, Phone..." oninput="window.applyFilters()">
             
-            <div class="filter-layout">
-                <div class="filter-left">
+            <div class="filter-grid">
+                <div class="filter-left-col">
                     <div class="filter-row">
-                        <input type="checkbox" id="chkCourse" class="filter-checkbox" onchange="window.toggleFilter('courseSelect', this.checked)">
-                        <select id="courseSelect" class="filter-select" disabled>
+                        <!-- Checkbox triggers filter automatically -->
+                        <input type="checkbox" id="chkCourse" class="filter-checkbox" onchange="window.toggleFilter('courseSelect', this.checked); window.applyFilters();">
+                        <select id="courseSelect" class="filter-select" disabled onchange="window.applyFilters()">
                             <option value="">Select Course</option>
                         </select>
                     </div>
                     <div class="filter-row">
-                        <input type="checkbox" id="chkModule" class="filter-checkbox" onchange="window.toggleFilter('moduleSelect', this.checked)">
-                        <select id="moduleSelect" class="filter-select" disabled>
+                        <!-- Checkbox triggers filter automatically -->
+                        <input type="checkbox" id="chkModule" class="filter-checkbox" onchange="window.toggleFilter('moduleSelect', this.checked); window.applyFilters();">
+                        <select id="moduleSelect" class="filter-select" disabled onchange="window.applyFilters()">
                             <option value="">Select Module</option>
                         </select>
                     </div>
                 </div>
                 
-                <div class="filter-right">
-                    <select id="statusFilter" class="status-select" onchange="window.updateStatusUI(this)">
-                        <option value="active">🟢 Active</option>
+                <div class="filter-right-col">
+                    <select id="statusFilter" class="status-select" onchange="window.updateStatusColor(this); window.applyFilters();">
+                        <option value="active" selected>🟢 Active</option>
                         <option value="completed">🔵 Completed</option>
                         <option value="all">⚪ All Students</option>
                     </select>
                 </div>
             </div>
-
-            <button class="btn-apply-filter" onclick="window.applyFilters()">
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                Search / Apply Filter
-            </button>
+            <!-- Removed the big purple apply button entirely! -->
         </div>
         
         <div id="studentsList"><div class="loading-state">Loading students database...</div></div>
@@ -288,7 +275,7 @@
         </div>
     </div>
 
-    <!-- JS LOGIC UNTOUCHED -->
+    <!-- JS LOGIC UNTOUCHED EXCEPT FOR LIVE SEARCH CONNECTION -->
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         let allStudents = [], globalCourses = [], currentStudentData = null;
@@ -306,10 +293,10 @@
             document.getElementById(selectId).disabled = !isChecked;
         };
 
-        window.updateStatusUI = function(select) {
+        window.updateStatusColor = function(select) {
             if(select.value === 'active') { select.style.color = '#15803d'; select.style.borderColor = '#bbf7d0'; select.style.backgroundColor = '#f0fdf4'; }
             else if(select.value === 'completed') { select.style.color = '#1d4ed8'; select.style.borderColor = '#bfdbfe'; select.style.backgroundColor = '#eff6ff'; }
-            else { select.style.color = '#0f172a'; select.style.borderColor = '#cbd5e1'; select.style.backgroundColor = '#ffffff'; }
+            else { select.style.color = '#475569'; select.style.borderColor = '#cbd5e1'; select.style.backgroundColor = '#f8fafc'; }
         };
 
         async function loadSettings() {
@@ -390,8 +377,6 @@
             renderList(filtered);
         }
 
-        document.getElementById('searchInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') window.applyFilters(); });
-
         function renderList(data) {
             const container = document.getElementById('studentsList'); container.innerHTML = '';
             if (data.length === 0) { container.innerHTML = '<div class="empty-state">No students found matching your search/filters.</div>'; return; }
@@ -435,13 +420,14 @@
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
                 
+                // FIX 1: SVG Fill is correctly set to 'none' for Delete Button
                 let actionBtnsHTML = `
                     <div class="card-action-btns">
                         <button onclick="window.viewAndEditStudent('${s.id}')" class="btn-card btn-view"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> View / Edit</button>
                         <button onclick="window.openProfileAndCard('${s.id}')" class="btn-card btn-id"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ID Card</button>
                     </div>
                     <button onclick="window.deleteStudent('${s.id}', '${s.register_number}', '${s.status}')" class="btn-del-full">
-                        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                         Delete Student
                     </button>
                 `;
@@ -468,7 +454,6 @@
             });
         }
 
-        // --- REMAINDER OF ACTIONS (UNTOUCHED) ---
         window.viewAndEditStudent = function(id) {
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
@@ -699,7 +684,7 @@
                     const name = document.getElementById('liveName').value || 'Student';
                     const file = new File([blob], `ID_Card_${name}.png`, { type: 'image/png' });
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Student ID Card' }); } catch (err) {}
+                        try { await navigator.share({ files: [file], title: 'Student ID Card', text: `ID Card for ${name}` }); } catch (err) {}
                     } else {
                         const link = document.createElement('a'); link.download = `ID_Card_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
                     }
