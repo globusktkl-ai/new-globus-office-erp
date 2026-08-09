@@ -645,7 +645,7 @@
                 let isCompleted = student.status === 'completed';
                 let currentModule = isCompleted ? 'Course Completed' : (student.module || course.modules[0]);
                 
-                const avatar = student.photo_url || (student.gender === 'Female' ? 'https://avatar.iran.liara.run/public/girl' : 'https://avatar.iran.liara.run/public/boy');
+                const avatar = student.photo_url || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${student.gender === "Female" ? "%23ec4899" : "%233b82f6"}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
 
                 const totalCourseFee = Number(student.total_fee) || 0;
                 const admissionFee = Number(student.admission_fee) || 0;
