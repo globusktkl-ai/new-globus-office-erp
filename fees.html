@@ -80,21 +80,6 @@
             .tab-btn svg { width: 22px; height: 22px; }
             .btn-back-dashboard span { display: none; }
         }
-
-        /* HIDDEN AREA FOR PROFESSIONAL LEDGER PDF GENERATION */
-        #ledgerPrintWrapper { position: absolute; top: -9999px; left: -9999px; background: white; width: 794px; min-height: 1123px; padding: 40px; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #0f172a; z-index: -1000; }
-        .lp-header-section { display: flex; align-items: center; border-bottom: 3px solid #1e3a8a; padding-bottom: 20px; margin-bottom: 25px; }
-        .lp-logo { width: 85px; height: 85px; object-fit: contain; margin-right: 20px; }
-        .lp-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; z-index: 0; pointer-events: none; }
-        .lp-watermark img { width: 450px; height: auto; }
-        .lp-content-area { position: relative; z-index: 10; }
-        .lp-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 20px; border-radius: 10px; margin-bottom: 30px; }
-        .lp-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px; }
-        .lp-table th { background: #1e3a8a; color: white; padding: 12px; border: 1px solid #94a3b8; text-align: left; }
-        .lp-table td { padding: 12px; border: 1px solid #cbd5e1; }
-        .lp-summary-box { width: 320px; border: 2px solid #cbd5e1; border-radius: 10px; overflow: hidden; }
-        .lp-summary-row { display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #cbd5e1; font-size: 15px; }
-        .lp-seal { width: 180px; height: 90px; border: 4px solid #16a34a; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-15deg); color: #16a34a; background: rgba(22, 163, 74, 0.03); margin-bottom: 15px; box-shadow: inset 0 0 10px rgba(22,163,74,0.1); mix-blend-mode: multiply;}
     </style>
 </head>
 <body>
@@ -150,7 +135,7 @@
                         <select id="studentSelect" class="form-control" size="4" style="margin-top: 8px; display: none; height: auto;" required></select>
                     </div>
 
-                    <!-- VERIFICATION BOX -->
+                    <!-- NEW VERIFICATION BOX -->
                     <div id="selectedStudentInfo" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                         <div style="font-size: 14px; font-weight: 900; color: #1e3a8a; margin-bottom: 4px;" id="infoCourse">Course Name</div>
                         <div style="font-size: 13px; font-weight: 800; color: #2563eb; display: flex; align-items: center; gap: 6px;">
@@ -344,7 +329,6 @@
                         </table>
                     </div>
                     
-                    <!-- UPDATED: Download Professional PDF Statement Button -->
                     <button class="action-btn btn-statement" onclick="window.downloadLedgerPDF()">📄 Download Official Statement (PDF)</button>
                 </div>
             </div>
@@ -397,14 +381,15 @@
             </div>
         </div>
 
-        <!-- NEW HIDDEN AREA FOR PROFESSIONAL LEDGER PDF GENERATION (Requested in Image 2) -->
-        <div id="ledgerPrintWrapper" class="no-print">
-            <!-- Watermark Logo -->
-            <div class="lp-watermark"><img id="lpWatermark" src="assets/images/logo.png" onerror="this.style.display='none'"></div>
+        <!-- HIDDEN AREA FOR PROFESSIONAL LEDGER PDF GENERATION -->
+        <div id="ledgerPrintWrapper" class="no-print" style="position: absolute; top: -9999px; left: -9999px; background: white; width: 794px; min-height: 1123px; padding: 40px; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #0f172a; z-index: -1000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; z-index: 0; pointer-events: none;">
+                <img id="lpWatermark" src="assets/images/logo.png" style="width: 450px; height: auto;" onerror="this.style.display='none'">
+            </div>
 
-            <div class="lp-content-area">
-                <div class="lp-header-section">
-                    <img id="lpLogo" src="assets/images/logo.png" class="lp-logo" onerror="this.style.display='none'">
+            <div style="position: relative; z-index: 10;">
+                <div style="display: flex; align-items: center; border-bottom: 3px solid #1e3a8a; padding-bottom: 20px; margin-bottom: 25px;">
+                    <img id="lpLogo" src="assets/images/logo.png" style="width: 85px; height: 85px; object-fit: contain; margin-right: 20px;" onerror="this.style.display='none'">
                     <div style="flex: 1;">
                         <h1 id="lpInstName" style="margin: 0; font-size: 28px; color: #1e3a8a; font-weight: 900; text-transform: uppercase;">GLOBUS</h1>
                         <h2 id="lpSubName" style="margin: 5px 0 0; font-size: 14px; color: #475569; font-weight: 700; text-transform: uppercase;">TECHNICAL ACADEMY</h2>
@@ -415,46 +400,43 @@
                     </div>
                 </div>
 
-                <div class="lp-info-grid">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
                     <div><span style="color: #64748b; font-weight: 700;">Student Name:</span> <span id="lpName" style="font-weight: 900; font-size: 16px; margin-left: 5px;"></span></div>
                     <div><span style="color: #64748b; font-weight: 700;">Reg No:</span> <span id="lpReg" style="font-weight: 800; margin-left: 5px;"></span></div>
                     <div><span style="color: #64748b; font-weight: 700;">Course:</span> <span id="lpCourse" style="font-weight: 800; color: #1d4ed8; margin-left: 5px;"></span></div>
                     <div><span style="color: #64748b; font-weight: 700;">Phone:</span> <span id="lpPhone" style="font-weight: 800; margin-left: 5px;"></span></div>
                 </div>
 
-                <table class="lp-table">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px;">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Receipt No</th>
-                            <th style="text-align: right;">Amount Paid (₹)</th>
+                            <th style="background: #1e3a8a; color: white; padding: 12px; border: 1px solid #94a3b8; text-align: left;">Date</th>
+                            <th style="background: #1e3a8a; color: white; padding: 12px; border: 1px solid #94a3b8; text-align: left;">Description</th>
+                            <th style="background: #1e3a8a; color: white; padding: 12px; border: 1px solid #94a3b8; text-align: left;">Receipt No</th>
+                            <th style="background: #1e3a8a; color: white; padding: 12px; border: 1px solid #94a3b8; text-align: right;">Amount Paid (₹)</th>
                         </tr>
                     </thead>
-                    <tbody id="lpTableBody">
-                        <!-- Filled by JS -->
-                    </tbody>
+                    <tbody id="lpTableBody"></tbody>
                 </table>
 
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div class="lp-summary-box">
-                        <div class="lp-summary-row">
+                    <div style="width: 320px; border: 2px solid #cbd5e1; border-radius: 10px; overflow: hidden;">
+                        <div style="display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #cbd5e1; font-size: 15px;">
                             <span style="font-weight: 700;">Total Course Fee:</span>
                             <span id="lpTotal" style="font-weight: 900;"></span>
                         </div>
-                        <div class="lp-summary-row" style="background: #f0fdf4;">
+                        <div style="display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #cbd5e1; font-size: 15px; background: #f0fdf4;">
                             <span style="font-weight: 700; color: #15803d;">Total Paid + Disc:</span>
                             <span id="lpPaid" style="font-weight: 900; color: #15803d;"></span>
                         </div>
-                        <div class="lp-summary-row" style="background: #fef2f2; border: none;">
+                        <div style="display: flex; justify-content: space-between; padding: 12px 15px; font-size: 15px; background: #fef2f2; border: none;">
                             <span style="font-weight: 700; color: #b91c1c;">Pending Balance:</span>
                             <span id="lpPending" style="font-weight: 900; color: #b91c1c; font-size: 18px;"></span>
                         </div>
                     </div>
 
-                    <!-- PERFECT OVAL SEAL AS REQUESTED -->
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div class="lp-seal">
+                        <div style="width: 180px; height: 90px; border: 4px solid #16a34a; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-15deg); color: #16a34a; background: rgba(22, 163, 74, 0.03); margin-bottom: 15px; box-shadow: inset 0 0 10px rgba(22,163,74,0.1); mix-blend-mode: multiply;">
                             <span id="lpSealInst" style="font-size: 10px; font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1.1; padding: 0 10px;">GLOBUS</span>
                             <span style="font-size: 18px; font-weight: 900; margin: 4px 0;">FEE PAID</span>
                             <span style="font-size: 8px; font-weight: 700;">Digitally Signed</span>
@@ -762,7 +744,12 @@
                 
                 canvas.toBlob(async (blob) => {
                     const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
-                    const link = document.createElement('a'); link.download = `Fee_Receipt_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+                    const file = new File([blob], `Fee_Receipt_${name}.png`, { type: 'image/png' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try { await navigator.share({ files: [file], title: 'Fee Receipt' }); } catch (err) {}
+                    } else {
+                        const link = document.createElement('a'); link.download = `Fee_Receipt_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+                    }
                     btn.innerHTML = old; btn.disabled = false;
                 }, 'image/png');
             } catch (error) { alert("Error generating image."); btn.innerHTML = old; btn.disabled = false; }
@@ -826,6 +813,7 @@
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">No payment history found.</td></tr>';
                 } else {
                     ledgerTransactions.forEach(p => {
+                        // NEW PRINT BUTTON IN LEDGER TABLE
                         tbody.innerHTML += `<tr>
                             <td>${p.payment_date || '-'}</td><td>Fee Payment (${p.payment_mode || 'Cash'})</td><td>${p.receipt_no || '-'}</td>
                             <td style="color:#d97706;">${p.discount_amount > 0 ? '₹ '+p.discount_amount : '-'}</td>
@@ -840,11 +828,13 @@
             }
         });
 
+        // Trigger Receipt from Ledger Table
         window.showReceiptFromLedger = function(pid) {
             const p = ledgerTransactions.find(x => x.id === pid);
             if(!p) return;
             
             window.reloadOnReceiptClose = false; 
+            
             window.populateAndShowReceipt({
                 receiptNo: p.receipt_no || p.id,
                 date: p.payment_date,
@@ -859,7 +849,7 @@
             });
         };
 
-        // --- NEW PROFESSIONAL PDF STATEMENT GENERATOR ---
+        // --- PROFESSIONAL PDF STATEMENT GENERATOR ---
         window.downloadLedgerPDF = async function() {
             if(!ledgerStudentData) return;
             const btn = document.querySelector('.btn-statement');
@@ -895,7 +885,7 @@
                 });
 
                 const wrapper = document.getElementById('ledgerPrintWrapper');
-                wrapper.style.zIndex = "-1";
+                wrapper.style.zIndex = "-100"; 
                 
                 const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
                 
