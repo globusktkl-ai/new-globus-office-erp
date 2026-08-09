@@ -73,13 +73,28 @@
             @page { size: A5 portrait; margin: 5mm; }
         }
 
-        /* Mobile specific adjustments */
+        /* Mobile specific adjustments for tabs */
         @media (max-width: 600px) {
             .finance-tabs { gap: 6px; }
             .tab-btn { padding: 10px 2px; font-size: 11px; flex-direction: column; gap: 5px; text-align: center; }
             .tab-btn svg { width: 22px; height: 22px; }
             .btn-back-dashboard span { display: none; }
         }
+
+        /* HIDDEN AREA FOR PROFESSIONAL LEDGER PDF GENERATION */
+        #ledgerPrintWrapper { position: absolute; top: -9999px; left: -9999px; background: white; width: 794px; min-height: 1123px; padding: 40px; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #0f172a; z-index: -1000; }
+        .lp-header-section { display: flex; align-items: center; border-bottom: 3px solid #1e3a8a; padding-bottom: 20px; margin-bottom: 25px; }
+        .lp-logo { width: 85px; height: 85px; object-fit: contain; margin-right: 20px; }
+        .lp-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; z-index: 0; pointer-events: none; }
+        .lp-watermark img { width: 450px; height: auto; }
+        .lp-content-area { position: relative; z-index: 10; }
+        .lp-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+        .lp-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 14px; }
+        .lp-table th { background: #1e3a8a; color: white; padding: 12px; border: 1px solid #94a3b8; text-align: left; }
+        .lp-table td { padding: 12px; border: 1px solid #cbd5e1; }
+        .lp-summary-box { width: 320px; border: 2px solid #cbd5e1; border-radius: 10px; overflow: hidden; }
+        .lp-summary-row { display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #cbd5e1; font-size: 15px; }
+        .lp-seal { width: 180px; height: 90px; border: 4px solid #16a34a; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-15deg); color: #16a34a; background: rgba(22, 163, 74, 0.03); margin-bottom: 15px; box-shadow: inset 0 0 10px rgba(22,163,74,0.1); mix-blend-mode: multiply;}
     </style>
 </head>
 <body>
@@ -221,16 +236,10 @@
                     <button id="rcptPngBtn" onclick="window.shareReceiptPNG()" style="flex:1; padding:12px; background:#10b981; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:13px;">📲 WhatsApp</button>
                 </div>
 
-                <!-- Scrollable container for mobile view -->
                 <div style="width: 100%; overflow-x: auto; background: #e2e8f0; padding: 15px 5px; border-radius: 8px; display: flex; justify-content: center;">
-                    
                     <div id="rcptViewport" style="transform-origin: top center; transition: transform 0.2s;">
-                        
-                        <!-- A5 RECEIPT CANVAS (148 x 210 mm ratio approx) -->
                         <div class="receipt-wrapper" id="receiptRenderArea" style="width: 550px; height: 780px; background: white; padding: 25px; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; position: relative; flex-shrink: 0;">
-                            
                             <div style="border: 2px solid #cbd5e1; height: 100%; padding: 20px; box-sizing: border-box; border-radius: 8px; position: relative;">
-                                
                                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 20px;">
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <img id="rcptLogo" src="assets/images/logo.png" style="width: 55px; height: 55px; object-fit: contain;" onerror="this.style.display='none'">
@@ -243,12 +252,10 @@
                                         <h1 style="margin: 0; font-size: 22px; color: #10b981; font-weight: 900; letter-spacing: 1px;">FEE RECEIPT</h1>
                                     </div>
                                 </div>
-                                
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 13px;">
                                     <div><strong>Receipt No:</strong> <span id="rcptNo">-</span></div>
                                     <div><strong>Date:</strong> <span id="rcptDate">-</span></div>
                                 </div>
-                                
                                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 25px;">
                                     <table style="width: 100%; font-size: 14px; line-height: 2;">
                                         <tr><td style="width: 120px; color: #64748b; font-weight: 700;">Student Name:</td><td style="font-weight: 900; color: #0f172a; text-transform: uppercase;" id="rcptStuName">-</td></tr>
@@ -257,7 +264,6 @@
                                         <tr><td style="color: #64748b; font-weight: 700;">Phone No:</td><td style="font-weight: 800; color: #1e293b;" id="rcptPhone">-</td></tr>
                                     </table>
                                 </div>
-                                
                                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 14px;">
                                     <thead>
                                         <tr style="background: #1e3a8a; color: white;">
@@ -280,12 +286,10 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                
                                 <div style="display: flex; justify-content: space-between; align-items: center; background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 8px; padding: 15px; margin-bottom: 40px;">
                                     <div style="font-weight: 800; color: #b91c1c; font-size: 14px;">Pending Course Fee Balance:</div>
                                     <div style="font-weight: 900; color: #ef4444; font-size: 20px;">₹ <span id="rcptPending">0</span></div>
                                 </div>
-                                
                                 <div style="position: absolute; bottom: 30px; left: 30px; right: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
                                     <div style="font-size: 10px; color: #64748b; line-height: 1.6;">
                                         * This is a computer-generated receipt.<br>
@@ -318,7 +322,6 @@
                     <div class="ledger-summary">
                         <div class="summary-box"><span class="summary-label">Student Name</span><span class="summary-value" id="l_name">-</span></div>
                         <div class="summary-box"><span class="summary-label">Reg No</span><span class="summary-value" id="l_reg">-</span></div>
-                        <!-- PHONE NUMBER BOX IN LEDGER -->
                         <div class="summary-box"><span class="summary-label">Phone</span><span class="summary-value" id="l_phone" style="color: #2563eb;">-</span></div>
                         <div class="summary-box"><span class="summary-label">Course</span><span class="summary-value" id="l_course">-</span></div>
                         <div class="summary-box"><span class="summary-label">Total Fee</span><span class="summary-value" id="l_total" style="color: #1e3a8a;">₹ 0</span></div>
@@ -341,7 +344,8 @@
                         </table>
                     </div>
                     
-                    <button class="action-btn btn-statement" onclick="window.downloadLedgerPDF()">📄 Download Payment Statement (PDF)</button>
+                    <!-- UPDATED: Download Professional PDF Statement Button -->
+                    <button class="action-btn btn-statement" onclick="window.downloadLedgerPDF()">📄 Download Official Statement (PDF)</button>
                 </div>
             </div>
         </div>
@@ -392,6 +396,79 @@
                 </table>
             </div>
         </div>
+
+        <!-- NEW HIDDEN AREA FOR PROFESSIONAL LEDGER PDF GENERATION (Requested in Image 2) -->
+        <div id="ledgerPrintWrapper" class="no-print">
+            <!-- Watermark Logo -->
+            <div class="lp-watermark"><img id="lpWatermark" src="assets/images/logo.png" onerror="this.style.display='none'"></div>
+
+            <div class="lp-content-area">
+                <div class="lp-header-section">
+                    <img id="lpLogo" src="assets/images/logo.png" class="lp-logo" onerror="this.style.display='none'">
+                    <div style="flex: 1;">
+                        <h1 id="lpInstName" style="margin: 0; font-size: 28px; color: #1e3a8a; font-weight: 900; text-transform: uppercase;">GLOBUS</h1>
+                        <h2 id="lpSubName" style="margin: 5px 0 0; font-size: 14px; color: #475569; font-weight: 700; text-transform: uppercase;">TECHNICAL ACADEMY</h2>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 20px; font-weight: 900; color: #0f172a; border: 2px solid #1e3a8a; padding: 8px 15px; border-radius: 8px;">PAYMENT STATEMENT</div>
+                        <div style="margin-top: 10px; font-size: 12px; color: #64748b;">Date: <span id="lpPrintDate"></span></div>
+                    </div>
+                </div>
+
+                <div class="lp-info-grid">
+                    <div><span style="color: #64748b; font-weight: 700;">Student Name:</span> <span id="lpName" style="font-weight: 900; font-size: 16px; margin-left: 5px;"></span></div>
+                    <div><span style="color: #64748b; font-weight: 700;">Reg No:</span> <span id="lpReg" style="font-weight: 800; margin-left: 5px;"></span></div>
+                    <div><span style="color: #64748b; font-weight: 700;">Course:</span> <span id="lpCourse" style="font-weight: 800; color: #1d4ed8; margin-left: 5px;"></span></div>
+                    <div><span style="color: #64748b; font-weight: 700;">Phone:</span> <span id="lpPhone" style="font-weight: 800; margin-left: 5px;"></span></div>
+                </div>
+
+                <table class="lp-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Receipt No</th>
+                            <th style="text-align: right;">Amount Paid (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lpTableBody">
+                        <!-- Filled by JS -->
+                    </tbody>
+                </table>
+
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div class="lp-summary-box">
+                        <div class="lp-summary-row">
+                            <span style="font-weight: 700;">Total Course Fee:</span>
+                            <span id="lpTotal" style="font-weight: 900;"></span>
+                        </div>
+                        <div class="lp-summary-row" style="background: #f0fdf4;">
+                            <span style="font-weight: 700; color: #15803d;">Total Paid + Disc:</span>
+                            <span id="lpPaid" style="font-weight: 900; color: #15803d;"></span>
+                        </div>
+                        <div class="lp-summary-row" style="background: #fef2f2; border: none;">
+                            <span style="font-weight: 700; color: #b91c1c;">Pending Balance:</span>
+                            <span id="lpPending" style="font-weight: 900; color: #b91c1c; font-size: 18px;"></span>
+                        </div>
+                    </div>
+
+                    <!-- PERFECT OVAL SEAL AS REQUESTED -->
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div class="lp-seal">
+                            <span id="lpSealInst" style="font-size: 10px; font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1.1; padding: 0 10px;">GLOBUS</span>
+                            <span style="font-size: 18px; font-weight: 900; margin: 4px 0;">FEE PAID</span>
+                            <span style="font-size: 8px; font-weight: 700;">Digitally Signed</span>
+                        </div>
+                        <div style="font-size: 12px; font-weight: 700; color: #64748b;">Authorized Signatory</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 40px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px dashed #cbd5e1; padding-top: 10px;">
+                    * This is a computer-generated statement and does not require physical signature.
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <script type="module">
@@ -401,7 +478,11 @@
         let selectedStudentId = null, currentBalance = 0;
         let ledgerStudentId = null, ledgerStudentData = null, ledgerTransactions = [];
         window.feeReportData = []; window.filteredFeeData = [];
-        window.instSettings = null; // Store settings for receipt
+        window.instSettings = null; 
+
+        document.addEventListener('wheel', function(event) {
+            if (document.activeElement.type === 'number') { document.activeElement.blur(); }
+        });
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -417,14 +498,21 @@
                     window.instSettings = data;
                     document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
                     document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
-                    if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
+                    if(data.logo_url) {
+                        document.getElementById('navLogo').src = data.logo_url;
+                        document.getElementById('rcptLogo').src = data.logo_url;
+                        document.getElementById('lpLogo').src = data.logo_url;
+                        document.getElementById('lpWatermark').src = data.logo_url;
+                    }
                     
-                    // Receipt Settings
                     document.getElementById('rcptInstName').innerText = data.institute_name || 'GLOBUS';
                     document.getElementById('rcptSubName').innerText = data.sub_name || 'Technical Academy';
-                    if(data.logo_url) document.getElementById('rcptLogo').src = data.logo_url;
                     document.getElementById('rcptAddress').innerText = data.address || '';
                     document.getElementById('rcptContact').innerText = data.phone ? 'Ph: +91 ' + data.phone : '';
+
+                    document.getElementById('lpInstName').innerText = data.institute_name || 'GLOBUS';
+                    document.getElementById('lpSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
+                    document.getElementById('lpSealInst').innerText = data.institute_name || 'GLOBUS';
                 }
             } catch (e) {}
         }
@@ -530,7 +618,6 @@
             }
         });
 
-        // CONFIRMATION POPUP LOGIC
         window.triggerConfirmation = function() {
             if (!selectedStudentId) { alert('Warning: Please select a student.'); return; }
             const amountPaid = Number(document.getElementById('amountPaid').value) || 0;
@@ -551,7 +638,7 @@
             document.getElementById('confirmModal').style.display = 'none';
         }
 
-        // FINAL SUBMISSION LOGIC & RECEIPT TRIGGER
+        // --- ERROR FIX: AUTO GENERATE RECEIPT NUMBER IF EMPTY ---
         window.processFinalPayment = async function() {
             const finalBtn = document.getElementById('finalSubmitBtn');
             finalBtn.disabled = true; finalBtn.textContent = 'Processing...';
@@ -559,8 +646,13 @@
             const amountPaid = Number(document.getElementById('amountPaid').value) || 0;
             const discountAmount = Number(document.getElementById('discountAmount').value) || 0;
             const pMode = document.getElementById('paymentMode').value;
-            const pTxnId = document.getElementById('txnId').value;
+            let pTxnId = document.getElementById('txnId').value.trim();
             const pDate = document.getElementById('paymentDate').value;
+
+            // FIX: Generate unique ID if left blank to prevent Database Error
+            if(!pTxnId) {
+                pTxnId = 'TXN-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000);
+            }
 
             const { data: newPayment, error } = await supabase.from('fee_payments').insert([{
                 student_id: selectedStudentId, amount_paid: amountPaid, discount_amount: discountAmount,
@@ -581,10 +673,10 @@
                 const course = coursesData.find(c => c.id == s.course_id);
                 const cName = course ? course.course_name : (s.course_name || 'N/A');
                 
-                window.reloadOnReceiptClose = true; // Reload page when user closes receipt
+                window.reloadOnReceiptClose = true; 
                 
                 window.populateAndShowReceipt({
-                    receiptNo: pTxnId || (newPayment && newPayment[0] ? newPayment[0].id : 'AUTO'),
+                    receiptNo: pTxnId,
                     date: pDate,
                     studentName: s.full_name,
                     regNo: s.register_number || 'N/A',
@@ -598,13 +690,8 @@
             }
         };
 
-        // ==========================================
-        // SMART A5 RECEIPT LOGIC
-        // ==========================================
         window.populateAndShowReceipt = function(data) {
             document.getElementById('rcptNo').innerText = data.receiptNo;
-            
-            // Format Date (DD-MM-YYYY)
             let dateObj = new Date(data.date);
             let formattedDate = !isNaN(dateObj) ? `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth()+1).toString().padStart(2, '0')}-${dateObj.getFullYear()}` : data.date;
             
@@ -618,10 +705,8 @@
             document.getElementById('rcptAmount').innerText = data.amount;
             document.getElementById('rcptDisc').innerText = data.discount;
             document.getElementById('rcptTotal').innerText = data.amount + data.discount;
-            
             document.getElementById('rcptPending').innerText = data.pending;
 
-            // Auto-scale to fit mobile
             let scale = window.innerWidth < 650 ? ((window.innerWidth - 60) / 550) : 0.8;
             document.getElementById('rcptViewport').style.transform = `scale(${scale})`;
             document.getElementById('rcptViewport').style.height = `${780 * scale}px`;
@@ -661,12 +746,7 @@
                 
                 const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
                 const filename = `Fee_Receipt_${name}.pdf`;
-                const pdfBlob = pdf.output('blob');
-                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
-                
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try { await navigator.share({ files: [file], title: 'Fee Receipt' }); } catch (err) { pdf.save(filename); }
-                } else { pdf.save(filename); }
+                pdf.save(filename);
             } catch (e) { alert("Error generating PDF."); } finally { btn.innerHTML = old; btn.disabled = false; }
         };
 
@@ -682,12 +762,7 @@
                 
                 canvas.toBlob(async (blob) => {
                     const name = document.getElementById('rcptStuName').innerText.replace(/ /g, '_');
-                    const file = new File([blob], `Fee_Receipt_${name}.png`, { type: 'image/png' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Fee Receipt' }); } catch (err) {}
-                    } else {
-                        const link = document.createElement('a'); link.download = `Fee_Receipt_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
-                    }
+                    const link = document.createElement('a'); link.download = `Fee_Receipt_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
                     btn.innerHTML = old; btn.disabled = false;
                 }, 'image/png');
             } catch (error) { alert("Error generating image."); btn.innerHTML = old; btn.disabled = false; }
@@ -751,7 +826,6 @@
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px;">No payment history found.</td></tr>';
                 } else {
                     ledgerTransactions.forEach(p => {
-                        // NEW PRINT BUTTON IN LEDGER TABLE
                         tbody.innerHTML += `<tr>
                             <td>${p.payment_date || '-'}</td><td>Fee Payment (${p.payment_mode || 'Cash'})</td><td>${p.receipt_no || '-'}</td>
                             <td style="color:#d97706;">${p.discount_amount > 0 ? '₹ '+p.discount_amount : '-'}</td>
@@ -766,13 +840,11 @@
             }
         });
 
-        // Trigger Receipt from Ledger Table
         window.showReceiptFromLedger = function(pid) {
             const p = ledgerTransactions.find(x => x.id === pid);
             if(!p) return;
             
-            window.reloadOnReceiptClose = false; // Don't reload since we are just viewing history
-            
+            window.reloadOnReceiptClose = false; 
             window.populateAndShowReceipt({
                 receiptNo: p.receipt_no || p.id,
                 date: p.payment_date,
@@ -783,30 +855,66 @@
                 mode: p.payment_mode || 'Cash',
                 amount: p.amount_paid,
                 discount: p.discount_amount || 0,
-                pending: document.getElementById('l_pending').textContent.replace('₹ ', '') // Show current pending
+                pending: document.getElementById('l_pending').textContent.replace('₹ ', '') 
             });
         };
 
-        window.downloadLedgerPDF = function() {
+        // --- NEW PROFESSIONAL PDF STATEMENT GENERATOR ---
+        window.downloadLedgerPDF = async function() {
             if(!ledgerStudentData) return;
-            const { jsPDF } = window.jspdf; const doc = new jsPDF('p', 'mm', 'a4');
-            const instName = document.getElementById('navInstName').innerText; const subName = document.getElementById('navSubName').innerText;
-            
-            doc.setFontSize(18); doc.setTextColor(30, 58, 138); doc.text(instName, 14, 20);
-            doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text(subName, 14, 25);
-            doc.setFontSize(14); doc.setTextColor(15, 23, 42); doc.text("Student Payment Statement", 14, 35);
-            
-            doc.setFontSize(10); doc.text(`Name: ${ledgerStudentData.full_name}`, 14, 45); doc.text(`Reg No: ${ledgerStudentData.register_number || 'N/A'}`, 100, 45); 
-            doc.text(`Phone: ${ledgerStudentData.phone_number || 'N/A'}`, 150, 45);
-            doc.text(`Course: ${document.getElementById('l_course').textContent}`, 14, 52);
-            doc.setFontSize(11); doc.setTextColor(16, 185, 129); doc.text(`Total Paid: ${document.getElementById('l_paid').textContent}`, 14, 62); doc.setTextColor(220, 38, 38); doc.text(`Pending Balance: ${document.getElementById('l_pending').textContent}`, 100, 62);
+            const btn = document.querySelector('.btn-statement');
+            const oldText = btn.innerHTML;
+            btn.innerHTML = '⏳ Generating Official Statement...';
+            btn.disabled = true;
 
-            const tableRows = []; const aFee = Number(ledgerStudentData.admission_fee) || 0;
-            if(aFee > 0) { tableRows.push([ledgerStudentData.admission_date ? ledgerStudentData.admission_date.split('T')[0] : '-', "Admission Fee", "-", "-", `Rs. ${aFee}`]); }
-            ledgerTransactions.forEach(p => { tableRows.push([p.payment_date || '-', `Fee Payment (${p.payment_mode || 'Cash'})`, p.receipt_no || '-', p.discount_amount > 0 ? `Rs. ${p.discount_amount}` : '-', `Rs. ${p.amount_paid}`]); });
+            try {
+                let d = new Date();
+                document.getElementById('lpPrintDate').textContent = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+                document.getElementById('lpName').textContent = ledgerStudentData.full_name;
+                document.getElementById('lpReg').textContent = ledgerStudentData.register_number || 'N/A';
+                document.getElementById('lpCourse').textContent = document.getElementById('l_course').textContent;
+                document.getElementById('lpPhone').textContent = ledgerStudentData.phone_number || 'N/A';
 
-            doc.autoTable({ head: [["Date", "Description", "Receipt No", "Discount", "Amount Paid"]], body: tableRows, startY: 70, theme: 'grid', headStyles: { fillColor: [30, 58, 138], fontStyle: 'bold' }, columnStyles: { 4: { fontStyle: 'bold', textColor: [16, 185, 129] } } });
-            doc.save(`Statement_${ledgerStudentData.full_name}.pdf`);
+                document.getElementById('lpTotal').textContent = document.getElementById('l_total').textContent;
+                document.getElementById('lpPaid').textContent = document.getElementById('l_paid').textContent;
+                document.getElementById('lpPending').textContent = document.getElementById('l_pending').textContent;
+
+                const tbody = document.getElementById('lpTableBody');
+                tbody.innerHTML = '';
+                
+                const aFee = Number(ledgerStudentData.admission_fee) || 0;
+                if(aFee > 0) {
+                    let dateStr = ledgerStudentData.admission_date ? ledgerStudentData.admission_date.split('T')[0] : '-';
+                    tbody.innerHTML += `<tr><td style="padding:12px; border:1px solid #cbd5e1;">${dateStr}</td><td style="padding:12px; border:1px solid #cbd5e1;">Admission Fee</td><td style="padding:12px; border:1px solid #cbd5e1;">-</td><td style="padding:12px; border:1px solid #cbd5e1; text-align:right; font-weight:bold;">₹ ${aFee}</td></tr>`;
+                }
+
+                ledgerTransactions.forEach(p => {
+                    let desc = `Fee Payment (${p.payment_mode || 'Cash'})`;
+                    if(p.discount_amount > 0) desc += `<br><span style="font-size:10px; color:#d97706;">Includes Discount: ₹ ${p.discount_amount}</span>`;
+                    tbody.innerHTML += `<tr><td style="padding:12px; border:1px solid #cbd5e1;">${p.payment_date || '-'}</td><td style="padding:12px; border:1px solid #cbd5e1;">${desc}</td><td style="padding:12px; border:1px solid #cbd5e1;">${p.receipt_no || '-'}</td><td style="padding:12px; border:1px solid #cbd5e1; text-align:right; font-weight:bold;">₹ ${p.amount_paid}</td></tr>`;
+                });
+
+                const wrapper = document.getElementById('ledgerPrintWrapper');
+                wrapper.style.zIndex = "-1";
+                
+                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`Statement_${ledgerStudentData.full_name}.pdf`);
+
+            } catch (e) {
+                alert("Error generating professional PDF.");
+            } finally {
+                btn.innerHTML = oldText;
+                btn.disabled = false;
+            }
         }
 
         // ==========================================
