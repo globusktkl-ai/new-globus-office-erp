@@ -120,10 +120,19 @@
             <div class="form-card">
                 <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--primary-dark);">Collect Student Fee</h2>
                 <form id="feeForm">
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 12px;">
                         <label class="form-label">Search Student</label>
                         <input type="text" id="studentSearchInput" class="form-control" placeholder="Name, reg no, or 10-digit phone..." autocomplete="off">
                         <select id="studentSelect" class="form-control" size="4" style="margin-top: 8px; display: none; height: auto;" required></select>
+                    </div>
+
+                    <!-- NEW VERIFICATION BOX -->
+                    <div id="selectedStudentInfo" style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <div style="font-size: 14px; font-weight: 900; color: #1e3a8a; margin-bottom: 4px;" id="infoCourse">Course Name</div>
+                        <div style="font-size: 13px; font-weight: 800; color: #2563eb; display: flex; align-items: center; gap: 6px;">
+                            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                            <span id="infoPhone">Phone Number</span>
+                        </div>
                     </div>
 
                     <div id="feeDetails" style="display: none; background: #FEF2F2; border: 1px solid #FCA5A5; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
@@ -203,6 +212,8 @@
                     <div class="ledger-summary">
                         <div class="summary-box"><span class="summary-label">Student Name</span><span class="summary-value" id="l_name">-</span></div>
                         <div class="summary-box"><span class="summary-label">Reg No</span><span class="summary-value" id="l_reg">-</span></div>
+                        <!-- NEW PHONE NUMBER BOX IN LEDGER -->
+                        <div class="summary-box"><span class="summary-label">Phone</span><span class="summary-value" id="l_phone" style="color: #2563eb;">-</span></div>
                         <div class="summary-box"><span class="summary-label">Course</span><span class="summary-value" id="l_course">-</span></div>
                         <div class="summary-box"><span class="summary-label">Total Fee</span><span class="summary-value" id="l_total" style="color: #1e3a8a;">₹ 0</span></div>
                         <div class="summary-box"><span class="summary-label">Total Paid + Disc</span><span class="summary-value" id="l_paid" style="color: #10b981;">₹ 0</span></div>
@@ -369,13 +380,26 @@
         document.getElementById('studentSelect').addEventListener('change', function() {
             selectedStudentId = this.value;
             const div = document.getElementById('feeDetails');
-            if (!selectedStudentId) { div.style.display = 'none'; return; }
+            const infoDiv = document.getElementById('selectedStudentInfo');
+
+            if (!selectedStudentId) { 
+                div.style.display = 'none'; 
+                infoDiv.style.display = 'none';
+                return; 
+            }
 
             const s = studentsData.find(x => x.id === selectedStudentId);
             if (s) {
                 document.getElementById('studentSearchInput').value = `${s.full_name} (${s.register_number || 'N/A'})`;
                 this.style.display = 'none';
                 document.getElementById('amountPaid').value = ''; document.getElementById('discountAmount').value = '';
+
+                // NEW VERIFICATION BOX UPDATE
+                const course = coursesData.find(c => c.id == s.course_id);
+                const cName = course ? course.course_name : (s.course_name || 'N/A');
+                document.getElementById('infoCourse').textContent = cName;
+                document.getElementById('infoPhone').textContent = s.phone_number || 'N/A';
+                infoDiv.style.display = 'block';
 
                 const tFee = Number(s.total_fee) || 0; const aFee = Number(s.admission_fee) || 0;
                 const pay = paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => sum + (Number(p.amount_paid) || 0) + (Number(p.discount_amount) || 0), 0);
@@ -474,6 +498,7 @@
                 
                 document.getElementById('l_name').textContent = ledgerStudentData.full_name;
                 document.getElementById('l_reg').textContent = ledgerStudentData.register_number || 'N/A';
+                document.getElementById('l_phone').textContent = ledgerStudentData.phone_number || 'N/A'; // NEW PHONE FIELD
                 document.getElementById('l_course').textContent = cName;
                 
                 const tFee = Number(ledgerStudentData.total_fee) || 0;
@@ -519,7 +544,9 @@
             doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text(subName, 14, 25);
             doc.setFontSize(14); doc.setTextColor(15, 23, 42); doc.text("Student Payment Statement", 14, 35);
             
-            doc.setFontSize(10); doc.text(`Name: ${ledgerStudentData.full_name}`, 14, 45); doc.text(`Reg No: ${ledgerStudentData.register_number || 'N/A'}`, 100, 45); doc.text(`Course: ${document.getElementById('l_course').textContent}`, 14, 52);
+            doc.setFontSize(10); doc.text(`Name: ${ledgerStudentData.full_name}`, 14, 45); doc.text(`Reg No: ${ledgerStudentData.register_number || 'N/A'}`, 100, 45); 
+            doc.text(`Phone: ${ledgerStudentData.phone_number || 'N/A'}`, 150, 45); // NEW PHONE IN PDF
+            doc.text(`Course: ${document.getElementById('l_course').textContent}`, 14, 52);
             doc.setFontSize(11); doc.setTextColor(16, 185, 129); doc.text(`Total Paid: ${document.getElementById('l_paid').textContent}`, 14, 62); doc.setTextColor(220, 38, 38); doc.text(`Pending Balance: ${document.getElementById('l_pending').textContent}`, 100, 62);
 
             const tableRows = []; const aFee = Number(ledgerStudentData.admission_fee) || 0;
