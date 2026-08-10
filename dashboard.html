@@ -3,712 +3,712 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard - Globus</title>
+    <title>Staff & HR - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-        body { background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%); min-height: 100vh; }
-        .main-content { padding: 12px; max-width: 1000px; margin: 0 auto; }
-        
-        /* ============================================= */
-        /* COMPACT SECTION HEADINGS                      */
-        /* ============================================= */
-        .section-heading {
-            font-size: 12px !important;
-            font-weight: 900 !important;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            margin: 0 0 10px 0 !important;
-            padding: 0 2px;
-        }
-        .section-heading-icon {
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .section-heading-icon svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        
-        /* ============================================= */
-        /* STAT BOXES - COMPACT PREMIUM                  */
-        /* ============================================= */
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-        
-        .stat-box {
-            background: #ffffff;
-            padding: 10px 8px !important;
-            border-radius: 12px !important;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02) !important;
-            border: 1px solid #e2e8f0 !important;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 8px;
-            text-align: left;
-        }
-        
-        .stat-mini-icon {
-            width: 34px; height: 34px;
-            border-radius: 9px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-        .stat-mini-icon svg { width: 17px; height: 17px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        
-        .stat-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-        .stat-label { font-size: 9px !important; margin-bottom: 2px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1; }
-        .stat-value { font-size: 18px !important; font-weight: 900 !important; line-height: 1; letter-spacing: -0.5px; }
-        
-        /* ============================================= */
-        /* PREMIUM FINANCE CARD - COMPACT                */
-        /* ============================================= */
-        .unified-finance-card {
-            position: relative;
-            background: #ffffff;
-            border-radius: 14px;
-            padding: 0;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.03);
-            border: 1px solid #e2e8f0;
-            display: grid;
-            grid-template-columns: 1fr 1px 1fr;
-            overflow: hidden;
-        }
-        .uf-panel {
-            padding: 12px 12px;
-            display: flex; flex-direction: column; justify-content: space-between;
-            min-height: 95px; position: relative; overflow: hidden;
-        }
-        .uf-left { background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%); }
-        .uf-right { background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); }
-        .uf-panel::before {
-            content: ''; position: absolute; top: -20px; right: -20px;
-            width: 70px; height: 70px; border-radius: 50%; opacity: 0.08;
-        }
-        .uf-left::before { background: #10B981; }
-        .uf-right::before { background: #EF4444; }
-        .uf-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-        .uf-icon-badge {
-            width: 24px; height: 24px; border-radius: 7px;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
-        .uf-icon-green { background: linear-gradient(135deg, #10B981, #047857); box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3); }
-        .uf-icon-red { background: linear-gradient(135deg, #EF4444, #b91c1c); box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3); }
-        .uf-icon-badge svg { width: 13px; height: 13px; stroke: #ffffff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .uf-title { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; }
-        .uf-title-green { color: #047857; }
-        .uf-title-red { color: #b91c1c; }
-        
-        .uf-amount { 
-            font-size: 22px; font-weight: 900; line-height: 1; 
-            letter-spacing: -0.5px; 
-            display: flex; align-items: baseline; gap: 4px; 
-            font-family: 'Segoe UI', Roboto, sans-serif;
-        }
-        .uf-amount-green { color: #047857; }
-        .uf-amount-red { color: #b91c1c; }
-        .uf-rupee { 
-            font-size: 16px; 
-            font-weight: 800; 
-            opacity: 0.85;
-            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-        }
-        .uf-footer {
-            margin-top: 6px; padding-top: 6px;
-            border-top: 1px dashed rgba(148, 163, 184, 0.4);
-            display: flex; align-items: center; justify-content: space-between; gap: 4px;
-        }
-        .uf-footer-label { font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px; display: flex; align-items: center; }
-        .uf-footer-value { font-size: 11px; font-weight: 900; color: #334155; display: flex; align-items: baseline; gap: 2px;}
-        .uf-footer-rupee { font-size: 10px; opacity: 0.85; }
-        
-        .uf-status-dot {
-            display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-            margin-right: 4px; animation: pulseDot 2s ease-in-out infinite;
-        }
-        .uf-dot-green { background: #10B981; }
-        @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } }
-        .uf-divider-line { background: linear-gradient(180deg, transparent 0%, #cbd5e1 20%, #cbd5e1 80%, transparent 100%); }
+        *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{background:#f8fafc;min-height:100vh;padding-bottom:90px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;overflow-x:hidden}
+        .main-content{padding:12px;max-width:800px;margin:0 auto;width:100%}
 
-        /* ============================================= */
-        /* ALERT TICKER                                  */
-        /* ============================================= */
-        .alert-ticker-wrap {
-            overflow: hidden;
-            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            border: 1px solid #fde68a;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            padding: 8px 5px;
-            white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(180, 83, 9, 0.08);
-            display: none;
-        }
-        .alert-ticker-track { display: inline-block; animation: scrollTicker 15s linear infinite; }
-        .alert-item { display: inline-flex; align-items: center; gap: 8px; margin-right: 40px; font-size: 12px; font-weight: 800; text-decoration: none; }
-        .ticker-bell { color: #b45309; }
-        .ticker-event { color: #1d4ed8; }
-        @keyframes scrollTicker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        /* Back Button */
+        .btn-back-dashboard{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #cbd5e1;padding:8px 16px;border-radius:10px;color:#1e293b;font-weight:800;font-size:14px;text-decoration:none;box-shadow:0 4px 6px rgba(0,0,0,.05),inset 0 -2px 0 rgba(226,232,240,.8);transition:.2s;cursor:pointer}
+        .btn-back-dashboard:active{transform:translateY(1px);box-shadow:0 1px 2px rgba(0,0,0,.05)}
+        .btn-back-dashboard svg{width:22px;height:22px;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none;stroke:#4c1d95}
+        .top-nav{display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:20px;border-bottom:2px solid #e2e8f0;padding-bottom:15px;min-height:45px}
+        .top-nav .btn-back-dashboard{position:absolute;left:0;top:50%;transform:translateY(-50%)}
+        .top-nav .btn-back-dashboard:active{transform:translateY(-50%) scale(.95)}
+        .page-title{font-size:18px;font-weight:900;color:#0f172a;margin:0;text-transform:uppercase;letter-spacing:-.5px;text-align:center;width:100%;padding:0 50px}
+        @media(max-width:600px){.btn-back-dashboard span{display:none}.btn-back-dashboard{padding:10px}.page-title{font-size:15px;padding:0 42px}}
 
-        /* ============================================= */
-        /* MODULE SECTIONS - COMPACT PREMIUM             */
-        /* ============================================= */
-        .module-section {
-            background: #ffffff;
-            border-radius: 14px !important;
-            padding: 12px 12px 14px 12px !important;
-            margin-bottom: 12px !important;
-            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02) !important;
-            border: 1px solid #e2e8f0;
-        }
-        .module-section .nav-grid {
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important;
-            gap: 8px !important;
-            margin-top: 10px;
-        }
-        
-        /* ============================================= */
-        /* PREMIUM NAV BUTTONS - NO TOP COLOR SHADE      */
-        /* ============================================= */
-        .nav-btn {
-            position: relative;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px !important;
-            padding: 12px 6px !important;
-            text-decoration: none;
-            color: #334155 !important;
-            font-size: 11px !important;
-            font-weight: 800 !important;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02) !important;
-            min-height: 82px !important;
-            text-align: center;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-        }
-        .nav-btn:active {
-            transform: scale(0.94);
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
-        }
-        
-        /* Special buttons keep their soft tint */
-        .nav-btn.fee-btn {
-            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%) !important;
-            border-color: #bbf7d0 !important;
-            color: #15803d !important;
-        }
-        .nav-btn.expense-btn {
-            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%) !important;
-            border-color: #fecaca !important;
-            color: #b91c1c !important;
-        }
-        .nav-btn[href="reminders.html"] {
-            background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%) !important;
-            border-color: #fde68a !important;
-            color: #b45309 !important;
-        }
-        
-        .nav-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 7px !important;
-            transition: transform 0.25s ease;
-        }
-        .nav-btn:active .nav-icon { transform: scale(0.9); }
-        .nav-icon svg { width: 22px; height: 22px; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
-        
-        /* Premium Icon Backgrounds - Soft, no top shade */
-        .icon-bg-adm { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
-        .icon-bg-dir { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
-        .icon-bg-crs { background: linear-gradient(135deg, #fef3c7, #fde68a); }
-        .icon-bg-exm { background: linear-gradient(135deg, #fee2e2, #fecaca); }
-        .icon-bg-rpt-adm { background: linear-gradient(135deg, #e0f2fe, #bae6fd); }
-        .icon-bg-alert { background: linear-gradient(135deg, #fef3c7, #fde68a); }
-        .icon-bg-fee { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
-        .icon-bg-exp { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
-        .icon-bg-rpt { background: linear-gradient(135deg, #ccfbf1, #99f6e4); }
-        
-        /* Notification badge */
-        .nav-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-            box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(239, 68, 68, 0.3);
-            animation: pulseDot 2s ease-in-out infinite;
-        }
+        /* Tabs */
+        .staff-tabs{display:flex;gap:6px;margin-bottom:18px}
+        .staff-tab-btn{flex:1;padding:10px 4px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;font-size:11px;font-weight:800;color:#475569;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.02)}
+        .staff-tab-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+        .staff-tab-btn.active{background:#1e3a8a;color:#fff;border-color:#1e3a8a;box-shadow:0 4px 12px rgba(30,58,138,.25)}
+        .staff-tab-btn:active{transform:scale(.96)}
+        .tab-panel{display:none;animation:fadeUp .3s ease}
+        .tab-panel.active{display:block}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-        /* ============================================= */
-        /* HEADER                                        */
-        /* ============================================= */
-        .header-auth-section {
-            display: flex; align-items: center; gap: 10px;
-            background: rgba(255,255,255,0.9);
-            padding: 4px 4px 4px 12px;
-            border-radius: 30px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
-        }
-        .logged-in-text { font-size: 10px; font-weight: 700; color: #64748b; display: flex; flex-direction: column; text-align: right; line-height: 1.2; }
-        .logged-in-email { color: #1e3a8a; font-weight: 900; font-size: 11px; }
-        .btn-logout-round {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white; border: none;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
-            flex-shrink: 0;
-        }
-        .btn-settings-round { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3); flex-shrink: 0; transition: 0.2s; margin-right: 12px; }
-        .btn-settings-round:active { transform: scale(0.95); }
-        
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
-        .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
-        label { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block; }
+        /* Search & Filters */
+        .search-filter-card{background:#fff;border-radius:14px;padding:12px;margin-bottom:16px;box-shadow:0 4px 14px rgba(15,23,42,.04);border:1px solid #e2e8f0}
+        .sf-search{width:100%;padding:10px 12px 10px 36px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:13px;font-weight:600;outline:none;background:#f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>') no-repeat 10px center;margin-bottom:10px;transition:.2s}
+        .sf-search:focus{border-color:#3b82f6;background-color:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+        .sf-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .sf-select{width:100%;padding:9px 8px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:12px;font-weight:700;color:#1e293b;background:#f8fafc;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
+
+        /* Staff Card */
+        .staff-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(15,23,42,.04);transition:.2s}
+        .sc-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;border-bottom:1px dashed #e2e8f0;padding-bottom:12px}
+        .sc-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f1f5f9}
+        .sc-avatar img,.sc-avatar svg{width:100%;height:100%;object-fit:cover}
+        .sc-name{font-size:17px;font-weight:900;color:#0f172a;text-transform:uppercase;line-height:1.2;margin-bottom:4px}
+        .sc-role-badge{display:inline-block;background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1d4ed8;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px}
+        .sc-row{display:flex;align-items:flex-start;margin-bottom:6px;font-size:13px}
+        .sc-label{width:100px;color:#64748b;font-weight:700;flex-shrink:0;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+        .sc-value{flex:1;color:#1e293b;font-weight:800}
+        .sc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;border-top:1px dashed #e2e8f0;padding-top:12px}
+        .sc-btn{border:none;padding:11px 6px;border-radius:10px;font-weight:800;cursor:pointer;font-size:12px;text-align:center;transition:.2s;display:flex;justify-content:center;align-items:center;gap:5px;box-shadow:0 3px 6px rgba(0,0,0,.08)}
+        .sc-btn:active{transform:scale(.95)}
+        .sc-btn-view{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff}
+        .sc-btn-archive{background:transparent;color:#ea580c;border:1.5px solid #fdba74}
+
+        /* FAB */
+        .fab-add{position:fixed;bottom:24px;right:20px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;font-size:28px;font-weight:300;cursor:pointer;box-shadow:0 8px 20px rgba(37,99,235,.35);z-index:50;display:flex;align-items:center;justify-content:center;transition:.2s}
+        .fab-add:active{transform:scale(.9)}
+
+        /* Modal */
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,.88);z-index:100;justify-content:center;align-items:flex-start;padding:15px;overflow-y:auto;backdrop-filter:blur(4px)}
+        .modal-sheet{background:#fff;width:100%;max-width:500px;border-radius:16px;padding:22px;margin:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,.4);animation:sheetUp .3s ease;position:relative}
+        @keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .modal-close{position:absolute;top:12px;right:12px;background:#ef4444;color:#fff;border:2px solid #fff;border-radius:50%;width:34px;height:34px;font-weight:bold;cursor:pointer;box-shadow:0 4px 8px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:15px;z-index:10}
+        .modal-close:active{transform:scale(.9)}
+        .modal-title{font-size:18px;font-weight:900;color:#0f172a;margin:0 0 18px;padding-right:40px}
+        .frm-label{font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;display:block}
+        .frm-input,.frm-select{width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:14px;font-weight:600;outline:none;margin-bottom:14px;background:#f8fafc;transition:.2s}
+        .frm-input:focus,.frm-select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1);background:#fff}
+        .frm-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .frm-submit{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;color:#fff;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 12px rgba(16,185,129,.25);margin-top:6px}
+        .frm-submit:active{transform:scale(.97)}
+        .frm-submit:disabled{background:#94a3b8;cursor:not-allowed;box-shadow:none}
+
+        /* Advance Card */
+        .adv-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(15,23,42,.03)}
+        .adv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+        .adv-name{font-weight:900;color:#0f172a;font-size:14px}
+        .adv-amount{font-weight:900;color:#ef4444;font-size:16px}
+        .adv-meta{font-size:11px;color:#64748b;font-weight:600;display:flex;gap:12px}
+        .adv-status{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:800;text-transform:uppercase}
+        .adv-status.unpaid{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+        .adv-status.paid{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+
+        /* Payroll */
+        .payroll-card{background:#fff;border-radius:16px;padding:20px;border:1px solid #e2e8f0;box-shadow:0 4px 14px rgba(15,23,42,.04);margin-bottom:16px}
+        .pay-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+        .pay-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center}
+        .pay-box-label{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+        .pay-box-value{font-size:20px;font-weight:900;line-height:1}
+        .pay-net{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid #10b981;border-radius:12px;padding:16px;text-align:center;margin:14px 0}
+        .pay-net-label{font-size:12px;font-weight:800;color:#047857;text-transform:uppercase;margin-bottom:4px}
+        .pay-net-value{font-size:30px;font-weight:900;color:#047857}
+
+        /* Slip Hidden */
+        #slipWrapper{position:absolute;top:-9999px;left:-9999px;z-index:-1}
+        .slip-page{width:550px;height:780px;background:#fff;padding:25px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;position:relative}
+        .slip-border{border:2px solid #cbd5e1;height:100%;padding:20px;box-sizing:border-box;border-radius:8px;position:relative}
+        .slip-seal{position:absolute;right:30px;bottom:100px;width:130px;height:70px;border:3px solid #16a34a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-15deg);color:#16a34a;background:rgba(22,163,74,.03);box-shadow:inset 0 0 10px rgba(22,163,74,.1);mix-blend-mode:multiply}
+
+        .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;font-weight:700;font-size:14px;background:#fff;border-radius:12px;border:1px dashed #cbd5e1}
+
+        /* Hide scroll number */
+        input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+        input[type=number]{-moz-appearance:textfield}
     </style>
 </head>
 <body>
-    <nav class="app-header" style="padding: 10px 15px;">
-        <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 8px;">
-            <img src="assets/images/logo.png" id="navLogo" class="logo-small" alt="Logo" style="width: 35px; height: 35px;" onerror="this.style.display='none'">
-            <div style="display: flex; flex-direction: column;">
-                <span id="navInstName" style="font-size: 14px; font-weight: 900; text-transform: uppercase;">GLOBUS</span>
-                <span id="navSubName" style="font-size: 9px; color: #64748b; font-weight: 800;">Technical Academy</span>
-            </div>
-        </div>
-        <div class="header-right">
-            <div class="header-auth-section">
-                <div class="logged-in-text">
-                    <span>Admin</span>
-                    <span class="logged-in-email" id="authEmail">Loading...</span>
-                </div>
-                <button class="btn-settings-round" onclick="window.triggerSettingsSecurity()" title="Institute Core Settings">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                    </svg>
-                </button>
-                <button class="btn-logout-round" id="logoutBtn" title="Secure Logout">
-                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </nav>
-
     <main class="main-content">
-        
-        <!-- INSTITUTE OVERVIEW - COMPACT HORIZONTAL LAYOUT -->
-        <h2 class="section-heading" style="color: #1e3a8a;">
-            <span class="section-heading-icon" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
-                <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 12l4-4 4 4 6-6"/></svg>
-            </span>
-            Institute Overview
-        </h2>
-        
-        <div class="stat-grid">
-            <div class="stat-box">
-                <div class="stat-mini-icon" style="background: linear-gradient(135deg, #64748b, #475569);">
-                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-                <div class="stat-info">
-                    <div class="stat-label" style="color: #64748b;">Total</div>
-                    <div class="stat-value" id="statTotalStudents" style="color: #334155;">0</div>
-                </div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-mini-icon" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);">
-                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
-                <div class="stat-info">
-                    <div class="stat-label" style="color: #2563eb;">Active</div>
-                    <div class="stat-value" id="statActiveStudents" style="color: #1d4ed8;">0</div>
-                </div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-mini-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                </div>
-                <div class="stat-info">
-                    <div class="stat-label" style="color: #d97706;">Courses</div>
-                    <div class="stat-value" id="statCourses" style="color: #b45309;">0</div>
-                </div>
-            </div>
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn-back-dashboard">
+                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <h1 class="page-title">Staff & HR Management</h1>
         </div>
 
-        <!-- UNIFIED FINANCE CARD -->
-        <div class="unified-finance-card">
-            <div class="uf-panel uf-left">
-                <div>
-                    <div class="uf-header">
-                        <div class="uf-icon-badge uf-icon-green">
-                            <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        </div>
-                        <div class="uf-title uf-title-green">Today's Collection</div>
-                    </div>
-                    <div class="uf-amount uf-amount-green">
-                        <span class="uf-rupee">₹</span>
-                        <span id="statTodayCollection">0</span>
-                    </div>
-                </div>
-                <div class="uf-footer">
-                    <span class="uf-footer-label">
-                        <span class="uf-status-dot uf-dot-green"></span>Live Today
-                    </span>
-                    <span class="uf-footer-value" style="color: #047857;">↑ Active</span>
-                </div>
-            </div>
-
-            <div class="uf-divider-line"></div>
-
-            <div class="uf-panel uf-right">
-                <div>
-                    <div class="uf-header">
-                        <div class="uf-icon-badge uf-icon-red">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        </div>
-                        <div class="uf-title uf-title-red">Current Overdue</div>
-                    </div>
-                    <div class="uf-amount uf-amount-red">
-                        <span class="uf-rupee">₹</span>
-                        <span id="statCurrentDue">0</span>
-                    </div>
-                </div>
-                <div class="uf-footer">
-                    <span class="uf-footer-label">Total Pending</span>
-                    <span class="uf-footer-value" style="color: #b91c1c;">
-                        <span class="uf-footer-rupee">₹</span><span id="statPendingFees">0</span>
-                    </span>
-                </div>
-            </div>
+        <!-- TABS -->
+        <div class="staff-tabs">
+            <button class="staff-tab-btn active" onclick="switchStaffTab('directory')">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Directory
+            </button>
+            <button class="staff-tab-btn" onclick="switchStaffTab('advances')">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Advances
+            </button>
+            <button class="staff-tab-btn" onclick="switchStaffTab('payroll')">
+                <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Payroll
+            </button>
         </div>
 
-        <!-- ALERT TICKER -->
-        <div class="alert-ticker-wrap" id="alertTickerWrap">
-            <div class="alert-ticker-track" id="alertTickerTrack"></div>
+        <!-- TAB 1: DIRECTORY -->
+        <div id="panel-directory" class="tab-panel active">
+            <div class="search-filter-card">
+                <input type="text" class="sf-search" id="staffSearch" placeholder="Search name or phone..." oninput="renderDirectory()">
+                <div class="sf-row">
+                    <select class="sf-select" id="filterRole" onchange="renderDirectory()">
+                        <option value="all">All Roles</option>
+                    </select>
+                    <select class="sf-select" id="filterStatus" onchange="renderDirectory()">
+                        <option value="active">🟢 Active</option>
+                        <option value="archived">🗄️ Archived</option>
+                        <option value="all">📁 All</option>
+                    </select>
+                </div>
+            </div>
+            <div id="staffList"><div class="empty-state">Loading staff data...</div></div>
+            <button class="fab-add" onclick="openModal('addStaffModal')" title="Add New Staff">+</button>
         </div>
 
-        <!-- ACADEMIC & ADMIN SECTION -->
-        <div class="module-section">
-            <h2 class="section-heading" style="color: #1e3a8a; margin: 0 !important;">
-                <span class="section-heading-icon" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
-                    <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                </span>
-                Academic & Admin
-            </h2>
-            <div class="nav-grid">
-                <a href="admission.html" class="nav-btn">
-                    <span class="nav-icon icon-bg-adm">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#1d4ed8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-                    </span>Admission
-                </a>
-                <a href="students.html" class="nav-btn">
-                    <span class="nav-icon icon-bg-dir">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    </span>Directory
-                </a>
-                <a href="courses.html" class="nav-btn">
-                    <span class="nav-icon icon-bg-crs">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#b45309"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    </span>Courses
-                </a>
-                <a href="exams.html" class="nav-btn">
-                    <span class="nav-icon icon-bg-exm">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#b91c1c"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
-                    </span>Exams
-                </a>
-                <a href="admission-report.html" class="nav-btn">
-                    <span class="nav-icon icon-bg-rpt-adm">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#0369a1"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
-                    </span>Adm Report
-                </a>
-                <a href="reminders.html" class="nav-btn">
-                    <span class="nav-badge"></span>
-                    <span class="nav-icon icon-bg-alert">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#d97706"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    </span>Smart Alerts
-                </a>
+        <!-- TAB 2: ADVANCES -->
+        <div id="panel-advances" class="tab-panel">
+            <div class="payroll-card">
+                <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Record Staff Advance</h3>
+                <label class="frm-label">Select Staff</label>
+                <select class="frm-select" id="advStaffSelect"><option value="">-- Choose Staff --</option></select>
+                <div class="frm-row">
+                    <div><label class="frm-label">Amount (₹)</label><input type="number" class="frm-input" id="advAmount" placeholder="0" min="0"></div>
+                    <div><label class="frm-label">Date</label><input type="date" class="frm-input" id="advDate"></div>
+                </div>
+                <label class="frm-label">Remarks (Optional)</label>
+                <input type="text" class="frm-input" id="advRemarks" placeholder="Purpose of advance...">
+                <button class="frm-submit" id="advSubmitBtn" onclick="saveAdvance()">💰 Record Advance</button>
             </div>
+            <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Recent Advances</h3>
+            <div id="advancesList"><div class="empty-state">Loading advances...</div></div>
         </div>
 
-        <!-- FINANCE & ACCOUNTS SECTION -->
-        <div class="module-section">
-            <h2 class="section-heading" style="color: #064e3b; margin: 0 !important;">
-                <span class="section-heading-icon" style="background: linear-gradient(135deg, #047857, #10b981);">
-                    <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </span>
-                Finance & Accounts
-            </h2>
-            <div class="nav-grid">
-                <a href="fees.html" class="nav-btn fee-btn">
-                    <span class="nav-icon icon-bg-fee">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#047857"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="7" y1="15" x2="9" y2="15"/></svg>
-                    </span>Fee Collect
-                </a>
-                <a href="expense.html" class="nav-btn expense-btn">
-                    <span class="nav-icon icon-bg-exp">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#be185d"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="13" y2="11"/></svg>
-                    </span>Day Book
-                </a>
-                <a href="report.html" class="nav-btn">
-                    <span class="nav-icon icon-bg-rpt">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                    </span>Other Reports
-                </a>
+        <!-- TAB 3: PAYROLL -->
+        <div id="panel-payroll" class="tab-panel">
+            <div class="payroll-card">
+                <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Process Monthly Salary</h3>
+                <div class="frm-row">
+                    <div><label class="frm-label">Month</label><input type="month" class="frm-input" id="payMonth"></div>
+                    <div><label class="frm-label">Select Staff</label>
+                        <select class="frm-select" id="payStaffSelect" onchange="loadPayrollDetails()"><option value="">-- Choose --</option></select>
+                    </div>
+                </div>
+                <div id="payrollDetails" style="display:none">
+                    <div class="pay-summary">
+                        <div class="pay-box"><div class="pay-box-label">Basic Salary</div><div class="pay-box-value" id="paySalary" style="color:#1d4ed8">₹ 0</div></div>
+                        <div class="pay-box"><div class="pay-box-label">Advance Deduction</div><div class="pay-box-value" id="payDeduction" style="color:#ef4444">₹ 0</div></div>
+                    </div>
+                    <div class="pay-net">
+                        <div class="pay-net-label">Net Payable Amount</div>
+                        <div class="pay-net-value" id="payNet">₹ 0</div>
+                    </div>
+                    <button class="frm-submit" id="payProcessBtn" onclick="processSalary()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25)">💳 Process Salary</button>
+                    <button class="frm-submit" id="paySlipBtn" onclick="downloadSalarySlip()" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 12px rgba(245,158,11,.25);margin-top:10px;display:none">📄 Download Salary Slip</button>
+                </div>
             </div>
+            <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Payment History</h3>
+            <div id="salaryHistory"><div class="empty-state">Process a salary to see history.</div></div>
         </div>
     </main>
 
-    <!-- SETTINGS MODAL -->
-    <div id="settingsModal" class="modal-overlay">
-        <div class="modal-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
-                <button onclick="document.getElementById('settingsModal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
-            </div>
-            <form id="settingsForm" onsubmit="saveSettings(event)">
-                <label>Institute Main Name</label><input type="text" id="set_name" class="form-control" required>
-                <label>Sub Name / Tagline</label><input type="text" id="set_sub" class="form-control">
-                <label>Full Address</label><input type="text" id="set_address" class="form-control">
-                <div style="display: flex; gap: 10px;"><div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control"></div><div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div></div>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save</button>
+    <!-- ADD STAFF MODAL -->
+    <div id="addStaffModal" class="modal-overlay">
+        <div class="modal-sheet">
+            <button class="modal-close" onclick="closeModal('addStaffModal')">×</button>
+            <h2 class="modal-title">➕ Add New Staff</h2>
+            <label class="frm-label">Full Name *</label>
+            <input type="text" class="frm-input" id="addName" required>
+            <div class="frm-row">
+                <div><label class="frm-label">Phone *</label><input type="tel" class="frm-input" id="addPhone" maxlength="10"></div>
+                <div><label class="frm-label">Gender</label>
+                    <select class="frm-select" id="addGender"><option value="Male">Male</option><option value="Female">Female</option></select>
                 </div>
-            </form>
+            </div>
+            <div class="frm-row">
+                <div><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="addRole" placeholder="e.g. Teacher"></div>
+                <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="addSalary" min="0"></div>
+            </div>
+            <div class="frm-row">
+                <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="addJoinDate"></div>
+                <div><label class="frm-label">Qualification</label><input type="text" class="frm-input" id="addQual" placeholder="e.g. B.Ed"></div>
+            </div>
+            <label class="frm-label">Address</label>
+            <input type="text" class="frm-input" id="addAddress" placeholder="Full address">
+            <button class="frm-submit" id="addStaffBtn" onclick="saveNewStaff()">✅ Save Staff Member</button>
+        </div>
+    </div>
+
+    <!-- VIEW/EDIT STAFF MODAL -->
+    <div id="editStaffModal" class="modal-overlay">
+        <div class="modal-sheet">
+            <button class="modal-close" onclick="closeModal('editStaffModal')">×</button>
+            <h2 class="modal-title">✏️ Edit Staff Profile</h2>
+            <input type="hidden" id="editId">
+            <label class="frm-label">Full Name *</label>
+            <input type="text" class="frm-input" id="editName">
+            <div class="frm-row">
+                <div><label class="frm-label">Phone *</label><input type="tel" class="frm-input" id="editPhone" maxlength="10"></div>
+                <div><label class="frm-label">Gender</label>
+                    <select class="frm-select" id="editGender"><option value="Male">Male</option><option value="Female">Female</option></select>
+                </div>
+            </div>
+            <div class="frm-row">
+                <div><label class="frm-label">Role</label><input type="text" class="frm-input" id="editRole"></div>
+                <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="editSalary" min="0"></div>
+            </div>
+            <div class="frm-row">
+                <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="editJoinDate"></div>
+                <div><label class="frm-label">Status</label>
+                    <select class="frm-select" id="editStatus"><option value="active">Active</option><option value="archived">Archived</option></select>
+                </div>
+            </div>
+            <label class="frm-label">Address</label>
+            <input type="text" class="frm-input" id="editAddress">
+            <button class="frm-submit" onclick="updateStaff()">💾 Update Profile</button>
+        </div>
+    </div>
+
+    <!-- HIDDEN SALARY SLIP FOR PDF -->
+    <div id="slipWrapper">
+        <div class="slip-page" id="slipRenderArea">
+            <div class="slip-border">
+                <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #1e3a8a;padding-bottom:15px;margin-bottom:20px">
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <img id="slipLogo" src="assets/images/logo.png" style="width:50px;height:50px;object-fit:contain" onerror="this.style.display='none'">
+                        <div>
+                            <h2 id="slipInstName" style="margin:0;font-size:20px;color:#1e3a8a;font-weight:900;text-transform:uppercase">GLOBUS</h2>
+                            <p id="slipSubName" style="margin:2px 0 0;font-size:10px;color:#475569;font-weight:800;text-transform:uppercase">Technical Academy</p>
+                        </div>
+                    </div>
+                    <div style="text-align:right"><h1 style="margin:0;font-size:18px;color:#0f172a;font-weight:900">SALARY SLIP</h1></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:18px;font-size:12px"><div><strong>Month:</strong> <span id="slipMonth">-</span></div><div><strong>Date:</strong> <span id="slipDate">-</span></div></div>
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:20px">
+                    <table style="width:100%;font-size:13px;line-height:2">
+                        <tr><td style="width:110px;color:#64748b;font-weight:700">Employee Name:</td><td style="font-weight:900;color:#0f172a;text-transform:uppercase" id="slipName">-</td></tr>
+                        <tr><td style="color:#64748b;font-weight:700">Designation:</td><td style="font-weight:800;color:#1e293b" id="slipRole">-</td></tr>
+                        <tr><td style="color:#64748b;font-weight:700">Phone:</td><td style="font-weight:800;color:#1e293b" id="slipPhone">-</td></tr>
+                    </table>
+                </div>
+                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px">
+                    <thead><tr style="background:#1e3a8a;color:#fff"><th style="padding:10px;text-align:left;border:1px solid #1e3a8a">Description</th><th style="padding:10px;text-align:right;border:1px solid #1e3a8a">Amount (₹)</th></tr></thead>
+                    <tbody>
+                        <tr><td style="padding:12px;border:1px solid #cbd5e1;font-weight:700">Basic Salary</td><td style="padding:12px;border:1px solid #cbd5e1;text-align:right;font-weight:900" id="slipBasic">0</td></tr>
+                        <tr><td style="padding:12px;border:1px solid #cbd5e1;font-weight:700;color:#dc2626">Advance Deduction</td><td style="padding:12px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#dc2626" id="slipDeduction">0</td></tr>
+                        <tr style="background:#f0fdf4"><td style="padding:12px;border:1px solid #bbf7d0;font-weight:900;color:#15803d;text-align:right">NET PAYABLE</td><td style="padding:12px;border:1px solid #bbf7d0;text-align:right;font-weight:900;color:#15803d;font-size:18px" id="slipNet">0</td></tr>
+                    </tbody>
+                </table>
+                <div style="position:absolute;bottom:30px;left:30px;right:30px;display:flex;justify-content:space-between;align-items:flex-end">
+                    <div style="font-size:9px;color:#94a3b8;line-height:1.5">* Computer generated salary slip<br>No signature required</div>
+                    <div style="text-align:center"><div style="border-bottom:1px solid #1e293b;width:140px;height:40px;margin-bottom:6px"></div><div style="font-size:12px;font-weight:800;color:#1e293b">Authorized Signatory</div></div>
+                </div>
+                <div class="slip-seal">
+                    <span style="font-size:7px;font-weight:900;text-transform:uppercase;text-align:center;line-height:1.1;padding:0 5px" id="slipSealInst">GLOBUS</span>
+                    <span style="font-size:14px;font-weight:900;margin:2px 0">PAID</span>
+                    <span style="font-size:6px;font-weight:700">Digitally Signed</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-        
-        async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
-            document.getElementById('authEmail').innerText = session.user.email.split('@')[0];
-            
-            loadSettings();
-            loadDashboardData();
-            buildSmartTicker();
-            setInterval(buildSmartTicker, 30000); 
+
+        let allStaff = [], allAdvances = [], allSalaryPayments = [];
+        let instSettings = null;
+        let payrollAdvances = []; // unpaid advances for selected staff
+
+        // ===================== AUTH =====================
+        async function init() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) { window.location.href = 'login.html'; return; }
+                await loadInstSettings();
+                await fetchAllData();
+            } catch(e) { console.error("Init error:", e); }
         }
 
-        window.buildSmartTicker = async function() {
-            const eventSet = localStorage.getItem('globus_events_settings');
-            let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
-            
-            const wrap = document.getElementById('alertTickerWrap');
-            const track = document.getElementById('alertTickerTrack');
-
-            if (!masterAlertsOn) {
-                wrap.style.display = 'none';
-                track.innerHTML = '';
-                return; 
-            }
-
-            let tickerItems = [];
-            const now = new Date();
-
-            const savedBell = localStorage.getItem('globus_bell_settings_final'); 
-            if(savedBell) {
-                const bSettings = JSON.parse(savedBell);
-                if(bSettings.isOn && bSettings.warningDuration > 0 && !(bSettings.excludedDays && bSettings.excludedDays.includes(now.getDay()))) {
-                    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-                    let nextBell = null; let minDiff = Infinity;
-                    if(bSettings.bells) {
-                        bSettings.bells.forEach(bell => {
-                            const [bH, bM] = bell.time.split(':').map(Number);
-                            const diff = (bH * 60 + bM) - currentMinutes;
-                            if(diff > 0 && diff <= bSettings.warningDuration && diff < minDiff) { minDiff = diff; nextBell = bell; }
-                        });
-                    }
-                    if(nextBell) {
-                        let parts = nextBell.time.split(':');
-                        let h = parseInt(parts[0]); let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
-                        tickerItems.push(`<a href="reminders.html" class="alert-item ticker-bell">⏳ Upcoming Bell: ${nextBell.name} at ${String(h).padStart(2,'0')}:${parts[1]} ${ampm}</a>`);
-                    }
-                }
-            }
-
-            const savedEvents = localStorage.getItem('globus_events');
-            if(savedEvents) {
-                const events = JSON.parse(savedEvents);
-                events.forEach(e => {
-                    let evDate = new Date(e.date + 'T' + e.time);
-                    let diffMs = evDate - now;
-                    if(diffMs > 0 && diffMs <= (24 * 60 * 60 * 1000)) {
-                        let displayTime = evDate.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
-                        tickerItems.push(`<a href="reminders.html" class="alert-item ticker-event">📅 Event: ${e.name} (${displayTime})</a>`);
-                    }
-                });
-            }
-
-            if(tickerItems.length > 0) {
-                let htmlStr = tickerItems.join('');
-                if(tickerItems.length < 3) htmlStr += htmlStr; 
-                
-                track.innerHTML = htmlStr;
-                wrap.style.display = 'block';
-            } else {
-                wrap.style.display = 'none';
-                track.innerHTML = '';
-            }
-        };
-
-        async function loadDashboardData() {
+        async function loadInstSettings() {
             try {
-                const [stuRes, crsRes, payRes] = await Promise.all([
-                    supabase.from('students').select('*'), 
-                    supabase.from('courses').select('*'), 
-                    supabase.from('fee_payments').select('*')
+                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                if (data) {
+                    instSettings = data;
+                    if (data.logo_url) { 
+                        const slipLogo = document.getElementById('slipLogo');
+                        if(slipLogo) slipLogo.src = data.logo_url;
+                    }
+                    const sn = document.getElementById('slipInstName'); if(sn) sn.textContent = data.institute_name || 'GLOBUS';
+                    const ss = document.getElementById('slipSubName'); if(ss) ss.textContent = data.sub_name || 'Technical Academy';
+                    const si = document.getElementById('slipSealInst'); if(si) si.textContent = data.institute_name || 'GLOBUS';
+                }
+            } catch(e) {}
+        }
+
+        async function fetchAllData() {
+            try {
+                const [staffRes, advRes, salRes] = await Promise.all([
+                    supabase.from('staff').select('*').order('created_at', { ascending: false }),
+                    supabase.from('staff_advances').select('*').order('advance_date', { ascending: false }),
+                    supabase.from('salary_payments').select('*').order('created_at', { ascending: false })
                 ]);
-                
-                const studentsData = stuRes.data || []; 
-                const coursesData = crsRes.data || []; 
-                const paymentsData = payRes.data || [];
+                allStaff = staffRes.data || [];
+                allAdvances = advRes.data || [];
+                allSalaryPayments = salRes.data || [];
 
-                document.getElementById('statTotalStudents').textContent = studentsData.length;
-                const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
-                document.getElementById('statActiveStudents').textContent = activeStudents.length;
-
-                const activeCourses = coursesData.filter(c => c.status === 'Active');
-                document.getElementById('statCourses').textContent = activeCourses.length;
-
-                const todayDate = new Date().toISOString().split('T')[0];
-                const paymentsToday = paymentsData.filter(p => p.payment_date === todayDate).reduce((sum, p) => sum + Number(p.amount_paid), 0);
-                const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
-                document.getElementById('statTodayCollection').textContent = (paymentsToday + admissionsToday).toLocaleString('en-IN');
-
-                let totalPendingSum = 0;
-                let currentDueSum = 0; 
-
-                activeStudents.forEach(s => {
-                    const totalCourseFee = Number(s.total_fee) || 0; 
-                    const admissionFee = Number(s.admission_fee) || 0;
-                    
-                    let totalPaidPayments = 0;
-                    let totalDiscount = 0;
-                    paymentsData.filter(p => p.student_id === s.id).forEach(p => {
-                        totalPaidPayments += (Number(p.amount_paid) || 0);
-                        totalDiscount += (Number(p.discount_amount) || 0);
-                    });
-                    
-                    const totalPaidAndDisc = admissionFee + totalPaidPayments + totalDiscount;
-                    let totalCoursePending = totalCourseFee - totalPaidAndDisc;
-                    if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
-
-                    const course = coursesData.find(c => c.id == s.course_id);
-                    const totalModules = (course && Array.isArray(course.modules) && course.modules.length > 0) ? course.modules.length : 1;
-                    const feePerModule = totalCourseFee / totalModules;
-                    
-                    let currentModIndex = 1;
-                    if (s.status === 'completed' || s.module === 'Course Completed') { 
-                        currentModIndex = totalModules; 
-                    } else if (course && Array.isArray(course.modules)) { 
-                        let idx = course.modules.indexOf(s.module); 
-                        currentModIndex = idx >= 0 ? idx + 1 : 1; 
-                    }
-                    
-                    let expectedTillNow = feePerModule * currentModIndex; 
-                    if (expectedTillNow > totalCourseFee) expectedTillNow = totalCourseFee;
-                    
-                    let currentDue = expectedTillNow - totalPaidAndDisc;
-                    if (currentDue > 0) currentDueSum += currentDue;
-                });
-                
-                document.getElementById('statCurrentDue').textContent = Math.round(currentDueSum).toLocaleString('en-IN');
-                document.getElementById('statPendingFees').textContent = Math.round(totalPendingSum).toLocaleString('en-IN');
-
-            } catch (err) { console.error("Dashboard Loading Error:", err); }
+                populateRoleFilter();
+                populateStaffDropdowns();
+                renderDirectory();
+                renderAdvances();
+                renderSalaryHistory();
+            } catch(e) { console.error("Fetch error:", e); }
         }
 
-        window.triggerSettingsSecurity = function() {
-            let warn1 = confirm("⚠️ WARNING 1: This section contains critical core settings of the institute. Any wrong changes will break the receipts and reports. Do you want to proceed?");
-            if (!warn1) return;
-            
-            let warn2 = confirm("🛑 WARNING 2: Are you strictly authorized by the Admin to alter the Institute Name, Address, and Contact details?");
-            if (!warn2) return;
-            
-            let warn3 = prompt("🚨 FINAL WARNING 3: Type 'ADMIN' to unlock the settings panel:");
-            if (warn3 === "ADMIN" || warn3 === "admin") {
-                window.openSettings();
-            } else {
-                alert("❌ Security Verification Failed! Access denied.");
-            }
+        // ===================== HELPERS =====================
+        function generateAvatar(name, gender) {
+            const color = gender === 'Female' ? '%23ec4899' : '%233b82f6';
+            return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${color}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
+        }
+
+        function formatDate(d) {
+            if (!d) return '-';
+            if (d.includes('T')) d = d.split('T')[0];
+            const parts = d.split('-');
+            if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            return d;
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        window.switchStaffTab = function(tab) {
+            document.querySelectorAll('.staff-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('panel-' + tab).classList.add('active');
         };
 
-        window.openSettings = async function() {
-            try {
-                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
-                if (data) {
-                    document.getElementById('set_name').value = data.institute_name || '';
-                    document.getElementById('set_sub').value = data.sub_name || '';
-                    document.getElementById('set_address').value = data.address || '';
-                    document.getElementById('set_phone').value = data.phone || '';
-                    document.getElementById('set_email').value = data.email || '';
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+
+        // ===================== TAB 1: DIRECTORY =====================
+        function populateRoleFilter() {
+            const roleSet = new Set();
+            allStaff.forEach(s => { if (s.role) roleSet.add(s.role); });
+            const sel = document.getElementById('filterRole');
+            sel.innerHTML = '<option value="all">All Roles</option>';
+            [...roleSet].sort().forEach(r => { sel.add(new Option(r, r)); });
+        }
+
+        function populateStaffDropdowns() {
+            const active = allStaff.filter(s => (s.status || 'active') === 'active');
+            ['advStaffSelect', 'payStaffSelect'].forEach(id => {
+                const sel = document.getElementById(id);
+                if (!sel) return;
+                sel.innerHTML = '<option value="">-- Choose Staff --</option>';
+                active.forEach(s => { sel.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)); });
+            });
+            // Set default dates
+            document.getElementById('advDate').value = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            document.getElementById('payMonth').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        }
+
+        window.renderDirectory = function() {
+            const search = document.getElementById('staffSearch').value.toLowerCase();
+            const role = document.getElementById('filterRole').value;
+            const status = document.getElementById('filterStatus').value;
+
+            let filtered = allStaff.filter(s => {
+                const sStatus = (s.status || 'active').toLowerCase();
+                if (status === 'active' && sStatus !== 'active') return false;
+                if (status === 'archived' && sStatus !== 'archived') return false;
+                if (role !== 'all' && s.role !== role) return false;
+                if (search) {
+                    const str = `${s.full_name || ''} ${s.phone || ''}`.toLowerCase();
+                    if (!str.includes(search)) return false;
                 }
-            } catch (e) {}
-            document.getElementById('settingsModal').style.display = 'flex';
+                return true;
+            });
+
+            const container = document.getElementById('staffList');
+            if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No staff found.</div>'; return; }
+
+            container.innerHTML = filtered.map(s => {
+                const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
+                const statusColor = (s.status || 'active') === 'active' ? '#10b981' : '#94a3b8';
+                return `
+                <div class="staff-card">
+                    <div class="sc-header">
+                        <div class="sc-avatar"><img src="${avatar}" alt="${s.full_name}" onerror="this.src='${generateAvatar(s.full_name, s.gender)}'"></div>
+                        <div style="flex:1;min-width:0">
+                            <div class="sc-name">${s.full_name || 'N/A'}</div>
+                            <span class="sc-role-badge">${s.role || 'Staff'}</span>
+                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${statusColor};margin-left:8px;vertical-align:middle"></span>
+                        </div>
+                    </div>
+                    <div class="sc-row"><span class="sc-label">Phone:</span><span class="sc-value">${s.phone || 'N/A'}</span></div>
+                    <div class="sc-row"><span class="sc-label">Salary:</span><span class="sc-value" style="color:#1d4ed8;font-size:15px">₹ ${s.basic_salary || 0}</span></div>
+                    <div class="sc-row"><span class="sc-label">Joined:</span><span class="sc-value">${formatDate(s.joining_date)}</span></div>
+                    <div class="sc-actions">
+                        <button class="sc-btn sc-btn-view" onclick="openEditStaff('${s.id}')">✏️ View / Edit</button>
+                        <button class="sc-btn sc-btn-archive" onclick="archiveStaff('${s.id}','${s.full_name}')">🗄️ Archive</button>
+                    </div>
+                </div>`;
+            }).join('');
         };
 
-        window.saveSettings = async function(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            const oldText = btn.innerHTML;
-            btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
-            
+        window.openEditStaff = function(id) {
+            const s = allStaff.find(x => x.id === id);
+            if (!s) return;
+            document.getElementById('editId').value = s.id;
+            document.getElementById('editName').value = s.full_name || '';
+            document.getElementById('editPhone').value = s.phone || '';
+            document.getElementById('editGender').value = s.gender || 'Male';
+            document.getElementById('editRole').value = s.role || '';
+            document.getElementById('editSalary').value = s.basic_salary || '';
+            document.getElementById('editJoinDate').value = s.joining_date || '';
+            document.getElementById('editStatus').value = s.status || 'active';
+            document.getElementById('editAddress').value = s.address || '';
+            openModal('editStaffModal');
+        };
+
+        window.updateStaff = async function() {
+            const id = document.getElementById('editId').value;
             const updates = {
-                institute_name: document.getElementById('set_name').value,
-                sub_name: document.getElementById('set_sub').value,
-                address: document.getElementById('set_address').value,
-                phone: document.getElementById('set_phone').value,
-                email: document.getElementById('set_email').value
+                full_name: document.getElementById('editName').value.trim(),
+                phone: document.getElementById('editPhone').value.trim(),
+                gender: document.getElementById('editGender').value,
+                role: document.getElementById('editRole').value.trim(),
+                basic_salary: Number(document.getElementById('editSalary').value) || 0,
+                joining_date: document.getElementById('editJoinDate').value || null,
+                status: document.getElementById('editStatus').value,
+                address: document.getElementById('editAddress').value.trim()
             };
-            
-            const { error } = await supabase.from('institute_settings').update(updates).eq('id', 1);
-            if(error) { alert("Error saving settings."); } 
-            else { 
-                alert("Settings Saved Successfully!"); 
-                document.getElementById('settingsModal').style.display = 'none';
-                loadSettings(); 
-            }
-            btn.innerHTML = oldText; btn.disabled = false;
+            if (!updates.full_name) { alert('Name is required!'); return; }
+            const { error } = await supabase.from('staff').update(updates).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            alert('✅ Staff updated!');
+            closeModal('editStaffModal');
+            await fetchAllData();
         };
 
-        async function loadSettings() {
-            try {
-                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
-                if (data) {
-                    document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
-                    document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
-                    if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
-                }
-            } catch (e) {}
+        window.archiveStaff = async function(id, name) {
+            const n1 = Math.floor(Math.random()*10)+1, n2 = Math.floor(Math.random()*10)+1;
+            const ans = prompt(`⚠️ To archive "${name}", solve: ${n1} + ${n2} = ?`);
+            if (ans === null) return;
+            if (parseInt(ans) !== (n1+n2)) { alert('❌ Wrong answer! Cancelled.'); return; }
+            const { error } = await supabase.from('staff').update({ status: 'archived' }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            alert('✅ Staff archived successfully.');
+            await fetchAllData();
+        };
+
+        window.saveNewStaff = async function() {
+            const btn = document.getElementById('addStaffBtn');
+            const name = document.getElementById('addName').value.trim();
+            const phone = document.getElementById('addPhone').value.trim();
+            if (!name) { alert('Name is required!'); return; }
+            if (phone && phone.length !== 10) { alert('Phone must be 10 digits!'); return; }
+            btn.disabled = true; btn.textContent = '⏳ Saving...';
+            const { error } = await supabase.from('staff').insert([{
+                full_name: name,
+                phone: phone,
+                gender: document.getElementById('addGender').value,
+                role: document.getElementById('addRole').value.trim() || 'Staff',
+                basic_salary: Number(document.getElementById('addSalary').value) || 0,
+                joining_date: document.getElementById('addJoinDate').value || null,
+                qualification: document.getElementById('addQual').value.trim(),
+                address: document.getElementById('addAddress').value.trim(),
+                status: 'active'
+            }]);
+            btn.disabled = false; btn.textContent = '✅ Save Staff Member';
+            if (error) { alert('Error: ' + error.message); return; }
+            alert('✅ Staff added!');
+            closeModal('addStaffModal');
+            // Reset form
+            ['addName','addPhone','addRole','addSalary','addJoinDate','addQual','addAddress'].forEach(id => document.getElementById(id).value = '');
+            await fetchAllData();
+        };
+
+        // ===================== TAB 2: ADVANCES =====================
+        function renderAdvances() {
+            const container = document.getElementById('advancesList');
+            if (allAdvances.length === 0) { container.innerHTML = '<div class="empty-state">No advances recorded yet.</div>'; return; }
+            container.innerHTML = allAdvances.slice(0, 50).map(a => {
+                const staff = allStaff.find(s => s.id === a.staff_id);
+                const sName = staff ? staff.full_name : 'Unknown';
+                const isPaid = (a.status || 'unpaid').toLowerCase() === 'paid';
+                return `
+                <div class="adv-card">
+                    <div class="adv-top">
+                        <div class="adv-name">${sName}</div>
+                        <div class="adv-amount">₹ ${a.amount || 0}</div>
+                    </div>
+                    <div class="adv-meta">
+                        <span>📅 ${formatDate(a.advance_date)}</span>
+                        <span class="adv-status ${isPaid ? 'paid' : 'unpaid'}">${isPaid ? 'Paid' : 'Unpaid'}</span>
+                        ${a.remarks ? `<span>📝 ${a.remarks}</span>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
-        checkAuth();
+        window.saveAdvance = async function() {
+            const staffId = document.getElementById('advStaffSelect').value;
+            const amount = Number(document.getElementById('advAmount').value) || 0;
+            const date = document.getElementById('advDate').value;
+            const remarks = document.getElementById('advRemarks').value.trim();
+
+            if (!staffId) { alert('Please select a staff member!'); return; }
+            if (amount <= 0) { alert('Enter a valid amount!'); return; }
+            if (!date) { alert('Select a date!'); return; }
+
+            const btn = document.getElementById('advSubmitBtn');
+            btn.disabled = true; btn.textContent = '⏳ Saving...';
+
+            try {
+                // 1. Insert into staff_advances
+                const { error: advErr } = await supabase.from('staff_advances').insert([{
+                    staff_id: staffId, amount: amount, advance_date: date, remarks: remarks, status: 'unpaid'
+                }]);
+                if (advErr) throw advErr;
+
+                // 2. INTEGRATE: Insert into expenses (Day Book)
+                const staff = allStaff.find(s => s.id === staffId);
+                const description = `Staff Advance - ${staff ? staff.full_name : 'Unknown'}${remarks ? ' (' + remarks + ')' : ''}`;
+                const { error: expErr } = await supabase.from('expenses').insert([{
+                    category: 'Staff Advance', description: description, amount: amount, expense_date: date, payment_mode: 'Cash'
+                }]);
+                if (expErr) console.warn("Expense insert warning:", expErr.message);
+
+                alert('✅ Advance recorded & added to Day Book!');
+                document.getElementById('advAmount').value = '';
+                document.getElementById('advRemarks').value = '';
+                await fetchAllData();
+            } catch(e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.disabled = false; btn.textContent = '💰 Record Advance';
+            }
+        };
+
+        // ===================== TAB 3: PAYROLL =====================
+        window.loadPayrollDetails = function() {
+            const staffId = document.getElementById('payStaffSelect').value;
+            const detailsDiv = document.getElementById('payrollDetails');
+            if (!staffId) { detailsDiv.style.display = 'none'; return; }
+
+            const staff = allStaff.find(s => s.id === staffId);
+            if (!staff) return;
+
+            const salary = Number(staff.basic_salary) || 0;
+            payrollAdvances = allAdvances.filter(a => a.staff_id === staffId && (a.status || 'unpaid').toLowerCase() === 'unpaid');
+            const totalDeduction = payrollAdvances.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
+            const net = salary - totalDeduction;
+
+            document.getElementById('paySalary').textContent = `₹ ${salary.toLocaleString('en-IN')}`;
+            document.getElementById('payDeduction').textContent = `₹ ${totalDeduction.toLocaleString('en-IN')}`;
+            document.getElementById('payNet').textContent = `₹ ${(net > 0 ? net : 0).toLocaleString('en-IN')}`;
+
+            document.getElementById('payProcessBtn').style.display = 'block';
+            document.getElementById('paySlipBtn').style.display = 'none';
+            detailsDiv.style.display = 'block';
+        };
+
+        window.processSalary = async function() {
+            const staffId = document.getElementById('payStaffSelect').value;
+            const month = document.getElementById('payMonth').value;
+            if (!staffId || !month) { alert('Select staff and month!'); return; }
+
+            const staff = allStaff.find(s => s.id === staffId);
+            const salary = Number(staff.basic_salary) || 0;
+            const totalDeduction = payrollAdvances.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
+            const netPay = salary - totalDeduction > 0 ? salary - totalDeduction : 0;
+
+            const btn = document.getElementById('payProcessBtn');
+            btn.disabled = true; btn.textContent = '⏳ Processing...';
+
+            try {
+                // 1. Insert salary payment
+                const { error: salErr } = await supabase.from('salary_payments').insert([{
+                    staff_id: staffId, month: month, basic_salary: salary,
+                    deductions: totalDeduction, net_salary: netPay, payment_date: new Date().toISOString().split('T')[0]
+                }]);
+                if (salErr) throw salErr;
+
+                // 2. Mark advances as paid
+                for (const adv of payrollAdvances) {
+                    await supabase.from('staff_advances').update({ status: 'paid' }).eq('id', adv.id);
+                }
+
+                // 3. INTEGRATE: Insert into expenses (Day Book)
+                const desc = `Salary Payment - ${staff.full_name} (${month})`;
+                const { error: expErr } = await supabase.from('expenses').insert([{
+                    category: 'Salary Payment', description: desc, amount: netPay,
+                    expense_date: new Date().toISOString().split('T')[0], payment_mode: 'Bank Transfer'
+                }]);
+                if (expErr) console.warn("Expense insert warning:", expErr.message);
+
+                alert('✅ Salary processed & added to Day Book!');
+                document.getElementById('payProcessBtn').style.display = 'none';
+                document.getElementById('paySlipBtn').style.display = 'block';
+                
+                // Store last processed data for slip
+                window.lastSlipData = { staff, month, salary, totalDeduction, netPay };
+
+                await fetchAllData();
+            } catch(e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.disabled = false; btn.textContent = '💳 Process Salary';
+            }
+        };
+
+        function renderSalaryHistory() {
+            const container = document.getElementById('salaryHistory');
+            if (allSalaryPayments.length === 0) { container.innerHTML = '<div class="empty-state">No salary payments yet.</div>'; return; }
+            container.innerHTML = allSalaryPayments.slice(0, 30).map(p => {
+                const staff = allStaff.find(s => s.id === p.staff_id);
+                return `
+                <div class="adv-card">
+                    <div class="adv-top">
+                        <div class="adv-name">${staff ? staff.full_name : 'Unknown'}</div>
+                        <div style="font-weight:900;color:#059669;font-size:16px">₹ ${p.net_salary || 0}</div>
+                    </div>
+                    <div class="adv-meta">
+                        <span>📅 ${p.month || '-'}</span>
+                        <span>💰 Basic: ₹${p.basic_salary || 0}</span>
+                        <span style="color:#ef4444">Ded: ₹${p.deductions || 0}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ===================== SALARY SLIP PDF =====================
+        window.downloadSalarySlip = async function() {
+            const data = window.lastSlipData;
+            if (!data) { alert('No salary data available. Process salary first.'); return; }
+
+            const btn = document.getElementById('paySlipBtn');
+            btn.disabled = true; btn.textContent = '⏳ Generating...';
+
+            try {
+                // Populate slip
+                document.getElementById('slipMonth').textContent = data.month;
+                const d = new Date();
+                document.getElementById('slipDate').textContent = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+                document.getElementById('slipName').textContent = data.staff.full_name || '-';
+                document.getElementById('slipRole').textContent = data.staff.role || 'Staff';
+                document.getElementById('slipPhone').textContent = data.staff.phone || '-';
+                document.getElementById('slipBasic').textContent = data.salary.toLocaleString('en-IN');
+                document.getElementById('slipDeduction').textContent = `- ${data.totalDeduction.toLocaleString('en-IN')}`;
+                document.getElementById('slipNet').textContent = data.netPay.toLocaleString('en-IN');
+
+                const wrapper = document.getElementById('slipRenderArea');
+                const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
+                const imgData = canvas.toDataURL('image/jpeg', 0.8);
+
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
+                pdf.addImage(imgData, 'JPEG', 0, 0, 148, 210);
+
+                const filename = `Salary_Slip_${data.staff.full_name.replace(/ /g,'_')}_${data.month}.pdf`;
+                pdf.save(filename);
+            } catch(e) {
+                alert('Error generating slip: ' + e.message);
+            } finally {
+                btn.disabled = false; btn.textContent = '📄 Download Salary Slip';
+            }
+        };
+
+        init();
     </script>
 </body>
 </html>
