@@ -63,38 +63,100 @@
 
         /* Modal */
         .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,.88);z-index:100;justify-content:center;align-items:flex-start;padding:15px;overflow-y:auto;backdrop-filter:blur(4px)}
-        .modal-sheet{background:#fff;width:100%;max-width:500px;border-radius:16px;padding:22px;margin:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,.4);animation:sheetUp .3s ease;position:relative}
+        .modal-sheet{background:#fff;width:100%;max-width:500px;border-radius:16px;padding:22px;margin:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,.4);animation:sheetUp .3s ease;position:relative;overflow:hidden}
         @keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
         .modal-close{position:absolute;top:12px;right:12px;background:#ef4444;color:#fff;border:2px solid #fff;border-radius:50%;width:34px;height:34px;font-weight:bold;cursor:pointer;box-shadow:0 4px 8px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:15px;z-index:10}
         .modal-close:active{transform:scale(.9)}
         .modal-title{font-size:18px;font-weight:900;color:#0f172a;margin:0 0 18px;padding-right:40px}
+
+        /* ============================================= */
+        /* FORM LABELS & INPUTS - FIXED LAYOUT           */
+        /* ============================================= */
         .frm-label{font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;display:block}
-        .frm-input,.frm-select{width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:14px;font-weight:600;outline:none;margin-bottom:14px;background:#f8fafc;transition:.2s}
+        .frm-input,.frm-select{
+            width:100%;
+            max-width:100%;
+            box-sizing:border-box;
+            padding:11px 12px;
+            border:1.5px solid #cbd5e1;
+            border-radius:9px;
+            font-size:14px;
+            font-weight:600;
+            outline:none;
+            margin-bottom:12px;
+            background:#f8fafc;
+            transition:.2s;
+            display:block;
+        }
         .frm-input:focus,.frm-select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1);background:#fff}
-        .frm-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        .frm-submit{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;color:#fff;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 12px rgba(16,185,129,.25);margin-top:6px}
+
+        /* Form Field wrapper (single input group) */
+        .frm-group{
+            width:100%;
+            margin-bottom:12px;
+            min-width:0;
+        }
+        .frm-group .frm-input,.frm-group .frm-select{
+            margin-bottom:0;
+        }
+
+        /* ============================================= */
+        /* PREMIUM FORM ROW - EQUAL WIDTH GRID           */
+        /* ============================================= */
+        .frm-row{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:10px;
+            width:100%;
+            margin-bottom:12px;
+            min-width:0;
+        }
+        .frm-row > div{
+            min-width:0;
+            width:100%;
+        }
+        .frm-row .frm-input,
+        .frm-row .frm-select{
+            width:100%;
+            max-width:100%;
+            box-sizing:border-box;
+            margin-bottom:0;
+        }
+        
+        .frm-submit{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;color:#fff;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 12px rgba(16,185,129,.25);margin-top:10px;box-sizing:border-box}
         .frm-submit:active{transform:scale(.97)}
         .frm-submit:disabled{background:#94a3b8;cursor:not-allowed;box-shadow:none}
+
+        /* Mobile Modal Adjustments */
+        @media (max-width: 500px) {
+            .modal-sheet{padding:18px 16px}
+            .frm-row{gap:8px}
+            .frm-input,.frm-select{padding:10px 10px;font-size:13px}
+        }
 
         /* Advance Card */
         .adv-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(15,23,42,.03)}
         .adv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
         .adv-name{font-weight:900;color:#0f172a;font-size:14px}
         .adv-amount{font-weight:900;color:#ef4444;font-size:16px}
-        .adv-meta{font-size:11px;color:#64748b;font-weight:600;display:flex;gap:12px}
+        .adv-meta{font-size:11px;color:#64748b;font-weight:600;display:flex;gap:12px;flex-wrap:wrap}
         .adv-status{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:800;text-transform:uppercase}
         .adv-status.unpaid{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
         .adv-status.paid{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
 
         /* Payroll */
-        .payroll-card{background:#fff;border-radius:16px;padding:20px;border:1px solid #e2e8f0;box-shadow:0 4px 14px rgba(15,23,42,.04);margin-bottom:16px}
+        .payroll-card{background:#fff;border-radius:16px;padding:20px;border:1px solid #e2e8f0;box-shadow:0 4px 14px rgba(15,23,42,.04);margin-bottom:16px;overflow:hidden}
         .pay-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
-        .pay-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center}
+        .pay-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;min-width:0;overflow:hidden}
         .pay-box-label{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
-        .pay-box-value{font-size:20px;font-weight:900;line-height:1}
+        .pay-box-value{font-size:18px;font-weight:900;line-height:1.1;word-break:break-word}
         .pay-net{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid #10b981;border-radius:12px;padding:16px;text-align:center;margin:14px 0}
         .pay-net-label{font-size:12px;font-weight:800;color:#047857;text-transform:uppercase;margin-bottom:4px}
-        .pay-net-value{font-size:30px;font-weight:900;color:#047857}
+        .pay-net-value{font-size:28px;font-weight:900;color:#047857;word-break:break-word}
+
+        @media (max-width: 500px) {
+            .payroll-card{padding:16px 14px}
+        }
 
         /* Slip Hidden */
         #slipWrapper{position:absolute;top:-9999px;left:-9999px;z-index:-1}
@@ -113,7 +175,7 @@
         /* ============================================= */
         .card-modal-container{background:#fff;width:100%;max-width:820px;border-radius:16px;padding:20px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5);margin:auto;display:flex;gap:16px;flex-wrap:wrap;position:relative;animation:sheetUp .3s ease}
         .card-preview-col{flex:1;min-width:290px;display:flex;justify-content:center;align-items:flex-start;padding-top:16px;position:relative}
-        .card-edit-col{flex:1;min-width:290px;background:#f8fafc;padding:18px;border-radius:14px;border:1px solid #e2e8f0;display:flex;flex-direction:column}
+        .card-edit-col{flex:1;min-width:290px;background:#f8fafc;padding:18px;border-radius:14px;border:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
         @media(max-width:700px){
             .card-preview-col,.card-edit-col{min-width:100%;width:100%}
             .card-modal-container{padding:15px;margin-top:10px}
@@ -178,14 +240,28 @@
         <div id="panel-advances" class="tab-panel">
             <div class="payroll-card">
                 <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Record Staff Advance</h3>
-                <label class="frm-label">Select Staff</label>
-                <select class="frm-select" id="advStaffSelect"><option value="">-- Choose Staff --</option></select>
-                <div class="frm-row">
-                    <div><label class="frm-label">Amount (₹)</label><input type="number" class="frm-input" id="advAmount" placeholder="0" min="0"></div>
-                    <div><label class="frm-label">Date</label><input type="date" class="frm-input" id="advDate"></div>
+                
+                <div class="frm-group">
+                    <label class="frm-label">Select Staff</label>
+                    <select class="frm-select" id="advStaffSelect"><option value="">-- Choose Staff --</option></select>
                 </div>
-                <label class="frm-label">Remarks (Optional)</label>
-                <input type="text" class="frm-input" id="advRemarks" placeholder="Purpose of advance...">
+                
+                <div class="frm-row">
+                    <div>
+                        <label class="frm-label">Amount (₹)</label>
+                        <input type="number" class="frm-input" id="advAmount" placeholder="0" min="0">
+                    </div>
+                    <div>
+                        <label class="frm-label">Date</label>
+                        <input type="date" class="frm-input" id="advDate">
+                    </div>
+                </div>
+                
+                <div class="frm-group">
+                    <label class="frm-label">Remarks (Optional)</label>
+                    <input type="text" class="frm-input" id="advRemarks" placeholder="Purpose of advance...">
+                </div>
+                
                 <button class="frm-submit" id="advSubmitBtn" onclick="saveAdvance()">💰 Record Advance</button>
             </div>
             <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Recent Advances</h3>
@@ -196,12 +272,18 @@
         <div id="panel-payroll" class="tab-panel">
             <div class="payroll-card">
                 <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Process Monthly Salary</h3>
+                
                 <div class="frm-row">
-                    <div><label class="frm-label">Month</label><input type="month" class="frm-input" id="payMonth"></div>
-                    <div><label class="frm-label">Select Staff</label>
+                    <div>
+                        <label class="frm-label">Month</label>
+                        <input type="month" class="frm-input" id="payMonth">
+                    </div>
+                    <div>
+                        <label class="frm-label">Select Staff</label>
                         <select class="frm-select" id="payStaffSelect" onchange="loadPayrollDetails()"><option value="">-- Choose --</option></select>
                     </div>
                 </div>
+                
                 <div id="payrollDetails" style="display:none">
                     <div class="pay-summary">
                         <div class="pay-box"><div class="pay-box-label">Basic Salary</div><div class="pay-box-value" id="paySalary" style="color:#1d4ed8">₹ 0</div></div>
@@ -220,59 +302,116 @@
         </div>
     </main>
 
-    <!-- ADD STAFF MODAL -->
+    <!-- ADD STAFF MODAL (FIXED LAYOUT) -->
     <div id="addStaffModal" class="modal-overlay">
         <div class="modal-sheet">
             <button class="modal-close" onclick="closeModal('addStaffModal')">×</button>
             <h2 class="modal-title">➕ Add New Staff</h2>
-            <label class="frm-label">Full Name *</label>
-            <input type="text" class="frm-input" id="addName" required>
+            
+            <div class="frm-group">
+                <label class="frm-label">Full Name *</label>
+                <input type="text" class="frm-input" id="addName" required>
+            </div>
+            
             <div class="frm-row">
-                <div><label class="frm-label">Phone *</label><input type="tel" class="frm-input" id="addPhone" maxlength="10"></div>
-                <div><label class="frm-label">Gender</label>
-                    <select class="frm-select" id="addGender"><option value="Male">Male</option><option value="Female">Female</option></select>
+                <div>
+                    <label class="frm-label">Phone *</label>
+                    <input type="tel" class="frm-input" id="addPhone" maxlength="10">
+                </div>
+                <div>
+                    <label class="frm-label">Gender</label>
+                    <select class="frm-select" id="addGender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
                 </div>
             </div>
-            <div class="frm-row">
-                <div><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="addRole" placeholder="e.g. Teacher"></div>
-                <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="addSalary" min="0"></div>
+            
+            <div class="frm-group">
+                <label class="frm-label">Role / Designation</label>
+                <input type="text" class="frm-input" id="addRole" placeholder="e.g. Teacher">
             </div>
+            
             <div class="frm-row">
-                <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="addJoinDate"></div>
-                <div><label class="frm-label">Qualification</label><input type="text" class="frm-input" id="addQual" placeholder="e.g. B.Ed"></div>
+                <div>
+                    <label class="frm-label">Basic Salary (₹)</label>
+                    <input type="number" class="frm-input" id="addSalary" min="0">
+                </div>
+                <div>
+                    <label class="frm-label">Joining Date</label>
+                    <input type="date" class="frm-input" id="addJoinDate">
+                </div>
             </div>
-            <label class="frm-label">Address</label>
-            <input type="text" class="frm-input" id="addAddress" placeholder="Full address">
+            
+            <div class="frm-group">
+                <label class="frm-label">Qualification</label>
+                <input type="text" class="frm-input" id="addQual" placeholder="e.g. B.Ed">
+            </div>
+            
+            <div class="frm-group">
+                <label class="frm-label">Address</label>
+                <input type="text" class="frm-input" id="addAddress" placeholder="Full address">
+            </div>
+            
             <button class="frm-submit" id="addStaffBtn" onclick="saveNewStaff()">✅ Save Staff Member</button>
         </div>
     </div>
 
-    <!-- VIEW/EDIT STAFF MODAL -->
+    <!-- VIEW/EDIT STAFF MODAL (FIXED LAYOUT) -->
     <div id="editStaffModal" class="modal-overlay">
         <div class="modal-sheet">
             <button class="modal-close" onclick="closeModal('editStaffModal')">×</button>
             <h2 class="modal-title">✏️ Edit Staff Profile</h2>
             <input type="hidden" id="editId">
-            <label class="frm-label">Full Name *</label>
-            <input type="text" class="frm-input" id="editName">
+            
+            <div class="frm-group">
+                <label class="frm-label">Full Name *</label>
+                <input type="text" class="frm-input" id="editName">
+            </div>
+            
             <div class="frm-row">
-                <div><label class="frm-label">Phone *</label><input type="tel" class="frm-input" id="editPhone" maxlength="10"></div>
-                <div><label class="frm-label">Gender</label>
-                    <select class="frm-select" id="editGender"><option value="Male">Male</option><option value="Female">Female</option></select>
+                <div>
+                    <label class="frm-label">Phone *</label>
+                    <input type="tel" class="frm-input" id="editPhone" maxlength="10">
+                </div>
+                <div>
+                    <label class="frm-label">Gender</label>
+                    <select class="frm-select" id="editGender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
                 </div>
             </div>
-            <div class="frm-row">
-                <div><label class="frm-label">Role</label><input type="text" class="frm-input" id="editRole"></div>
-                <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="editSalary" min="0"></div>
+            
+            <div class="frm-group">
+                <label class="frm-label">Role / Designation</label>
+                <input type="text" class="frm-input" id="editRole">
             </div>
+            
             <div class="frm-row">
-                <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="editJoinDate"></div>
-                <div><label class="frm-label">Status</label>
-                    <select class="frm-select" id="editStatus"><option value="active">Active</option><option value="archived">Archived</option></select>
+                <div>
+                    <label class="frm-label">Basic Salary (₹)</label>
+                    <input type="number" class="frm-input" id="editSalary" min="0">
+                </div>
+                <div>
+                    <label class="frm-label">Joining Date</label>
+                    <input type="date" class="frm-input" id="editJoinDate">
                 </div>
             </div>
-            <label class="frm-label">Address</label>
-            <input type="text" class="frm-input" id="editAddress">
+            
+            <div class="frm-group">
+                <label class="frm-label">Status</label>
+                <select class="frm-select" id="editStatus">
+                    <option value="active">Active</option>
+                    <option value="archived">Archived</option>
+                </select>
+            </div>
+            
+            <div class="frm-group">
+                <label class="frm-label">Address</label>
+                <input type="text" class="frm-input" id="editAddress">
+            </div>
+            
             <button class="frm-submit" onclick="updateStaff()">💾 Update Profile</button>
         </div>
     </div>
@@ -397,21 +536,27 @@
                 <!-- Institute Settings -->
                 <div style="background:#fff;padding:12px;border-radius:10px;margin-bottom:14px;border:1px solid #cbd5e1">
                     <label class="frm-label" style="margin-bottom:8px">🏢 Institute Settings (Card Only)</label>
-                    <div class="frm-row" style="margin-bottom:6px">
-                        <input type="text" class="frm-input" id="liveInstName" placeholder="Institute Name" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px">
-                        <input type="text" class="frm-input" id="liveInstSub" placeholder="Sub Name" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px">
+                    <div class="frm-row" style="margin-bottom:8px">
+                        <div><input type="text" class="frm-input" id="liveInstName" placeholder="Institute Name" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px"></div>
+                        <div><input type="text" class="frm-input" id="liveInstSub" placeholder="Sub Name" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px"></div>
                     </div>
                     <input type="text" class="frm-input" id="liveInstAddress" placeholder="Full Address" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px">
                 </div>
 
-                <label class="frm-label">Upload Photo (Auto-preview)</label>
-                <input type="file" id="liveStaffPhotoInput" accept="image/*" class="frm-input" onchange="window.updateLiveStaffPhoto(event)" style="padding:8px;font-size:12px">
+                <div class="frm-group">
+                    <label class="frm-label">Upload Photo (Auto-preview)</label>
+                    <input type="file" id="liveStaffPhotoInput" accept="image/*" class="frm-input" onchange="window.updateLiveStaffPhoto(event)" style="padding:8px;font-size:12px">
+                </div>
 
-                <label class="frm-label">Staff Name</label>
-                <input type="text" class="frm-input" id="liveStaffName" oninput="document.getElementById('staffCardName').innerText = (this.value || 'N/A').toUpperCase()">
+                <div class="frm-group">
+                    <label class="frm-label">Staff Name</label>
+                    <input type="text" class="frm-input" id="liveStaffName" oninput="document.getElementById('staffCardName').innerText = (this.value || 'N/A').toUpperCase()">
+                </div>
 
-                <label class="frm-label">Role / Designation</label>
-                <input type="text" class="frm-input" id="liveStaffRole" oninput="document.getElementById('staffCardRole').innerText = (this.value || 'N/A').toUpperCase()">
+                <div class="frm-group">
+                    <label class="frm-label">Role / Designation</label>
+                    <input type="text" class="frm-input" id="liveStaffRole" oninput="document.getElementById('staffCardRole').innerText = (this.value || 'N/A').toUpperCase()">
+                </div>
 
                 <div class="frm-row">
                     <div>
