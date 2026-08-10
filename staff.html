@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Staff & HR - Globus</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{background:#f8fafc;min-height:100vh;padding-bottom:90px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;overflow-x:hidden}
+        .main-content{padding:12px;max-width:800px;margin:0 auto;width:100%}
+
+        /* Back Button */
+        .btn-back-dashboard{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #cbd5e1;padding:8px 16px;border-radius:10px;color:#1e293b;font-weight:800;font-size:14px;text-decoration:none;box-shadow:0 4px 6px rgba(0,0,0,.05),inset 0 -2px 0 rgba(226,232,240,.8);transition:.2s;cursor:pointer}
+        .btn-back-dashboard:active{transform:translateY(1px);box-shadow:0 1px 2px rgba(0,0,0,.05)}
+        .btn-back-dashboard svg{width:22px;height:22px;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none;stroke:#4c1d95}
+        .top-nav{display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:20px;border-bottom:2px solid #e2e8f0;padding-bottom:15px;min-height:45px}
+        .top-nav .btn-back-dashboard{position:absolute;left:0;top:50%;transform:translateY(-50%)}
+        .top-nav .btn-back-dashboard:active{transform:translateY(-50%) scale(.95)}
+        .page-title{font-size:18px;font-weight:900;color:#0f172a;margin:0;text-transform:uppercase;letter-spacing:-.5px;text-align:center;width:100%;padding:0 50px}
+        @media(max-width:600px){.btn-back-dashboard span{display:none}.btn-back-dashboard{padding:10px}.page-title{font-size:15px;padding:0 42px}}
+
+        /* Tabs */
+        .staff-tabs{display:flex;gap:6px;margin-bottom:18px}
+        .staff-tab-btn{flex:1;padding:10px 4px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;font-size:11px;font-weight:800;color:#475569;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.02)}
+        .staff-tab-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+        .staff-tab-btn.active{background:#1e3a8a;color:#fff;border-color:#1e3a8a;box-shadow:0 4px 12px rgba(30,58,138,.25)}
+        .staff-tab-btn:active{transform:scale(.96)}
+        .tab-panel{display:none;animation:fadeUp .3s ease}
+        .tab-panel.active{display:block}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+        /* Search & Filters */
+        .search-filter-card{background:#fff;border-radius:14px;padding:12px;margin-bottom:16px;box-shadow:0 4px 14px rgba(15,23,42,.04);border:1px solid #e2e8f0}
+        .sf-search{width:100%;padding:10px 12px 10px 36px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:13px;font-weight:600;outline:none;background:#f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>') no-repeat 10px center;margin-bottom:10px;transition:.2s}
+        .sf-search:focus{border-color:#3b82f6;background-color:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+        .sf-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .sf-select{width:100%;padding:9px 8px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:12px;font-weight:700;color:#1e293b;background:#f8fafc;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
+
+        /* Staff Card */
+        .staff-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(15,23,42,.04);transition:.2s}
+        .sc-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;border-bottom:1px dashed #e2e8f0;padding-bottom:12px}
+        .sc-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f1f5f9}
+        .sc-avatar img,.sc-avatar svg{width:100%;height:100%;object-fit:cover}
+        .sc-name{font-size:17px;font-weight:900;color:#0f172a;text-transform:uppercase;line-height:1.2;margin-bottom:4px}
+        .sc-role-badge{display:inline-block;background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1d4ed8;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px}
+        .sc-row{display:flex;align-items:flex-start;margin-bottom:6px;font-size:13px}
+        .sc-label{width:100px;color:#64748b;font-weight:700;flex-shrink:0;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+        .sc-value{flex:1;color:#1e293b;font-weight:800}
+        .sc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;border-top:1px dashed #e2e8f0;padding-top:12px}
+        .sc-btn{border:none;padding:11px 6px;border-radius:10px;font-weight:800;cursor:pointer;font-size:12px;text-align:center;transition:.2s;display:flex;justify-content:center;align-items:center;gap:5px;box-shadow:0 3px 6px rgba(0,0,0,.08)}
+        .sc-btn:active{transform:scale(.95)}
+        .sc-btn-view{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff}
+        .sc-btn-archive{background:transparent;color:#ea580c;border:1.5px solid #fdba74}
+
+        /* FAB */
+        .fab-add{position:fixed;bottom:24px;right:20px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;font-size:28px;font-weight:300;cursor:pointer;box-shadow:0 8px 20px rgba(37,99,235,.35);z-index:50;display:flex;align-items:center;justify-content:center;transition:.2s}
+        .fab-add:active{transform:scale(.9)}
+
+        /* Modal */
+        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,.88);z-index:100;justify-content:center;align-items:flex-start;padding:15px;overflow-y:auto;backdrop-filter:blur(4px)}
+        .modal-sheet{background:#fff;width:100%;max-width:500px;border-radius:16px;padding:22px;margin:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,.4);animation:sheetUp .3s ease;position:relative}
+        @keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .modal-close{position:absolute;top:12px;right:12px;background:#ef4444;color:#fff;border:2px solid #fff;border-radius:50%;width:34px;height:34px;font-weight:bold;cursor:pointer;box-shadow:0 4px 8px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:15px;z-index:10}
+        .modal-close:active{transform:scale(.9)}
+        .modal-title{font-size:18px;font-weight:900;color:#0f172a;margin:0 0 18px;padding-right:40px}
+        .frm-label{font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;display:block}
+        .frm-input,.frm-select{width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:14px;font-weight:600;outline:none;margin-bottom:14px;background:#f8fafc;transition:.2s}
+        .frm-input:focus,.frm-select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1);background:#fff}
+        .frm-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .frm-submit{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;color:#fff;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 12px rgba(16,185,129,.25);margin-top:6px}
+        .frm-submit:active{transform:scale(.97)}
+        .frm-submit:disabled{background:#94a3b8;cursor:not-allowed;box-shadow:none}
+
+        /* Advance Card */
+        .adv-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(15,23,42,.03)}
+        .adv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+        .adv-name{font-weight:900;color:#0f172a;font-size:14px}
+        .adv-amount{font-weight:900;color:#ef4444;font-size:16px}
+        .adv-meta{font-size:11px;color:#64748b;font-weight:600;display:flex;gap:12px}
+        .adv-status{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:800;text-transform:uppercase}
+        .adv-status.unpaid{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+        .adv-status.paid{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+
+        /* Payroll */
+        .payroll-card{background:#fff;border-radius:16px;padding:20px;border:1px solid #e2e8f0;box-shadow:0 4px 14px rgba(15,23,42,.04);margin-bottom:16px}
+        .pay-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+        .pay-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center}
+        .pay-box-label{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+        .pay-box-value{font-size:20px;font-weight:900;line-height:1}
+        .pay-net{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid #10b981;border-radius:12px;padding:16px;text-align:center;margin:14px 0}
+        .pay-net-label{font-size:12px;font-weight:800;color:#047857;text-transform:uppercase;margin-bottom:4px}
+        .pay-net-value{font-size:30px;font-weight:900;color:#047857}
+
+        /* Slip Hidden */
+        #slipWrapper{position:absolute;top:-9999px;left:-9999px;z-index:-1}
+        .slip-page{width:550px;height:780px;background:#fff;padding:25px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;position:relative}
+        .slip-border{border:2px solid #cbd5e1;height:100%;padding:20px;box-sizing:border-box;border-radius:8px;position:relative}
+        .slip-seal{position:absolute;right:30px;bottom:100px;width:130px;height:70px;border:3px solid #16a34a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-15deg);color:#16a34a;background:rgba(22,163,74,.03);box-shadow:inset 0 0 10px rgba(22,163,74,.1);mix-blend-mode:multiply}
+
+        .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;font-weight:700;font-size:14px;background:#fff;border-radius:12px;border:1px dashed #cbd5e1}
+
+        /* Hide scroll number */
+        input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+        input[type=number]{-moz-appearance:textfield}
+    </style>
+</head>
+<body>
+    <main class="main-content">
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn-back-dashboard">
+                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <h1 class="page-title">Staff & HR Management</h1>
+        </div>
+
+        <!-- TABS -->
+        <div class="staff-tabs">
+            <button class="staff-tab-btn active" onclick="switchStaffTab('directory')">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Directory
+            </button>
+            <button class="staff-tab-btn" onclick="switchStaffTab('advances')">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Advances
+            </button>
+            <button class="staff-tab-btn" onclick="switchStaffTab('payroll')">
+                <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Payroll
+            </button>
+        </div>
+
+        <!-- TAB 1: DIRECTORY -->
+        <div id="panel-directory" class="tab-panel active">
+            <div class="search-filter-card">
+                <input type="text" class="sf-search" id="staffSearch" placeholder="Search name or phone..." oninput="renderDirectory()">
+                <div class="sf-row">
+                    <select class="sf-select" id="filterRole" onchange="renderDirectory()">
+                        <option value="all">All Roles</option>
+                    </select>
+                    <select class="sf-select" id="filterStatus" onchange="renderDirectory()">
+                        <option value="active">🟢 Active</option>
+                        <option value="archived">🗄️ Archived</option>
+                        <option value="all">📁 All</option>
+                    </select>
+                </div>
+            </div>
+            <div id="staffList"><div class="empty-state">Loading staff data...</div></div>
+            <button class="fab-add" onclick="openModal('addStaffModal')" title="Add New Staff">+</button>
+        </div>
+
+        <!-- TAB 2: ADVANCES -->
+        <div id="panel-advances" class="tab-panel">
+            <div class="payroll-card">
+                <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Record Staff Advance</h3>
+                <label class="frm-label">Select Staff</label>
+                <select class="frm-select" id="advStaffSelect"><option value="">-- Choose Staff --</option></select>
+                <div class="frm-row">
+                    <div><label class="frm-label">Amount (₹)</label><input type="number" class="frm-input" id="advAmount" placeholder="0" min="0"></div>
+                    <div><label class="frm-label">Date</label><input type="date" class="frm-input" id="advDate"></div>
+                </div>
+                <label class="frm-label">Remarks (Optional)</label>
+                <input type="text" class="frm-input" id="advRemarks" placeholder="Purpose of advance...">
+                <button class="frm-submit" id="advSubmitBtn" onclick="saveAdvance()">💰 Record Advance</button>
+            </div>
+            <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Recent Advances</h3>
+            <div id="advancesList"><div class="empty-state">Loading advances...</div></div>
+        </div>
+
+        <!-- TAB 3: PAYROLL -->
+        <div id="panel-payroll" class="tab-panel">
+            <div class="payroll-card">
+                <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Process Monthly Salary</h3>
+                <div class="frm-row">
+                    <div><label class="frm-label">Month</label><input type="month" class="frm-input" id="payMonth"></div>
+                    <div><label class="frm-label">Select Staff</label>
+                        <select class="frm-select" id="payStaffSelect" onchange="loadPayrollDetails()"><option value="">-- Choose --</option></select>
+                    </div>
+                </div>
+                <div id="payrollDetails" style="display:none">
+                    <div class="pay-summary">
+                        <div class="pay-box"><div class="pay-box-label">Basic Salary</div><div class="pay-box-value" id="paySalary" style="color:#1d4ed8">₹ 0</div></div>
+                        <div class="pay-box"><div class="pay-box-label">Advance Deduction</div><div class="pay-box-value" id="payDeduction" style="color:#ef4444">₹ 0</div></div>
+                    </div>
+                    <div class="pay-net">
+                        <div class="pay-net-label">Net Payable Amount</div>
+                        <div class="pay-net-value" id="payNet">₹ 0</div>
+                    </div>
+                    <button class="frm-submit" id="payProcessBtn" onclick="processSalary()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25)">💳 Process Salary</button>
+                    <button class="frm-submit" id="paySlipBtn" onclick="downloadSalarySlip()" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 12px rgba(245,158,11,.25);margin-top:10px;display:none">📄 Download Salary Slip</button>
+                </div>
+            </div>
+            <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Payment History</h3>
+            <div id="salaryHistory"><div class="empty-state">Process a salary to see history.</div></div>
+        </div>
+    </main>
+
+    <!-- ADD STAFF MODAL -->
+    <div id="addStaffModal" class="modal-overlay">
+        <div class="modal-sheet">
+            <button class="modal-close" onclick="closeModal('addStaffModal')">×</button>
+            <h2 class="modal-title">➕ Add New Staff</h2>
+            <label class="frm-label">Full Name *</label>
+            <input type="text" class="frm-input" id="addName" required>
+            <div class="frm-row">
+                <div><label class="frm-label">Phone *</label><input type="tel" class="frm-input" id="addPhone" maxlength="10"></div>
+                <div><label class="frm-label">Gender</label>
+                    <select class="frm-select" id="addGender"><option value="Male">Male</option><option value="Female">Female</option></select>
+                </div>
+            </div>
+            <div class="frm-row">
+                <div><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="addRole" placeholder="e.g. Teacher"></div>
+                <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="addSalary" min="0"></div>
+            </div>
+            <div class="frm-row">
+                <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="addJoinDate"></div>
+                <div><label class="frm-label">Qualification</label><input type="text" class="frm-input" id="addQual" placeholder="e.g. B.Ed"></div>
+            </div>
+            <label class="frm-label">Address</label>
+            <input type="text" class="frm-input" id="addAddress" placeholder="Full address">
+            <button class="frm-submit" id="addStaffBtn" onclick="saveNewStaff()">✅ Save Staff Member</button>
+        </div>
+    </div>
+
+    <!-- VIEW/EDIT STAFF MODAL -->
+    <div id="editStaffModal" class="modal-overlay">
+        <div class="modal-sheet">
+            <button class="modal-close" onclick="closeModal('editStaffModal')">×</button>
+            <h2 class="modal-title">✏️ Edit Staff Profile</h2>
+            <input type="hidden" id="editId">
+            <label class="frm-label">Full Name *</label>
+            <input type="text" class="frm-input" id="editName">
+            <div class="frm-row">
+                <div><label class="frm-label">Phone *</label><input type="tel" class="frm-input" id="editPhone" maxlength="10"></div>
+                <div><label class="frm-label">Gender</label>
+                    <select class="frm-select" id="editGender"><option value="Male">Male</option><option value="Female">Female</option></select>
+                </div>
+            </div>
+            <div class="frm-row">
+                <div><label class="frm-label">Role</label><input type="text" class="frm-input" id="editRole"></div>
+                <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="editSalary" min="0"></div>
+            </div>
+            <div class="frm-row">
+                <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="editJoinDate"></div>
+                <div><label class="frm-label">Status</label>
+                    <select class="frm-select" id="editStatus"><option value="active">Active</option><option value="archived">Archived</option></select>
+                </div>
+            </div>
+            <label class="frm-label">Address</label>
+            <input type="text" class="frm-input" id="editAddress">
+            <button class="frm-submit" onclick="updateStaff()">💾 Update Profile</button>
+        </div>
+    </div>
+
+    <!-- HIDDEN SALARY SLIP FOR PDF -->
+    <div id="slipWrapper">
+        <div class="slip-page" id="slipRenderArea">
+            <div class="slip-border">
+                <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #1e3a8a;padding-bottom:15px;margin-bottom:20px">
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <img id="slipLogo" src="assets/images/logo.png" style="width:50px;height:50px;object-fit:contain" onerror="this.style.display='none'">
+                        <div>
+                            <h2 id="slipInstName" style="margin:0;font-size:20px;color:#1e3a8a;font-weight:900;text-transform:uppercase">GLOBUS</h2>
+                            <p id="slipSubName" style="margin:2px 0 0;font-size:10px;color:#475569;font-weight:800;text-transform:uppercase">Technical Academy</p>
+                        </div>
+                    </div>
+                    <div style="text-align:right"><h1 style="margin:0;font-size:18px;color:#0f172a;font-weight:900">SALARY SLIP</h1></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:18px;font-size:12px"><div><strong>Month:</strong> <span id="slipMonth">-</span></div><div><strong>Date:</strong> <span id="slipDate">-</span></div></div>
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:20px">
+                    <table style="width:100%;font-size:13px;line-height:2">
+                        <tr><td style="width:110px;color:#64748b;font-weight:700">Employee Name:</td><td style="font-weight:900;color:#0f172a;text-transform:uppercase" id="slipName">-</td></tr>
+                        <tr><td style="color:#64748b;font-weight:700">Designation:</td><td style="font-weight:800;color:#1e293b" id="slipRole">-</td></tr>
+                        <tr><td style="color:#64748b;font-weight:700">Phone:</td><td style="font-weight:800;color:#1e293b" id="slipPhone">-</td></tr>
+                    </table>
+                </div>
+                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px">
+                    <thead><tr style="background:#1e3a8a;color:#fff"><th style="padding:10px;text-align:left;border:1px solid #1e3a8a">Description</th><th style="padding:10px;text-align:right;border:1px solid #1e3a8a">Amount (₹)</th></tr></thead>
+                    <tbody>
+                        <tr><td style="padding:12px;border:1px solid #cbd5e1;font-weight:700">Basic Salary</td><td style="padding:12px;border:1px solid #cbd5e1;text-align:right;font-weight:900" id="slipBasic">0</td></tr>
+                        <tr><td style="padding:12px;border:1px solid #cbd5e1;font-weight:700;color:#dc2626">Advance Deduction</td><td style="padding:12px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#dc2626" id="slipDeduction">0</td></tr>
+                        <tr style="background:#f0fdf4"><td style="padding:12px;border:1px solid #bbf7d0;font-weight:900;color:#15803d;text-align:right">NET PAYABLE</td><td style="padding:12px;border:1px solid #bbf7d0;text-align:right;font-weight:900;color:#15803d;font-size:18px" id="slipNet">0</td></tr>
+                    </tbody>
+                </table>
+                <div style="position:absolute;bottom:30px;left:30px;right:30px;display:flex;justify-content:space-between;align-items:flex-end">
+                    <div style="font-size:9px;color:#94a3b8;line-height:1.5">* Computer generated salary slip<br>No signature required</div>
+                    <div style="text-align:center"><div style="border-bottom:1px solid #1e293b;width:140px;height:40px;margin-bottom:6px"></div><div style="font-size:12px;font-weight:800;color:#1e293b">Authorized Signatory</div></div>
+                </div>
+                <div class="slip-seal">
+                    <span style="font-size:7px;font-weight:900;text-transform:uppercase;text-align:center;line-height:1.1;padding:0 5px" id="slipSealInst">GLOBUS</span>
+                    <span style="font-size:14px;font-weight:900;margin:2px 0">PAID</span>
+                    <span style="font-size:6px;font-weight:700">Digitally Signed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+
+        let allStaff = [], allAdvances = [], allSalaryPayments = [];
+        let instSettings = null;
+        let payrollAdvances = []; // unpaid advances for selected staff
+
+        // ===================== AUTH =====================
+        async function init() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) { window.location.href = 'login.html'; return; }
+                await loadInstSettings();
+                await fetchAllData();
+            } catch(e) { console.error("Init error:", e); }
+        }
+
+        async function loadInstSettings() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                if (data) {
+                    instSettings = data;
+                    if (data.logo_url) { 
+                        const slipLogo = document.getElementById('slipLogo');
+                        if(slipLogo) slipLogo.src = data.logo_url;
+                    }
+                    const sn = document.getElementById('slipInstName'); if(sn) sn.textContent = data.institute_name || 'GLOBUS';
+                    const ss = document.getElementById('slipSubName'); if(ss) ss.textContent = data.sub_name || 'Technical Academy';
+                    const si = document.getElementById('slipSealInst'); if(si) si.textContent = data.institute_name || 'GLOBUS';
+                }
+            } catch(e) {}
+        }
+
+        async function fetchAllData() {
+            try {
+                const [staffRes, advRes, salRes] = await Promise.all([
+                    supabase.from('staff').select('*').order('created_at', { ascending: false }),
+                    supabase.from('staff_advances').select('*').order('advance_date', { ascending: false }),
+                    supabase.from('salary_payments').select('*').order('created_at', { ascending: false })
+                ]);
+                allStaff = staffRes.data || [];
+                allAdvances = advRes.data || [];
+                allSalaryPayments = salRes.data || [];
+
+                populateRoleFilter();
+                populateStaffDropdowns();
+                renderDirectory();
+                renderAdvances();
+                renderSalaryHistory();
+            } catch(e) { console.error("Fetch error:", e); }
+        }
+
+        // ===================== HELPERS =====================
+        function generateAvatar(name, gender) {
+            const color = gender === 'Female' ? '%23ec4899' : '%233b82f6';
+            return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${color}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
+        }
+
+        function formatDate(d) {
+            if (!d) return '-';
+            if (d.includes('T')) d = d.split('T')[0];
+            const parts = d.split('-');
+            if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            return d;
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        window.switchStaffTab = function(tab) {
+            document.querySelectorAll('.staff-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('panel-' + tab).classList.add('active');
+        };
+
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+
+        // ===================== TAB 1: DIRECTORY =====================
+        function populateRoleFilter() {
+            const roleSet = new Set();
+            allStaff.forEach(s => { if (s.role) roleSet.add(s.role); });
+            const sel = document.getElementById('filterRole');
+            sel.innerHTML = '<option value="all">All Roles</option>';
+            [...roleSet].sort().forEach(r => { sel.add(new Option(r, r)); });
+        }
+
+        function populateStaffDropdowns() {
+            const active = allStaff.filter(s => (s.status || 'active') === 'active');
+            ['advStaffSelect', 'payStaffSelect'].forEach(id => {
+                const sel = document.getElementById(id);
+                if (!sel) return;
+                sel.innerHTML = '<option value="">-- Choose Staff --</option>';
+                active.forEach(s => { sel.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)); });
+            });
+            // Set default dates
+            document.getElementById('advDate').value = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            document.getElementById('payMonth').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        }
+
+        window.renderDirectory = function() {
+            const search = document.getElementById('staffSearch').value.toLowerCase();
+            const role = document.getElementById('filterRole').value;
+            const status = document.getElementById('filterStatus').value;
+
+            let filtered = allStaff.filter(s => {
+                const sStatus = (s.status || 'active').toLowerCase();
+                if (status === 'active' && sStatus !== 'active') return false;
+                if (status === 'archived' && sStatus !== 'archived') return false;
+                if (role !== 'all' && s.role !== role) return false;
+                if (search) {
+                    const str = `${s.full_name || ''} ${s.phone || ''}`.toLowerCase();
+                    if (!str.includes(search)) return false;
+                }
+                return true;
+            });
+
+            const container = document.getElementById('staffList');
+            if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No staff found.</div>'; return; }
+
+            container.innerHTML = filtered.map(s => {
+                const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
+                const statusColor = (s.status || 'active') === 'active' ? '#10b981' : '#94a3b8';
+                return `
+                <div class="staff-card">
+                    <div class="sc-header">
+                        <div class="sc-avatar"><img src="${avatar}" alt="${s.full_name}" onerror="this.src='${generateAvatar(s.full_name, s.gender)}'"></div>
+                        <div style="flex:1;min-width:0">
+                            <div class="sc-name">${s.full_name || 'N/A'}</div>
+                            <span class="sc-role-badge">${s.role || 'Staff'}</span>
+                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${statusColor};margin-left:8px;vertical-align:middle"></span>
+                        </div>
+                    </div>
+                    <div class="sc-row"><span class="sc-label">Phone:</span><span class="sc-value">${s.phone || 'N/A'}</span></div>
+                    <div class="sc-row"><span class="sc-label">Salary:</span><span class="sc-value" style="color:#1d4ed8;font-size:15px">₹ ${s.basic_salary || 0}</span></div>
+                    <div class="sc-row"><span class="sc-label">Joined:</span><span class="sc-value">${formatDate(s.joining_date)}</span></div>
+                    <div class="sc-actions">
+                        <button class="sc-btn sc-btn-view" onclick="openEditStaff('${s.id}')">✏️ View / Edit</button>
+                        <button class="sc-btn sc-btn-archive" onclick="archiveStaff('${s.id}','${s.full_name}')">🗄️ Archive</button>
+                    </div>
+                </div>`;
+            }).join('');
+        };
+
+        window.openEditStaff = function(id) {
+            const s = allStaff.find(x => x.id === id);
+            if (!s) return;
+            document.getElementById('editId').value = s.id;
+            document.getElementById('editName').value = s.full_name || '';
+            document.getElementById('editPhone').value = s.phone || '';
+            document.getElementById('editGender').value = s.gender || 'Male';
+            document.getElementById('editRole').value = s.role || '';
+            document.getElementById('editSalary').value = s.basic_salary || '';
+            document.getElementById('editJoinDate').value = s.joining_date || '';
+            document.getElementById('editStatus').value = s.status || 'active';
+            document.getElementById('editAddress').value = s.address || '';
+            openModal('editStaffModal');
+        };
+
+        window.updateStaff = async function() {
+            const id = document.getElementById('editId').value;
+            const updates = {
+                full_name: document.getElementById('editName').value.trim(),
+                phone: document.getElementById('editPhone').value.trim(),
+                gender: document.getElementById('editGender').value,
+                role: document.getElementById('editRole').value.trim(),
+                basic_salary: Number(document.getElementById('editSalary').value) || 0,
+                joining_date: document.getElementById('editJoinDate').value || null,
+                status: document.getElementById('editStatus').value,
+                address: document.getElementById('editAddress').value.trim()
+            };
+            if (!updates.full_name) { alert('Name is required!'); return; }
+            const { error } = await supabase.from('staff').update(updates).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            alert('✅ Staff updated!');
+            closeModal('editStaffModal');
+            await fetchAllData();
+        };
+
+        window.archiveStaff = async function(id, name) {
+            const n1 = Math.floor(Math.random()*10)+1, n2 = Math.floor(Math.random()*10)+1;
+            const ans = prompt(`⚠️ To archive "${name}", solve: ${n1} + ${n2} = ?`);
+            if (ans === null) return;
+            if (parseInt(ans) !== (n1+n2)) { alert('❌ Wrong answer! Cancelled.'); return; }
+            const { error } = await supabase.from('staff').update({ status: 'archived' }).eq('id', id);
+            if (error) { alert('Error: ' + error.message); return; }
+            alert('✅ Staff archived successfully.');
+            await fetchAllData();
+        };
+
+        window.saveNewStaff = async function() {
+            const btn = document.getElementById('addStaffBtn');
+            const name = document.getElementById('addName').value.trim();
+            const phone = document.getElementById('addPhone').value.trim();
+            if (!name) { alert('Name is required!'); return; }
+            if (phone && phone.length !== 10) { alert('Phone must be 10 digits!'); return; }
+            btn.disabled = true; btn.textContent = '⏳ Saving...';
+            const { error } = await supabase.from('staff').insert([{
+                full_name: name,
+                phone: phone,
+                gender: document.getElementById('addGender').value,
+                role: document.getElementById('addRole').value.trim() || 'Staff',
+                basic_salary: Number(document.getElementById('addSalary').value) || 0,
+                joining_date: document.getElementById('addJoinDate').value || null,
+                qualification: document.getElementById('addQual').value.trim(),
+                address: document.getElementById('addAddress').value.trim(),
+                status: 'active'
+            }]);
+            btn.disabled = false; btn.textContent = '✅ Save Staff Member';
+            if (error) { alert('Error: ' + error.message); return; }
+            alert('✅ Staff added!');
+            closeModal('addStaffModal');
+            // Reset form
+            ['addName','addPhone','addRole','addSalary','addJoinDate','addQual','addAddress'].forEach(id => document.getElementById(id).value = '');
+            await fetchAllData();
+        };
+
+        // ===================== TAB 2: ADVANCES =====================
+        function renderAdvances() {
+            const container = document.getElementById('advancesList');
+            if (allAdvances.length === 0) { container.innerHTML = '<div class="empty-state">No advances recorded yet.</div>'; return; }
+            container.innerHTML = allAdvances.slice(0, 50).map(a => {
+                const staff = allStaff.find(s => s.id === a.staff_id);
+                const sName = staff ? staff.full_name : 'Unknown';
+                const isPaid = (a.status || 'unpaid').toLowerCase() === 'paid';
+                return `
+                <div class="adv-card">
+                    <div class="adv-top">
+                        <div class="adv-name">${sName}</div>
+                        <div class="adv-amount">₹ ${a.amount || 0}</div>
+                    </div>
+                    <div class="adv-meta">
+                        <span>📅 ${formatDate(a.advance_date)}</span>
+                        <span class="adv-status ${isPaid ? 'paid' : 'unpaid'}">${isPaid ? 'Paid' : 'Unpaid'}</span>
+                        ${a.remarks ? `<span>📝 ${a.remarks}</span>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.saveAdvance = async function() {
+            const staffId = document.getElementById('advStaffSelect').value;
+            const amount = Number(document.getElementById('advAmount').value) || 0;
+            const date = document.getElementById('advDate').value;
+            const remarks = document.getElementById('advRemarks').value.trim();
+
+            if (!staffId) { alert('Please select a staff member!'); return; }
+            if (amount <= 0) { alert('Enter a valid amount!'); return; }
+            if (!date) { alert('Select a date!'); return; }
+
+            const btn = document.getElementById('advSubmitBtn');
+            btn.disabled = true; btn.textContent = '⏳ Saving...';
+
+            try {
+                // 1. Insert into staff_advances
+                const { error: advErr } = await supabase.from('staff_advances').insert([{
+                    staff_id: staffId, amount: amount, advance_date: date, remarks: remarks, status: 'unpaid'
+                }]);
+                if (advErr) throw advErr;
+
+                // 2. INTEGRATE: Insert into expenses (Day Book)
+                const staff = allStaff.find(s => s.id === staffId);
+                const description = `Staff Advance - ${staff ? staff.full_name : 'Unknown'}${remarks ? ' (' + remarks + ')' : ''}`;
+                const { error: expErr } = await supabase.from('expenses').insert([{
+                    category: 'Staff Advance', description: description, amount: amount, expense_date: date, payment_mode: 'Cash'
+                }]);
+                if (expErr) console.warn("Expense insert warning:", expErr.message);
+
+                alert('✅ Advance recorded & added to Day Book!');
+                document.getElementById('advAmount').value = '';
+                document.getElementById('advRemarks').value = '';
+                await fetchAllData();
+            } catch(e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.disabled = false; btn.textContent = '💰 Record Advance';
+            }
+        };
+
+        // ===================== TAB 3: PAYROLL =====================
+        window.loadPayrollDetails = function() {
+            const staffId = document.getElementById('payStaffSelect').value;
+            const detailsDiv = document.getElementById('payrollDetails');
+            if (!staffId) { detailsDiv.style.display = 'none'; return; }
+
+            const staff = allStaff.find(s => s.id === staffId);
+            if (!staff) return;
+
+            const salary = Number(staff.basic_salary) || 0;
+            payrollAdvances = allAdvances.filter(a => a.staff_id === staffId && (a.status || 'unpaid').toLowerCase() === 'unpaid');
+            const totalDeduction = payrollAdvances.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
+            const net = salary - totalDeduction;
+
+            document.getElementById('paySalary').textContent = `₹ ${salary.toLocaleString('en-IN')}`;
+            document.getElementById('payDeduction').textContent = `₹ ${totalDeduction.toLocaleString('en-IN')}`;
+            document.getElementById('payNet').textContent = `₹ ${(net > 0 ? net : 0).toLocaleString('en-IN')}`;
+
+            document.getElementById('payProcessBtn').style.display = 'block';
+            document.getElementById('paySlipBtn').style.display = 'none';
+            detailsDiv.style.display = 'block';
+        };
+
+        window.processSalary = async function() {
+            const staffId = document.getElementById('payStaffSelect').value;
+            const month = document.getElementById('payMonth').value;
+            if (!staffId || !month) { alert('Select staff and month!'); return; }
+
+            const staff = allStaff.find(s => s.id === staffId);
+            const salary = Number(staff.basic_salary) || 0;
+            const totalDeduction = payrollAdvances.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
+            const netPay = salary - totalDeduction > 0 ? salary - totalDeduction : 0;
+
+            const btn = document.getElementById('payProcessBtn');
+            btn.disabled = true; btn.textContent = '⏳ Processing...';
+
+            try {
+                // 1. Insert salary payment
+                const { error: salErr } = await supabase.from('salary_payments').insert([{
+                    staff_id: staffId, month: month, basic_salary: salary,
+                    deductions: totalDeduction, net_salary: netPay, payment_date: new Date().toISOString().split('T')[0]
+                }]);
+                if (salErr) throw salErr;
+
+                // 2. Mark advances as paid
+                for (const adv of payrollAdvances) {
+                    await supabase.from('staff_advances').update({ status: 'paid' }).eq('id', adv.id);
+                }
+
+                // 3. INTEGRATE: Insert into expenses (Day Book)
+                const desc = `Salary Payment - ${staff.full_name} (${month})`;
+                const { error: expErr } = await supabase.from('expenses').insert([{
+                    category: 'Salary Payment', description: desc, amount: netPay,
+                    expense_date: new Date().toISOString().split('T')[0], payment_mode: 'Bank Transfer'
+                }]);
+                if (expErr) console.warn("Expense insert warning:", expErr.message);
+
+                alert('✅ Salary processed & added to Day Book!');
+                document.getElementById('payProcessBtn').style.display = 'none';
+                document.getElementById('paySlipBtn').style.display = 'block';
+                
+                // Store last processed data for slip
+                window.lastSlipData = { staff, month, salary, totalDeduction, netPay };
+
+                await fetchAllData();
+            } catch(e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.disabled = false; btn.textContent = '💳 Process Salary';
+            }
+        };
+
+        function renderSalaryHistory() {
+            const container = document.getElementById('salaryHistory');
+            if (allSalaryPayments.length === 0) { container.innerHTML = '<div class="empty-state">No salary payments yet.</div>'; return; }
+            container.innerHTML = allSalaryPayments.slice(0, 30).map(p => {
+                const staff = allStaff.find(s => s.id === p.staff_id);
+                return `
+                <div class="adv-card">
+                    <div class="adv-top">
+                        <div class="adv-name">${staff ? staff.full_name : 'Unknown'}</div>
+                        <div style="font-weight:900;color:#059669;font-size:16px">₹ ${p.net_salary || 0}</div>
+                    </div>
+                    <div class="adv-meta">
+                        <span>📅 ${p.month || '-'}</span>
+                        <span>💰 Basic: ₹${p.basic_salary || 0}</span>
+                        <span style="color:#ef4444">Ded: ₹${p.deductions || 0}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ===================== SALARY SLIP PDF =====================
+        window.downloadSalarySlip = async function() {
+            const data = window.lastSlipData;
+            if (!data) { alert('No salary data available. Process salary first.'); return; }
+
+            const btn = document.getElementById('paySlipBtn');
+            btn.disabled = true; btn.textContent = '⏳ Generating...';
+
+            try {
+                // Populate slip
+                document.getElementById('slipMonth').textContent = data.month;
+                const d = new Date();
+                document.getElementById('slipDate').textContent = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+                document.getElementById('slipName').textContent = data.staff.full_name || '-';
+                document.getElementById('slipRole').textContent = data.staff.role || 'Staff';
+                document.getElementById('slipPhone').textContent = data.staff.phone || '-';
+                document.getElementById('slipBasic').textContent = data.salary.toLocaleString('en-IN');
+                document.getElementById('slipDeduction').textContent = `- ${data.totalDeduction.toLocaleString('en-IN')}`;
+                document.getElementById('slipNet').textContent = data.netPay.toLocaleString('en-IN');
+
+                const wrapper = document.getElementById('slipRenderArea');
+                const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
+                const imgData = canvas.toDataURL('image/jpeg', 0.8);
+
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
+                pdf.addImage(imgData, 'JPEG', 0, 0, 148, 210);
+
+                const filename = `Salary_Slip_${data.staff.full_name.replace(/ /g,'_')}_${data.month}.pdf`;
+                pdf.save(filename);
+            } catch(e) {
+                alert('Error generating slip: ' + e.message);
+            } finally {
+                btn.disabled = false; btn.textContent = '📄 Download Salary Slip';
+            }
+        };
+
+        init();
+    </script>
+</body>
+</html>
