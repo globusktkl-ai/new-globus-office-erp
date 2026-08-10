@@ -28,7 +28,7 @@
         .staff-tab-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
         .staff-tab-btn.active{background:#1e3a8a;color:#fff;border-color:#1e3a8a;box-shadow:0 4px 12px rgba(30,58,138,.25)}
         .staff-tab-btn:active{transform:scale(.96)}
-        .tab-panel{display:none;animation:fadeUp .3s ease}
+        .tab-panel{display:none;animation:fadeUp .3s ease;width:100%;box-sizing:border-box;overflow-x:hidden}
         .tab-panel.active{display:block}
         @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
@@ -76,6 +76,7 @@
         .frm-input,.frm-select{
             width:100%;
             max-width:100%;
+            min-width:0;
             box-sizing:border-box;
             padding:11px 12px;
             border:1.5px solid #cbd5e1;
@@ -83,7 +84,7 @@
             font-size:14px;
             font-weight:600;
             outline:none;
-            margin-bottom:12px;
+            margin:0 0 12px 0;
             background:#f8fafc;
             transition:.2s;
             display:block;
@@ -93,34 +94,42 @@
         /* Form Field wrapper (single input group) */
         .frm-group{
             width:100%;
+            max-width:100%;
             margin-bottom:12px;
             min-width:0;
+            box-sizing:border-box;
         }
         .frm-group .frm-input,.frm-group .frm-select{
             margin-bottom:0;
         }
 
         /* ============================================= */
-        /* PREMIUM FORM ROW - EQUAL WIDTH GRID           */
+        /* PREMIUM FORM ROW - EQUAL WIDTH GRID (FIXED)  */
         /* ============================================= */
         .frm-row{
             display:grid;
-            grid-template-columns:1fr 1fr;
+            grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
             gap:10px;
             width:100%;
+            max-width:100%;
             margin-bottom:12px;
             min-width:0;
+            box-sizing:border-box;
         }
         .frm-row > div{
             min-width:0;
             width:100%;
+            max-width:100%;
+            box-sizing:border-box;
+            overflow:hidden;
         }
         .frm-row .frm-input,
         .frm-row .frm-select{
             width:100%;
             max-width:100%;
+            min-width:0;
             box-sizing:border-box;
-            margin-bottom:0;
+            margin:0;
         }
         
         .frm-submit{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;color:#fff;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 12px rgba(16,185,129,.25);margin-top:10px;box-sizing:border-box}
@@ -134,20 +143,105 @@
             .frm-input,.frm-select{padding:10px 10px;font-size:13px}
         }
 
-        /* Advance Card */
-        .adv-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(15,23,42,.03)}
-        .adv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-        .adv-name{font-weight:900;color:#0f172a;font-size:14px}
-        .adv-amount{font-weight:900;color:#ef4444;font-size:16px}
-        .adv-meta{font-size:11px;color:#64748b;font-weight:600;display:flex;gap:12px;flex-wrap:wrap}
-        .adv-status{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:800;text-transform:uppercase}
+        /* ============================================= */
+        /* ADVANCE CARD (FIXED OVERFLOW)                 */
+        /* ============================================= */
+        .adv-card{
+            background:#fff;
+            border:1px solid #e2e8f0;
+            border-radius:12px;
+            padding:14px;
+            margin-bottom:10px;
+            box-shadow:0 2px 8px rgba(15,23,42,.03);
+            width:100%;
+            max-width:100%;
+            box-sizing:border-box;
+            overflow-x:hidden;
+            word-wrap:break-word;
+            overflow-wrap:break-word;
+        }
+        .adv-top{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:6px;
+            gap:10px;
+            flex-wrap:wrap;
+            min-width:0;
+        }
+        .adv-name{
+            font-weight:900;
+            color:#0f172a;
+            font-size:14px;
+            word-wrap:break-word;
+            overflow-wrap:break-word;
+            white-space:normal;
+            min-width:0;
+            flex:1;
+        }
+        .adv-amount{
+            font-weight:900;
+            color:#ef4444;
+            font-size:16px;
+            white-space:nowrap;
+            flex-shrink:0;
+        }
+        .adv-meta{
+            font-size:11px;
+            color:#64748b;
+            font-weight:600;
+            display:flex;
+            gap:12px;
+            flex-wrap:wrap;
+            word-wrap:break-word;
+            overflow-wrap:break-word;
+        }
+        .adv-meta span{
+            word-wrap:break-word;
+            overflow-wrap:break-word;
+            white-space:normal;
+            min-width:0;
+        }
+        .adv-status{
+            display:inline-block;
+            padding:2px 8px;
+            border-radius:12px;
+            font-size:10px;
+            font-weight:800;
+            text-transform:uppercase;
+            white-space:nowrap;
+            flex-shrink:0;
+        }
         .adv-status.unpaid{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
         .adv-status.paid{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
 
-        /* Payroll */
-        .payroll-card{background:#fff;border-radius:16px;padding:20px;border:1px solid #e2e8f0;box-shadow:0 4px 14px rgba(15,23,42,.04);margin-bottom:16px;overflow:hidden}
-        .pay-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
-        .pay-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;min-width:0;overflow:hidden}
+        /* ============================================= */
+        /* LIST CONTAINERS (Advances/Salary History)    */
+        /* ============================================= */
+        #advancesList, #salaryHistory, #staffList {
+            width:100%;
+            max-width:100%;
+            box-sizing:border-box;
+            overflow-x:hidden;
+        }
+
+        /* ============================================= */
+        /* PAYROLL CARD (FIXED)                          */
+        /* ============================================= */
+        .payroll-card{
+            background:#fff;
+            border-radius:16px;
+            padding:20px;
+            border:1px solid #e2e8f0;
+            box-shadow:0 4px 14px rgba(15,23,42,.04);
+            margin-bottom:16px;
+            overflow:hidden;
+            width:100%;
+            max-width:100%;
+            box-sizing:border-box;
+        }
+        .pay-summary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:16px 0;width:100%;box-sizing:border-box}
+        .pay-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;min-width:0;overflow:hidden;box-sizing:border-box}
         .pay-box-label{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
         .pay-box-value{font-size:18px;font-weight:900;line-height:1.1;word-break:break-word}
         .pay-net{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid #10b981;border-radius:12px;padding:16px;text-align:center;margin:14px 0}
@@ -166,9 +260,21 @@
 
         .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;font-weight:700;font-size:14px;background:#fff;border-radius:12px;border:1px dashed #cbd5e1}
 
-        /* Hide scroll number */
-        input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-        input[type=number]{-moz-appearance:textfield}
+        /* ============================================= */
+        /* HIDE NUMBER SPIN ARROWS (COMPLETELY)          */
+        /* ============================================= */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button{
+            -webkit-appearance:none;
+            -moz-appearance:none;
+            appearance:none;
+            margin:0;
+            display:none;
+        }
+        input[type=number]{
+            -moz-appearance:textfield;
+            appearance:textfield;
+        }
 
         /* ============================================= */
         /* ID CARD STUDIO MODAL                          */
@@ -191,7 +297,7 @@
         .id-btn:disabled{opacity:.6;cursor:not-allowed}
 
         /* Salary History Slip Download Button */
-        .slip-dl-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;box-shadow:0 3px 6px rgba(245,158,11,.25);transition:.2s;display:inline-flex;align-items:center;gap:4px;margin-top:8px}
+        .slip-dl-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;box-shadow:0 3px 6px rgba(245,158,11,.25);transition:.2s;display:inline-flex;align-items:center;gap:4px;margin-top:8px;max-width:100%;box-sizing:border-box}
         .slip-dl-btn:active{transform:scale(.95)}
         .slip-dl-btn:disabled{opacity:.6;cursor:not-allowed}
     </style>
