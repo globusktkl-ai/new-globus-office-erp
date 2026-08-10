@@ -583,17 +583,13 @@
                         <div id="salarySlipNo" style="font-size:10px;color:#cbd5e1;margin-top:6px;font-weight:700;letter-spacing:1px">SLIP #: ---</div>
                     </div>
                 </div>
-                <!-- Decorative corner -->
                 <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:linear-gradient(135deg,transparent 60%,rgba(251,191,36,.12) 60%);pointer-events:none"></div>
             </div>
 
-            <!-- GOLD ACCENT LINE -->
             <div style="height:4px;background:linear-gradient(90deg,#fbbf24 0%,#f59e0b 50%,#fbbf24 100%);box-shadow:0 2px 4px rgba(251,191,36,.4)"></div>
 
-            <!-- BODY CONTENT -->
             <div style="padding:22px 30px;position:relative">
                 
-                <!-- Pay Period Bar -->
                 <div style="background:#f1f5f9;border-left:4px solid #1e3a8a;padding:10px 14px;border-radius:4px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center">
                     <div>
                         <div style="font-size:9px;color:#64748b;font-weight:800;letter-spacing:1.2px;text-transform:uppercase">Pay Period</div>
@@ -605,7 +601,6 @@
                     </div>
                 </div>
 
-                <!-- Employee Info Box -->
                 <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:20px;box-shadow:0 2px 6px rgba(15,23,42,.04)">
                     <div style="font-size:10px;color:#1e3a8a;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px dashed #cbd5e1;padding-bottom:6px;margin-bottom:10px">👤 Employee Details</div>
                     <table style="width:100%;font-size:13px;line-height:1.9">
@@ -632,7 +627,6 @@
                     </table>
                 </div>
 
-                <!-- Earnings & Deductions Table -->
                 <table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:13px">
                     <thead>
                         <tr style="background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff">
@@ -664,13 +658,11 @@
                     </tbody>
                 </table>
 
-                <!-- Amount In Words -->
                 <div style="background:#fffbeb;border:1px dashed #fbbf24;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:11px">
                     <span style="color:#92400e;font-weight:800;text-transform:uppercase;letter-spacing:.8px">Amount in Words:</span>
                     <span id="salaryAmountWords" style="color:#0f172a;font-weight:700;margin-left:5px;font-style:italic">Rupees Zero Only</span>
                 </div>
 
-                <!-- Payment Details -->
                 <div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:20px">
                     <div style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px">
                         <div style="font-size:8px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Payment Mode</div>
@@ -682,7 +674,6 @@
                     </div>
                 </div>
 
-                <!-- Footer Signature Row -->
                 <div style="position:absolute;bottom:24px;left:30px;right:30px;display:flex;justify-content:space-between;align-items:flex-end">
                     <div style="font-size:9px;color:#94a3b8;line-height:1.6;max-width:200px">
                         <strong style="color:#475569">Note:</strong> This is a computer-generated salary slip and does not require a physical signature. For any queries, contact HR.
@@ -694,7 +685,6 @@
                     </div>
                 </div>
 
-                <!-- Digital PAID Seal -->
                 <div style="position:absolute;bottom:110px;right:38px;width:120px;height:120px;border:4px solid #16a34a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-14deg);color:#16a34a;background:rgba(22,163,74,.06);box-shadow:inset 0 0 15px rgba(22,163,74,.15);mix-blend-mode:multiply">
                     <div style="width:104px;height:104px;border:2px dashed rgba(22,163,74,.6);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;box-sizing:border-box">
                         <div id="salarySealInst" style="font-size:8px;font-weight:900;letter-spacing:.5px;line-height:1.1;margin-bottom:2px">GLOBUS</div>
@@ -704,7 +694,6 @@
                     </div>
                 </div>
 
-                <!-- Bottom accent -->
                 <div style="position:absolute;bottom:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#0f172a 0%,#1e293b 50%,#0f172a 100%)"></div>
             </div>
         </div>
@@ -1140,17 +1129,18 @@
         }
 
         // ===================================================
-        // UPDATED: Advance Save + Day Book Integration
+        // FIXED: Advance Save + Day Book Integration
+        // Uses correct schema: expense_date, purpose
         // ===================================================
         window.saveAdvance = async function() {
             const staffId = document.getElementById('advStaffSelect').value;
-            const amount = Number(document.getElementById('advAmount').value) || 0;
-            const date = document.getElementById('advDate').value;
+            const advanceAmount = Number(document.getElementById('advAmount').value) || 0;
+            const advanceDate = document.getElementById('advDate').value;
             const remarks = document.getElementById('advRemarks').value.trim();
 
             if (!staffId) { alert('Please select a staff member!'); return; }
-            if (amount <= 0) { alert('Enter a valid amount!'); return; }
-            if (!date) { alert('Select a date!'); return; }
+            if (advanceAmount <= 0) { alert('Enter a valid amount!'); return; }
+            if (!advanceDate) { alert('Select a date!'); return; }
 
             const btn = document.getElementById('advSubmitBtn');
             btn.disabled = true; btn.textContent = '⏳ Saving...';
@@ -1158,42 +1148,29 @@
             try {
                 // 1. Insert into staff_advances
                 const { error: advErr } = await supabase.from('staff_advances').insert([{
-                    staff_id: staffId, amount: amount, advance_date: date, remarks: remarks, status: 'unpaid'
+                    staff_id: staffId, amount: advanceAmount, advance_date: advanceDate, remarks: remarks, status: 'unpaid'
                 }]);
                 if (advErr) throw advErr;
 
-                // 2. INTEGRATE: Dual-write to expenses table (Day Book)
+                // 2. INTEGRATE: Insert into expenses table (Day Book) with correct schema
                 const staff = allStaff.find(s => s.id === staffId);
                 const staffName = staff ? staff.full_name : 'Unknown';
-                const description = 'Advance to ' + staffName + (remarks ? ' - ' + remarks : '');
                 
-                // Try multiple schema variants for expenses table compatibility
                 let expenseInserted = false;
-                try {
-                    const { error: expErr1 } = await supabase.from('expenses').insert([{
-                        date: date,
-                        category: 'Staff Advance',
-                        description: description,
-                        amount: amount
-                    }]);
-                    if (!expErr1) expenseInserted = true;
-                    else throw expErr1;
-                } catch(e1) {
-                    // Fallback: try with expense_date instead of date
-                    try {
-                        const { error: expErr2 } = await supabase.from('expenses').insert([{
-                            expense_date: date,
-                            category: 'Staff Advance',
-                            description: description,
-                            amount: amount,
-                            payment_mode: 'Cash'
-                        }]);
-                        if (!expErr2) expenseInserted = true;
-                        else console.warn('Day Book insert failed:', expErr2.message);
-                    } catch(e2) { console.warn('Day Book fallback failed:', e2.message); }
+                const { error: expErr } = await supabase.from('expenses').insert([{
+                    expense_date: advanceDate,
+                    category: 'Staff Advance',
+                    purpose: 'Advance to ' + staffName + (remarks ? ' - ' + remarks : ''),
+                    amount: advanceAmount
+                }]);
+                
+                if (!expErr) {
+                    expenseInserted = true;
+                } else {
+                    console.warn('Day Book insert failed:', expErr.message);
                 }
 
-                alert('✅ Advance recorded' + (expenseInserted ? ' & added to Day Book!' : '!'));
+                alert('✅ Advance recorded' + (expenseInserted ? ' & added to Day Book!' : '! (Day Book update failed - check console)'));
                 document.getElementById('advAmount').value = '';
                 document.getElementById('advRemarks').value = '';
                 await fetchAllData();
@@ -1228,7 +1205,8 @@
         };
 
         // ===================================================
-        // UPDATED: Salary Process + Day Book Integration
+        // FIXED: Salary Process + Day Book Integration
+        // Uses correct schema: expense_date, purpose, category 'Salary'
         // ===================================================
         window.processSalary = async function() {
             const staffId = document.getElementById('payStaffSelect').value;
@@ -1238,7 +1216,7 @@
             const staff = allStaff.find(s => s.id === staffId);
             const salary = Number(staff.basic_salary) || 0;
             const totalDeduction = payrollAdvances.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
-            const netPay = salary - totalDeduction > 0 ? salary - totalDeduction : 0;
+            const netSalary = salary - totalDeduction > 0 ? salary - totalDeduction : 0;
             const todayDate = new Date().toISOString().split('T')[0];
 
             const btn = document.getElementById('payProcessBtn');
@@ -1248,7 +1226,7 @@
                 // 1. Insert salary payment
                 const { data: newSal, error: salErr } = await supabase.from('salary_payments').insert([{
                     staff_id: staffId, month: month, basic_salary: salary,
-                    deductions: totalDeduction, net_salary: netPay, payment_date: todayDate
+                    deductions: totalDeduction, net_salary: netSalary, payment_date: todayDate
                 }]).select();
                 if (salErr) throw salErr;
                 if (newSal && newSal[0]) lastProcessedPaymentId = newSal[0].id;
@@ -1258,35 +1236,24 @@
                     await supabase.from('staff_advances').update({ status: 'paid' }).eq('id', adv.id);
                 }
 
-                // 3. INTEGRATE: Dual-write to expenses (Day Book)
+                // 3. INTEGRATE: Insert into expenses (Day Book) with correct schema
                 const staffName = staff.full_name || 'Unknown';
-                const desc = 'Salary for ' + staffName + ' - ' + month;
                 
                 let expenseInserted = false;
-                try {
-                    const { error: expErr1 } = await supabase.from('expenses').insert([{
-                        date: todayDate,
-                        category: 'Salary Payment',
-                        description: desc,
-                        amount: netPay
-                    }]);
-                    if (!expErr1) expenseInserted = true;
-                    else throw expErr1;
-                } catch(e1) {
-                    try {
-                        const { error: expErr2 } = await supabase.from('expenses').insert([{
-                            expense_date: todayDate,
-                            category: 'Salary Payment',
-                            description: desc,
-                            amount: netPay,
-                            payment_mode: 'Bank Transfer'
-                        }]);
-                        if (!expErr2) expenseInserted = true;
-                        else console.warn('Day Book insert failed:', expErr2.message);
-                    } catch(e2) { console.warn('Day Book fallback failed:', e2.message); }
+                const { error: expErr } = await supabase.from('expenses').insert([{
+                    expense_date: todayDate,
+                    category: 'Salary',
+                    purpose: 'Salary for ' + staffName + ' - ' + month,
+                    amount: netSalary
+                }]);
+                
+                if (!expErr) {
+                    expenseInserted = true;
+                } else {
+                    console.warn('Day Book insert failed:', expErr.message);
                 }
 
-                alert('✅ Salary processed' + (expenseInserted ? ' & added to Day Book!' : '!'));
+                alert('✅ Salary processed' + (expenseInserted ? ' & added to Day Book!' : '! (Day Book update failed - check console)'));
                 document.getElementById('payProcessBtn').style.display = 'none';
                 document.getElementById('paySlipBtn').style.display = 'block';
 
@@ -1379,7 +1346,7 @@
                 wrapper.style.opacity = '0';
 
                 const target = document.getElementById('salarySlipRender');
-                await new Promise(r => setTimeout(r, 100)); // let DOM settle
+                await new Promise(r => setTimeout(r, 100));
 
                 const canvas = await html2canvas(target, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false });
                 
