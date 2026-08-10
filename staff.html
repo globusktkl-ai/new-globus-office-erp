@@ -3,1481 +3,643 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Staff & HR - Globus</title>
+    <title>Staff & Payroll Management - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Required CDNs for PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
-        *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-        body{background:#f8fafc;min-height:100vh;padding-bottom:90px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;overflow-x:hidden}
-        .main-content{padding:12px;max-width:800px;margin:0 auto;width:100%}
-
-        /* Back Button */
-        .btn-back-dashboard{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #cbd5e1;padding:8px 16px;border-radius:10px;color:#1e293b;font-weight:800;font-size:14px;text-decoration:none;box-shadow:0 4px 6px rgba(0,0,0,.05),inset 0 -2px 0 rgba(226,232,240,.8);transition:.2s;cursor:pointer}
-        .btn-back-dashboard:active{transform:translateY(1px);box-shadow:0 1px 2px rgba(0,0,0,.05)}
-        .btn-back-dashboard svg{width:22px;height:22px;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none;stroke:#4c1d95}
-        .top-nav{display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:20px;border-bottom:2px solid #e2e8f0;padding-bottom:15px;min-height:45px}
-        .top-nav .btn-back-dashboard{position:absolute;left:0;top:50%;transform:translateY(-50%)}
-        .top-nav .btn-back-dashboard:active{transform:translateY(-50%) scale(.95)}
-        .page-title{font-size:18px;font-weight:900;color:#0f172a;margin:0;text-transform:uppercase;letter-spacing:-.5px;text-align:center;width:100%;padding:0 50px}
-        @media(max-width:600px){.btn-back-dashboard span{display:none}.btn-back-dashboard{padding:10px}.page-title{font-size:15px;padding:0 42px}}
-
-        /* Tabs */
-        .staff-tabs{display:flex;gap:6px;margin-bottom:18px}
-        .staff-tab-btn{flex:1;padding:10px 4px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;font-size:11px;font-weight:800;color:#475569;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.02)}
-        .staff-tab-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
-        .staff-tab-btn.active{background:#1e3a8a;color:#fff;border-color:#1e3a8a;box-shadow:0 4px 12px rgba(30,58,138,.25)}
-        .staff-tab-btn:active{transform:scale(.96)}
-        .tab-panel{display:none;animation:fadeUp .3s ease;width:100%;box-sizing:border-box;overflow-x:hidden}
-        .tab-panel.active{display:block}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-        /* Search & Filters */
-        .search-filter-card{background:#fff;border-radius:14px;padding:12px;margin-bottom:16px;box-shadow:0 4px 14px rgba(15,23,42,.04);border:1px solid #e2e8f0}
-        .sf-search{width:100%;padding:10px 12px 10px 36px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:13px;font-weight:600;outline:none;background:#f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>') no-repeat 10px center;margin-bottom:10px;transition:.2s}
-        .sf-search:focus{border-color:#3b82f6;background-color:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
-        .sf-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-        .sf-select{width:100%;padding:9px 8px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:12px;font-weight:700;color:#1e293b;background:#f8fafc;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
-
-        /* Staff Card */
-        .staff-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(15,23,42,.04);transition:.2s}
-        .sc-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;border-bottom:1px dashed #e2e8f0;padding-bottom:12px}
-        .sc-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f1f5f9}
-        .sc-avatar img,.sc-avatar svg{width:100%;height:100%;object-fit:cover}
-        .sc-name{font-size:17px;font-weight:900;color:#0f172a;text-transform:uppercase;line-height:1.2;margin-bottom:4px}
-        .sc-role-badge{display:inline-block;background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1d4ed8;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px}
-        .sc-row{display:flex;align-items:flex-start;margin-bottom:6px;font-size:13px}
-        .sc-label{width:100px;color:#64748b;font-weight:700;flex-shrink:0;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
-        .sc-value{flex:1;color:#1e293b;font-weight:800}
-        .sc-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;border-top:1px dashed #e2e8f0;padding-top:12px}
-        .sc-actions-full{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
-        .sc-btn{border:none;padding:11px 6px;border-radius:10px;font-weight:800;cursor:pointer;font-size:12px;text-align:center;transition:.2s;display:flex;justify-content:center;align-items:center;gap:5px;box-shadow:0 3px 6px rgba(0,0,0,.08)}
-        .sc-btn:active{transform:scale(.95)}
-        .sc-btn-view{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff}
-        .sc-btn-id{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff}
-        .sc-btn-archive{background:transparent;color:#ea580c;border:1.5px solid #fdba74}
-
-        /* FAB */
-        .fab-add{position:fixed;bottom:24px;right:20px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;font-size:28px;font-weight:300;cursor:pointer;box-shadow:0 8px 20px rgba(37,99,235,.35);z-index:50;display:flex;align-items:center;justify-content:center;transition:.2s}
-        .fab-add:active{transform:scale(.9)}
-
-        /* Modal */
-        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,.88);z-index:100;justify-content:center;align-items:flex-start;padding:15px;overflow-y:auto;backdrop-filter:blur(4px)}
-        .modal-sheet{background:#fff;width:100%;max-width:500px;border-radius:16px;padding:22px;margin:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,.4);animation:sheetUp .3s ease;position:relative;overflow:hidden}
-        @keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-        .modal-close{position:absolute;top:12px;right:12px;background:#ef4444;color:#fff;border:2px solid #fff;border-radius:50%;width:34px;height:34px;font-weight:bold;cursor:pointer;box-shadow:0 4px 8px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:15px;z-index:10}
-        .modal-close:active{transform:scale(.9)}
-        .modal-title{font-size:18px;font-weight:900;color:#0f172a;margin:0 0 18px;padding-right:40px}
-
-        /* ============================================= */
-        /* FORM LABELS & INPUTS - FIXED LAYOUT           */
-        /* ============================================= */
-        .frm-label{font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;display:block}
-        .frm-input,.frm-select{
-            width:100%;
-            max-width:100%;
-            min-width:0;
-            box-sizing:border-box;
-            padding:11px 12px;
-            border:1.5px solid #cbd5e1;
-            border-radius:9px;
-            font-size:14px;
-            font-weight:600;
-            outline:none;
-            margin:0 0 12px 0;
-            background:#f8fafc;
-            transition:.2s;
-            display:block;
-        }
-        .frm-input:focus,.frm-select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1);background:#fff}
-
-        /* Form Field wrapper (single input group) */
-        .frm-group{
-            width:100%;
-            max-width:100%;
-            margin-bottom:12px;
-            min-width:0;
-            box-sizing:border-box;
-        }
-        .frm-group .frm-input,.frm-group .frm-select{
-            margin-bottom:0;
-        }
-
-        /* ============================================= */
-        /* PREMIUM FORM ROW - EQUAL WIDTH GRID (FIXED)  */
-        /* ============================================= */
-        .frm-row{
-            display:grid;
-            grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
-            gap:10px;
-            width:100%;
-            max-width:100%;
-            margin-bottom:12px;
-            min-width:0;
-            box-sizing:border-box;
-        }
-        .frm-row > div{
-            min-width:0;
-            width:100%;
-            max-width:100%;
-            box-sizing:border-box;
-            overflow:hidden;
-        }
-        .frm-row .frm-input,
-        .frm-row .frm-select{
-            width:100%;
-            max-width:100%;
-            min-width:0;
-            box-sizing:border-box;
-            margin:0;
-        }
+        body { padding: 15px; background-color: #f4f7f6; color: #333; font-family: 'Segoe UI', Tahoma, sans-serif; padding-bottom: 40px; }
         
-        .frm-submit{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;color:#fff;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 12px rgba(16,185,129,.25);margin-top:10px;box-sizing:border-box}
-        .frm-submit:active{transform:scale(.97)}
-        .frm-submit:disabled{background:#94a3b8;cursor:not-allowed;box-shadow:none}
+        /* Premium 3D Back to Dashboard Button */
+        .btn-back-dashboard { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
+        .btn-back-dashboard:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
+        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); }
 
-        /* Mobile Modal Adjustments */
-        @media (max-width: 500px) {
-            .modal-sheet{padding:18px 16px}
-            .frm-row{gap:8px}
-            .frm-input,.frm-select{padding:10px 10px;font-size:13px}
-        }
-
-        /* ============================================= */
-        /* ADVANCE CARD (FIXED OVERFLOW)                 */
-        /* ============================================= */
-        .adv-card{
-            background:#fff;
-            border:1px solid #e2e8f0;
-            border-radius:12px;
-            padding:14px;
-            margin-bottom:10px;
-            box-shadow:0 2px 8px rgba(15,23,42,.03);
-            width:100%;
-            max-width:100%;
-            box-sizing:border-box;
-            overflow-x:hidden;
-            word-wrap:break-word;
-            overflow-wrap:break-word;
-        }
-        .adv-top{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:6px;
-            gap:10px;
-            flex-wrap:wrap;
-            min-width:0;
-        }
-        .adv-name{
-            font-weight:900;
-            color:#0f172a;
-            font-size:14px;
-            word-wrap:break-word;
-            overflow-wrap:break-word;
-            white-space:normal;
-            min-width:0;
-            flex:1;
-        }
-        .adv-amount{
-            font-weight:900;
-            color:#ef4444;
-            font-size:16px;
-            white-space:nowrap;
-            flex-shrink:0;
-        }
-        .adv-meta{
-            font-size:11px;
-            color:#64748b;
-            font-weight:600;
-            display:flex;
-            gap:12px;
-            flex-wrap:wrap;
-            word-wrap:break-word;
-            overflow-wrap:break-word;
-        }
-        .adv-meta span{
-            word-wrap:break-word;
-            overflow-wrap:break-word;
-            white-space:normal;
-            min-width:0;
-        }
-        .adv-status{
-            display:inline-block;
-            padding:2px 8px;
-            border-radius:12px;
-            font-size:10px;
-            font-weight:800;
-            text-transform:uppercase;
-            white-space:nowrap;
-            flex-shrink:0;
-        }
-        .adv-status.unpaid{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
-        .adv-status.paid{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
-
-        /* ============================================= */
-        /* LIST CONTAINERS (Advances/Salary History)    */
-        /* ============================================= */
-        #advancesList, #salaryHistory, #staffList {
-            width:100%;
-            max-width:100%;
-            box-sizing:border-box;
-            overflow-x:hidden;
+        @media (max-width: 600px) {
+            .btn-back-dashboard span { display: none; } 
         }
 
-        /* ============================================= */
-        /* PAYROLL CARD (FIXED)                          */
-        /* ============================================= */
-        .payroll-card{
-            background:#fff;
-            border-radius:16px;
-            padding:20px;
-            border:1px solid #e2e8f0;
-            box-shadow:0 4px 14px rgba(15,23,42,.04);
-            margin-bottom:16px;
-            overflow:hidden;
-            width:100%;
-            max-width:100%;
-            box-sizing:border-box;
+        /* Top Navigation & Tabs */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        
+        .tab-container { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; overflow-x: auto; }
+        .tab-btn { background: none; border: none; font-size: 16px; font-weight: 700; color: #94a3b8; cursor: pointer; padding: 8px 12px; transition: all 0.3s; white-space: nowrap; }
+        .tab-btn:hover { color: #3B82F6; }
+        .tab-btn.active { color: #3B82F6; border-bottom: 3px solid #3B82F6; margin-bottom: -7px; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .btn-all-data { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-all-data:hover { filter: brightness(1.1); }
+        
+        h2 { color: #2c3e50; border-bottom: 2px solid #ddd; padding-bottom: 10px; font-size: 18px; margin-top: 0; }
+        
+        /* Summary Cards */
+        .summary-cards { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .card { flex: 1; min-width: 100px; padding: 12px 10px; border-radius: 8px; color: white; text-align: center; font-size: 16px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .income-card { background: linear-gradient(135deg, #10B981, #059669); }
+        .expense-card { background: linear-gradient(135deg, #EF4444, #DC2626); }
+        .balance-card { background: linear-gradient(135deg, #3B82F6, #2563EB); }
+        
+        /* Containers & Filters */
+        .filter-container { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        .filter-box { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; margin-bottom: 12px; }
+        .filter-box select { border: none; background: transparent; font-size: 15px; font-weight: 600; color: #1e293b; outline: none; width: 100%; appearance: none; -webkit-appearance: none; cursor: pointer; }
+        .filter-box select:disabled { color: #94a3b8; cursor: not-allowed; }
+        .select-wrapper { flex: 1; position: relative; }
+        .select-wrapper::after { content: "▼"; font-size: 10px; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #64748b; }
+        .select-wrapper.disabled::after { color: #cbd5e1; }
+
+        .custom-date-box { flex-direction: column; align-items: stretch; box-sizing: border-box; }
+        .custom-date-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .custom-date-title { font-size: 15px; font-weight: 600; color: #1e293b; }
+        .custom-date-title.disabled { color: #94a3b8; }
+        
+        .date-inputs-container { display: none; gap: 10px; width: 100%; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px; box-sizing: border-box; }
+        .date-inputs-container.active { display: flex; }
+        .date-col { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+        .date-col label { font-size: 12px; color: #64748b; font-weight: bold; }
+        .date-col input { padding: 10px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; width: 100%; box-sizing: border-box; min-width: 0; }
+
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; margin-left: 15px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: #8B5CF6; } 
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Buttons & Actions */
+        .bottom-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn-action { color: white; border: none; padding: 14px 5px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%; transition: transform 0.1s; letter-spacing: 0.5px; }
+        .btn-action:active { transform: scale(0.96); }
+        .btn-search { background-color: #3B82F6; } 
+        .btn-view { background-color: #10B981; }   
+        .btn-share { background-color: #8B5CF6; }  
+        
+        .btn-ledger-download { background: linear-gradient(135deg, #0f172a, #334155); display: none; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-ledger-download:hover { background: linear-gradient(135deg, #1e293b, #475569); }
+
+        /* Dropdowns & Tables */
+        .share-dropdown { position: relative; width: 100%; }
+        .dropdown-content { display: none; position: absolute; background-color: #ffffff; min-width: 180px; box-shadow: 0px -4px 20px rgba(0,0,0,0.2); z-index: 100; border-radius: 12px; bottom: 110%; right: 0; overflow: hidden; border: 1px solid #e5e7eb; }
+        .dropdown-content button { color: #1f2937; padding: 16px 20px; text-decoration: none; display: block; background: none; border: none; text-align: left; width: 100%; cursor: pointer; border-bottom: 1px solid #f3f4f6; font-size: 15px; font-weight: 600; }
+        .dropdown-content button:hover { background-color: #f9fafb; }
+        .dropdown-content button:last-child { border-bottom: none; }
+        .share-dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content.show { display: block; }
+
+        .table-container { overflow-x: auto; width: 100%; display: block; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; word-break: break-word; word-wrap: break-word; white-space: normal; }
+        th { background-color: #F3F4F6; color: #374151; font-weight: bold; }
+
+        /* Payroll Specific Form Inputs */
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; color: #64748b; font-weight: bold; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        
+        @media print {
+            body { background-color: white; padding: 0; }
+            .top-nav, .filter-container, .action-btn, .tab-container, .btn-ledger-download { display: none !important; }
+            .summary-cards { margin-bottom: 10px; }
+            .card { color: black !important; border: 1px solid #000; background: white !important; -webkit-print-color-adjust: exact; }
+            table { border: 1px solid #000; }
+            th, td { border: 1px solid #ddd; }
         }
-        .pay-summary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:16px 0;width:100%;box-sizing:border-box}
-        .pay-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;min-width:0;overflow:hidden;box-sizing:border-box}
-        .pay-box-label{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
-        .pay-box-value{font-size:18px;font-weight:900;line-height:1.1;word-break:break-word}
-        .pay-net{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid #10b981;border-radius:12px;padding:16px;text-align:center;margin:14px 0}
-        .pay-net-label{font-size:12px;font-weight:800;color:#047857;text-transform:uppercase;margin-bottom:4px}
-        .pay-net-value{font-size:28px;font-weight:900;color:#047857;word-break:break-word}
-
-        @media (max-width: 500px) {
-            .payroll-card{padding:16px 14px}
-        }
-
-        /* Slip Hidden */
-        #slipWrapper{position:absolute;top:-9999px;left:-9999px;z-index:-1}
-        .slip-page{width:550px;height:780px;background:#fff;padding:25px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;position:relative}
-        .slip-border{border:2px solid #cbd5e1;height:100%;padding:20px;box-sizing:border-box;border-radius:8px;position:relative}
-        .slip-seal{position:absolute;right:30px;bottom:100px;width:130px;height:70px;border:3px solid #16a34a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-15deg);color:#16a34a;background:rgba(22,163,74,.03);box-shadow:inset 0 0 10px rgba(22,163,74,.1);mix-blend-mode:multiply}
-
-        .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;font-weight:700;font-size:14px;background:#fff;border-radius:12px;border:1px dashed #cbd5e1}
-
-        /* ============================================= */
-        /* HIDE NUMBER SPIN ARROWS (COMPLETELY)          */
-        /* ============================================= */
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button{
-            -webkit-appearance:none;
-            -moz-appearance:none;
-            appearance:none;
-            margin:0;
-            display:none;
-        }
-        input[type=number]{
-            -moz-appearance:textfield;
-            appearance:textfield;
-        }
-
-        /* ============================================= */
-        /* ID CARD STUDIO MODAL                          */
-        /* ============================================= */
-        .card-modal-container{background:#fff;width:100%;max-width:820px;border-radius:16px;padding:20px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5);margin:auto;display:flex;gap:16px;flex-wrap:wrap;position:relative;animation:sheetUp .3s ease}
-        .card-preview-col{flex:1;min-width:290px;display:flex;justify-content:center;align-items:flex-start;padding-top:16px;position:relative}
-        .card-edit-col{flex:1;min-width:290px;background:#f8fafc;padding:18px;border-radius:14px;border:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
-        @media(max-width:700px){
-            .card-preview-col,.card-edit-col{min-width:100%;width:100%}
-            .card-modal-container{padding:15px;margin-top:10px}
-        }
-
-        /* CORPORATE STAFF ID CARD DESIGN */
-        #staffCardContent{width:280px;height:445px;background:#fff;border:1px solid #cbd5e1;border-radius:12px;position:relative;box-sizing:border-box;overflow:hidden;box-shadow:0 12px 30px rgba(15,23,42,.15);margin:0 auto;font-family:'Segoe UI',Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-
-        .id-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;margin-bottom:12px}
-        .id-btn-grid-3{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;margin-bottom:12px}
-        .id-btn{padding:11px 6px;border:none;border-radius:10px;font-weight:800;cursor:pointer;font-size:12px;color:#fff;transition:.2s;box-shadow:0 3px 6px rgba(0,0,0,.1)}
-        .id-btn:active{transform:scale(.95)}
-        .id-btn:disabled{opacity:.6;cursor:not-allowed}
-
-        /* Salary History Slip Download Button */
-        .slip-dl-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;box-shadow:0 3px 6px rgba(245,158,11,.25);transition:.2s;display:inline-flex;align-items:center;gap:4px;margin-top:8px;max-width:100%;box-sizing:border-box}
-        .slip-dl-btn:active{transform:scale(.95)}
-        .slip-dl-btn:disabled{opacity:.6;cursor:not-allowed}
     </style>
 </head>
 <body>
-    <main class="main-content">
-        <div class="top-nav">
-            <a href="dashboard.html" class="btn-back-dashboard">
-                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
-                <span>Dashboard</span>
-            </a>
-            <h1 class="page-title">Staff & HR Management</h1>
-        </div>
-
-        <!-- TABS -->
-        <div class="staff-tabs">
-            <button class="staff-tab-btn active" onclick="switchStaffTab('directory')">
-                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                Directory
-            </button>
-            <button class="staff-tab-btn" onclick="switchStaffTab('advances')">
-                <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                Advances
-            </button>
-            <button class="staff-tab-btn" onclick="switchStaffTab('payroll')">
-                <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                Payroll
-            </button>
-        </div>
-
-        <!-- TAB 1: DIRECTORY -->
-        <div id="panel-directory" class="tab-panel active">
-            <div class="search-filter-card">
-                <input type="text" class="sf-search" id="staffSearch" placeholder="Search name or phone..." oninput="renderDirectory()">
-                <div class="sf-row">
-                    <select class="sf-select" id="filterRole" onchange="renderDirectory()">
-                        <option value="all">All Roles</option>
-                    </select>
-                    <select class="sf-select" id="filterStatus" onchange="renderDirectory()">
-                        <option value="active">🟢 Active</option>
-                        <option value="archived">🗄️ Archived</option>
-                        <option value="all">📁 All</option>
-                    </select>
-                </div>
-            </div>
-            <div id="staffList"><div class="empty-state">Loading staff data...</div></div>
-            <button class="fab-add" onclick="openModal('addStaffModal')" title="Add New Staff">+</button>
-        </div>
-
-        <!-- TAB 2: ADVANCES -->
-        <div id="panel-advances" class="tab-panel">
-            <div class="payroll-card">
-                <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Record Staff Advance</h3>
-                
-                <div class="frm-group">
-                    <label class="frm-label">Select Staff</label>
-                    <select class="frm-select" id="advStaffSelect"><option value="">-- Choose Staff --</option></select>
-                </div>
-                
-                <div class="frm-row">
-                    <div>
-                        <label class="frm-label">Amount (₹)</label>
-                        <input type="number" class="frm-input" id="advAmount" placeholder="0" min="0">
-                    </div>
-                    <div>
-                        <label class="frm-label">Date</label>
-                        <input type="date" class="frm-input" id="advDate">
-                    </div>
-                </div>
-                
-                <div class="frm-group">
-                    <label class="frm-label">Remarks (Optional)</label>
-                    <input type="text" class="frm-input" id="advRemarks" placeholder="Purpose of advance...">
-                </div>
-                
-                <button class="frm-submit" id="advSubmitBtn" onclick="saveAdvance()">💰 Record Advance</button>
-            </div>
-            <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Recent Advances</h3>
-            <div id="advancesList"><div class="empty-state">Loading advances...</div></div>
-        </div>
-
-        <!-- TAB 3: PAYROLL -->
-        <div id="panel-payroll" class="tab-panel">
-            <div class="payroll-card">
-                <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Process Monthly Salary</h3>
-                
-                <div class="frm-row">
-                    <div>
-                        <label class="frm-label">Month</label>
-                        <input type="month" class="frm-input" id="payMonth">
-                    </div>
-                    <div>
-                        <label class="frm-label">Select Staff</label>
-                        <select class="frm-select" id="payStaffSelect" onchange="loadPayrollDetails()"><option value="">-- Choose --</option></select>
-                    </div>
-                </div>
-                
-                <div id="payrollDetails" style="display:none">
-                    <div class="pay-summary">
-                        <div class="pay-box"><div class="pay-box-label">Basic Salary</div><div class="pay-box-value" id="paySalary" style="color:#1d4ed8">₹ 0</div></div>
-                        <div class="pay-box"><div class="pay-box-label">Advance Deduction</div><div class="pay-box-value" id="payDeduction" style="color:#ef4444">₹ 0</div></div>
-                    </div>
-                    <div class="pay-net">
-                        <div class="pay-net-label">Net Payable Amount</div>
-                        <div class="pay-net-value" id="payNet">₹ 0</div>
-                    </div>
-                    <button class="frm-submit" id="payProcessBtn" onclick="processSalary()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25)">💳 Process Salary</button>
-                    <button class="frm-submit" id="paySlipBtn" onclick="downloadLastSlip()" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 12px rgba(245,158,11,.25);margin-top:10px;display:none">📄 Download Salary Slip</button>
-                </div>
-            </div>
-            <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Payment History</h3>
-            <div id="salaryHistory"><div class="empty-state">Process a salary to see history.</div></div>
-        </div>
-    </main>
-
-    <!-- ADD STAFF MODAL (FIXED LAYOUT) -->
-    <div id="addStaffModal" class="modal-overlay">
-        <div class="modal-sheet">
-            <button class="modal-close" onclick="closeModal('addStaffModal')">×</button>
-            <h2 class="modal-title">➕ Add New Staff</h2>
-            
-            <div class="frm-group">
-                <label class="frm-label">Full Name *</label>
-                <input type="text" class="frm-input" id="addName" required>
-            </div>
-            
-            <div class="frm-row">
-                <div>
-                    <label class="frm-label">Phone *</label>
-                    <input type="tel" class="frm-input" id="addPhone" maxlength="10">
-                </div>
-                <div>
-                    <label class="frm-label">Gender</label>
-                    <select class="frm-select" id="addGender">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="frm-group">
-                <label class="frm-label">Role / Designation</label>
-                <input type="text" class="frm-input" id="addRole" placeholder="e.g. Teacher">
-            </div>
-            
-            <div class="frm-row">
-                <div>
-                    <label class="frm-label">Basic Salary (₹)</label>
-                    <input type="number" class="frm-input" id="addSalary" min="0">
-                </div>
-                <div>
-                    <label class="frm-label">Joining Date</label>
-                    <input type="date" class="frm-input" id="addJoinDate">
-                </div>
-            </div>
-            
-            <div class="frm-group">
-                <label class="frm-label">Qualification</label>
-                <input type="text" class="frm-input" id="addQual" placeholder="e.g. B.Ed">
-            </div>
-            
-            <div class="frm-group">
-                <label class="frm-label">Address</label>
-                <input type="text" class="frm-input" id="addAddress" placeholder="Full address">
-            </div>
-            
-            <button class="frm-submit" id="addStaffBtn" onclick="saveNewStaff()">✅ Save Staff Member</button>
-        </div>
+    
+    <div class="top-nav">
+        <a href="dashboard.html" class="btn-back-dashboard">
+            <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
+                <defs>
+                    <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#2563eb" />
+                        <stop offset="100%" stop-color="#9333ea" />
+                    </linearGradient>
+                </defs>
+                <path d="M9 14L4 9l5-5" />
+                <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+            </svg>
+            <span>Dashboard</span>
+        </a>
     </div>
 
-    <!-- VIEW/EDIT STAFF MODAL (FIXED LAYOUT) -->
-    <div id="editStaffModal" class="modal-overlay">
-        <div class="modal-sheet">
-            <button class="modal-close" onclick="closeModal('editStaffModal')">×</button>
-            <h2 class="modal-title">✏️ Edit Staff Profile</h2>
-            <input type="hidden" id="editId">
-            
-            <div class="frm-group">
-                <label class="frm-label">Full Name *</label>
-                <input type="text" class="frm-input" id="editName">
-            </div>
-            
-            <div class="frm-row">
-                <div>
-                    <label class="frm-label">Phone *</label>
-                    <input type="tel" class="frm-input" id="editPhone" maxlength="10">
-                </div>
-                <div>
-                    <label class="frm-label">Gender</label>
-                    <select class="frm-select" id="editGender">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="frm-group">
-                <label class="frm-label">Role / Designation</label>
-                <input type="text" class="frm-input" id="editRole">
-            </div>
-            
-            <div class="frm-row">
-                <div>
-                    <label class="frm-label">Basic Salary (₹)</label>
-                    <input type="number" class="frm-input" id="editSalary" min="0">
-                </div>
-                <div>
-                    <label class="frm-label">Joining Date</label>
-                    <input type="date" class="frm-input" id="editJoinDate">
-                </div>
-            </div>
-            
-            <div class="frm-group">
-                <label class="frm-label">Status</label>
-                <select class="frm-select" id="editStatus">
-                    <option value="active">Active</option>
-                    <option value="archived">Archived</option>
-                </select>
-            </div>
-            
-            <div class="frm-group">
-                <label class="frm-label">Address</label>
-                <input type="text" class="frm-input" id="editAddress">
-            </div>
-            
-            <button class="frm-submit" onclick="updateStaff()">💾 Update Profile</button>
-        </div>
+    <!-- TAB NAVIGATION -->
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="window.switchTab('overview', this)">Overview</button>
+        <button class="tab-btn" onclick="window.switchTab('payroll', this)">Payroll</button>
     </div>
 
-    <!-- ============================================= -->
-    <!-- STAFF ID CARD STUDIO MODAL                    -->
-    <!-- ============================================= -->
-    <div id="staffCardModal" class="modal-overlay">
-        <div class="card-modal-container">
-            <button class="modal-close" onclick="closeModal('staffCardModal')">×</button>
-
-            <!-- COLUMN 1: LIVE PREVIEW (CORPORATE REDESIGN) -->
-            <div class="card-preview-col">
-                <div id="staffCardContent">
-                    
-                    <!-- CORPORATE HEADER (Diagonal Cut) -->
-                    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);height:95px;width:100%;position:relative;padding:12px 16px 0;box-sizing:border-box;clip-path:polygon(0 0,100% 0,100% 88%,0 100%);">
-                        <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:2">
-                            <div style="width:44px;height:44px;background:rgba(255,255,255,.95);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:4px;box-shadow:0 3px 8px rgba(0,0,0,.25);flex-shrink:0">
-                                <img id="staffCardLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" alt="Logo" onerror="this.style.display='none'">
-                            </div>
-                            <div style="flex:1;min-width:0">
-                                <div id="staffCardInstName" style="font-size:15px;font-weight:900;color:#fff;line-height:1.1;letter-spacing:1.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Segoe UI',Arial,sans-serif">GLOBUS</div>
-                                <div id="staffCardSubName" style="font-size:7.5px;font-weight:700;color:#fbbf24;letter-spacing:1.2px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase">TECHNICAL ACADEMY</div>
-                                <div id="staffCardAddress" style="font-size:6px;color:#cbd5e1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px"></div>
-                            </div>
-                        </div>
-                        <div style="position:absolute;top:0;right:0;width:60px;height:60px;background:linear-gradient(135deg,transparent 50%,rgba(251,191,36,.15) 50%);pointer-events:none"></div>
-                    </div>
-
-                    <div style="height:3px;background:linear-gradient(90deg,#fbbf24 0%,#f59e0b 50%,#fbbf24 100%);width:100%;box-shadow:0 1px 3px rgba(251,191,36,.4)"></div>
-
-                    <div style="background:#f8fafc;padding:6px 16px;text-align:center;border-bottom:1px solid #e2e8f0">
-                        <div style="font-size:10px;font-weight:900;color:#0f172a;letter-spacing:3px;text-transform:uppercase;font-family:'Segoe UI',Arial,sans-serif">STAFF IDENTITY CARD</div>
-                    </div>
-
-                    <div style="text-align:center;margin-top:-8px;position:relative;z-index:5">
-                        <div style="display:inline-block;padding:4px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,.2),0 0 0 1px #e2e8f0">
-                            <img id="staffCardAvatarImg" src="" style="width:90px;height:105px;object-fit:cover;border-radius:10px;display:block">
-                        </div>
-                    </div>
-
-                    <div style="padding:14px 16px 0;position:relative">
-                        <div style="display:flex;gap:10px;align-items:stretch">
-                            <div style="width:3px;background:linear-gradient(180deg,#fbbf24 0%,#f59e0b 100%);border-radius:2px;flex-shrink:0"></div>
-                            <div style="flex:1;min-width:0">
-                                <div style="margin-bottom:8px">
-                                    <div style="font-size:7px;color:#64748b;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:1px">Employee Name</div>
-                                    <div id="staffCardName" style="font-size:14px;font-weight:900;color:#0f172a;line-height:1.15;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">STAFF NAME</div>
-                                </div>
-                                <div style="margin-bottom:8px">
-                                    <div style="font-size:7px;color:#64748b;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:1px">Designation</div>
-                                    <div id="staffCardRole" style="font-size:12px;font-weight:800;color:#1e3a8a;line-height:1.1;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">DESIGNATION</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="display:flex;justify-content:space-between;margin-top:10px;padding:8px 10px;background:linear-gradient(135deg,#f1f5f9 0%,#f8fafc 100%);border-radius:8px;border-left:3px solid #0f172a">
-                            <div style="text-align:left;min-width:0;flex:1">
-                                <div style="font-size:6.5px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Employee ID</div>
-                                <div id="staffCardEmpId" style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div>
-                            </div>
-                            <div style="text-align:right;min-width:0;flex:1">
-                                <div style="font-size:6.5px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Contact</div>
-                                <div id="staffCardPhone" style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="position:absolute;bottom:28px;left:14px;width:140px">
-                        <div style="height:26px;background:repeating-linear-gradient(90deg,#0f172a 0,#0f172a 1px,#fff 1px,#fff 3px,#0f172a 3px,#0f172a 5px,#fff 5px,#fff 6px,#0f172a 6px,#0f172a 9px,#fff 9px,#fff 10px,#0f172a 10px,#0f172a 11px,#fff 11px,#fff 13px);border:1px solid #e2e8f0;border-radius:2px"></div>
-                        <div id="staffCardBarcodeText" style="font-size:7px;font-family:'Courier New',monospace;font-weight:700;color:#0f172a;letter-spacing:2px;text-align:center;margin-top:2px">||| STAFF |||</div>
-                    </div>
-
-                    <div style="position:absolute;bottom:20px;right:14px;width:64px;height:64px;border:2px solid rgba(15,23,42,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;transform:rotate(-8deg);box-shadow:inset 0 0 8px rgba(15,23,42,.1);mix-blend-mode:multiply;background:rgba(251,191,36,.05)">
-                        <div style="width:56px;height:56px;border:1px dashed rgba(15,23,42,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:2px;box-sizing:border-box">
-                            <div id="staffSealMainName" style="font-size:6px;font-weight:900;color:rgba(15,23,42,.85);line-height:1.1;text-transform:uppercase;word-wrap:break-word;overflow:hidden;max-height:14px">GLOBUS</div>
-                            <div style="font-size:8px;font-weight:900;color:#0f172a;margin:1px 0;letter-spacing:.5px">✓ VERIFIED</div>
-                            <div id="staffSealSubName" style="font-size:4px;font-weight:700;color:rgba(15,23,42,.65);line-height:1.1;text-transform:uppercase;word-wrap:break-word;overflow:hidden;max-height:8px">OFFICIAL</div>
-                            <div id="staffSealAddress" style="display:none">ADDRESS</div>
-                        </div>
-                    </div>
-
-                    <div style="position:absolute;bottom:4px;left:0;right:0;font-size:6px;color:#94a3b8;font-weight:600;text-align:center;padding:0 6px;letter-spacing:.5px">
-                        Property of Institute • Return to: <span id="staffCardReturnPhone">+91 9846000000</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- COLUMN 2: EDIT STUDIO -->
-            <div class="card-edit-col">
-                <div style="margin-bottom:14px;border-bottom:2px dashed #e2e8f0;padding-bottom:10px">
-                    <h3 style="font-size:16px;font-weight:900;color:#0f172a;margin:0">🎨 ID Card Studio</h3>
-                    <p style="color:#64748b;font-size:11px;font-weight:600;margin:2px 0 0">Edit and generate premium ID card</p>
-                </div>
-
-                <div style="background:#fff;padding:12px;border-radius:10px;margin-bottom:14px;border:1px solid #cbd5e1">
-                    <label class="frm-label" style="margin-bottom:8px">🏢 Institute Settings (Card Only)</label>
-                    <div class="frm-row" style="margin-bottom:8px">
-                        <div><input type="text" class="frm-input" id="liveInstName" placeholder="Institute Name" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px"></div>
-                        <div><input type="text" class="frm-input" id="liveInstSub" placeholder="Sub Name" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px"></div>
-                    </div>
-                    <input type="text" class="frm-input" id="liveInstAddress" placeholder="Full Address" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px">
-                </div>
-
-                <div class="frm-group">
-                    <label class="frm-label">Upload Photo (Auto-preview)</label>
-                    <input type="file" id="liveStaffPhotoInput" accept="image/*" class="frm-input" onchange="window.updateLiveStaffPhoto(event)" style="padding:8px;font-size:12px">
-                </div>
-
-                <div class="frm-group">
-                    <label class="frm-label">Staff Name</label>
-                    <input type="text" class="frm-input" id="liveStaffName" oninput="document.getElementById('staffCardName').innerText = (this.value || 'N/A').toUpperCase()">
-                </div>
-
-                <div class="frm-group">
-                    <label class="frm-label">Role / Designation</label>
-                    <input type="text" class="frm-input" id="liveStaffRole" oninput="document.getElementById('staffCardRole').innerText = (this.value || 'N/A').toUpperCase()">
-                </div>
-
-                <div class="frm-row">
-                    <div>
-                        <label class="frm-label">Emp ID</label>
-                        <input type="text" class="frm-input" id="liveStaffEmpId" oninput="document.getElementById('staffCardEmpId').innerText = this.value || 'N/A'; document.getElementById('staffCardBarcodeText').innerText = '||| ' + (this.value || 'STAFF') + ' |||';">
-                    </div>
-                    <div>
-                        <label class="frm-label">Phone</label>
-                        <input type="text" class="frm-input" id="liveStaffPhone" maxlength="10" oninput="document.getElementById('staffCardPhone').innerText = this.value || 'N/A'">
-                    </div>
-                </div>
-
-                <div class="id-btn-grid">
-                    <button type="button" id="staffSharePdfBtn" onclick="window.shareStaffPDF()" class="id-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 6px rgba(239,68,68,.25)">📄 Share PDF</button>
-                    <button type="button" id="staffShareCardBtn" onclick="window.shareStaffCard()" class="id-btn" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 6px rgba(16,185,129,.25)">🔗 Share Image</button>
-                </div>
-
-                <hr style="border:none;border-top:1px dashed #cbd5e1;margin:6px 0 12px">
-                <button type="button" onclick="window.saveStaffCardDataToDB()" class="id-btn" style="background:linear-gradient(135deg,#4f46e5,#3b82f6);box-shadow:0 4px 10px rgba(79,70,229,.3);width:100%;padding:13px">💾 Save Changes</button>
-            </div>
+    <!-- TAB 1: OVERVIEW (Original Financial Report) -->
+    <div id="tab-overview" class="tab-content active">
+        <div class="filter-container" style="padding-bottom: 5px; background: transparent; box-shadow: none;">
+            <button class="btn-all-data" style="width:100%;" onclick="window.fetchReports('all')">Fetch All Data</button>
         </div>
-    </div>
 
-    <!-- ============================================= -->
-    <!-- HIDDEN SALARY SLIP TEMPLATE (A5 Professional) -->
-    <!-- ============================================= -->
-    <div id="salarySlipTemplate" style="position:absolute;top:-9999px;left:-9999px;z-index:-1;display:block">
-        <div id="salarySlipRender" style="width:550px;height:780px;background:#fff;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;position:relative;overflow:hidden">
-            
-            <!-- CORPORATE HEADER -->
-            <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);padding:24px 30px 22px;position:relative;overflow:hidden">
-                <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2">
-                    <div style="display:flex;align-items:center;gap:14px">
-                        <div style="width:60px;height:60px;background:#fff;border-radius:10px;padding:6px;box-shadow:0 4px 12px rgba(0,0,0,.3);flex-shrink:0">
-                            <img id="salaryLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
-                        </div>
-                        <div>
-                            <div id="salaryInstName" style="font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;line-height:1.1;text-transform:uppercase">GLOBUS</div>
-                            <div id="salaryInstSub" style="font-size:10px;font-weight:700;color:#fbbf24;letter-spacing:1.5px;margin-top:3px;text-transform:uppercase">TECHNICAL ACADEMY</div>
-                            <div id="salaryInstAddress" style="font-size:9px;color:#cbd5e1;font-weight:500;margin-top:4px"></div>
-                        </div>
-                    </div>
-                    <div style="text-align:right">
-                        <div style="background:#fbbf24;color:#0f172a;padding:8px 14px;border-radius:6px;font-size:14px;font-weight:900;letter-spacing:2px;box-shadow:0 3px 8px rgba(0,0,0,.2)">SALARY SLIP</div>
-                        <div id="salarySlipNo" style="font-size:10px;color:#cbd5e1;margin-top:6px;font-weight:700;letter-spacing:1px">SLIP #: ---</div>
-                    </div>
-                </div>
-                <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:linear-gradient(135deg,transparent 60%,rgba(251,191,36,.12) 60%);pointer-events:none"></div>
+        <div id="printable-area">
+            <h2>Financial Report</h2>
+            <div class="summary-cards">
+                <div class="card income-card">Income<br>₹<span id="total-income">0</span></div>
+                <div class="card expense-card">Expense<br>₹<span id="total-expense">0</span></div>
+                <div class="card balance-card">Net Balance<br>₹<span id="net-balance">0</span></div>
             </div>
-
-            <div style="height:4px;background:linear-gradient(90deg,#fbbf24 0%,#f59e0b 50%,#fbbf24 100%);box-shadow:0 2px 4px rgba(251,191,36,.4)"></div>
-
-            <div style="padding:22px 30px;position:relative">
-                
-                <div style="background:#f1f5f9;border-left:4px solid #1e3a8a;padding:10px 14px;border-radius:4px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center">
-                    <div>
-                        <div style="font-size:9px;color:#64748b;font-weight:800;letter-spacing:1.2px;text-transform:uppercase">Pay Period</div>
-                        <div id="salaryMonthDisplay" style="font-size:16px;font-weight:900;color:#0f172a;letter-spacing:.5px">MONTH YEAR</div>
-                    </div>
-                    <div style="text-align:right">
-                        <div style="font-size:9px;color:#64748b;font-weight:800;letter-spacing:1.2px;text-transform:uppercase">Issued On</div>
-                        <div id="salaryIssueDate" style="font-size:13px;font-weight:800;color:#334155">DD-MM-YYYY</div>
-                    </div>
-                </div>
-
-                <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:20px;box-shadow:0 2px 6px rgba(15,23,42,.04)">
-                    <div style="font-size:10px;color:#1e3a8a;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px dashed #cbd5e1;padding-bottom:6px;margin-bottom:10px">👤 Employee Details</div>
-                    <table style="width:100%;font-size:13px;line-height:1.9">
-                        <tr>
-                            <td style="width:130px;color:#64748b;font-weight:700">Employee Name</td>
-                            <td style="color:#64748b;font-weight:700">:</td>
-                            <td style="font-weight:900;color:#0f172a;text-transform:uppercase" id="salaryStaffName">-</td>
-                        </tr>
-                        <tr>
-                            <td style="color:#64748b;font-weight:700">Designation</td>
-                            <td style="color:#64748b;font-weight:700">:</td>
-                            <td style="font-weight:800;color:#1e3a8a" id="salaryStaffRole">-</td>
-                        </tr>
-                        <tr>
-                            <td style="color:#64748b;font-weight:700">Employee ID</td>
-                            <td style="color:#64748b;font-weight:700">:</td>
-                            <td style="font-weight:800;color:#1e293b;font-family:'Courier New',monospace" id="salaryStaffEmpId">-</td>
-                        </tr>
-                        <tr>
-                            <td style="color:#64748b;font-weight:700">Contact</td>
-                            <td style="color:#64748b;font-weight:700">:</td>
-                            <td style="font-weight:800;color:#1e293b" id="salaryStaffPhone">-</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:13px">
+            <div class="table-container" id="reportTableSection">
+                <table id="report-table">
                     <thead>
-                        <tr style="background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff">
-                            <th style="padding:12px 14px;text-align:left;border:1px solid #0f172a;font-weight:800;letter-spacing:.5px">DESCRIPTION</th>
-                            <th style="padding:12px 14px;text-align:right;border:1px solid #0f172a;font-weight:800;letter-spacing:.5px;width:130px">AMOUNT (₹)</th>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Purpose/Name</th>
+                            <th>Category</th>
+                            <th>Amount (₹)</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td style="padding:12px 14px;border:1px solid #cbd5e1;font-weight:700;color:#1e293b">
-                                <span style="color:#16a34a;font-weight:900">▸</span> Basic Salary
-                            </td>
-                            <td style="padding:12px 14px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#16a34a;font-size:14px" id="salaryBasicAmt">0</td>
-                        </tr>
-                        <tr style="background:#fafafa">
-                            <td style="padding:12px 14px;border:1px solid #cbd5e1;font-weight:800;color:#0f172a;text-align:right">Gross Earnings</td>
-                            <td style="padding:12px 14px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#0f172a" id="salaryGrossAmt">0</td>
-                        </tr>
-                        <tr>
-                            <td style="padding:12px 14px;border:1px solid #cbd5e1;font-weight:700;color:#1e293b">
-                                <span style="color:#dc2626;font-weight:900">▸</span> Advance Deduction
-                            </td>
-                            <td style="padding:12px 14px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#dc2626;font-size:14px" id="salaryDedAmt">0</td>
-                        </tr>
-                        <tr style="background:linear-gradient(135deg,#ecfdf5,#d1fae5)">
-                            <td style="padding:14px;border:2px solid #10b981;font-weight:900;color:#047857;text-align:right;font-size:14px;letter-spacing:.5px">NET PAYABLE AMOUNT</td>
-                            <td style="padding:14px;border:2px solid #10b981;text-align:right;font-weight:900;color:#047857;font-size:20px" id="salaryNetAmt">0</td>
-                        </tr>
+                    <tbody id="report-body">
+                        <tr><td colspan="5" style="text-align: center;">Loading data...</td></tr>
                     </tbody>
                 </table>
-
-                <div style="background:#fffbeb;border:1px dashed #fbbf24;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:11px">
-                    <span style="color:#92400e;font-weight:800;text-transform:uppercase;letter-spacing:.8px">Amount in Words:</span>
-                    <span id="salaryAmountWords" style="color:#0f172a;font-weight:700;margin-left:5px;font-style:italic">Rupees Zero Only</span>
-                </div>
-
-                <div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:20px">
-                    <div style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px">
-                        <div style="font-size:8px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Payment Mode</div>
-                        <div style="font-size:12px;font-weight:800;color:#0f172a;margin-top:2px">Bank Transfer</div>
-                    </div>
-                    <div style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px">
-                        <div style="font-size:8px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Status</div>
-                        <div style="font-size:12px;font-weight:800;color:#16a34a;margin-top:2px">✓ Processed</div>
-                    </div>
-                </div>
-
-                <div style="position:absolute;bottom:24px;left:30px;right:30px;display:flex;justify-content:space-between;align-items:flex-end">
-                    <div style="font-size:9px;color:#94a3b8;line-height:1.6;max-width:200px">
-                        <strong style="color:#475569">Note:</strong> This is a computer-generated salary slip and does not require a physical signature. For any queries, contact HR.
-                    </div>
-                    <div style="text-align:center">
-                        <div style="border-bottom:1.5px solid #0f172a;width:150px;height:38px;margin-bottom:6px"></div>
-                        <div style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.5px">Authorized Signatory</div>
-                        <div style="font-size:8px;color:#64748b;font-weight:600;margin-top:1px">HR Department</div>
-                    </div>
-                </div>
-
-                <div style="position:absolute;bottom:110px;right:38px;width:120px;height:120px;border:4px solid #16a34a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-14deg);color:#16a34a;background:rgba(22,163,74,.06);box-shadow:inset 0 0 15px rgba(22,163,74,.15);mix-blend-mode:multiply">
-                    <div style="width:104px;height:104px;border:2px dashed rgba(22,163,74,.6);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;box-sizing:border-box">
-                        <div id="salarySealInst" style="font-size:8px;font-weight:900;letter-spacing:.5px;line-height:1.1;margin-bottom:2px">GLOBUS</div>
-                        <div style="font-size:24px;font-weight:900;letter-spacing:2px;line-height:1;margin:3px 0">PAID</div>
-                        <div style="font-size:6.5px;font-weight:700;letter-spacing:.8px;line-height:1.1">DIGITALLY SIGNED</div>
-                        <div id="salarySealDate" style="font-size:6px;font-weight:700;margin-top:2px;letter-spacing:.5px">DD-MM-YYYY</div>
-                    </div>
-                </div>
-
-                <div style="position:absolute;bottom:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#0f172a 0%,#1e293b 50%,#0f172a 100%)"></div>
             </div>
+        </div>
+
+        <div class="filter-container" style="margin-top: 20px;">
+            <div class="filter-box">
+                <div class="select-wrapper disabled" id="wrap-type">
+                    <select id="filter-type" disabled>
+                        <option value="all">Income & Expense</option>
+                        <option value="income">Income Only</option>
+                        <option value="expense">Expense Only</option>
+                    </select>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-type" onchange="window.toggleInput('type')">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="filter-box custom-date-box">
+                <div class="custom-date-header">
+                    <span class="custom-date-title disabled" id="title-date">Custom Date</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-date" onchange="window.toggleInput('date')">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="date-inputs-container" id="date-inputs-container">
+                    <div class="date-col">
+                        <label>From Date:</label>
+                        <input type="date" id="from-date">
+                    </div>
+                    <div class="date-col">
+                        <label>To Date:</label>
+                        <input type="date" id="to-date">
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-box">
+                <div class="select-wrapper disabled" id="wrap-period">
+                    <select id="filter-period" disabled>
+                        <option value="daily">Filter by: Daily</option>
+                        <option value="weekly">Filter by: Weekly</option>
+                        <option value="monthly">Filter by: Monthly</option>
+                    </select>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="toggle-period" onchange="window.toggleInput('period')">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="bottom-actions">
+                <button class="btn-action btn-search" onclick="window.fetchReports('search')">Search</button>
+                <button class="btn-action btn-view" onclick="document.getElementById('reportTableSection').scrollIntoView({behavior: 'smooth'})">View</button>
+                
+                <div class="share-dropdown">
+                    <button class="btn-action btn-share" onclick="window.toggleDropdown()">Share</button>
+                    <div class="dropdown-content" id="shareMenu">
+                        <button onclick="window.printReport()">Print Report</button>
+                        <button onclick="window.downloadPDF()">Download PDF</button>
+                        <button onclick="window.exportToCSV()">Download Excel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: PAYROLL (New Feature) -->
+    <div id="tab-payroll" class="tab-content">
+        <div class="filter-container">
+            <h2 style="margin-bottom: 15px;">Staff Payroll Management</h2>
+            
+            <!-- Staff Selection -->
+            <div class="filter-box" style="flex-direction: column; align-items: flex-start;">
+                <label style="font-weight: bold; color: #1e293b; margin-bottom: 8px;">Select Staff Member:</label>
+                <div class="select-wrapper" style="width: 100%;">
+                    <select id="staff-select" onchange="window.handleStaffSelection()">
+                        <option value="">-- Choose Staff --</option>
+                        <!-- Options will be populated via Supabase -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Process Monthly Salary Card -->
+            <div class="card" style="background: white; border: 1px solid #e2e8f0; padding: 20px; color: #333; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-top: 15px;">
+                <h3 style="margin-top: 0; color: #1e293b; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 16px;">Process Monthly Salary</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                    <div class="form-group">
+                        <label>Basic Salary (₹)</label>
+                        <input type="number" id="basic-salary" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Deductions (₹)</label>
+                        <input type="number" id="deductions" placeholder="0.00">
+                    </div>
+                </div>
+                
+                <button class="btn-action btn-view" style="margin-top: 10px;">Process Salary</button>
+            </div>
+
+            <!-- Ledger Download Button -->
+            <button id="btn-download-ledger" class="btn-action btn-ledger-download" onclick="window.downloadStaffLedger()">
+                📄 Download Full Payment Ledger
+            </button>
         </div>
     </div>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        let allStaff = [], allAdvances = [], allSalaryPayments = [];
-        let instSettings = null;
-        let payrollAdvances = []; // unpaid advances for selected staff
-        let currentStaffCardData = null; // for ID Card Studio
-        let lastProcessedPaymentId = null; // to track last processed payment for slip download
+        // --- TAB SYSTEM LOGIC ---
+        window.switchTab = function(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            element.classList.add('active');
 
-        // ===================== AUTH =====================
-        async function init() {
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-                if (!session) { window.location.href = 'login.html'; return; }
-                await loadInstSettings();
-                await fetchAllData();
-            } catch(e) { console.error("Init error:", e); }
-        }
+            if (tabId === 'payroll') {
+                loadStaffData();
+            }
+        };
 
-        async function loadInstSettings() {
+        // --- PAYROLL & LEDGER LOGIC ---
+        async function loadStaffData() {
+            const select = document.getElementById('staff-select');
+            if (select.options.length > 1) return; // Prevent duplicate loading
+
             try {
-                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                // Adjust 'staff' table name if it differs in your database
+                const { data, error } = await supabase.from('staff').select('id, name'); 
+                if (error) throw error;
                 if (data) {
-                    instSettings = data;
-                    if (data.logo_url) { 
-                        const cardLogo = document.getElementById('staffCardLogo');
-                        if(cardLogo) cardLogo.src = data.logo_url;
-                        const salLogo = document.getElementById('salaryLogo');
-                        if(salLogo) salLogo.src = data.logo_url;
-                    }
-
-                    // Set card default headers
-                    const cin = document.getElementById('staffCardInstName'); if(cin) cin.innerText = data.institute_name || 'GLOBUS';
-                    const csn = document.getElementById('staffCardSubName'); if(csn) csn.innerText = data.sub_name || 'TECHNICAL ACADEMY';
-                    const cad = document.getElementById('staffCardAddress'); if(cad) cad.innerText = data.address || '';
-                    const smn = document.getElementById('staffSealMainName'); if(smn) smn.innerText = data.institute_name || 'GLOBUS';
-                    const ssn = document.getElementById('staffSealSubName'); if(ssn) ssn.innerText = data.sub_name || 'OFFICIAL';
-                    const sad = document.getElementById('staffSealAddress'); if(sad) sad.innerText = data.address || '';
-                    const rp = document.getElementById('staffCardReturnPhone'); if(rp && data.phone) rp.innerText = '+91 ' + data.phone;
-
-                    // Salary slip default headers
-                    const sin = document.getElementById('salaryInstName'); if(sin) sin.innerText = data.institute_name || 'GLOBUS';
-                    const sisub = document.getElementById('salaryInstSub'); if(sisub) sisub.innerText = data.sub_name || 'TECHNICAL ACADEMY';
-                    const siadr = document.getElementById('salaryInstAddress'); if(siadr) siadr.innerText = data.address || '';
-                    const ssealName = document.getElementById('salarySealInst'); if(ssealName) ssealName.innerText = data.institute_name || 'GLOBUS';
+                    data.forEach(staff => {
+                        const opt = document.createElement('option');
+                        opt.value = staff.id;
+                        opt.textContent = staff.name || `Staff ID: ${staff.id}`;
+                        select.appendChild(opt);
+                    });
                 }
-            } catch(e) {}
+            } catch (err) {
+                console.error("Error loading staff:", err);
+            }
         }
 
-        async function fetchAllData() {
-            try {
-                const [staffRes, advRes, salRes] = await Promise.all([
-                    supabase.from('staff').select('*').order('created_at', { ascending: false }),
-                    supabase.from('staff_advances').select('*').order('advance_date', { ascending: false }),
-                    supabase.from('salary_payments').select('*').order('created_at', { ascending: false })
-                ]);
-                allStaff = staffRes.data || [];
-                allAdvances = advRes.data || [];
-                allSalaryPayments = salRes.data || [];
-
-                populateRoleFilter();
-                populateStaffDropdowns();
-                renderDirectory();
-                renderAdvances();
-                renderSalaryHistory();
-            } catch(e) { console.error("Fetch error:", e); }
-        }
-
-        // ===================== HELPERS =====================
-        function generateAvatar(name, gender) {
-            const color = gender === 'Female' ? '%23ec4899' : '%233b82f6';
-            return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${color}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
-        }
-
-        function formatDate(d) {
-            if (!d) return '-';
-            if (d.includes('T')) d = d.split('T')[0];
-            const parts = d.split('-');
-            if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
-            return d;
-        }
-
-        function formatMonthDisplay(m) {
-            if (!m) return '-';
-            const parts = m.split('-');
-            if (parts.length !== 2) return m;
-            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-            return months[parseInt(parts[1])-1] + ' ' + parts[0];
-        }
-
-        // Convert number to words (Indian style)
-        function numberToWords(num) {
-            if (num === 0) return 'Rupees Zero Only';
-            const a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
-            const b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+        window.handleStaffSelection = function() {
+            const staffId = document.getElementById('staff-select').value;
+            const downloadBtn = document.getElementById('btn-download-ledger');
             
-            function inWords(n) {
-                if (n < 20) return a[n];
-                if (n < 100) return b[Math.floor(n/10)] + (n%10 ? ' ' + a[n%10] : '');
-                if (n < 1000) return a[Math.floor(n/100)] + ' Hundred' + (n%100 ? ' ' + inWords(n%100) : '');
-                if (n < 100000) return inWords(Math.floor(n/1000)) + ' Thousand' + (n%1000 ? ' ' + inWords(n%1000) : '');
-                if (n < 10000000) return inWords(Math.floor(n/100000)) + ' Lakh' + (n%100000 ? ' ' + inWords(n%100000) : '');
-                return inWords(Math.floor(n/10000000)) + ' Crore' + (n%10000000 ? ' ' + inWords(n%10000000) : '');
-            }
-            
-            return 'Rupees ' + inWords(Math.floor(num)).trim() + ' Only';
-        }
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        window.switchStaffTab = function(tab) {
-            document.querySelectorAll('.staff-tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            document.getElementById('panel-' + tab).classList.add('active');
-        };
-
-        window.openModal = openModal;
-        window.closeModal = closeModal;
-
-        // ===================== TAB 1: DIRECTORY =====================
-        function populateRoleFilter() {
-            const roleSet = new Set();
-            allStaff.forEach(s => { if (s.role) roleSet.add(s.role); });
-            const sel = document.getElementById('filterRole');
-            sel.innerHTML = '<option value="all">All Roles</option>';
-            [...roleSet].sort().forEach(r => { sel.add(new Option(r, r)); });
-        }
-
-        function populateStaffDropdowns() {
-            const active = allStaff.filter(s => (s.status || 'active') === 'active');
-            ['advStaffSelect', 'payStaffSelect'].forEach(id => {
-                const sel = document.getElementById(id);
-                if (!sel) return;
-                sel.innerHTML = '<option value="">-- Choose Staff --</option>';
-                active.forEach(s => { sel.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)); });
-            });
-            document.getElementById('advDate').value = new Date().toISOString().split('T')[0];
-            const now = new Date();
-            document.getElementById('payMonth').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-        }
-
-        window.renderDirectory = function() {
-            const search = document.getElementById('staffSearch').value.toLowerCase();
-            const role = document.getElementById('filterRole').value;
-            const status = document.getElementById('filterStatus').value;
-
-            let filtered = allStaff.filter(s => {
-                const sStatus = (s.status || 'active').toLowerCase();
-                if (status === 'active' && sStatus !== 'active') return false;
-                if (status === 'archived' && sStatus !== 'archived') return false;
-                if (role !== 'all' && s.role !== role) return false;
-                if (search) {
-                    const str = `${s.full_name || ''} ${s.phone || ''}`.toLowerCase();
-                    if (!str.includes(search)) return false;
-                }
-                return true;
-            });
-
-            const container = document.getElementById('staffList');
-            if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No staff found.</div>'; return; }
-
-            container.innerHTML = filtered.map(s => {
-                const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
-                const statusColor = (s.status || 'active') === 'active' ? '#10b981' : '#94a3b8';
-                return `
-                <div class="staff-card">
-                    <div class="sc-header">
-                        <div class="sc-avatar"><img src="${avatar}" alt="${s.full_name}" onerror="this.src='${generateAvatar(s.full_name, s.gender)}'"></div>
-                        <div style="flex:1;min-width:0">
-                            <div class="sc-name">${s.full_name || 'N/A'}</div>
-                            <span class="sc-role-badge">${s.role || 'Staff'}</span>
-                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${statusColor};margin-left:8px;vertical-align:middle"></span>
-                        </div>
-                    </div>
-                    <div class="sc-row"><span class="sc-label">Phone:</span><span class="sc-value">${s.phone || 'N/A'}</span></div>
-                    <div class="sc-row"><span class="sc-label">Salary:</span><span class="sc-value" style="color:#1d4ed8;font-size:15px">₹ ${s.basic_salary || 0}</span></div>
-                    <div class="sc-row"><span class="sc-label">Joined:</span><span class="sc-value">${formatDate(s.joining_date)}</span></div>
-                    <div class="sc-actions">
-                        <button class="sc-btn sc-btn-view" onclick="openEditStaff('${s.id}')">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                            View / Edit
-                        </button>
-                        <button class="sc-btn sc-btn-id" onclick="window.openStaffCardStudio('${s.id}')">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="10" r="2.5"/><path d="M8 16.5c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5"/></svg>
-                            ID Card
-                        </button>
-                    </div>
-                    <div class="sc-actions-full">
-                        <button class="sc-btn sc-btn-archive" onclick="archiveStaff('${s.id}','${s.full_name}')">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-                            Archive Staff
-                        </button>
-                    </div>
-                </div>`;
-            }).join('');
-        };
-
-        window.openEditStaff = function(id) {
-            const s = allStaff.find(x => x.id === id);
-            if (!s) return;
-            document.getElementById('editId').value = s.id;
-            document.getElementById('editName').value = s.full_name || '';
-            document.getElementById('editPhone').value = s.phone || '';
-            document.getElementById('editGender').value = s.gender || 'Male';
-            document.getElementById('editRole').value = s.role || '';
-            document.getElementById('editSalary').value = s.basic_salary || '';
-            document.getElementById('editJoinDate').value = s.joining_date || '';
-            document.getElementById('editStatus').value = s.status || 'active';
-            document.getElementById('editAddress').value = s.address || '';
-            openModal('editStaffModal');
-        };
-
-        window.updateStaff = async function() {
-            const id = document.getElementById('editId').value;
-            const updates = {
-                full_name: document.getElementById('editName').value.trim(),
-                phone: document.getElementById('editPhone').value.trim(),
-                gender: document.getElementById('editGender').value,
-                role: document.getElementById('editRole').value.trim(),
-                basic_salary: Number(document.getElementById('editSalary').value) || 0,
-                joining_date: document.getElementById('editJoinDate').value || null,
-                status: document.getElementById('editStatus').value,
-                address: document.getElementById('editAddress').value.trim()
-            };
-            if (!updates.full_name) { alert('Name is required!'); return; }
-            const { error } = await supabase.from('staff').update(updates).eq('id', id);
-            if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Staff updated!');
-            closeModal('editStaffModal');
-            await fetchAllData();
-        };
-
-        window.archiveStaff = async function(id, name) {
-            const n1 = Math.floor(Math.random()*10)+1, n2 = Math.floor(Math.random()*10)+1;
-            const ans = prompt(`⚠️ To archive "${name}", solve: ${n1} + ${n2} = ?`);
-            if (ans === null) return;
-            if (parseInt(ans) !== (n1+n2)) { alert('❌ Wrong answer! Cancelled.'); return; }
-            const { error } = await supabase.from('staff').update({ status: 'archived' }).eq('id', id);
-            if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Staff archived successfully.');
-            await fetchAllData();
-        };
-
-        window.saveNewStaff = async function() {
-            const btn = document.getElementById('addStaffBtn');
-            const name = document.getElementById('addName').value.trim();
-            const phone = document.getElementById('addPhone').value.trim();
-            if (!name) { alert('Name is required!'); return; }
-            if (phone && phone.length !== 10) { alert('Phone must be 10 digits!'); return; }
-            btn.disabled = true; btn.textContent = '⏳ Saving...';
-            const { error } = await supabase.from('staff').insert([{
-                full_name: name,
-                phone: phone,
-                gender: document.getElementById('addGender').value,
-                role: document.getElementById('addRole').value.trim() || 'Staff',
-                basic_salary: Number(document.getElementById('addSalary').value) || 0,
-                joining_date: document.getElementById('addJoinDate').value || null,
-                qualification: document.getElementById('addQual').value.trim(),
-                address: document.getElementById('addAddress').value.trim(),
-                status: 'active'
-            }]);
-            btn.disabled = false; btn.textContent = '✅ Save Staff Member';
-            if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Staff added!');
-            closeModal('addStaffModal');
-            ['addName','addPhone','addRole','addSalary','addJoinDate','addQual','addAddress'].forEach(id => document.getElementById(id).value = '');
-            await fetchAllData();
-        };
-
-        // ===================== STAFF ID CARD STUDIO =====================
-        window.openStaffCardStudio = function(id) {
-            const s = allStaff.find(x => x.id === id);
-            if (!s) return;
-            currentStaffCardData = s;
-
-            document.getElementById('liveStaffName').value = s.full_name || '';
-            document.getElementById('liveStaffRole').value = s.role || 'Staff';
-            const empId = s.emp_id || ('EMP-' + s.id.substring(0, 6).toUpperCase());
-            document.getElementById('liveStaffEmpId').value = empId;
-            document.getElementById('liveStaffPhone').value = s.phone || '';
-            document.getElementById('liveStaffPhotoInput').value = '';
-
-            if (instSettings) {
-                document.getElementById('liveInstName').value = instSettings.institute_name || '';
-                document.getElementById('liveInstSub').value = instSettings.sub_name || '';
-                document.getElementById('liveInstAddress').value = instSettings.address || '';
-            }
-
-            document.getElementById('staffCardName').innerText = (s.full_name || 'N/A').toUpperCase();
-            document.getElementById('staffCardRole').innerText = (s.role || 'STAFF').toUpperCase();
-            document.getElementById('staffCardEmpId').innerText = empId;
-            document.getElementById('staffCardPhone').innerText = s.phone || 'N/A';
-            
-            const barcodeEl = document.getElementById('staffCardBarcodeText');
-            if (barcodeEl) barcodeEl.innerText = '||| ' + empId + ' |||';
-
-            const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
-            document.getElementById('staffCardAvatarImg').src = avatar;
-
-            openModal('staffCardModal');
-        };
-
-        window.updateStaffInstUI = function() {
-            const n = document.getElementById('liveInstName').value || 'GLOBUS';
-            const s = document.getElementById('liveInstSub').value || 'TECHNICAL ACADEMY';
-            const a = document.getElementById('liveInstAddress').value || '';
-
-            document.getElementById('staffCardInstName').innerText = n;
-            document.getElementById('staffCardSubName').innerText = s;
-            document.getElementById('staffCardAddress').innerText = a;
-            document.getElementById('staffSealMainName').innerText = n;
-            const ssn = document.getElementById('staffSealSubName');
-            if(ssn) ssn.innerText = s || 'OFFICIAL';
-            document.getElementById('staffSealAddress').innerText = a;
-        };
-
-        window.updateLiveStaffPhoto = function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                document.getElementById('staffCardAvatarImg').src = URL.createObjectURL(file);
-            }
-        };
-
-        window.saveStaffCardDataToDB = async function() {
-            if (!currentStaffCardData) return;
-            const newName = document.getElementById('liveStaffName').value.trim();
-            const newPhone = document.getElementById('liveStaffPhone').value.trim();
-            const newRole = document.getElementById('liveStaffRole').value.trim();
-            const newEmpId = document.getElementById('liveStaffEmpId').value.trim();
-            let photoUrlToSave = currentStaffCardData.photo_url;
-
-            if (newPhone && newPhone.length !== 10) { alert('Phone must be 10 digits!'); return; }
-            if (!newName) { alert('Name is required!'); return; }
-
-            const fileInput = document.getElementById('liveStaffPhotoInput');
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const fileName = `staff_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-                try {
-                    const { data, error } = await supabase.storage.from('staff-photos').upload(fileName, file);
-                    if (!error) {
-                        photoUrlToSave = supabase.storage.from('staff-photos').getPublicUrl(fileName).data.publicUrl;
-                    } else { console.warn('Upload issue:', error.message); }
-                } catch (e) { console.warn(e); }
-            }
-
-            const updates = { full_name: newName, phone: newPhone, role: newRole, photo_url: photoUrlToSave };
-            if (newEmpId) updates.emp_id = newEmpId;
-
-            const { error } = await supabase.from('staff').update(updates).eq('id', currentStaffCardData.id);
-            if (error) {
-                if (error.message && error.message.includes('emp_id')) {
-                    delete updates.emp_id;
-                    const { error: err2 } = await supabase.from('staff').update(updates).eq('id', currentStaffCardData.id);
-                    if (err2) { alert('Error: ' + err2.message); return; }
-                } else { alert('Error saving data: ' + error.message); return; }
-            }
-            alert('✅ Details Saved Successfully!');
-            await fetchAllData();
-        };
-
-        window.shareStaffPDF = async function() {
-            const btn = document.getElementById('staffSharePdfBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
-            try {
-                const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
-                const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] });
-                pdf.addImage(imgData, 'JPEG', 0, 0, 54, 86);
-                const filename = `Staff_ID_${(document.getElementById('liveStaffName').value || 'Staff').replace(/ /g,'_')}.pdf`;
-                const pdfBlob = pdf.output('blob');
-                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try { await navigator.share({ files: [file], title: 'Staff ID Card' }); }
-                    catch (err) { pdf.save(filename); }
-                } else { pdf.save(filename); }
-            } catch (error) { alert("Could not generate PDF: " + error.message);
-            } finally { btn.innerHTML = originalText; btn.disabled = false; }
-        };
-
-        window.shareStaffCard = async function() {
-            const btn = document.getElementById('staffShareCardBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
-            try {
-                const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-                canvas.toBlob(async (blob) => {
-                    const name = document.getElementById('liveStaffName').value || 'Staff';
-                    const file = new File([blob], `Staff_ID_${name.replace(/ /g,'_')}.jpg`, { type: 'image/jpeg' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Staff ID Card', text: `ID Card for ${name}` }); } catch (err) {}
-                    } else {
-                        const link = document.createElement('a');
-                        link.download = `Staff_ID_${name.replace(/ /g,'_')}.jpg`;
-                        link.href = canvas.toDataURL('image/jpeg', 0.9);
-                        link.click();
-                    }
-                    btn.innerHTML = originalText; btn.disabled = false;
-                }, 'image/jpeg', 0.9);
-            } catch (error) { alert("Error generating image: " + error.message); btn.innerHTML = originalText; btn.disabled = false; }
-        };
-
-        // ===================== TAB 2: ADVANCES =====================
-        function renderAdvances() {
-            const container = document.getElementById('advancesList');
-            if (allAdvances.length === 0) { container.innerHTML = '<div class="empty-state">No advances recorded yet.</div>'; return; }
-            container.innerHTML = allAdvances.slice(0, 50).map(a => {
-                const staff = allStaff.find(s => s.id === a.staff_id);
-                const sName = staff ? staff.full_name : 'Unknown';
-                const isPaid = (a.status || 'unpaid').toLowerCase() === 'paid';
-                return `
-                <div class="adv-card">
-                    <div class="adv-top">
-                        <div class="adv-name">${sName}</div>
-                        <div class="adv-amount">₹ ${a.amount || 0}</div>
-                    </div>
-                    <div class="adv-meta">
-                        <span>📅 ${formatDate(a.advance_date)}</span>
-                        <span class="adv-status ${isPaid ? 'paid' : 'unpaid'}">${isPaid ? 'Paid' : 'Unpaid'}</span>
-                        ${a.remarks ? `<span>📝 ${a.remarks}</span>` : ''}
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        // ===================================================
-        // FIXED: Advance Save + Day Book Integration
-        // Uses correct schema: expense_date, purpose
-        // ===================================================
-        window.saveAdvance = async function() {
-            const staffId = document.getElementById('advStaffSelect').value;
-            const advanceAmount = Number(document.getElementById('advAmount').value) || 0;
-            const advanceDate = document.getElementById('advDate').value;
-            const remarks = document.getElementById('advRemarks').value.trim();
-
-            if (!staffId) { alert('Please select a staff member!'); return; }
-            if (advanceAmount <= 0) { alert('Enter a valid amount!'); return; }
-            if (!advanceDate) { alert('Select a date!'); return; }
-
-            const btn = document.getElementById('advSubmitBtn');
-            btn.disabled = true; btn.textContent = '⏳ Saving...';
-
-            try {
-                // 1. Insert into staff_advances
-                const { error: advErr } = await supabase.from('staff_advances').insert([{
-                    staff_id: staffId, amount: advanceAmount, advance_date: advanceDate, remarks: remarks, status: 'unpaid'
-                }]);
-                if (advErr) throw advErr;
-
-                // 2. INTEGRATE: Insert into expenses table (Day Book) with correct schema
-                const staff = allStaff.find(s => s.id === staffId);
-                const staffName = staff ? staff.full_name : 'Unknown';
-                
-                let expenseInserted = false;
-                const { error: expErr } = await supabase.from('expenses').insert([{
-                    expense_date: advanceDate,
-                    category: 'Staff Advance',
-                    purpose: 'Advance to ' + staffName + (remarks ? ' - ' + remarks : ''),
-                    amount: advanceAmount
-                }]);
-                
-                if (!expErr) {
-                    expenseInserted = true;
-                } else {
-                    console.warn('Day Book insert failed:', expErr.message);
-                }
-
-                alert('✅ Advance recorded' + (expenseInserted ? ' & added to Day Book!' : '! (Day Book update failed - check console)'));
-                document.getElementById('advAmount').value = '';
-                document.getElementById('advRemarks').value = '';
-                await fetchAllData();
-            } catch(e) {
-                alert('Error: ' + e.message);
-            } finally {
-                btn.disabled = false; btn.textContent = '💰 Record Advance';
-            }
-        };
-
-        // ===================== TAB 3: PAYROLL =====================
-        window.loadPayrollDetails = function() {
-            const staffId = document.getElementById('payStaffSelect').value;
-            const detailsDiv = document.getElementById('payrollDetails');
-            if (!staffId) { detailsDiv.style.display = 'none'; return; }
-
-            const staff = allStaff.find(s => s.id === staffId);
-            if (!staff) return;
-
-            const salary = Number(staff.basic_salary) || 0;
-            payrollAdvances = allAdvances.filter(a => a.staff_id === staffId && (a.status || 'unpaid').toLowerCase() === 'unpaid');
-            const totalDeduction = payrollAdvances.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
-            const net = salary - totalDeduction;
-
-            document.getElementById('paySalary').textContent = `₹ ${salary.toLocaleString('en-IN')}`;
-            document.getElementById('payDeduction').textContent = `₹ ${totalDeduction.toLocaleString('en-IN')}`;
-            document.getElementById('payNet').textContent = `₹ ${(net > 0 ? net : 0).toLocaleString('en-IN')}`;
-
-            document.getElementById('payProcessBtn').style.display = 'block';
-            document.getElementById('paySlipBtn').style.display = 'none';
-            detailsDiv.style.display = 'block';
-        };
-
-        // ===================================================
-        // FIXED: Salary Process + Day Book Integration
-        // Uses correct schema: expense_date, purpose, category 'Salary'
-        // ===================================================
-        window.processSalary = async function() {
-            const staffId = document.getElementById('payStaffSelect').value;
-            const month = document.getElementById('payMonth').value;
-            if (!staffId || !month) { alert('Select staff and month!'); return; }
-
-            const staff = allStaff.find(s => s.id === staffId);
-            const salary = Number(staff.basic_salary) || 0;
-            const totalDeduction = payrollAdvances.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
-            const netSalary = salary - totalDeduction > 0 ? salary - totalDeduction : 0;
-            const todayDate = new Date().toISOString().split('T')[0];
-
-            const btn = document.getElementById('payProcessBtn');
-            btn.disabled = true; btn.textContent = '⏳ Processing...';
-
-            try {
-                // 1. Insert salary payment
-                const { data: newSal, error: salErr } = await supabase.from('salary_payments').insert([{
-                    staff_id: staffId, month: month, basic_salary: salary,
-                    deductions: totalDeduction, net_salary: netSalary, payment_date: todayDate
-                }]).select();
-                if (salErr) throw salErr;
-                if (newSal && newSal[0]) lastProcessedPaymentId = newSal[0].id;
-
-                // 2. Mark advances as paid
-                for (const adv of payrollAdvances) {
-                    await supabase.from('staff_advances').update({ status: 'paid' }).eq('id', adv.id);
-                }
-
-                // 3. INTEGRATE: Insert into expenses (Day Book) with correct schema
-                const staffName = staff.full_name || 'Unknown';
-                
-                let expenseInserted = false;
-                const { error: expErr } = await supabase.from('expenses').insert([{
-                    expense_date: todayDate,
-                    category: 'Salary',
-                    purpose: 'Salary for ' + staffName + ' - ' + month,
-                    amount: netSalary
-                }]);
-                
-                if (!expErr) {
-                    expenseInserted = true;
-                } else {
-                    console.warn('Day Book insert failed:', expErr.message);
-                }
-
-                alert('✅ Salary processed' + (expenseInserted ? ' & added to Day Book!' : '! (Day Book update failed - check console)'));
-                document.getElementById('payProcessBtn').style.display = 'none';
-                document.getElementById('paySlipBtn').style.display = 'block';
-
-                await fetchAllData();
-            } catch(e) {
-                alert('Error: ' + e.message);
-            } finally {
-                btn.disabled = false; btn.textContent = '💳 Process Salary';
-            }
-        };
-
-        // ===================================================
-        // UPDATED: Salary History with Download Button per row
-        // ===================================================
-        function renderSalaryHistory() {
-            const container = document.getElementById('salaryHistory');
-            if (allSalaryPayments.length === 0) { container.innerHTML = '<div class="empty-state">No salary payments yet.</div>'; return; }
-            container.innerHTML = allSalaryPayments.slice(0, 30).map(p => {
-                const staff = allStaff.find(s => s.id === p.staff_id);
-                return `
-                <div class="adv-card">
-                    <div class="adv-top">
-                        <div class="adv-name">${staff ? staff.full_name : 'Unknown'}</div>
-                        <div style="font-weight:900;color:#059669;font-size:16px">₹ ${p.net_salary || 0}</div>
-                    </div>
-                    <div class="adv-meta">
-                        <span>📅 ${formatMonthDisplay(p.month) || '-'}</span>
-                        <span>💰 Basic: ₹${p.basic_salary || 0}</span>
-                        <span style="color:#ef4444">Ded: ₹${p.deductions || 0}</span>
-                    </div>
-                    <button class="slip-dl-btn" onclick="window.downloadSalarySlip('${p.id}')">
-                        📄 Download Slip
-                    </button>
-                </div>`;
-            }).join('');
-        }
-
-        // ===================================================
-        // Download Last Processed Slip (from Process button)
-        // ===================================================
-        window.downloadLastSlip = function() {
-            if (lastProcessedPaymentId) {
-                window.downloadSalarySlip(lastProcessedPaymentId);
-            } else if (allSalaryPayments && allSalaryPayments.length > 0) {
-                window.downloadSalarySlip(allSalaryPayments[0].id);
+            if (staffId) {
+                downloadBtn.style.display = 'block';
             } else {
-                alert('No salary payment available.');
+                downloadBtn.style.display = 'none';
             }
         };
 
-        // ===================================================
-        // MAIN: Download Salary Slip PDF
-        // ===================================================
-        window.downloadSalarySlip = async function(paymentId) {
-            const payment = allSalaryPayments.find(p => p.id === paymentId);
-            if (!payment) { alert('Payment record not found!'); return; }
+        window.downloadStaffLedger = async function() {
+            const select = document.getElementById('staff-select');
+            const staffId = select.value;
+            const staffName = select.options[select.selectedIndex].text;
 
-            const staff = allStaff.find(s => s.id === payment.staff_id);
-            if (!staff) { alert('Staff record not found!'); return; }
+            if (!staffId) {
+                alert("Please select a staff member first.");
+                return;
+            }
 
             try {
-                // Populate slip template
-                const empId = staff.emp_id || ('EMP-' + staff.id.substring(0, 6).toUpperCase());
-                const d = new Date();
-                const issueDate = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
-                const slipNo = 'SAL-' + (payment.id || '').substring(0, 8).toUpperCase();
-                const grossAmt = Number(payment.basic_salary) || 0;
-                const dedAmt = Number(payment.deductions) || 0;
-                const netAmt = Number(payment.net_salary) || 0;
+                // Fetch salary history for the specific staff member
+                const { data, error } = await supabase
+                    .from('salary_payments')
+                    .select('*')
+                    .eq('staff_id', staffId)
+                    .order('payment_date', { ascending: false });
 
-                document.getElementById('salaryStaffName').innerText = staff.full_name || '-';
-                document.getElementById('salaryStaffRole').innerText = staff.role || 'Staff';
-                document.getElementById('salaryStaffEmpId').innerText = empId;
-                document.getElementById('salaryStaffPhone').innerText = staff.phone || '-';
-                document.getElementById('salaryMonthDisplay').innerText = formatMonthDisplay(payment.month) || '-';
-                document.getElementById('salaryIssueDate').innerText = payment.payment_date ? formatDate(payment.payment_date) : issueDate;
-                document.getElementById('salarySlipNo').innerText = 'SLIP #: ' + slipNo;
-                document.getElementById('salaryBasicAmt').innerText = grossAmt.toLocaleString('en-IN');
-                document.getElementById('salaryGrossAmt').innerText = grossAmt.toLocaleString('en-IN');
-                document.getElementById('salaryDedAmt').innerText = '- ' + dedAmt.toLocaleString('en-IN');
-                document.getElementById('salaryNetAmt').innerText = '₹ ' + netAmt.toLocaleString('en-IN');
-                document.getElementById('salaryAmountWords').innerText = numberToWords(netAmt);
-                document.getElementById('salarySealDate').innerText = issueDate;
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    alert("No payment records found for this staff member in the system.");
+                    return;
+                }
 
-                // Make wrapper visible for rendering (offscreen still)
-                const wrapper = document.getElementById('salarySlipTemplate');
-                wrapper.style.left = '0';
-                wrapper.style.top = '0';
-                wrapper.style.zIndex = '-9999';
-                wrapper.style.opacity = '0';
-
-                const target = document.getElementById('salarySlipRender');
-                await new Promise(r => setTimeout(r, 100));
-
-                const canvas = await html2canvas(target, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false });
-                
-                // Reset wrapper position
-                wrapper.style.left = '-9999px';
-                wrapper.style.top = '-9999px';
-                wrapper.style.opacity = '1';
-                wrapper.style.zIndex = '-1';
-
-                const imgData = canvas.toDataURL('image/jpeg', 0.85);
+                // Initialize jsPDF
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
-                pdf.addImage(imgData, 'JPEG', 0, 0, 148, 210);
+                const doc = new jsPDF();
 
-                const cleanName = (staff.full_name || 'Staff').replace(/[^a-zA-Z0-9]/g, '_');
-                const cleanMonth = (payment.month || 'Month').replace(/[^a-zA-Z0-9-]/g, '_');
-                const filename = `Salary_Slip_${cleanName}_${cleanMonth}.pdf`;
-                pdf.save(filename);
-            } catch(e) {
-                alert('Error generating slip: ' + e.message);
-                console.error(e);
+                // Document Header
+                doc.setFontSize(22);
+                doc.setTextColor(30, 41, 59);
+                doc.text("Globus Institute", 14, 20);
+                
+                doc.setFontSize(14);
+                doc.setTextColor(100, 116, 139);
+                doc.text("Staff Payment Ledger", 14, 28);
+                
+                doc.setFontSize(12);
+                doc.setTextColor(15, 23, 42);
+                doc.text(`Staff Member: ${staffName}`, 14, 38);
+                doc.text(`Generated On: ${new Date().toLocaleDateString()}`, 140, 38);
+
+                let totalPaid = 0;
+                
+                // Prepare AutoTable Data
+                const tableData = data.map(record => {
+                    const basic = parseFloat(record.basic_salary || 0);
+                    const deductions = parseFloat(record.deductions || 0);
+                    const net = parseFloat(record.net_paid || 0);
+                    totalPaid += net;
+
+                    return [
+                        record.payment_date || '-',
+                        record.month || '-',
+                        `Rs ${basic.toFixed(2)}`,
+                        `Rs ${deductions.toFixed(2)}`,
+                        `Rs ${net.toFixed(2)}`
+                    ];
+                });
+
+                // Generate AutoTable
+                doc.autoTable({
+                    startY: 45,
+                    head: [['Payment Date', 'Salary Month', 'Basic Salary', 'Deductions', 'Net Paid']],
+                    body: tableData,
+                    theme: 'striped',
+                    headStyles: { fillColor: [16, 185, 129], textColor: [255, 255, 255] },
+                    styles: { fontSize: 10, cellPadding: 4 },
+                });
+
+                // Append Final Total at the bottom
+                const finalY = doc.lastAutoTable.finalY || 45;
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(37, 99, 235); // Blue color for emphasis
+                doc.text(`Total Amount Paid: Rs ${totalPaid.toFixed(2)}`, 14, finalY + 12);
+
+                // Save PDF locally
+                doc.save(`${staffName.replace(/\s+/g, '_')}_Payment_Ledger.pdf`);
+
+            } catch (err) {
+                console.error("Error generating ledger:", err);
+                alert("Failed to generate the ledger. Check console for details.");
             }
         };
 
-        init();
+        // --- ORIGINAL FINANCIAL REPORT LOGIC ---
+        window.toggleInput = function(field) {
+            const isOn = document.getElementById('toggle-' + field).checked;
+            if(field === 'type') {
+                document.getElementById('filter-type').disabled = !isOn;
+                document.getElementById('wrap-type').classList.toggle('disabled', !isOn);
+            }
+            if(field === 'period') {
+                document.getElementById('filter-period').disabled = !isOn;
+                document.getElementById('wrap-period').classList.toggle('disabled', !isOn);
+            }
+            if(field === 'date') {
+                document.getElementById('title-date').classList.toggle('disabled', !isOn);
+                document.getElementById('date-inputs-container').classList.toggle('active', isOn);
+            }
+        };
+
+        window.toggleDropdown = function() {
+            document.getElementById('shareMenu').classList.toggle('show');
+        };
+        
+        window.onclick = function(event) {
+            if (!event.target.matches('.btn-share')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].classList.remove('show');
+                }
+            }
+        }
+
+        const initDate = new Date();
+        const localDateStr = initDate.getFullYear() + "-" + String(initDate.getMonth() + 1).padStart(2, '0') + "-" + String(initDate.getDate()).padStart(2, '0');
+        document.getElementById('to-date').value = localDateStr;
+        initDate.setDate(1); 
+        const firstDayStr = initDate.getFullYear() + "-" + String(initDate.getMonth() + 1).padStart(2, '0') + "-" + String(initDate.getDate()).padStart(2, '0');
+        document.getElementById('from-date').value = firstDayStr;
+
+        function getLocalDateStr(utcString) {
+            if (!utcString) return '';
+            const d = new Date(utcString);
+            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
+        }
+
+        window.fetchReports = async function(mode = 'search') {
+            const tableBody = document.getElementById('report-body');
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Fetching records...</td></tr>';
+            
+            let rawIncome = [], rawExpense = [], rawAdmissions = [];
+            let studentsMap = {};
+
+            try {
+                const stuRes = await supabase.from('students').select('*');
+                if(stuRes.error) throw stuRes.error;
+                if(stuRes.data) {
+                    rawAdmissions = stuRes.data;
+                    stuRes.data.forEach(s => {
+                        studentsMap[s.id] = s.student_name || s.name || s.full_name || `ID: ${s.id}`;
+                    });
+                }
+
+                const incRes = await supabase.from('fee_payments').select('*');
+                if(incRes.error) throw incRes.error;
+                if(incRes.data) rawIncome = incRes.data;
+                
+                const expRes = await supabase.from('expenses').select('*');
+                if(expRes.error) throw expRes.error;
+                if(expRes.data) rawExpense = expRes.data;
+
+            } catch (err) {
+                console.error("DB Fetch Error:", err);
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Database Connection Error: Please check console.</td></tr>';
+                return;
+            }
+
+            const isTypeOn = document.getElementById('toggle-type').checked;
+            const isDateOn = document.getElementById('toggle-date').checked;
+            const isPeriodOn = document.getElementById('toggle-period').checked;
+
+            const typeVal = document.getElementById('filter-type').value;
+            const fromDate = document.getElementById('from-date').value;
+            const toDate = document.getElementById('to-date').value;
+            const periodVal = document.getElementById('filter-period').value;
+
+            let effectiveFrom = '1970-01-01';
+            let effectiveTo = '2100-01-01';
+            let applyDateFilter = false;
+            let showIncome = true;
+            let showExpense = true;
+
+            if (mode === 'all') {
+                showIncome = true; showExpense = true; applyDateFilter = false;
+            } else {
+                if (isTypeOn) {
+                    if (typeVal === 'income') showExpense = false;
+                    if (typeVal === 'expense') showIncome = false;
+                }
+
+                if (isDateOn) {
+                    effectiveFrom = fromDate;
+                    effectiveTo = toDate;
+                    applyDateFilter = true;
+                } else if (isPeriodOn) {
+                    const today = new Date();
+                    const todayLocal = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
+                    effectiveTo = todayLocal;
+                    
+                    if (periodVal === 'daily') {
+                        effectiveFrom = todayLocal;
+                    } else if (periodVal === 'weekly') {
+                        let lw = new Date(); lw.setDate(lw.getDate() - 7);
+                        effectiveFrom = lw.getFullYear() + "-" + String(lw.getMonth() + 1).padStart(2, '0') + "-" + String(lw.getDate()).padStart(2, '0');
+                    } else if (periodVal === 'monthly') {
+                        effectiveFrom = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-01";
+                    }
+                    applyDateFilter = true;
+                }
+            }
+
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let combinedData = [];
+
+            if (showIncome) {
+                rawIncome.forEach(item => {
+                    const rDate = getLocalDateStr(item.payment_date);
+                    if (!applyDateFilter || (rDate >= effectiveFrom && rDate <= effectiveTo)) {
+                        const sName = studentsMap[item.student_id] || `ID: ${item.student_id}`;
+                        const amt = parseFloat(item.amount_paid || 0);
+                        if(amt > 0) {
+                            totalIncome += amt;
+                            combinedData.push({ date: rDate, type: 'Income', purpose: sName + " (Fee)", category: 'Fees', amount: amt, color: '#10B981' });
+                        }
+                    }
+                });
+
+                rawAdmissions.forEach(item => {
+                    const rDate = getLocalDateStr(item.created_at);
+                    if (!applyDateFilter || (rDate >= effectiveFrom && rDate <= effectiveTo)) {
+                        const amt = parseFloat(item.admission_fee || 0);
+                        if(amt > 0) {
+                            totalIncome += amt;
+                            const sName = item.student_name || item.name || item.full_name || "Student";
+                            combinedData.push({ date: rDate, type: 'Income', purpose: sName + " (Admission)", category: 'Admission Fee', amount: amt, color: '#10B981' });
+                        }
+                    }
+                });
+            }
+
+            if (showExpense) {
+                rawExpense.forEach(item => {
+                    const rDate = getLocalDateStr(item.expense_date);
+                    if (!applyDateFilter || (rDate >= effectiveFrom && rDate <= effectiveTo)) {
+                        const amt = parseFloat(item.amount || 0);
+                        if(amt > 0) {
+                            totalExpense += amt;
+                            combinedData.push({ date: rDate, type: 'Expense', purpose: item.purpose || '-', category: item.category || 'General', amount: amt, color: '#EF4444' });
+                        }
+                    }
+                });
+            }
+
+            combinedData.sort((a, b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('total-income').innerText = totalIncome.toFixed(2);
+            document.getElementById('total-expense').innerText = totalExpense.toFixed(2);
+            document.getElementById('net-balance').innerText = (totalIncome - totalExpense).toFixed(2);
+
+            tableBody.innerHTML = ''; 
+            if (combinedData.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No records found for the selected filters.</td></tr>';
+                return;
+            }
+            combinedData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${row.date}</td>
+                                <td style="color: ${row.color}; font-weight: bold;">${row.type}</td>
+                                <td>${row.purpose}</td>
+                                <td>${row.category}</td>
+                                <td style="color: ${row.color}; font-weight: bold;">₹${row.amount.toFixed(2)}</td>`;
+                tableBody.appendChild(tr);
+            });
+        };
+
+        window.printReport = function() { window.print(); };
+        
+        window.downloadPDF = function() {
+            window.scrollTo(0, 0); 
+            const element = document.getElementById('printable-area');
+            const opt = { 
+                margin: 10, 
+                filename: 'Financial_Report.pdf', 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+            };
+            html2pdf().set(opt).from(element).save();
+        };
+
+        window.exportToCSV = function() {
+            let csv = []; let rows = document.querySelectorAll("#report-table tr");
+            for (let i = 0; i < rows.length; i++) {
+                let row = [], cols = rows[i].querySelectorAll("td, th");
+                for (let j = 0; j < cols.length; j++) { 
+                    row.push('"' + cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/₹/g, "") + '"'); 
+                }
+                csv.push(row.join(","));
+            }
+            let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
+            let dl = document.createElement("a"); dl.download = "Report.csv"; dl.href = window.URL.createObjectURL(csvFile); dl.style.display = "none";
+            document.body.appendChild(dl); dl.click(); document.body.removeChild(dl);
+        };
+
+        async function checkAuthAndLoad() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { 
+                window.location.href = 'login.html'; 
+                return; 
+            }
+            
+            const periodToggle = document.getElementById('toggle-period');
+            periodToggle.checked = true;
+            window.toggleInput('period'); 
+            document.getElementById('filter-period').value = 'daily';
+            
+            window.fetchReports('search');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthAndLoad();
+        });
     </script>
 </body>
 </html>
