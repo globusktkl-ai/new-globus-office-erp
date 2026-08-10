@@ -58,12 +58,6 @@
         .btn-submit:hover { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
         .btn-submit:disabled { background: #9CA3AF; cursor: not-allowed; box-shadow: none; }
 
-        /* FIX CONTENT VISIBILITY FOR TABLE CELLS (PURPOSE / DESCRIPTION COLUMN) */
-        table th, table td, .table th, .table td {
-            word-wrap: break-word;
-            white-space: normal;
-        }
-
         /* Notification Toast */
         #toast {
             visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center;
@@ -180,38 +174,6 @@
             toast.className = "show " + type;
             setTimeout(() => { toast.className = toast.className.replace("show " + type, ""); }, 3000);
         }
-
-        // FIX BLANK PDF CAPTURE LOGIC (Helper function if called or attached globally)
-        window.captureExpenseReportPDF = async function(targetElementId) {
-            window.scrollTo(0, 0);
-            const targetElement = document.getElementById(targetElementId);
-            if (!targetElement) return;
-
-            // Ensure element is visible and not clipped by overflow before capture
-            const originalOverflow = targetElement.style.overflow;
-            const originalDisplay = targetElement.style.display;
-            targetElement.style.overflow = 'visible';
-            targetElement.style.display = 'block';
-
-            if (typeof html2canvas !== 'undefined') {
-                try {
-                    const canvas = await html2canvas(targetElement, {
-                        scale: 2,
-                        useCORS: true,
-                        logging: false
-                    });
-                    
-                    targetElement.style.overflow = originalOverflow;
-                    targetElement.style.display = originalDisplay;
-
-                    return canvas.toDataURL('image/png');
-                } catch (err) {
-                    console.error('html2canvas error:', err);
-                    targetElement.style.overflow = originalOverflow;
-                    targetElement.style.display = originalDisplay;
-                }
-            }
-        };
 
         document.getElementById('expenseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
