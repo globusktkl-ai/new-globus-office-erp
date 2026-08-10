@@ -123,11 +123,39 @@
         /* Empty State */
         .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;font-weight:700;font-size:13px;background:#fff;border-radius:12px;border:1px dashed #cbd5e1}
 
-        /* FIXED: Toast Notification text wrap & max-width */
-        .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#0f172a;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:700;z-index:999;box-shadow:0 10px 25px rgba(0,0,0,.15);transition:transform .3s ease;display:flex;align-items:center;gap:8px;white-space:normal;max-width:90%;text-align:center;line-height:1.4}
-        .toast.show{transform:translateX(-50%) translateY(0)}
-        .toast.success{background:#059669}
-        .toast.error{background:#dc2626}
+        /* FIXED: Professional Toast Notification */
+        .toast {
+            position: fixed;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            color: #1e293b;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            z-index: 9999;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-left: 4px solid #3b82f6;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: normal;
+            max-width: 90%;
+            text-align: left;
+            line-height: 1.4;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .toast.show {
+            top: 20px;
+            opacity: 1;
+            visibility: visible;
+        }
+        .toast.success { border-left-color: #10b981; }
+        .toast.error { border-left-color: #ef4444; }
 
         /* Bulk action bar */
         .bulk-bar{display:flex;gap:8px;margin-bottom:12px;padding:10px;background:#f1f5f9;border-radius:10px;border:1px solid #e2e8f0}
@@ -276,23 +304,30 @@
 
             <div id="printableReport" style="display:none; background:#fff; padding:15px; border-radius:12px; border:1px solid #e2e8f0;">
                 
-                <!-- Print Report Institute Header -->
-                <div style="display:flex; align-items:center; gap:15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e2e8f0;">
-                    <img id="rptLogo" src="assets/images/logo.png" style="height: 50px; width: auto;" onerror="this.style.display='none'">
-                    <div>
-                        <h2 id="rptInstName" style="font-size:18px; font-weight:900; color:#0f172a; margin:0; text-transform:uppercase;">GLOBUS</h2>
-                        <div id="rptSubName" style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px;">Technical Academy</div>
-                        <div id="rptAddress" style="font-size:10px; color:#475569; margin-top:3px;">Address</div>
+                <!-- FIXED: Professional Print Report Header -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #1e293b;">
+                    <!-- Left: Institute Details -->
+                    <div style="display:flex; align-items:center; gap:12px; width: 33%;">
+                        <img id="rptLogo" src="assets/images/logo.png" style="height: 50px; width: auto;" onerror="this.style.display='none'">
+                        <div>
+                            <h2 id="rptInstName" style="font-size:14px; font-weight:900; color:#0f172a; margin:0; text-transform:uppercase;">GLOBUS</h2>
+                            <div id="rptSubName" style="font-size:9px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-top:1px;">Technical Academy</div>
+                            <div id="rptAddress" style="font-size:8px; color:#475569; margin-top:2px;">Address</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Center: Document Title -->
+                    <div style="text-align:center; width: 34%;">
+                        <h2 style="font-size:16px;font-weight:900;color:#0f172a;text-transform:uppercase;margin:0;">Attendance Log</h2>
+                        <div style="font-size:10px;color:#64748b;font-weight:600;margin-top:4px;" id="rptGeneratedMeta">Generated: -</div>
+                    </div>
+
+                    <!-- Right: Print Button -->
+                    <div style="width: 33%; text-align: right;">
+                        <button class="btn-primary btn-sm" onclick="window.print()" style="background:#4338ca; display:inline-block;">🖨️ Print</button>
                     </div>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px dashed #cbd5e1; padding-bottom:10px;">
-                    <div>
-                        <h2 style="font-size:14px;font-weight:900;color:#0f172a;text-transform:uppercase;">Attendance Log</h2>
-                        <div style="font-size:11px;color:#64748b;font-weight:600;" id="rptGeneratedMeta">Generated: -</div>
-                    </div>
-                    <button class="btn-primary btn-sm" onclick="window.print()" style="background:#4338ca">🖨️ Print</button>
-                </div>
                 <div style="overflow-x:auto;">
                     <table class="print-table">
                         <thead>
@@ -412,7 +447,7 @@
         let isAlreadySaved = false;
         let isEditMode = false;
         let isPastDate = false;
-        let instSettings = null; // Store institute settings
+        let instSettings = null; 
 
         // ======================== INIT ========================
         async function init() {
@@ -434,7 +469,7 @@
                     supabase.from('module_assignments').select('*'),
                     supabase.from('attendance_records').select('*'),
                     supabase.from('modules').select('*'),
-                    supabase.from('institute_settings').select('*').eq('id', 1).single() // Fetch Settings
+                    supabase.from('institute_settings').select('*').eq('id', 1).single() 
                 ]);
                 
                 allCourses = cRes.data || [];
@@ -445,7 +480,6 @@
                 let dbModules = mRes.data || [];
                 instSettings = instRes.data || null;
 
-                // Load Settings into Print Header
                 if(instSettings) {
                     document.getElementById('rptInstName').innerText = instSettings.institute_name || 'GLOBUS';
                     document.getElementById('rptSubName').innerText = instSettings.sub_name || 'Technical Academy';
@@ -482,7 +516,7 @@
         // ======================== HELPERS ========================
         function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
-            t.textContent = (type === 'success' ? '✅ ' : '❌ ') + msg;
+            t.innerHTML = (type === 'success' ? '✅ ' : '⚠️ ') + msg;
             t.className = 'toast ' + type + ' show';
             setTimeout(() => t.classList.remove('show'), 3500);
         }
@@ -761,7 +795,7 @@
                 }
 
                 showToast(`Attendance saved securely!`);
-                document.getElementById('pastDateReasonBox').style.display = 'none'; // Fix: Hide Reason Box after Save
+                document.getElementById('pastDateReasonBox').style.display = 'none'; 
                 
                 const { data } = await supabase.from('attendance_records').select('*');
                 allAttendance = data || [];
@@ -813,7 +847,7 @@
                 tBody.innerHTML = filteredAtt.map(a => {
                     const student = allStudents.find(s => s.id === a.student_id);
                     const mod = allModules.find(m => m.id === a.module_id);
-                    // Fix: Inline status with strict color styling instead of conflicting class
+                    
                     const statusColor = a.status === 'Present' ? '#16a34a' : a.status === 'Absent' ? '#dc2626' : '#d97706';
                     
                     const sName = student ? student.full_name : 'Unknown';
