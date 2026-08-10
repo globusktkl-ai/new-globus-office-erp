@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Financial Report - Globus</title>
+    <title>Master Day Book - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -24,7 +24,7 @@
         .btn-all-data { background: linear-gradient(135deg, #10B981, #059669); color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .btn-all-data:hover { filter: brightness(1.1); }
         
-        h2 { color: #2c3e50; border-bottom: 2px solid #ddd; padding-bottom: 10px; font-size: 18px; margin-top: 0; }
+        h2 { color: #2c3e50; border-bottom: 2px solid #ddd; padding-bottom: 10px; font-size: 18px; margin-top: 0; text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px; }
         
         /* Summary Cards */
         .summary-cards { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -52,7 +52,7 @@
         /* Fixed Alignment Issue Here */
         .date-inputs-container { display: none; gap: 10px; width: 100%; margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px; box-sizing: border-box; }
         .date-inputs-container.active { display: flex; }
-        .date-col { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; } /* min-width: 0 forces flex items to stay inside the parent container */
+        .date-col { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
         .date-col label { font-size: 12px; color: #64748b; font-weight: bold; }
         .date-col input { padding: 10px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; width: 100%; box-sizing: border-box; min-width: 0; }
 
@@ -115,7 +115,7 @@
     </div>
 
     <div id="printable-area">
-        <h2>Financial Report</h2>
+        <h2>Master Day Book</h2>
         <div class="summary-cards">
             <div class="card income-card">Income<br>₹<span id="total-income">0</span></div>
             <div class="card expense-card">Expense<br>₹<span id="total-expense">0</span></div>
@@ -396,7 +396,7 @@
             const element = document.getElementById('printable-area');
             const opt = { 
                 margin: 10, 
-                filename: 'Financial_Report.pdf', 
+                filename: 'Master_Day_Book.pdf', 
                 image: { type: 'jpeg', quality: 0.98 }, 
                 html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, 
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
@@ -414,7 +414,7 @@
                 csv.push(row.join(","));
             }
             let csvFile = new Blob([csv.join("\n")], {type: "text/csv"});
-            let dl = document.createElement("a"); dl.download = "Report.csv"; dl.href = window.URL.createObjectURL(csvFile); dl.style.display = "none";
+            let dl = document.createElement("a"); dl.download = "DayBook_Report.csv"; dl.href = window.URL.createObjectURL(csvFile); dl.style.display = "none";
             document.body.appendChild(dl); dl.click(); document.body.removeChild(dl);
         };
 
