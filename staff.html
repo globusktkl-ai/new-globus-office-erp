@@ -1314,7 +1314,7 @@
             const today = new Date();
             const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
             if (month > currentMonthStr) {
-                alert('⚠️ ഭാവിയിലെ മാസത്തെ ശമ്പളം മുൻകൂറായി നൽകാൻ സിസ്റ്റം അനുവദിക്കില്ല! (Cannot process future month salary)');
+                alert('⚠️Cannot process future month salary)');
                 return;
             }
 
@@ -1323,7 +1323,7 @@
             // ==========================================
             const isDuplicate = allSalaryPayments.some(p => p.staff_id === staffId && p.month === month);
             if (isDuplicate) {
-                alert(`⚠️ ഈ സ്റ്റാഫിന് ${formatMonthDisplay(month)} മാസത്തെ ശമ്പളം ഇതിനകം നൽകിക്കഴിഞ്ഞു! (Salary already processed for this month)`);
+                alert(`⚠️ Salary already processed for this month ${formatMonthDisplay(month)} `);
                 return;
             }
 
@@ -1477,7 +1477,7 @@
         window.downloadStaffLedger = function() {
             const staffId = document.getElementById('payStaffSelect').value;
             if (!staffId) {
-                alert('ദയവായി റിപ്പോർട്ട് എടുക്കേണ്ട സ്റ്റാഫിനെ ആദ്യം സെലക്ട് ചെയ്യുക! (Please select a staff member first)');
+                alert('Please select a staff member first');
                 return;
             }
             
@@ -1489,7 +1489,7 @@
                 .sort((a, b) => new Date(a.month) - new Date(b.month));
 
             if (staffPayments.length === 0) {
-                alert('ഈ സ്റ്റാഫിന് ഇതുവരെ ശമ്പളം നൽകിയതായി കണക്കില്ല. (No payment history found)');
+                alert('No payment history found');
                 return;
             }
 
@@ -1555,7 +1555,7 @@
 
                 doc.save(`Ledger_${staff.full_name.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
             } catch (error) {
-                alert("റിപ്പോർട്ട് തയ്യാറാക്കുന്നതിൽ പിഴവുണ്ടായി! " + error.message);
+                alert("Error generating report! " + error.message);
                 console.error(error);
             }
         };
