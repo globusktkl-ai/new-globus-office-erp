@@ -80,7 +80,8 @@
 
         .table-container { overflow-x: auto; width: 100%; display: block; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
+        /* Added word-break and white-space to fix cut-off text */
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; word-break: break-word; word-wrap: break-word; white-space: normal; }
         th { background-color: #F3F4F6; color: #374151; font-weight: bold; }
 
         @media print {
@@ -388,11 +389,21 @@
         };
 
         window.printReport = function() { window.print(); };
+        
+        // Updated PDF logic to fix the blank page issue
         window.downloadPDF = function() {
+            window.scrollTo(0, 0); // Scroll to top before capturing to avoid blank areas
             const element = document.getElementById('printable-area');
-            const opt = { margin: 10, filename: 'Financial_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+            const opt = { 
+                margin: 10, 
+                filename: 'Financial_Report.pdf', 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+            };
             html2pdf().set(opt).from(element).save();
         };
+
         window.exportToCSV = function() {
             let csv = []; let rows = document.querySelectorAll("table tr");
             for (let i = 0; i < rows.length; i++) {
