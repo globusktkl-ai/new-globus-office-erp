@@ -350,7 +350,7 @@
         // ======================== STATE ========================
         let allCourses = [], allModules = [], allStaff = [], allStudents = [];
         let allAssignments = [], allAttendance = [];
-        let currentAttendanceMarks = {}; // { student_id: 'Present'|'Absent'|'Half-Day' }
+        let currentAttendanceMarks = {}; 
 
         // ======================== INIT ========================
         async function init() {
@@ -367,12 +367,13 @@
 
         async function fetchAllData() {
             try {
-                const [cRes, sRes, stRes, maRes, arRes] = await Promise.all([
+                const [cRes, sRes, stRes, maRes, arRes, mRes] = await Promise.all([
                     supabase.from('courses').select('*').eq('status', 'Active').order('course_name'),
                     supabase.from('students').select('*').eq('status', 'active').order('full_name'),
                     supabase.from('staff').select('*').eq('status', 'active').order('full_name'),
                     supabase.from('module_assignments').select('*'),
-                    supabase.from('attendance_records').select('*')
+                    supabase.from('attendance_records').select('*'),
+                    supabase.from('modules').select('*') // Fetch from new Database Table
                 ]);
                 
                 allCourses = cRes.data || [];
@@ -380,21 +381,34 @@
                 allStaff = stRes.data || [];
                 allAssignments = maRes.data || [];
                 allAttendance = arRes.data || [];
+                let dbModules = mRes.data || [];
 
-                // Build modules from courses
-                allModules = [];
+                // =========================================================
+                // AUTO SYNC LOGIC: Migrates JSON modules to DB table securely
+                // =========================================================
+                let newModulesToInsert = [];
                 allCourses.forEach(c => {
                     if (c.modules && Array.isArray(c.modules)) {
-                        c.modules.forEach((m, idx) => {
-                            allModules.push({
-                                id: `${c.id}_mod_${idx}`,
-                                course_id: c.id,
-                                module_name: m,
-                                course_name: c.course_name
-                            });
+                        c.modules.forEach(mName => {
+                            const exists = dbModules.find(dbm => dbm.course_id === c.id && dbm.module_name === mName);
+                            if (!exists) newModulesToInsert.push({ course_id: c.id, module_name: mName });
                         });
                     }
                 });
+
+                if (newModulesToInsert.length > 0) {
+                    // Automatically save missing modules to DB to generate secure UUIDs
+                    await supabase.from('modules').insert(newModulesToInsert);
+                    const freshMRes = await supabase.from('modules').select('*');
+                    dbModules = freshMRes.data || [];
+                }
+
+                // Map the final correct UUIDs
+                allModules = dbModules.map(m => {
+                    const crs = allCourses.find(c => c.id === m.course_id);
+                    return { ...m, course_name: crs ? crs.course_name : '' };
+                });
+                // =========================================================
 
                 populateDropdowns();
                 loadAssignments();
@@ -422,22 +436,18 @@
 
         // ======================== DROPDOWNS ========================
         function populateDropdowns() {
-            // Attendance course dropdown
             const attCourse = document.getElementById('attCourse');
             attCourse.innerHTML = '<option value="">-- Select Course --</option>';
             allCourses.forEach(c => attCourse.add(new Option(c.course_name, c.id)));
 
-            // Map course dropdown
             const mapCourse = document.getElementById('mapCourse');
             mapCourse.innerHTML = '<option value="">-- Select Course --</option>';
             allCourses.forEach(c => mapCourse.add(new Option(c.course_name, c.id)));
 
-            // Defaulter course dropdown
             const defCourse = document.getElementById('defCourse');
             defCourse.innerHTML = '<option value="all">All Courses</option>';
             allCourses.forEach(c => defCourse.add(new Option(c.course_name, c.id)));
 
-            // Map teacher dropdown
             const mapTeacher = document.getElementById('mapTeacher');
             mapTeacher.innerHTML = '<option value="">-- Select Teacher --</option>';
             allStaff.forEach(s => mapTeacher.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)));
@@ -478,7 +488,6 @@
                 return;
             }
 
-            // Find assigned teacher
             const assignment = allAssignments.find(a => a.module_id === moduleId);
             const teacherInfo = document.getElementById('attTeacherInfo');
             if (assignment) {
@@ -489,21 +498,16 @@
                 teacherInfo.style.display = 'none';
             }
 
-            // Get students enrolled in this course
             const students = allStudents.filter(s => s.course_id == courseId);
-
-            // Check existing attendance for this date & module
             const existingAtt = allAttendance.filter(a => a.date === dateVal && a.module_id === moduleId);
             const existingMap = {};
             existingAtt.forEach(a => existingMap[a.student_id] = a.status);
 
-            // Initialize marks (default: Present / or existing)
             currentAttendanceMarks = {};
             students.forEach(s => {
                 currentAttendanceMarks[s.id] = existingMap[s.id] || 'Present';
             });
 
-            // Update UI
             document.getElementById('attDateChip').textContent = '📅 ' + formatDateDisplay(dateVal);
             document.getElementById('attCount').textContent = students.length + ' Students';
 
@@ -579,7 +583,7 @@
                     .eq('date', dateVal)
                     .eq('module_id', moduleId);
 
-                // Insert new records
+                // Insert new records using the proper UUID
                 const records = Object.entries(currentAttendanceMarks).map(([sid, status]) => ({
                     date: dateVal,
                     student_id: sid,
@@ -594,7 +598,6 @@
 
                 showToast(`Attendance saved for ${records.length} students!`);
                 
-                // Refresh attendance data
                 const { data } = await supabase.from('attendance_records').select('*');
                 allAttendance = data || [];
 
@@ -619,7 +622,6 @@
                 return;
             }
 
-            // Institute Summary
             const present = dayRecords.filter(r => r.status === 'Present').length;
             const absent = dayRecords.filter(r => r.status === 'Absent').length;
             const halfday = dayRecords.filter(r => r.status === 'Half-Day').length;
@@ -637,7 +639,6 @@
 
             document.getElementById('rptSummary').style.display = 'block';
 
-            // Course-wise
             const courseMap = {};
             dayRecords.forEach(r => {
                 const mod = allModules.find(m => m.id === r.module_id);
@@ -667,7 +668,6 @@
             }).join('');
             document.getElementById('rptCourseWise').style.display = 'block';
 
-            // Module-wise
             const modMap = {};
             dayRecords.forEach(r => {
                 const mod = allModules.find(m => m.id === r.module_id);
@@ -781,16 +781,13 @@
             }
 
             try {
-                // Check if already assigned
                 const existing = allAssignments.find(a => a.module_id === moduleId);
                 if (existing) {
-                    // Update
                     const { error } = await supabase.from('module_assignments')
                         .update({ teacher_id: teacherId })
                         .eq('id', existing.id);
                     if (error) throw error;
                 } else {
-                    // Insert
                     const { error } = await supabase.from('module_assignments')
                         .insert([{ module_id: moduleId, teacher_id: teacherId }]);
                     if (error) throw error;
