@@ -189,6 +189,11 @@
         .id-btn{padding:11px 6px;border:none;border-radius:10px;font-weight:800;cursor:pointer;font-size:12px;color:#fff;transition:.2s;box-shadow:0 3px 6px rgba(0,0,0,.1)}
         .id-btn:active{transform:scale(.95)}
         .id-btn:disabled{opacity:.6;cursor:not-allowed}
+
+        /* Salary History Slip Download Button */
+        .slip-dl-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;box-shadow:0 3px 6px rgba(245,158,11,.25);transition:.2s;display:inline-flex;align-items:center;gap:4px;margin-top:8px}
+        .slip-dl-btn:active{transform:scale(.95)}
+        .slip-dl-btn:disabled{opacity:.6;cursor:not-allowed}
     </style>
 </head>
 <body>
@@ -294,7 +299,7 @@
                         <div class="pay-net-value" id="payNet">₹ 0</div>
                     </div>
                     <button class="frm-submit" id="payProcessBtn" onclick="processSalary()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25)">💳 Process Salary</button>
-                    <button class="frm-submit" id="paySlipBtn" onclick="downloadSalarySlip()" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 12px rgba(245,158,11,.25);margin-top:10px;display:none">📄 Download Salary Slip</button>
+                    <button class="frm-submit" id="paySlipBtn" onclick="downloadLastSlip()" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 12px rgba(245,158,11,.25);margin-top:10px;display:none">📄 Download Salary Slip</button>
                 </div>
             </div>
             <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Payment History</h3>
@@ -416,49 +421,6 @@
         </div>
     </div>
 
-    <!-- HIDDEN SALARY SLIP FOR PDF -->
-    <div id="slipWrapper">
-        <div class="slip-page" id="slipRenderArea">
-            <div class="slip-border">
-                <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #1e3a8a;padding-bottom:15px;margin-bottom:20px">
-                    <div style="display:flex;align-items:center;gap:10px">
-                        <img id="slipLogo" src="assets/images/logo.png" style="width:50px;height:50px;object-fit:contain" onerror="this.style.display='none'">
-                        <div>
-                            <h2 id="slipInstName" style="margin:0;font-size:20px;color:#1e3a8a;font-weight:900;text-transform:uppercase">GLOBUS</h2>
-                            <p id="slipSubName" style="margin:2px 0 0;font-size:10px;color:#475569;font-weight:800;text-transform:uppercase">Technical Academy</p>
-                        </div>
-                    </div>
-                    <div style="text-align:right"><h1 style="margin:0;font-size:18px;color:#0f172a;font-weight:900">SALARY SLIP</h1></div>
-                </div>
-                <div style="display:flex;justify-content:space-between;margin-bottom:18px;font-size:12px"><div><strong>Month:</strong> <span id="slipMonth">-</span></div><div><strong>Date:</strong> <span id="slipDate">-</span></div></div>
-                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:20px">
-                    <table style="width:100%;font-size:13px;line-height:2">
-                        <tr><td style="width:110px;color:#64748b;font-weight:700">Employee Name:</td><td style="font-weight:900;color:#0f172a;text-transform:uppercase" id="slipName">-</td></tr>
-                        <tr><td style="color:#64748b;font-weight:700">Designation:</td><td style="font-weight:800;color:#1e293b" id="slipRole">-</td></tr>
-                        <tr><td style="color:#64748b;font-weight:700">Phone:</td><td style="font-weight:800;color:#1e293b" id="slipPhone">-</td></tr>
-                    </table>
-                </div>
-                <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:13px">
-                    <thead><tr style="background:#1e3a8a;color:#fff"><th style="padding:10px;text-align:left;border:1px solid #1e3a8a">Description</th><th style="padding:10px;text-align:right;border:1px solid #1e3a8a">Amount (₹)</th></tr></thead>
-                    <tbody>
-                        <tr><td style="padding:12px;border:1px solid #cbd5e1;font-weight:700">Basic Salary</td><td style="padding:12px;border:1px solid #cbd5e1;text-align:right;font-weight:900" id="slipBasic">0</td></tr>
-                        <tr><td style="padding:12px;border:1px solid #cbd5e1;font-weight:700;color:#dc2626">Advance Deduction</td><td style="padding:12px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#dc2626" id="slipDeduction">0</td></tr>
-                        <tr style="background:#f0fdf4"><td style="padding:12px;border:1px solid #bbf7d0;font-weight:900;color:#15803d;text-align:right">NET PAYABLE</td><td style="padding:12px;border:1px solid #bbf7d0;text-align:right;font-weight:900;color:#15803d;font-size:18px" id="slipNet">0</td></tr>
-                    </tbody>
-                </table>
-                <div style="position:absolute;bottom:30px;left:30px;right:30px;display:flex;justify-content:space-between;align-items:flex-end">
-                    <div style="font-size:9px;color:#94a3b8;line-height:1.5">* Computer generated salary slip<br>No signature required</div>
-                    <div style="text-align:center"><div style="border-bottom:1px solid #1e293b;width:140px;height:40px;margin-bottom:6px"></div><div style="font-size:12px;font-weight:800;color:#1e293b">Authorized Signatory</div></div>
-                </div>
-                <div class="slip-seal">
-                    <span style="font-size:7px;font-weight:900;text-transform:uppercase;text-align:center;line-height:1.1;padding:0 5px" id="slipSealInst">GLOBUS</span>
-                    <span style="font-size:14px;font-weight:900;margin:2px 0">PAID</span>
-                    <span style="font-size:6px;font-weight:700">Digitally Signed</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- ============================================= -->
     <!-- STAFF ID CARD STUDIO MODAL                    -->
     <!-- ============================================= -->
@@ -470,12 +432,8 @@
             <div class="card-preview-col">
                 <div id="staffCardContent">
                     
-                    <!-- ================================= -->
-                    <!-- CORPORATE HEADER (Diagonal Cut)   -->
-                    <!-- ================================= -->
+                    <!-- CORPORATE HEADER (Diagonal Cut) -->
                     <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);height:95px;width:100%;position:relative;padding:12px 16px 0;box-sizing:border-box;clip-path:polygon(0 0,100% 0,100% 88%,0 100%);">
-                        
-                        <!-- Logo & Institute -->
                         <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:2">
                             <div style="width:44px;height:44px;background:rgba(255,255,255,.95);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:4px;box-shadow:0 3px 8px rgba(0,0,0,.25);flex-shrink:0">
                                 <img id="staffCardLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" alt="Logo" onerror="this.style.display='none'">
@@ -486,48 +444,29 @@
                                 <div id="staffCardAddress" style="font-size:6px;color:#cbd5e1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px"></div>
                             </div>
                         </div>
-                        
-                        <!-- Decorative corner element -->
                         <div style="position:absolute;top:0;right:0;width:60px;height:60px;background:linear-gradient(135deg,transparent 50%,rgba(251,191,36,.15) 50%);pointer-events:none"></div>
                     </div>
 
-                    <!-- ================================= -->
-                    <!-- GOLD ACCENT LINE                  -->
-                    <!-- ================================= -->
                     <div style="height:3px;background:linear-gradient(90deg,#fbbf24 0%,#f59e0b 50%,#fbbf24 100%);width:100%;box-shadow:0 1px 3px rgba(251,191,36,.4)"></div>
 
-                    <!-- ================================= -->
-                    <!-- TITLE BAR                         -->
-                    <!-- ================================= -->
                     <div style="background:#f8fafc;padding:6px 16px;text-align:center;border-bottom:1px solid #e2e8f0">
                         <div style="font-size:10px;font-weight:900;color:#0f172a;letter-spacing:3px;text-transform:uppercase;font-family:'Segoe UI',Arial,sans-serif">STAFF IDENTITY CARD</div>
                     </div>
 
-                    <!-- ================================= -->
-                    <!-- PHOTO FRAME (Elevated, Square)    -->
-                    <!-- ================================= -->
                     <div style="text-align:center;margin-top:-8px;position:relative;z-index:5">
                         <div style="display:inline-block;padding:4px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,.2),0 0 0 1px #e2e8f0">
                             <img id="staffCardAvatarImg" src="" style="width:90px;height:105px;object-fit:cover;border-radius:10px;display:block">
                         </div>
                     </div>
 
-                    <!-- ================================= -->
-                    <!-- STAFF DETAILS (Left-aligned with vertical accent) -->
-                    <!-- ================================= -->
                     <div style="padding:14px 16px 0;position:relative">
-                        
-                        <!-- Vertical Accent Line + Details -->
                         <div style="display:flex;gap:10px;align-items:stretch">
                             <div style="width:3px;background:linear-gradient(180deg,#fbbf24 0%,#f59e0b 100%);border-radius:2px;flex-shrink:0"></div>
                             <div style="flex:1;min-width:0">
-                                <!-- Name Section -->
                                 <div style="margin-bottom:8px">
                                     <div style="font-size:7px;color:#64748b;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:1px">Employee Name</div>
                                     <div id="staffCardName" style="font-size:14px;font-weight:900;color:#0f172a;line-height:1.15;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">STAFF NAME</div>
                                 </div>
-                                
-                                <!-- Designation (Prominent) -->
                                 <div style="margin-bottom:8px">
                                     <div style="font-size:7px;color:#64748b;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:1px">Designation</div>
                                     <div id="staffCardRole" style="font-size:12px;font-weight:800;color:#1e3a8a;line-height:1.1;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">DESIGNATION</div>
@@ -535,7 +474,6 @@
                             </div>
                         </div>
 
-                        <!-- Emp ID & Phone Row -->
                         <div style="display:flex;justify-content:space-between;margin-top:10px;padding:8px 10px;background:linear-gradient(135deg,#f1f5f9 0%,#f8fafc 100%);border-radius:8px;border-left:3px solid #0f172a">
                             <div style="text-align:left;min-width:0;flex:1">
                                 <div style="font-size:6.5px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Employee ID</div>
@@ -548,17 +486,11 @@
                         </div>
                     </div>
 
-                    <!-- ================================= -->
-                    <!-- BARCODE (CSS Simulated)           -->
-                    <!-- ================================= -->
                     <div style="position:absolute;bottom:28px;left:14px;width:140px">
                         <div style="height:26px;background:repeating-linear-gradient(90deg,#0f172a 0,#0f172a 1px,#fff 1px,#fff 3px,#0f172a 3px,#0f172a 5px,#fff 5px,#fff 6px,#0f172a 6px,#0f172a 9px,#fff 9px,#fff 10px,#0f172a 10px,#0f172a 11px,#fff 11px,#fff 13px);border:1px solid #e2e8f0;border-radius:2px"></div>
                         <div id="staffCardBarcodeText" style="font-size:7px;font-family:'Courier New',monospace;font-weight:700;color:#0f172a;letter-spacing:2px;text-align:center;margin-top:2px">||| STAFF |||</div>
                     </div>
 
-                    <!-- ================================= -->
-                    <!-- DIGITAL SEAL (Bottom Right)       -->
-                    <!-- ================================= -->
                     <div style="position:absolute;bottom:20px;right:14px;width:64px;height:64px;border:2px solid rgba(15,23,42,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;transform:rotate(-8deg);box-shadow:inset 0 0 8px rgba(15,23,42,.1);mix-blend-mode:multiply;background:rgba(251,191,36,.05)">
                         <div style="width:56px;height:56px;border:1px dashed rgba(15,23,42,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:2px;box-sizing:border-box">
                             <div id="staffSealMainName" style="font-size:6px;font-weight:900;color:rgba(15,23,42,.85);line-height:1.1;text-transform:uppercase;word-wrap:break-word;overflow:hidden;max-height:14px">GLOBUS</div>
@@ -568,22 +500,19 @@
                         </div>
                     </div>
 
-                    <!-- Bottom Return Info -->
                     <div style="position:absolute;bottom:4px;left:0;right:0;font-size:6px;color:#94a3b8;font-weight:600;text-align:center;padding:0 6px;letter-spacing:.5px">
                         Property of Institute • Return to: <span id="staffCardReturnPhone">+91 9846000000</span>
                     </div>
-
                 </div>
             </div>
 
-            <!-- COLUMN 2: EDIT STUDIO (UNCHANGED) -->
+            <!-- COLUMN 2: EDIT STUDIO -->
             <div class="card-edit-col">
                 <div style="margin-bottom:14px;border-bottom:2px dashed #e2e8f0;padding-bottom:10px">
                     <h3 style="font-size:16px;font-weight:900;color:#0f172a;margin:0">🎨 ID Card Studio</h3>
                     <p style="color:#64748b;font-size:11px;font-weight:600;margin:2px 0 0">Edit and generate premium ID card</p>
                 </div>
 
-                <!-- Institute Settings -->
                 <div style="background:#fff;padding:12px;border-radius:10px;margin-bottom:14px;border:1px solid #cbd5e1">
                     <label class="frm-label" style="margin-bottom:8px">🏢 Institute Settings (Card Only)</label>
                     <div class="frm-row" style="margin-bottom:8px">
@@ -619,7 +548,6 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
                 <div class="id-btn-grid">
                     <button type="button" id="staffSharePdfBtn" onclick="window.shareStaffPDF()" class="id-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 6px rgba(239,68,68,.25)">📄 Share PDF</button>
                     <button type="button" id="staffShareCardBtn" onclick="window.shareStaffCard()" class="id-btn" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 6px rgba(16,185,129,.25)">🔗 Share Image</button>
@@ -631,6 +559,157 @@
         </div>
     </div>
 
+    <!-- ============================================= -->
+    <!-- HIDDEN SALARY SLIP TEMPLATE (A5 Professional) -->
+    <!-- ============================================= -->
+    <div id="salarySlipTemplate" style="position:absolute;top:-9999px;left:-9999px;z-index:-1;display:block">
+        <div id="salarySlipRender" style="width:550px;height:780px;background:#fff;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;position:relative;overflow:hidden">
+            
+            <!-- CORPORATE HEADER -->
+            <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);padding:24px 30px 22px;position:relative;overflow:hidden">
+                <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2">
+                    <div style="display:flex;align-items:center;gap:14px">
+                        <div style="width:60px;height:60px;background:#fff;border-radius:10px;padding:6px;box-shadow:0 4px 12px rgba(0,0,0,.3);flex-shrink:0">
+                            <img id="salaryLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+                        </div>
+                        <div>
+                            <div id="salaryInstName" style="font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;line-height:1.1;text-transform:uppercase">GLOBUS</div>
+                            <div id="salaryInstSub" style="font-size:10px;font-weight:700;color:#fbbf24;letter-spacing:1.5px;margin-top:3px;text-transform:uppercase">TECHNICAL ACADEMY</div>
+                            <div id="salaryInstAddress" style="font-size:9px;color:#cbd5e1;font-weight:500;margin-top:4px"></div>
+                        </div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="background:#fbbf24;color:#0f172a;padding:8px 14px;border-radius:6px;font-size:14px;font-weight:900;letter-spacing:2px;box-shadow:0 3px 8px rgba(0,0,0,.2)">SALARY SLIP</div>
+                        <div id="salarySlipNo" style="font-size:10px;color:#cbd5e1;margin-top:6px;font-weight:700;letter-spacing:1px">SLIP #: ---</div>
+                    </div>
+                </div>
+                <!-- Decorative corner -->
+                <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:linear-gradient(135deg,transparent 60%,rgba(251,191,36,.12) 60%);pointer-events:none"></div>
+            </div>
+
+            <!-- GOLD ACCENT LINE -->
+            <div style="height:4px;background:linear-gradient(90deg,#fbbf24 0%,#f59e0b 50%,#fbbf24 100%);box-shadow:0 2px 4px rgba(251,191,36,.4)"></div>
+
+            <!-- BODY CONTENT -->
+            <div style="padding:22px 30px;position:relative">
+                
+                <!-- Pay Period Bar -->
+                <div style="background:#f1f5f9;border-left:4px solid #1e3a8a;padding:10px 14px;border-radius:4px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <div style="font-size:9px;color:#64748b;font-weight:800;letter-spacing:1.2px;text-transform:uppercase">Pay Period</div>
+                        <div id="salaryMonthDisplay" style="font-size:16px;font-weight:900;color:#0f172a;letter-spacing:.5px">MONTH YEAR</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-size:9px;color:#64748b;font-weight:800;letter-spacing:1.2px;text-transform:uppercase">Issued On</div>
+                        <div id="salaryIssueDate" style="font-size:13px;font-weight:800;color:#334155">DD-MM-YYYY</div>
+                    </div>
+                </div>
+
+                <!-- Employee Info Box -->
+                <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:20px;box-shadow:0 2px 6px rgba(15,23,42,.04)">
+                    <div style="font-size:10px;color:#1e3a8a;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px dashed #cbd5e1;padding-bottom:6px;margin-bottom:10px">👤 Employee Details</div>
+                    <table style="width:100%;font-size:13px;line-height:1.9">
+                        <tr>
+                            <td style="width:130px;color:#64748b;font-weight:700">Employee Name</td>
+                            <td style="color:#64748b;font-weight:700">:</td>
+                            <td style="font-weight:900;color:#0f172a;text-transform:uppercase" id="salaryStaffName">-</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#64748b;font-weight:700">Designation</td>
+                            <td style="color:#64748b;font-weight:700">:</td>
+                            <td style="font-weight:800;color:#1e3a8a" id="salaryStaffRole">-</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#64748b;font-weight:700">Employee ID</td>
+                            <td style="color:#64748b;font-weight:700">:</td>
+                            <td style="font-weight:800;color:#1e293b;font-family:'Courier New',monospace" id="salaryStaffEmpId">-</td>
+                        </tr>
+                        <tr>
+                            <td style="color:#64748b;font-weight:700">Contact</td>
+                            <td style="color:#64748b;font-weight:700">:</td>
+                            <td style="font-weight:800;color:#1e293b" id="salaryStaffPhone">-</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Earnings & Deductions Table -->
+                <table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:13px">
+                    <thead>
+                        <tr style="background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff">
+                            <th style="padding:12px 14px;text-align:left;border:1px solid #0f172a;font-weight:800;letter-spacing:.5px">DESCRIPTION</th>
+                            <th style="padding:12px 14px;text-align:right;border:1px solid #0f172a;font-weight:800;letter-spacing:.5px;width:130px">AMOUNT (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding:12px 14px;border:1px solid #cbd5e1;font-weight:700;color:#1e293b">
+                                <span style="color:#16a34a;font-weight:900">▸</span> Basic Salary
+                            </td>
+                            <td style="padding:12px 14px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#16a34a;font-size:14px" id="salaryBasicAmt">0</td>
+                        </tr>
+                        <tr style="background:#fafafa">
+                            <td style="padding:12px 14px;border:1px solid #cbd5e1;font-weight:800;color:#0f172a;text-align:right">Gross Earnings</td>
+                            <td style="padding:12px 14px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#0f172a" id="salaryGrossAmt">0</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:12px 14px;border:1px solid #cbd5e1;font-weight:700;color:#1e293b">
+                                <span style="color:#dc2626;font-weight:900">▸</span> Advance Deduction
+                            </td>
+                            <td style="padding:12px 14px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#dc2626;font-size:14px" id="salaryDedAmt">0</td>
+                        </tr>
+                        <tr style="background:linear-gradient(135deg,#ecfdf5,#d1fae5)">
+                            <td style="padding:14px;border:2px solid #10b981;font-weight:900;color:#047857;text-align:right;font-size:14px;letter-spacing:.5px">NET PAYABLE AMOUNT</td>
+                            <td style="padding:14px;border:2px solid #10b981;text-align:right;font-weight:900;color:#047857;font-size:20px" id="salaryNetAmt">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Amount In Words -->
+                <div style="background:#fffbeb;border:1px dashed #fbbf24;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:11px">
+                    <span style="color:#92400e;font-weight:800;text-transform:uppercase;letter-spacing:.8px">Amount in Words:</span>
+                    <span id="salaryAmountWords" style="color:#0f172a;font-weight:700;margin-left:5px;font-style:italic">Rupees Zero Only</span>
+                </div>
+
+                <!-- Payment Details -->
+                <div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:20px">
+                    <div style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px">
+                        <div style="font-size:8px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Payment Mode</div>
+                        <div style="font-size:12px;font-weight:800;color:#0f172a;margin-top:2px">Bank Transfer</div>
+                    </div>
+                    <div style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px">
+                        <div style="font-size:8px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Status</div>
+                        <div style="font-size:12px;font-weight:800;color:#16a34a;margin-top:2px">✓ Processed</div>
+                    </div>
+                </div>
+
+                <!-- Footer Signature Row -->
+                <div style="position:absolute;bottom:24px;left:30px;right:30px;display:flex;justify-content:space-between;align-items:flex-end">
+                    <div style="font-size:9px;color:#94a3b8;line-height:1.6;max-width:200px">
+                        <strong style="color:#475569">Note:</strong> This is a computer-generated salary slip and does not require a physical signature. For any queries, contact HR.
+                    </div>
+                    <div style="text-align:center">
+                        <div style="border-bottom:1.5px solid #0f172a;width:150px;height:38px;margin-bottom:6px"></div>
+                        <div style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.5px">Authorized Signatory</div>
+                        <div style="font-size:8px;color:#64748b;font-weight:600;margin-top:1px">HR Department</div>
+                    </div>
+                </div>
+
+                <!-- Digital PAID Seal -->
+                <div style="position:absolute;bottom:110px;right:38px;width:120px;height:120px;border:4px solid #16a34a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-14deg);color:#16a34a;background:rgba(22,163,74,.06);box-shadow:inset 0 0 15px rgba(22,163,74,.15);mix-blend-mode:multiply">
+                    <div style="width:104px;height:104px;border:2px dashed rgba(22,163,74,.6);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;box-sizing:border-box">
+                        <div id="salarySealInst" style="font-size:8px;font-weight:900;letter-spacing:.5px;line-height:1.1;margin-bottom:2px">GLOBUS</div>
+                        <div style="font-size:24px;font-weight:900;letter-spacing:2px;line-height:1;margin:3px 0">PAID</div>
+                        <div style="font-size:6.5px;font-weight:700;letter-spacing:.8px;line-height:1.1">DIGITALLY SIGNED</div>
+                        <div id="salarySealDate" style="font-size:6px;font-weight:700;margin-top:2px;letter-spacing:.5px">DD-MM-YYYY</div>
+                    </div>
+                </div>
+
+                <!-- Bottom accent -->
+                <div style="position:absolute;bottom:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#0f172a 0%,#1e293b 50%,#0f172a 100%)"></div>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
@@ -638,6 +717,7 @@
         let instSettings = null;
         let payrollAdvances = []; // unpaid advances for selected staff
         let currentStaffCardData = null; // for ID Card Studio
+        let lastProcessedPaymentId = null; // to track last processed payment for slip download
 
         // ===================== AUTH =====================
         async function init() {
@@ -655,14 +735,11 @@
                 if (data) {
                     instSettings = data;
                     if (data.logo_url) { 
-                        const slipLogo = document.getElementById('slipLogo');
-                        if(slipLogo) slipLogo.src = data.logo_url;
                         const cardLogo = document.getElementById('staffCardLogo');
                         if(cardLogo) cardLogo.src = data.logo_url;
+                        const salLogo = document.getElementById('salaryLogo');
+                        if(salLogo) salLogo.src = data.logo_url;
                     }
-                    const sn = document.getElementById('slipInstName'); if(sn) sn.textContent = data.institute_name || 'GLOBUS';
-                    const ss = document.getElementById('slipSubName'); if(ss) ss.textContent = data.sub_name || 'Technical Academy';
-                    const si = document.getElementById('slipSealInst'); if(si) si.textContent = data.institute_name || 'GLOBUS';
 
                     // Set card default headers
                     const cin = document.getElementById('staffCardInstName'); if(cin) cin.innerText = data.institute_name || 'GLOBUS';
@@ -672,6 +749,12 @@
                     const ssn = document.getElementById('staffSealSubName'); if(ssn) ssn.innerText = data.sub_name || 'OFFICIAL';
                     const sad = document.getElementById('staffSealAddress'); if(sad) sad.innerText = data.address || '';
                     const rp = document.getElementById('staffCardReturnPhone'); if(rp && data.phone) rp.innerText = '+91 ' + data.phone;
+
+                    // Salary slip default headers
+                    const sin = document.getElementById('salaryInstName'); if(sin) sin.innerText = data.institute_name || 'GLOBUS';
+                    const sisub = document.getElementById('salaryInstSub'); if(sisub) sisub.innerText = data.sub_name || 'TECHNICAL ACADEMY';
+                    const siadr = document.getElementById('salaryInstAddress'); if(siadr) siadr.innerText = data.address || '';
+                    const ssealName = document.getElementById('salarySealInst'); if(ssealName) ssealName.innerText = data.institute_name || 'GLOBUS';
                 }
             } catch(e) {}
         }
@@ -709,6 +792,32 @@
             return d;
         }
 
+        function formatMonthDisplay(m) {
+            if (!m) return '-';
+            const parts = m.split('-');
+            if (parts.length !== 2) return m;
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            return months[parseInt(parts[1])-1] + ' ' + parts[0];
+        }
+
+        // Convert number to words (Indian style)
+        function numberToWords(num) {
+            if (num === 0) return 'Rupees Zero Only';
+            const a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+            const b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+            
+            function inWords(n) {
+                if (n < 20) return a[n];
+                if (n < 100) return b[Math.floor(n/10)] + (n%10 ? ' ' + a[n%10] : '');
+                if (n < 1000) return a[Math.floor(n/100)] + ' Hundred' + (n%100 ? ' ' + inWords(n%100) : '');
+                if (n < 100000) return inWords(Math.floor(n/1000)) + ' Thousand' + (n%1000 ? ' ' + inWords(n%1000) : '');
+                if (n < 10000000) return inWords(Math.floor(n/100000)) + ' Lakh' + (n%100000 ? ' ' + inWords(n%100000) : '');
+                return inWords(Math.floor(n/10000000)) + ' Crore' + (n%10000000 ? ' ' + inWords(n%10000000) : '');
+            }
+            
+            return 'Rupees ' + inWords(Math.floor(num)).trim() + ' Only';
+        }
+
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
@@ -739,7 +848,6 @@
                 sel.innerHTML = '<option value="">-- Choose Staff --</option>';
                 active.forEach(s => { sel.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)); });
             });
-            // Set default dates
             document.getElementById('advDate').value = new Date().toISOString().split('T')[0];
             const now = new Date();
             document.getElementById('payMonth').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
@@ -869,7 +977,6 @@
             if (error) { alert('Error: ' + error.message); return; }
             alert('✅ Staff added!');
             closeModal('addStaffModal');
-            // Reset form
             ['addName','addPhone','addRole','addSalary','addJoinDate','addQual','addAddress'].forEach(id => document.getElementById(id).value = '');
             await fetchAllData();
         };
@@ -880,7 +987,6 @@
             if (!s) return;
             currentStaffCardData = s;
 
-            // Populate form fields
             document.getElementById('liveStaffName').value = s.full_name || '';
             document.getElementById('liveStaffRole').value = s.role || 'Staff';
             const empId = s.emp_id || ('EMP-' + s.id.substring(0, 6).toUpperCase());
@@ -888,24 +994,20 @@
             document.getElementById('liveStaffPhone').value = s.phone || '';
             document.getElementById('liveStaffPhotoInput').value = '';
 
-            // Populate institute fields with existing data
             if (instSettings) {
                 document.getElementById('liveInstName').value = instSettings.institute_name || '';
                 document.getElementById('liveInstSub').value = instSettings.sub_name || '';
                 document.getElementById('liveInstAddress').value = instSettings.address || '';
             }
 
-            // Populate live card preview
             document.getElementById('staffCardName').innerText = (s.full_name || 'N/A').toUpperCase();
             document.getElementById('staffCardRole').innerText = (s.role || 'STAFF').toUpperCase();
             document.getElementById('staffCardEmpId').innerText = empId;
             document.getElementById('staffCardPhone').innerText = s.phone || 'N/A';
             
-            // Update barcode text
             const barcodeEl = document.getElementById('staffCardBarcodeText');
             if (barcodeEl) barcodeEl.innerText = '||| ' + empId + ' |||';
 
-            // Set photo
             const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
             document.getElementById('staffCardAvatarImg').src = avatar;
 
@@ -952,33 +1054,21 @@
                     const { data, error } = await supabase.storage.from('staff-photos').upload(fileName, file);
                     if (!error) {
                         photoUrlToSave = supabase.storage.from('staff-photos').getPublicUrl(fileName).data.publicUrl;
-                    } else {
-                        console.warn('Upload issue:', error.message);
-                    }
+                    } else { console.warn('Upload issue:', error.message); }
                 } catch (e) { console.warn(e); }
             }
 
-            const updates = {
-                full_name: newName,
-                phone: newPhone,
-                role: newRole,
-                photo_url: photoUrlToSave
-            };
-            // Only include emp_id if column exists (safe optional)
+            const updates = { full_name: newName, phone: newPhone, role: newRole, photo_url: photoUrlToSave };
             if (newEmpId) updates.emp_id = newEmpId;
 
             const { error } = await supabase.from('staff').update(updates).eq('id', currentStaffCardData.id);
             if (error) {
-                // Retry without emp_id if that column doesn't exist
                 if (error.message && error.message.includes('emp_id')) {
                     delete updates.emp_id;
                     const { error: err2 } = await supabase.from('staff').update(updates).eq('id', currentStaffCardData.id);
                     if (err2) { alert('Error: ' + err2.message); return; }
-                } else {
-                    alert('Error saving data: ' + error.message); return;
-                }
+                } else { alert('Error saving data: ' + error.message); return; }
             }
-
             alert('✅ Details Saved Successfully!');
             await fetchAllData();
         };
@@ -986,13 +1076,12 @@
         window.shareStaffPDF = async function() {
             const btn = document.getElementById('staffSharePdfBtn');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ Generating...';
-            btn.disabled = true;
+            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
                 const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
                 const imgData = canvas.toDataURL('image/jpeg', 0.9);
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] }); // CR80
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] });
                 pdf.addImage(imgData, 'JPEG', 0, 0, 54, 86);
                 const filename = `Staff_ID_${(document.getElementById('liveStaffName').value || 'Staff').replace(/ /g,'_')}.pdf`;
                 const pdfBlob = pdf.output('blob');
@@ -1000,22 +1089,15 @@
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     try { await navigator.share({ files: [file], title: 'Staff ID Card' }); }
                     catch (err) { pdf.save(filename); }
-                } else {
-                    pdf.save(filename);
-                }
-            } catch (error) {
-                alert("Could not generate PDF: " + error.message);
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
+                } else { pdf.save(filename); }
+            } catch (error) { alert("Could not generate PDF: " + error.message);
+            } finally { btn.innerHTML = originalText; btn.disabled = false; }
         };
 
         window.shareStaffCard = async function() {
             const btn = document.getElementById('staffShareCardBtn');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ Generating...';
-            btn.disabled = true;
+            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
                 const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
                 canvas.toBlob(async (blob) => {
@@ -1029,14 +1111,9 @@
                         link.href = canvas.toDataURL('image/jpeg', 0.9);
                         link.click();
                     }
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
+                    btn.innerHTML = originalText; btn.disabled = false;
                 }, 'image/jpeg', 0.9);
-            } catch (error) {
-                alert("Error generating image: " + error.message);
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
+            } catch (error) { alert("Error generating image: " + error.message); btn.innerHTML = originalText; btn.disabled = false; }
         };
 
         // ===================== TAB 2: ADVANCES =====================
@@ -1062,6 +1139,9 @@
             }).join('');
         }
 
+        // ===================================================
+        // UPDATED: Advance Save + Day Book Integration
+        // ===================================================
         window.saveAdvance = async function() {
             const staffId = document.getElementById('advStaffSelect').value;
             const amount = Number(document.getElementById('advAmount').value) || 0;
@@ -1082,15 +1162,38 @@
                 }]);
                 if (advErr) throw advErr;
 
-                // 2. INTEGRATE: Insert into expenses (Day Book)
+                // 2. INTEGRATE: Dual-write to expenses table (Day Book)
                 const staff = allStaff.find(s => s.id === staffId);
-                const description = `Staff Advance - ${staff ? staff.full_name : 'Unknown'}${remarks ? ' (' + remarks + ')' : ''}`;
-                const { error: expErr } = await supabase.from('expenses').insert([{
-                    category: 'Staff Advance', description: description, amount: amount, expense_date: date, payment_mode: 'Cash'
-                }]);
-                if (expErr) console.warn("Expense insert warning:", expErr.message);
+                const staffName = staff ? staff.full_name : 'Unknown';
+                const description = 'Advance to ' + staffName + (remarks ? ' - ' + remarks : '');
+                
+                // Try multiple schema variants for expenses table compatibility
+                let expenseInserted = false;
+                try {
+                    const { error: expErr1 } = await supabase.from('expenses').insert([{
+                        date: date,
+                        category: 'Staff Advance',
+                        description: description,
+                        amount: amount
+                    }]);
+                    if (!expErr1) expenseInserted = true;
+                    else throw expErr1;
+                } catch(e1) {
+                    // Fallback: try with expense_date instead of date
+                    try {
+                        const { error: expErr2 } = await supabase.from('expenses').insert([{
+                            expense_date: date,
+                            category: 'Staff Advance',
+                            description: description,
+                            amount: amount,
+                            payment_mode: 'Cash'
+                        }]);
+                        if (!expErr2) expenseInserted = true;
+                        else console.warn('Day Book insert failed:', expErr2.message);
+                    } catch(e2) { console.warn('Day Book fallback failed:', e2.message); }
+                }
 
-                alert('✅ Advance recorded & added to Day Book!');
+                alert('✅ Advance recorded' + (expenseInserted ? ' & added to Day Book!' : '!'));
                 document.getElementById('advAmount').value = '';
                 document.getElementById('advRemarks').value = '';
                 await fetchAllData();
@@ -1124,6 +1227,9 @@
             detailsDiv.style.display = 'block';
         };
 
+        // ===================================================
+        // UPDATED: Salary Process + Day Book Integration
+        // ===================================================
         window.processSalary = async function() {
             const staffId = document.getElementById('payStaffSelect').value;
             const month = document.getElementById('payMonth').value;
@@ -1133,37 +1239,56 @@
             const salary = Number(staff.basic_salary) || 0;
             const totalDeduction = payrollAdvances.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
             const netPay = salary - totalDeduction > 0 ? salary - totalDeduction : 0;
+            const todayDate = new Date().toISOString().split('T')[0];
 
             const btn = document.getElementById('payProcessBtn');
             btn.disabled = true; btn.textContent = '⏳ Processing...';
 
             try {
                 // 1. Insert salary payment
-                const { error: salErr } = await supabase.from('salary_payments').insert([{
+                const { data: newSal, error: salErr } = await supabase.from('salary_payments').insert([{
                     staff_id: staffId, month: month, basic_salary: salary,
-                    deductions: totalDeduction, net_salary: netPay, payment_date: new Date().toISOString().split('T')[0]
-                }]);
+                    deductions: totalDeduction, net_salary: netPay, payment_date: todayDate
+                }]).select();
                 if (salErr) throw salErr;
+                if (newSal && newSal[0]) lastProcessedPaymentId = newSal[0].id;
 
                 // 2. Mark advances as paid
                 for (const adv of payrollAdvances) {
                     await supabase.from('staff_advances').update({ status: 'paid' }).eq('id', adv.id);
                 }
 
-                // 3. INTEGRATE: Insert into expenses (Day Book)
-                const desc = `Salary Payment - ${staff.full_name} (${month})`;
-                const { error: expErr } = await supabase.from('expenses').insert([{
-                    category: 'Salary Payment', description: desc, amount: netPay,
-                    expense_date: new Date().toISOString().split('T')[0], payment_mode: 'Bank Transfer'
-                }]);
-                if (expErr) console.warn("Expense insert warning:", expErr.message);
+                // 3. INTEGRATE: Dual-write to expenses (Day Book)
+                const staffName = staff.full_name || 'Unknown';
+                const desc = 'Salary for ' + staffName + ' - ' + month;
+                
+                let expenseInserted = false;
+                try {
+                    const { error: expErr1 } = await supabase.from('expenses').insert([{
+                        date: todayDate,
+                        category: 'Salary Payment',
+                        description: desc,
+                        amount: netPay
+                    }]);
+                    if (!expErr1) expenseInserted = true;
+                    else throw expErr1;
+                } catch(e1) {
+                    try {
+                        const { error: expErr2 } = await supabase.from('expenses').insert([{
+                            expense_date: todayDate,
+                            category: 'Salary Payment',
+                            description: desc,
+                            amount: netPay,
+                            payment_mode: 'Bank Transfer'
+                        }]);
+                        if (!expErr2) expenseInserted = true;
+                        else console.warn('Day Book insert failed:', expErr2.message);
+                    } catch(e2) { console.warn('Day Book fallback failed:', e2.message); }
+                }
 
-                alert('✅ Salary processed & added to Day Book!');
+                alert('✅ Salary processed' + (expenseInserted ? ' & added to Day Book!' : '!'));
                 document.getElementById('payProcessBtn').style.display = 'none';
                 document.getElementById('paySlipBtn').style.display = 'block';
-                
-                // Store last processed data for slip
-                window.lastSlipData = { staff, month, salary, totalDeduction, netPay };
 
                 await fetchAllData();
             } catch(e) {
@@ -1173,6 +1298,9 @@
             }
         };
 
+        // ===================================================
+        // UPDATED: Salary History with Download Button per row
+        // ===================================================
         function renderSalaryHistory() {
             const container = document.getElementById('salaryHistory');
             if (allSalaryPayments.length === 0) { container.innerHTML = '<div class="empty-state">No salary payments yet.</div>'; return; }
@@ -1185,48 +1313,94 @@
                         <div style="font-weight:900;color:#059669;font-size:16px">₹ ${p.net_salary || 0}</div>
                     </div>
                     <div class="adv-meta">
-                        <span>📅 ${p.month || '-'}</span>
+                        <span>📅 ${formatMonthDisplay(p.month) || '-'}</span>
                         <span>💰 Basic: ₹${p.basic_salary || 0}</span>
                         <span style="color:#ef4444">Ded: ₹${p.deductions || 0}</span>
                     </div>
+                    <button class="slip-dl-btn" onclick="window.downloadSalarySlip('${p.id}')">
+                        📄 Download Slip
+                    </button>
                 </div>`;
             }).join('');
         }
 
-        // ===================== SALARY SLIP PDF =====================
-        window.downloadSalarySlip = async function() {
-            const data = window.lastSlipData;
-            if (!data) { alert('No salary data available. Process salary first.'); return; }
+        // ===================================================
+        // Download Last Processed Slip (from Process button)
+        // ===================================================
+        window.downloadLastSlip = function() {
+            if (lastProcessedPaymentId) {
+                window.downloadSalarySlip(lastProcessedPaymentId);
+            } else if (allSalaryPayments && allSalaryPayments.length > 0) {
+                window.downloadSalarySlip(allSalaryPayments[0].id);
+            } else {
+                alert('No salary payment available.');
+            }
+        };
 
-            const btn = document.getElementById('paySlipBtn');
-            btn.disabled = true; btn.textContent = '⏳ Generating...';
+        // ===================================================
+        // MAIN: Download Salary Slip PDF
+        // ===================================================
+        window.downloadSalarySlip = async function(paymentId) {
+            const payment = allSalaryPayments.find(p => p.id === paymentId);
+            if (!payment) { alert('Payment record not found!'); return; }
+
+            const staff = allStaff.find(s => s.id === payment.staff_id);
+            if (!staff) { alert('Staff record not found!'); return; }
 
             try {
-                // Populate slip
-                document.getElementById('slipMonth').textContent = data.month;
+                // Populate slip template
+                const empId = staff.emp_id || ('EMP-' + staff.id.substring(0, 6).toUpperCase());
                 const d = new Date();
-                document.getElementById('slipDate').textContent = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
-                document.getElementById('slipName').textContent = data.staff.full_name || '-';
-                document.getElementById('slipRole').textContent = data.staff.role || 'Staff';
-                document.getElementById('slipPhone').textContent = data.staff.phone || '-';
-                document.getElementById('slipBasic').textContent = data.salary.toLocaleString('en-IN');
-                document.getElementById('slipDeduction').textContent = `- ${data.totalDeduction.toLocaleString('en-IN')}`;
-                document.getElementById('slipNet').textContent = data.netPay.toLocaleString('en-IN');
+                const issueDate = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+                const slipNo = 'SAL-' + (payment.id || '').substring(0, 8).toUpperCase();
+                const grossAmt = Number(payment.basic_salary) || 0;
+                const dedAmt = Number(payment.deductions) || 0;
+                const netAmt = Number(payment.net_salary) || 0;
 
-                const wrapper = document.getElementById('slipRenderArea');
-                const canvas = await html2canvas(wrapper, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff' });
-                const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                document.getElementById('salaryStaffName').innerText = staff.full_name || '-';
+                document.getElementById('salaryStaffRole').innerText = staff.role || 'Staff';
+                document.getElementById('salaryStaffEmpId').innerText = empId;
+                document.getElementById('salaryStaffPhone').innerText = staff.phone || '-';
+                document.getElementById('salaryMonthDisplay').innerText = formatMonthDisplay(payment.month) || '-';
+                document.getElementById('salaryIssueDate').innerText = payment.payment_date ? formatDate(payment.payment_date) : issueDate;
+                document.getElementById('salarySlipNo').innerText = 'SLIP #: ' + slipNo;
+                document.getElementById('salaryBasicAmt').innerText = grossAmt.toLocaleString('en-IN');
+                document.getElementById('salaryGrossAmt').innerText = grossAmt.toLocaleString('en-IN');
+                document.getElementById('salaryDedAmt').innerText = '- ' + dedAmt.toLocaleString('en-IN');
+                document.getElementById('salaryNetAmt').innerText = '₹ ' + netAmt.toLocaleString('en-IN');
+                document.getElementById('salaryAmountWords').innerText = numberToWords(netAmt);
+                document.getElementById('salarySealDate').innerText = issueDate;
 
+                // Make wrapper visible for rendering (offscreen still)
+                const wrapper = document.getElementById('salarySlipTemplate');
+                wrapper.style.left = '0';
+                wrapper.style.top = '0';
+                wrapper.style.zIndex = '-9999';
+                wrapper.style.opacity = '0';
+
+                const target = document.getElementById('salarySlipRender');
+                await new Promise(r => setTimeout(r, 100)); // let DOM settle
+
+                const canvas = await html2canvas(target, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false });
+                
+                // Reset wrapper position
+                wrapper.style.left = '-9999px';
+                wrapper.style.top = '-9999px';
+                wrapper.style.opacity = '1';
+                wrapper.style.zIndex = '-1';
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.85);
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
                 pdf.addImage(imgData, 'JPEG', 0, 0, 148, 210);
 
-                const filename = `Salary_Slip_${data.staff.full_name.replace(/ /g,'_')}_${data.month}.pdf`;
+                const cleanName = (staff.full_name || 'Staff').replace(/[^a-zA-Z0-9]/g, '_');
+                const cleanMonth = (payment.month || 'Month').replace(/[^a-zA-Z0-9-]/g, '_');
+                const filename = `Salary_Slip_${cleanName}_${cleanMonth}.pdf`;
                 pdf.save(filename);
             } catch(e) {
                 alert('Error generating slip: ' + e.message);
-            } finally {
-                btn.disabled = false; btn.textContent = '📄 Download Salary Slip';
+                console.error(e);
             }
         };
 
