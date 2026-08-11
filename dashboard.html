@@ -11,224 +11,69 @@
         body { background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%); min-height: 100vh; }
         .main-content { padding: 12px; max-width: 1000px; margin: 0 auto; }
         
-        /* ============================================= */
-        /* COMPACT SECTION HEADINGS                      */
-        /* ============================================= */
-        .section-heading {
-            font-size: 12px !important;
-            font-weight: 900 !important;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            margin: 0 0 10px 0 !important;
-            padding: 0 2px;
-        }
-        .section-heading-icon {
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
+        /* SECTION HEADINGS */
+        .section-heading { font-size: 12px !important; font-weight: 900 !important; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 7px; margin: 0 0 10px 0 !important; padding: 0 2px; }
+        .section-heading-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .section-heading-icon svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         
-        /* ============================================= */
-        /* STAT BOXES - COMPACT PREMIUM                  */
-        /* ============================================= */
+        /* STAT BOXES */
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-        
-        .stat-box {
-            background: #ffffff;
-            padding: 10px 8px !important;
-            border-radius: 12px !important;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02) !important;
-            border: 1px solid #e2e8f0 !important;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 8px;
-            text-align: left;
-        }
-        
-        .stat-mini-icon {
-            width: 34px; height: 34px;
-            border-radius: 9px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
+        .stat-box { background: #ffffff; padding: 10px 8px !important; border-radius: 12px !important; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02) !important; border: 1px solid #e2e8f0 !important; display: flex; flex-direction: row; align-items: center; gap: 8px; text-align: left; }
+        .stat-mini-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .stat-mini-icon svg { width: 17px; height: 17px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        
         .stat-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
         .stat-label { font-size: 9px !important; margin-bottom: 2px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1; }
         .stat-value { font-size: 18px !important; font-weight: 900 !important; line-height: 1; letter-spacing: -0.5px; }
         
-        /* ============================================= */
-        /* PREMIUM FINANCE CARD - COMPACT                */
-        /* ============================================= */
-        .unified-finance-card {
-            position: relative;
-            background: #ffffff;
-            border-radius: 14px;
-            padding: 0;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.03);
-            border: 1px solid #e2e8f0;
-            display: grid;
-            grid-template-columns: 1fr 1px 1fr;
-            overflow: hidden;
-        }
-        .uf-panel {
-            padding: 12px 12px;
-            display: flex; flex-direction: column; justify-content: space-between;
-            min-height: 95px; position: relative; overflow: hidden;
-        }
+        /* FINANCE CARD */
+        .unified-finance-card { position: relative; background: #ffffff; border-radius: 14px; padding: 0; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.03); border: 1px solid #e2e8f0; display: grid; grid-template-columns: 1fr 1px 1fr; overflow: hidden; }
+        .uf-panel { padding: 12px 12px; display: flex; flex-direction: column; justify-content: space-between; min-height: 95px; position: relative; overflow: hidden; }
         .uf-left { background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%); }
         .uf-right { background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%); }
-        .uf-panel::before {
-            content: ''; position: absolute; top: -20px; right: -20px;
-            width: 70px; height: 70px; border-radius: 50%; opacity: 0.08;
-        }
+        .uf-panel::before { content: ''; position: absolute; top: -20px; right: -20px; width: 70px; height: 70px; border-radius: 50%; opacity: 0.08; }
         .uf-left::before { background: #10B981; }
         .uf-right::before { background: #EF4444; }
         .uf-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-        .uf-icon-badge {
-            width: 24px; height: 24px; border-radius: 7px;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
+        .uf-icon-badge { width: 24px; height: 24px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .uf-icon-green { background: linear-gradient(135deg, #10B981, #047857); box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3); }
         .uf-icon-red { background: linear-gradient(135deg, #EF4444, #b91c1c); box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3); }
         .uf-icon-badge svg { width: 13px; height: 13px; stroke: #ffffff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         .uf-title { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; }
         .uf-title-green { color: #047857; }
         .uf-title-red { color: #b91c1c; }
-        
-        .uf-amount { 
-            font-size: 22px; font-weight: 900; line-height: 1; 
-            letter-spacing: -0.5px; 
-            display: flex; align-items: baseline; gap: 4px; 
-            font-family: 'Segoe UI', Roboto, sans-serif;
-        }
+        .uf-amount { font-size: 22px; font-weight: 900; line-height: 1; letter-spacing: -0.5px; display: flex; align-items: baseline; gap: 4px; font-family: 'Segoe UI', Roboto, sans-serif; }
         .uf-amount-green { color: #047857; }
         .uf-amount-red { color: #b91c1c; }
-        .uf-rupee { 
-            font-size: 16px; 
-            font-weight: 800; 
-            opacity: 0.85;
-            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-        }
-        .uf-footer {
-            margin-top: 6px; padding-top: 6px;
-            border-top: 1px dashed rgba(148, 163, 184, 0.4);
-            display: flex; align-items: center; justify-content: space-between; gap: 4px;
-        }
+        .uf-rupee { font-size: 16px; font-weight: 800; opacity: 0.85; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
+        .uf-footer { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(148, 163, 184, 0.4); display: flex; align-items: center; justify-content: space-between; gap: 4px; }
         .uf-footer-label { font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px; display: flex; align-items: center; }
         .uf-footer-value { font-size: 11px; font-weight: 900; color: #334155; display: flex; align-items: baseline; gap: 2px;}
         .uf-footer-rupee { font-size: 10px; opacity: 0.85; }
-        
-        .uf-status-dot {
-            display: inline-block; width: 6px; height: 6px; border-radius: 50%;
-            margin-right: 4px; animation: pulseDot 2s ease-in-out infinite;
-        }
+        .uf-status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; animation: pulseDot 2s ease-in-out infinite; }
         .uf-dot-green { background: #10B981; }
         @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } }
         .uf-divider-line { background: linear-gradient(180deg, transparent 0%, #cbd5e1 20%, #cbd5e1 80%, transparent 100%); }
 
-        /* ============================================= */
-        /* ALERT TICKER                                  */
-        /* ============================================= */
-        .alert-ticker-wrap {
-            overflow: hidden;
-            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            border: 1px solid #fde68a;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            padding: 8px 5px;
-            white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(180, 83, 9, 0.08);
-            display: none;
-        }
+        /* ALERT TICKER */
+        .alert-ticker-wrap { overflow: hidden; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1px solid #fde68a; border-radius: 10px; margin-bottom: 12px; padding: 8px 5px; white-space: nowrap; box-shadow: 0 2px 8px rgba(180, 83, 9, 0.08); display: none; }
         .alert-ticker-track { display: inline-block; animation: scrollTicker 15s linear infinite; }
         .alert-item { display: inline-flex; align-items: center; gap: 8px; margin-right: 40px; font-size: 12px; font-weight: 800; text-decoration: none; }
         .ticker-bell { color: #b45309; }
         .ticker-event { color: #1d4ed8; }
         @keyframes scrollTicker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* ============================================= */
-        /* MODULE SECTIONS - COMPACT PREMIUM             */
-        /* ============================================= */
-        .module-section {
-            background: #ffffff;
-            border-radius: 14px !important;
-            padding: 12px 12px 14px 12px !important;
-            margin-bottom: 12px !important;
-            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02) !important;
-            border: 1px solid #e2e8f0;
-        }
-        .module-section .nav-grid {
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important;
-            gap: 8px !important;
-            margin-top: 10px;
-        }
+        /* MODULE SECTIONS */
+        .module-section { background: #ffffff; border-radius: 14px !important; padding: 12px 12px 14px 12px !important; margin-bottom: 12px !important; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02) !important; border: 1px solid #e2e8f0; }
+        .module-section .nav-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; margin-top: 10px; }
         
-        /* ============================================= */
-        /* PREMIUM NAV BUTTONS - NO TOP COLOR SHADE      */
-        /* ============================================= */
-        .nav-btn {
-            position: relative;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px !important;
-            padding: 12px 6px !important;
-            text-decoration: none;
-            color: #334155 !important;
-            font-size: 11px !important;
-            font-weight: 800 !important;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02) !important;
-            min-height: 82px !important;
-            text-align: center;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-        }
-        .nav-btn:active {
-            transform: scale(0.94);
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
-        }
+        /* NAV BUTTONS */
+        .nav-btn { position: relative; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px !important; padding: 12px 6px !important; text-decoration: none; color: #334155 !important; font-size: 11px !important; font-weight: 800 !important; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02) !important; min-height: 82px !important; text-align: center; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+        .nav-btn:active { transform: scale(0.94); box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important; }
+        .nav-btn.fee-btn { background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%) !important; border-color: #bbf7d0 !important; color: #15803d !important; }
+        .nav-btn.expense-btn { background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%) !important; border-color: #fecaca !important; color: #b91c1c !important; }
+        .nav-btn[href="reminders.html"] { background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%) !important; border-color: #fde68a !important; color: #b45309 !important; }
         
-        .nav-btn.fee-btn {
-            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%) !important;
-            border-color: #bbf7d0 !important;
-            color: #15803d !important;
-        }
-        .nav-btn.expense-btn {
-            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%) !important;
-            border-color: #fecaca !important;
-            color: #b91c1c !important;
-        }
-        .nav-btn[href="reminders.html"] {
-            background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%) !important;
-            border-color: #fde68a !important;
-            color: #b45309 !important;
-        }
-        
-        .nav-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 7px !important;
-            transition: transform 0.25s ease;
-        }
+        .nav-icon { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; margin-bottom: 7px !important; transition: transform 0.25s ease; }
         .nav-btn:active .nav-icon { transform: scale(0.9); }
         .nav-icon svg { width: 22px; height: 22px; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
         
@@ -243,48 +88,31 @@
         .icon-bg-fee { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
         .icon-bg-exp { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
         .icon-bg-rpt { background: linear-gradient(135deg, #ccfbf1, #99f6e4); }
+        .icon-bg-enq { background: linear-gradient(135deg, #ffedd5, #fcd34d); } /* Yellow for Enquiry */
+        .icon-bg-inv { background: linear-gradient(135deg, #e2e8f0, #cbd5e1); } /* Gray for Inventory */
         
-        .nav-badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-            box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(239, 68, 68, 0.3);
-            animation: pulseDot 2s ease-in-out infinite;
-        }
+        .nav-badge { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(239, 68, 68, 0.3); animation: pulseDot 2s ease-in-out infinite; }
 
-        /* ============================================= */
-        /* HEADER                                        */
-        /* ============================================= */
-        .header-auth-section {
-            display: flex; align-items: center; gap: 10px;
-            background: rgba(255,255,255,0.9);
-            padding: 4px 4px 4px 12px;
-            border-radius: 30px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
-        }
+        /* HEADER */
+        .header-auth-section { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.9); padding: 4px 4px 4px 12px; border-radius: 30px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04); }
         .logged-in-text { font-size: 10px; font-weight: 700; color: #64748b; display: flex; flex-direction: column; text-align: right; line-height: 1.2; }
         .logged-in-email { color: #1e3a8a; font-weight: 900; font-size: 11px; }
-        .btn-logout-round {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white; border: none;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
-            flex-shrink: 0;
-        }
+        .btn-logout-round { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); flex-shrink: 0; }
         .btn-settings-round { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3); flex-shrink: 0; transition: 0.2s; margin-right: 12px; }
         .btn-settings-round:active { transform: scale(0.95); }
         
+        /* MODALS & FORMS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
         .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
         label { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block; }
+        
+        /* CUSTOM TOAST NOTIFICATION */
+        .toast { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-left: 4px solid #3b82f6; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; white-space: normal; max-width: 90%; text-align: left; line-height: 1.4; opacity: 0; visibility: hidden; }
+        .toast.show { top: 20px; opacity: 1; visibility: visible; }
+        .toast.success { border-left-color: #10b981; }
+        .toast.error { border-left-color: #ef4444; }
+
     </style>
 </head>
 <body>
@@ -302,7 +130,7 @@
                     <span>Admin</span>
                     <span class="logged-in-email" id="authEmail">Loading...</span>
                 </div>
-                <button class="btn-settings-round" onclick="window.triggerSettingsSecurity()" title="Institute Core Settings">
+                <button class="btn-settings-round" onclick="window.openSecurityGate()" title="Institute Core Settings">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="3"></circle>
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -319,7 +147,7 @@
 
     <main class="main-content">
         
-        <!-- INSTITUTE OVERVIEW - COMPACT HORIZONTAL LAYOUT -->
+        <!-- INSTITUTE OVERVIEW -->
         <h2 class="section-heading" style="color: #1e3a8a;">
             <span class="section-heading-icon" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
                 <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 12l4-4 4 4 6-6"/></svg>
@@ -409,7 +237,7 @@
             <div class="alert-ticker-track" id="alertTickerTrack"></div>
         </div>
 
-        <!-- ACADEMIC & ADMIN SECTION -->
+        <!-- ACADEMIC & ADMIN SECTION (ADDED ENQUIRY & INVENTORY) -->
         <div class="module-section">
             <h2 class="section-heading" style="color: #1e3a8a; margin: 0 !important;">
                 <span class="section-heading-icon" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
@@ -418,16 +246,25 @@
                 Academic & Admin
             </h2>
             <div class="nav-grid">
+                <!-- Enquiry & Leads -->
+                <a href="enquiry.html" class="nav-btn">
+                    <span class="nav-icon icon-bg-enq">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#d97706"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </span>Enquiry & Leads
+                </a>
+                
                 <a href="admission.html" class="nav-btn">
                     <span class="nav-icon icon-bg-adm">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#1d4ed8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
                     </span>Admission
                 </a>
+                
                 <a href="students.html" class="nav-btn">
                     <span class="nav-icon icon-bg-dir">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </span>Directory
                 </a>
+                
                 <a href="staff.html" class="nav-btn">
                     <span class="nav-icon icon-bg-staff">
                         <svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-staff)">
@@ -446,7 +283,6 @@
                     </span>Staff & HR
                 </a>
                 
-                <!-- NEW ATTENDANCE BUTTON -->
                 <a href="attendance.html" class="nav-btn">
                     <span class="nav-icon icon-bg-att">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#4338ca"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
@@ -463,16 +299,28 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="#b91c1c"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
                     </span>Exams
                 </a>
+
+                <!-- Inventory -->
+                <a href="inventory.html" class="nav-btn">
+                    <span class="nav-icon icon-bg-inv">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#334155"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </span>Inventory
+                </a>
+
                 <a href="admission-report.html" class="nav-btn">
                     <span class="nav-icon icon-bg-rpt-adm">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#0369a1"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
                     </span>Adm Report
                 </a>
-                <a href="reminders.html" class="nav-btn">
-                    <span class="nav-badge"></span>
-                    <span class="nav-icon icon-bg-alert">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#d97706"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    </span>Smart Alerts
+                
+            </div>
+            
+            <div style="margin-top: 8px;">
+                <a href="reminders.html" class="nav-btn" style="flex-direction:row !important; min-height:50px !important; gap:10px;">
+                    <span class="nav-badge" style="position:relative; top:auto; right:auto; margin-left:-10px;"></span>
+                    <span class="nav-icon icon-bg-alert" style="width:30px; height:30px; margin-bottom:0 !important;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#d97706"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    </span>Smart Alerts & Reminders
                 </a>
             </div>
         </div>
@@ -505,7 +353,23 @@
         </div>
     </main>
 
-    <!-- SETTINGS MODAL (INCLUDES WIPE USER DATA) -->
+    <!-- CUSTOM SECURITY GATE MODAL (Replaces Browser Prompts) -->
+    <div id="securityGateModal" class="modal-overlay" style="z-index: 2000;">
+        <div class="modal-container" style="max-width: 320px; text-align: center;">
+            <div style="background:#fee2e2; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="#dc2626" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>
+            </div>
+            <h3 style="color:#0f172a; margin-bottom:8px; font-size:16px;">Admin Authentication</h3>
+            <p style="color:#64748b; font-size:12px; margin-bottom:15px; font-weight:600; line-height:1.4;">Only authorized administrators can access core settings. Enter access code to proceed.</p>
+            <input type="password" id="adminPassInput" class="form-control" placeholder="Type ADMIN here" style="text-align:center; font-weight:900; letter-spacing:2px; text-transform:uppercase;">
+            <div style="display:flex; gap:10px;">
+                <button onclick="document.getElementById('securityGateModal').style.display='none'" style="flex:1; background:#f1f5f9; color:#475569; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">Cancel</button>
+                <button onclick="window.verifySecurityGate()" style="flex:1; background:#2563eb; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -524,7 +388,7 @@
                     </div>
                 </form>
 
-                <!-- DANGER ZONE / WIPE USER DATA INSIDE INSTITUTE SETTINGS -->
+                <!-- DANGER ZONE -->
                 <div style="margin-top: 20px; padding: 12px; border: 2px dashed #fca5a5; border-radius: 10px; background: #fef2f2; text-align: center;">
                     <h4 style="color: #dc2626; font-size: 13px; font-weight: 900; margin: 0 0 6px 0; text-transform: uppercase;">⚠️ Danger Zone</h4>
                     <p style="color: #991b1b; font-size: 10px; font-weight: 700; margin-bottom: 10px; line-height: 1.3;">Permanently delete all students, staff, fee payments, attendance, & expense records.</p>
@@ -532,7 +396,7 @@
                 </div>
             </div>
 
-            <!-- CAPTCHA & SECURE CONFIRMATION STEP -->
+            <!-- CAPTCHA & WIPE VIEW -->
             <div id="settingsWipeView" style="display:none; background:#fff; border:1px solid #fecaca; border-radius:10px; padding:15px; text-align:left;">
                 <h4 style="color:#dc2626; margin:0 0 8px 0; font-size:14px; font-weight:900;">🔥 CRITICAL VERIFICATION</h4>
                 <p style="font-size:11px; color:#475569; margin-bottom:12px; font-weight:700; line-height:1.4;">This will permanently clear all student test data, <b>staff data</b>, fee records, attendance logs, and expenses. Only Courses will remain.</p>
@@ -547,21 +411,30 @@
                 
                 <div style="display: flex; gap: 8px;">
                     <button type="button" onclick="window.cancelWipe()" style="flex:1; background:#94a3b8; color:white; padding:10px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:12px;">Cancel</button>
+                    <!-- Replaced native confirm with direct action (typing WIPE is enough confirmation) -->
                     <button type="button" id="executeWipeBtn" onclick="window.executeDataWipe()" style="flex:1; background:#dc2626; color:white; padding:10px; border:none; border-radius:8px; font-weight:900; cursor:pointer; font-size:12px;">🔥 CONFIRM WIPE</button>
                 </div>
             </div>
-
         </div>
     </div>
+
+    <div class="toast" id="toast"></div>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
         let expectedCaptchaAns = 0;
         
-        // SECURITY IDLE TIMEOUT VARIABLES
+        // TIMEOUT VARIABLES (30s initial, 60s interaction)
         let settingsTimer;
         let settingsInteracted = false;
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.innerHTML = (type === 'success' ? '✅ ' : '⚠️ ') + msg;
+            t.className = 'toast ' + type + ' show';
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -573,7 +446,6 @@
             buildSmartTicker();
             setInterval(buildSmartTicker, 30000); 
 
-            // ATTACH IDLE TIMEOUT EVENT LISTENERS TO MODAL
             const sModal = document.getElementById('settingsModal');
             ['input', 'click', 'touchstart', 'keydown'].forEach(evt => {
                 sModal.addEventListener(evt, window.resetSettingsActivity);
@@ -587,15 +459,10 @@
             const wrap = document.getElementById('alertTickerWrap');
             const track = document.getElementById('alertTickerTrack');
 
-            if (!masterAlertsOn) {
-                wrap.style.display = 'none';
-                track.innerHTML = '';
-                return; 
-            }
+            if (!masterAlertsOn) { wrap.style.display = 'none'; track.innerHTML = ''; return; }
 
             let tickerItems = [];
             const now = new Date();
-
             const savedBell = localStorage.getItem('globus_bell_settings_final'); 
             if(savedBell) {
                 const bSettings = JSON.parse(savedBell);
@@ -633,12 +500,10 @@
             if(tickerItems.length > 0) {
                 let htmlStr = tickerItems.join('');
                 if(tickerItems.length < 3) htmlStr += htmlStr; 
-                
                 track.innerHTML = htmlStr;
                 wrap.style.display = 'block';
             } else {
-                wrap.style.display = 'none';
-                track.innerHTML = '';
+                wrap.style.display = 'none'; track.innerHTML = '';
             }
         };
 
@@ -666,20 +531,15 @@
                 const admissionsToday = studentsData.filter(s => s.admission_date === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
                 document.getElementById('statTodayCollection').textContent = (paymentsToday + admissionsToday).toLocaleString('en-IN');
 
-                let totalPendingSum = 0;
-                let currentDueSum = 0; 
-
+                let totalPendingSum = 0; let currentDueSum = 0; 
                 activeStudents.forEach(s => {
                     const totalCourseFee = Number(s.total_fee) || 0; 
                     const admissionFee = Number(s.admission_fee) || 0;
-                    
-                    let totalPaidPayments = 0;
-                    let totalDiscount = 0;
+                    let totalPaidPayments = 0; let totalDiscount = 0;
                     paymentsData.filter(p => p.student_id === s.id).forEach(p => {
                         totalPaidPayments += (Number(p.amount_paid) || 0);
                         totalDiscount += (Number(p.discount_amount) || 0);
                     });
-                    
                     const totalPaidAndDisc = admissionFee + totalPaidPayments + totalDiscount;
                     let totalCoursePending = totalCourseFee - totalPaidAndDisc;
                     if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
@@ -687,26 +547,21 @@
                     const course = coursesData.find(c => c.id == s.course_id);
                     const totalModules = (course && Array.isArray(course.modules) && course.modules.length > 0) ? course.modules.length : 1;
                     const feePerModule = totalCourseFee / totalModules;
-                    
                     let currentModIndex = 1;
-                    if (s.status === 'completed' || s.module === 'Course Completed') { 
-                        currentModIndex = totalModules; 
-                    } else if (course && Array.isArray(course.modules)) { 
+                    if (s.status === 'completed' || s.module === 'Course Completed') { currentModIndex = totalModules; } 
+                    else if (course && Array.isArray(course.modules)) { 
                         let idx = course.modules.indexOf(s.module); 
                         currentModIndex = idx >= 0 ? idx + 1 : 1; 
                     }
-                    
                     let expectedTillNow = feePerModule * currentModIndex; 
                     if (expectedTillNow > totalCourseFee) expectedTillNow = totalCourseFee;
-                    
                     let currentDue = expectedTillNow - totalPaidAndDisc;
                     if (currentDue > 0) currentDueSum += currentDue;
                 });
                 
                 document.getElementById('statCurrentDue').textContent = Math.round(currentDueSum).toLocaleString('en-IN');
                 document.getElementById('statPendingFees').textContent = Math.round(totalPendingSum).toLocaleString('en-IN');
-
-            } catch (err) { console.error("Dashboard Loading Error:", err); }
+            } catch (err) {}
         }
 
         // ==========================================
@@ -723,25 +578,28 @@
             if (modal.style.display === 'flex') {
                 settingsInteracted = true;
                 clearTimeout(settingsTimer);
+                // Reduced to 1 Minute (60000ms) after interaction starts
                 settingsTimer = setTimeout(() => {
                     window.closeSettingsModal();
-                    alert("⏳ Security Alert: Settings automatically closed due to 2 minutes of inactivity.");
-                }, 120000); 
+                    showToast("Settings auto-closed due to 1 minute inactivity.", "error");
+                }, 60000); 
             }
         };
 
-        window.triggerSettingsSecurity = function() {
-            let warn1 = confirm("⚠️ WARNING 1: This section contains critical core settings of the institute. Any wrong changes will break the receipts and reports. Do you want to proceed?");
-            if (!warn1) return;
-            
-            let warn2 = confirm("🛑 WARNING 2: Are you strictly authorized by the Admin to alter the Institute Name, Address, and Contact details?");
-            if (!warn2) return;
-            
-            let warn3 = prompt("🚨 FINAL WARNING 3: Type 'ADMIN' to unlock the settings panel:");
-            if (warn3 === "ADMIN" || warn3 === "admin") {
+        // CUSTOM SECURITY GATE (Replaces native browser prompt)
+        window.openSecurityGate = function() {
+            document.getElementById('adminPassInput').value = '';
+            document.getElementById('securityGateModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('adminPassInput').focus(), 100);
+        };
+
+        window.verifySecurityGate = function() {
+            const input = document.getElementById('adminPassInput').value.trim().toUpperCase();
+            if(input === "ADMIN") {
+                document.getElementById('securityGateModal').style.display = 'none';
                 window.openSettings();
             } else {
-                alert("❌ Security Verification Failed! Access denied.");
+                showToast("Access Denied! Incorrect code.", "error");
             }
         };
 
@@ -762,12 +620,13 @@
             
             document.getElementById('settingsModal').style.display = 'flex';
             
+            // Reduced Initial Timeout to 30 Seconds
             settingsInteracted = false;
             clearTimeout(settingsTimer);
             settingsTimer = setTimeout(() => {
                 window.closeSettingsModal();
-                alert("⏳ Security Alert: Settings closed automatically because there was no activity for 1 minute.");
-            }, 60000); 
+                showToast("Settings auto-closed (30s timeout).", "error");
+            }, 30000); 
         };
 
         window.saveSettings = async function(e) {
@@ -786,11 +645,10 @@
             
             const { error } = await supabase.from('institute_settings').update(updates).eq('id', 1);
             if(error) { 
-                alert("Error saving settings."); 
-                btn.innerHTML = oldText; 
-                btn.disabled = false;
+                showToast("Error saving settings.", "error"); 
+                btn.innerHTML = oldText; btn.disabled = false;
             } else { 
-                alert("Settings Saved Successfully!"); 
+                showToast("Settings Saved Successfully!"); 
                 window.closeSettingsModal(); 
                 loadSettings(); 
             }
@@ -830,27 +688,15 @@
 
         window.executeDataWipe = async function() {
             const userCaptcha = parseInt(document.getElementById('captchaInput').value);
-            const userText = document.getElementById('wipeConfirmText').value.trim();
+            const userText = document.getElementById('wipeConfirmText').value.trim().toUpperCase();
 
-            if (userCaptcha !== expectedCaptchaAns) {
-                alert("❌ Math Captcha is incorrect!");
-                return;
-            }
-
-            if (userText !== "WIPE") {
-                alert("❌ You must type exactly 'WIPE' to confirm.");
-                return;
-            }
-
-            const finalWarning = confirm("🚨 FINAL WARNING: ALL student data, staff details, attendance, fees, and expenses will be permanently deleted. Only Courses will remain. Are you absolutely sure?");
-            if(!finalWarning) return;
+            if (userCaptcha !== expectedCaptchaAns) { showToast("Math Captcha is incorrect!", "error"); return; }
+            if (userText !== "WIPE") { showToast("You must type exactly 'WIPE' to confirm.", "error"); return; }
 
             const btn = document.getElementById('executeWipeBtn');
-            btn.innerHTML = "⏳ WIPING DATA...";
-            btn.disabled = true;
+            btn.innerHTML = "⏳ WIPING DATA..."; btn.disabled = true;
 
             try {
-                // Wipe module_assignments first to prevent foreign key issues before deleting staff
                 await Promise.all([
                     supabase.from('attendance_records').delete().not('id', 'is', null),
                     supabase.from('fee_payments').delete().not('id', 'is', null),
@@ -858,20 +704,18 @@
                     supabase.from('module_assignments').delete().not('id', 'is', null)
                 ]);
 
-                // Wipe students and staff
                 await Promise.all([
                     supabase.from('students').delete().not('id', 'is', null),
                     supabase.from('staff').delete().not('id', 'is', null)
                 ]);
 
-                alert("✅ SUCCESS: All User Data has been securely wiped out. The system is clean.");
-                window.location.reload();
+                // Replacing alert() with custom toast
+                showToast("All User Data wiped successfully!");
+                setTimeout(() => { window.location.reload(); }, 2000);
 
             } catch (err) {
-                console.error("Wipe Error:", err);
-                alert("❌ An error occurred while wiping data. Check console.");
-                btn.innerHTML = "🔥 CONFIRM WIPE";
-                btn.disabled = false;
+                showToast("Error wiping data. Check console.", "error");
+                btn.innerHTML = "🔥 CONFIRM WIPE"; btn.disabled = false;
             }
         };
 
