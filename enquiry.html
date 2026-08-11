@@ -425,6 +425,19 @@
             }
         };
 
+        window.deleteLead = async function(id) {
+            if(!confirm("Are you sure you want to delete this lead?")) return;
+            
+            try {
+                const { error } = await supabase.from('enquiries').delete().eq('id', id);
+                if(error) throw error;
+                alert("Lead deleted successfully!");
+                await fetchData();
+            } catch(err) {
+                alert("Error deleting lead.");
+                console.error(err);
+            }
+        };
         window.openModal = function(id) {
             const lead = leadsData.find(l => l.id === id);
             if(!lead) return;
