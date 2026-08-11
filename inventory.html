@@ -1,1 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inventory - Globus</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Advanced Script to Convert HTML to Image for Sharing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <style>
+        *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+        body{background:#f1f5f9;min-height:100vh;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;overflow-x:hidden;padding-bottom:80px}
+        .main-content{padding:12px;max-width:800px;margin:0 auto;width:100%}
+
+        /* ================== FIXED HEADER & 3D U-TURN BUTTON ================== */
+        .top-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;border-bottom:2px solid #e2e8f0;padding-bottom:14px;min-height:45px; gap: 10px;}
+        
+        .btn-back-3d {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 42px; height: 38px;
+            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid #cbd5e1;
+            border-bottom: 3px solid #94a3b8;
+            border-radius: 10px;
+            transition: all 0.1s;
+            flex-shrink: 0;
+        }
+        .btn-back-3d:active { transform: translateY(2px); border-bottom: 1px solid #94a3b8; }
+        .btn-back-3d svg { width: 22px; height: 22px; stroke: #4c1d95; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        
+        .page-title{font-size:16px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:-.3px;text-align:right;margin:0;flex:1;}
+        /* ===================================================================== */
+
+        .bottom-tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;z-index:90;box-shadow:0 -4px 16px rgba(15,23,42,.06);padding:6px 8px 10px}
+        .btab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border:none;background:none;cursor:pointer;border-radius:10px;transition:.2s;font-size:10px;font-weight:700;color:#94a3b8}
+        
+        .btab svg{width:22px;height:22px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:.2s}
+        .btab.active{color:#1e3a8a;background:rgba(30,58,138,.06)}
+        .btab.active svg{stroke:#1e3a8a;stroke-width:2.5}
+        .btab:active{transform:scale(.92)}
+
+        .tab-panel{display:none;animation:fadeUp .25s ease}
+        .tab-panel.active{display:block}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+        .card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(15,23,42,.04)}
+        
+        /* NEW: Flex row for Card Title + Close Button */
+        .card-header-flex { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+        .card-title{font-size:15px;font-weight:900;color:#0f172a;display:flex;align-items:center;gap:8px; margin:0;}
+        .card-title svg{width:20px;height:20px;stroke:currentColor;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+        
+        /* The Small Close Button on Top Right */
+        .btn-close-sm { background:#fee2e2; color:#dc2626; border:none; width:26px; height:26px; border-radius:6px; font-weight:900; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.2s;}
+        .btn-close-sm:active { transform:scale(.9); }
+
+        .frm-label{font-size:10px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:block}
+        .frm-select,.frm-input{width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:10px;font-size:14px;font-weight:600;outline:none;background:#f8fafc;transition:.2s;margin-bottom:12px;-webkit-appearance:none;appearance:none}
+        .frm-select:focus,.frm-input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1);background:#fff}
+        
+        .frm-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:12px;align-items:end;}
+        
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .btn-primary{width:100%;padding:13px;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;color:#fff;background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25);transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+        .btn-primary:active{transform:scale(.97)}
+        .btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626);}
+        .btn-success{background:linear-gradient(135deg,#10b981,#059669);}
+        .btn-sm{padding:8px 14px;font-size:12px;border-radius:8px;}
+
+        /* Inventory Cards */
+        .inv-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px rgba(15,23,42,.03)}
+        .inv-card.low-stock{border-left:4px solid #ef4444; background:#fef2f2;}
+        .inv-header{display:flex;justify-content:space-between;align-items:flex-start}
+        .inv-title{font-size:15px;font-weight:900;color:#0f172a;}
+        .inv-cat{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;background:#f1f5f9;padding:3px 8px;border-radius:6px;margin-top:4px;display:inline-block}
+        .inv-qty{font-size:20px;font-weight:900;color:#1e3a8a;}
+        .low-stock .inv-qty{color:#dc2626;}
+        
+        .inv-actions{display:flex;gap:8px;}
+        .btn-stock-in{flex:1;background:#dcfce7;color:#16a34a;border:1px solid #86efac;padding:8px;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;transition:.2s;}
+        .btn-stock-in:active{transform:scale(.95);}
+        .btn-stock-out{flex:1;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;padding:8px;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;transition:.2s;}
+        .btn-stock-out:active{transform:scale(.95);}
+        
+        /* NEW: Edit Icon Button */
+        .btn-edit-item{width: 36px; flex-shrink: 0; background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; border-radius: 8px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition:.2s;}
+        .btn-edit-item:active{transform:scale(.95);}
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
+        .modal-container { background: #fff; width: 100%; max-width: 400px; border-radius: 14px; padding: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        
+        .toast { position: fixed; top: -150px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-left: 4px solid #3b82f6; transition: all 0.4s ease; display: flex; align-items: center; gap: 10px; max-width: 90%; text-align: left; opacity: 0; visibility: hidden; }
+        .toast.show { top: 20px; opacity: 1; visibility: visible; }
+        .toast.success { border-left-color: #10b981; }
+        .toast.error { border-left-color: #ef4444; }
+
+        .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;font-weight:700;font-size:13px;background:#fff;border-radius:12px;border:1px dashed #cbd5e1;}
+
+        .cat-item{display:flex;justify-content:space-between;align-items:center;background:#f8fafc;padding:10px 12px;border-radius:8px;margin-bottom:8px;border:1px solid #e2e8f0;font-size:13px;font-weight:800;color:#334155;}
+        .cat-del-btn{background:#fee2e2;color:#dc2626;border:none;width:24px;height:24px;border-radius:6px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+        .print-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:10px;background:#fff;border:1px solid #e2e8f0;}
+        .print-table th,.print-table td{border:1px solid #cbd5e1;padding:8px 10px;text-align:left;}
+        .print-table th{background:#f8fafc;font-weight:800;color:#0f172a;text-transform:uppercase;}
+        .print-table tr:nth-child(even){background:#fbfbfb;}
+        
+        .badge{padding:3px 6px;border-radius:4px;font-size:9px;font-weight:900;text-transform:uppercase;}
+        .badge.in{background:#dcfce7;color:#15803d;}
+        .badge.out{background:#fee2e2;color:#dc2626;}
+
+        .expense-check{display:flex;align-items:center;gap:8px;background:#fef3c7;padding:10px;border-radius:8px;border:1px solid #fde68a;margin-bottom:15px;font-size:12px;font-weight:800;color:#92400e; cursor:pointer;}
+        .expense-check input{width:16px;height:16px;accent-color:#d97706;}
+
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; background:white; padding: 20px;}
+            .btn-primary, .bottom-tabs, .top-nav, .card { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="main-content">
+        <!-- FIXED 3D U-TURN BUTTON -->
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn-back-3d">
+                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
+            </a>
+            <h1 class="page-title">INVENTORY</h1>
+        </div>
+
+        <!-- TAB 1: ITEMS LIST -->
+        <div id="panel-list" class="tab-panel active">
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <input type="text" id="searchItem" class="frm-input" placeholder="Search..." style="margin-bottom:0;" oninput="renderItems()">
+                <select id="filterCat" class="frm-select" style="margin-bottom:0;width:120px;flex-shrink:0;" onchange="renderItems()">
+                    <option value="All">All Categories</option>
+                </select>
+            </div>
+            <div id="itemsContainer">
+                <div style="text-align:center;padding:20px;">Loading items...</div>
+            </div>
+        </div>
+
+        <!-- TAB 2: ADD NEW ITEM -->
+        <div id="panel-add" class="tab-panel">
+            <div class="card">
+                <div class="card-header-flex">
+                    <div class="card-title" style="color:#1e3a8a">
+                        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                        Add New Item
+                    </div>
+                    <button class="btn-close-sm" onclick="switchTab('list')" title="Close">✖</button>
+                </div>
+                
+                <form id="addItemForm" onsubmit="handleAddItem(event)">
+                    <label class="frm-label">Item Name</label>
+                    <input type="text" id="newItemName" class="frm-input" required>
+                    
+                    <div class="frm-row">
+                        <div style="margin-bottom:0;">
+                            <label class="frm-label">Category</label>
+                            <select id="newItemCat" class="frm-select" style="margin-bottom:0;" required>
+                            </select>
+                        </div>
+                        <div style="margin-bottom:0;">
+                            <label class="frm-label">Initial Quantity</label>
+                            <input type="number" id="newItemQty" class="frm-input" style="margin-bottom:0;" required>
+                        </div>
+                    </div>
+
+                    <div class="frm-row">
+                        <div style="margin-bottom:0;">
+                            <label class="frm-label">Unit Price (₹)</label>
+                            <input type="number" id="newItemPrice" class="frm-input" style="margin-bottom:0;" step="0.01">
+                        </div>
+                        <div style="margin-bottom:0;">
+                            <label class="frm-label">Min Stock Alert Level</label>
+                            <input type="number" id="newItemAlert" class="frm-input" style="margin-bottom:0;" value="5" required>
+                        </div>
+                    </div>
+
+                    <label class="expense-check">
+                        <input type="checkbox" id="addLogExpenseCheck" checked>
+                        Log this initial stock as Expense in Day Book
+                    </label>
+
+                    <!-- REMOVED Cancel, Save is FULL Width -->
+                    <button type="submit" class="btn-primary" id="addBtn">Save Item</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 3: REPORTS -->
+        <div id="panel-history" class="tab-panel">
+            <div class="card">
+                <div class="card-header-flex">
+                    <div class="card-title" style="color:#0f766e">
+                        <svg viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><circle cx="12" cy="12" r="10"/></svg>
+                        Stock Report Filters
+                    </div>
+                    <button class="btn-close-sm" onclick="switchTab('list')" title="Close">✖</button>
+                </div>
+
+                <div class="frm-row">
+                    <div style="margin-bottom:0;">
+                        <label class="frm-label">From Date</label>
+                        <input type="date" id="logFromDate" class="frm-input" style="margin-bottom:0;" onchange="renderLogs()">
+                    </div>
+                    <div style="margin-bottom:0;">
+                        <label class="frm-label">To Date</label>
+                        <input type="date" id="logToDate" class="frm-input" style="margin-bottom:0;" onchange="renderLogs()">
+                    </div>
+                </div>
+                <div class="frm-row" style="margin-top:12px;">
+                    <div style="margin-bottom:0;">
+                        <label class="frm-label">Transaction Type</label>
+                        <select id="logType" class="frm-select" style="margin-bottom:0;" onchange="renderLogs()">
+                            <option value="All">All (IN & OUT)</option>
+                            <option value="IN">Stock IN Only (+)</option>
+                            <option value="OUT">Stock OUT Only (-)</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:flex-end;">
+                        <button class="btn-primary btn-sm" onclick="window.print()" style="background:#4338ca; flex:1;" title="Print Report">🖨️</button>
+                        <button class="btn-primary btn-sm" id="shareBtnObj" onclick="window.shareReport()" style="background:#059669; flex:1;" title="Share Image">📤 Share</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Printable Report Area -->
+            <div id="printableReport" style="background:#fff; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #1e293b;">
+                    <div style="display:flex; align-items:center; gap:12px; width: 50%;">
+                        <img id="rptLogo" src="assets/images/logo.png" style="height: 40px; width: auto;" onerror="this.style.display='none'">
+                        <div>
+                            <h2 id="rptInstName" style="font-size:14px; font-weight:900; color:#0f172a; margin:0; text-transform:uppercase;">GLOBUS</h2>
+                            <div id="rptSubName" style="font-size:9px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-top:1px;">Technical Academy</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right; width: 50%;">
+                        <h2 style="font-size:14px;font-weight:900;color:#0f172a;text-transform:uppercase;margin:0;">Stock Report</h2>
+                        <div style="font-size:9px;color:#64748b;font-weight:600;margin-top:4px;" id="rptGeneratedMeta">Generated: -</div>
+                    </div>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table class="print-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Item Name</th>
+                                <th>Type</th>
+                                <th>Qty</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsContainer">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: SETTINGS (CATEGORIES) -->
+        <div id="panel-settings" class="tab-panel">
+            <div class="card">
+                <div class="card-header-flex">
+                    <div class="card-title" style="color:#d97706">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    Manage Categories
+</div>
+                    <button class="btn-close-sm" onclick="switchTab('list')" title="Close">✖</button>
+                </div>
+                <p style="font-size:11px;color:#64748b;margin-bottom:12px;font-weight:600;">Add your own custom categories for inventory items.</p>
+                
+                <div style="display:flex; gap:8px; margin-bottom:15px;">
+                    <input type="text" id="newCatInput" class="frm-input" placeholder="New Category Name" style="margin-bottom:0;">
+                    <button class="btn-primary" onclick="addCategory()" style="width:auto; padding:0 15px;">Add</button>
+                </div>
+
+                <div id="categoriesList"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- EDIT ITEM MODAL (Directly from List) -->
+    <div id="editItemModal" class="modal-overlay">
+        <div class="modal-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: #0369a1; font-size:16px;">Edit Item Details</h3>
+                <button type="button" onclick="closeModal('editItemModal')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight:bold;">X</button>
+            </div>
+            
+            <form onsubmit="saveEditedItem(event)">
+                <input type="hidden" id="editItemId">
+                
+                <label class="frm-label">Item Name</label>
+                <input type="text" id="editItemName" class="frm-input" required>
+                
+                <label class="frm-label">Unit Price (₹)</label>
+                <input type="number" id="editItemPrice" class="frm-input" step="0.01" required>
+                
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button type="button" class="btn-primary btn-secondary" onclick="closeModal('editItemModal')">Cancel</button>
+                    <button type="submit" class="btn-primary" id="editSaveBtn" style="background:linear-gradient(135deg,#0284c7,#0369a1);">Verify & Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- STOCK IN/OUT MODAL -->
+    <div id="stockModal" class="modal-overlay">
+        <div class="modal-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 id="modalTitle" style="margin: 0; color: #1e3a8a; font-size:16px;">Stock Update</h3>
+                <button type="button" onclick="closeModal('stockModal')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight:bold;">X</button>
+            </div>
+            
+            <p id="modalItemName" style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:15px;background:#f1f5f9;padding:10px;border-radius:8px;"></p>
+            
+            <form onsubmit="handleStockUpdate(event)">
+                <input type="hidden" id="modalItemId">
+                <input type="hidden" id="modalType">
+                
+                <label class="frm-label">Quantity</label>
+                <input type="number" id="modalQty" class="frm-input" min="1" required>
+                
+                <label class="frm-label">Remarks / Reason</label>
+                <input type="text" id="modalRemarks" class="frm-input" required>
+                
+                <!-- Expense Log Checkbox for Stock IN -->
+                <div id="stockExpenseWrapper" style="display:none;">
+                    <label class="expense-check">
+                        <input type="checkbox" id="stockExpenseCheck" checked>
+                        Log this purchase as Expense in Day Book
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary" id="modalBtn" style="margin-top:10px;">Update Stock</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-tabs">
+        <button class="btab active" onclick="switchTab('list')">
+            <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            Items
+        </button>
+        <button class="btab" onclick="switchTab('add')">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            Add Item
+        </button>
+        <button class="btab" onclick="switchTab('history')">
+            <svg viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><circle cx="12" cy="12" r="10"/></svg>
+            Reports
+        </button>
+        <button class="btab" onclick="switchTab('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    Settings
+</button>
+    </nav>
+
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+
+        let itemsData = [];
+        let logsData = [];
+        let instSettings = null;
+        let invCategories = [];
+
+        async function init() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+            
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            document.getElementById('logFromDate').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('logToDate').value = today.toISOString().split('T')[0];
+
+            loadCategories();
+            await fetchData();
+        }
+
+        // ================= EXPENSE LOGGING =================
+        async function logExpenseSafely(itemName, totalCost) {
+            if (totalCost <= 0) return;
+            const dateStr = new Date().toISOString().split('T')[0];
+            const desc = 'Inventory Purchase: ' + itemName;
+            try {
+                let res = await supabase.from('expenses').insert([{ title: desc, amount: totalCost, category: 'Inventory', expense_date: dateStr }]);
+                if (res.error) res = await supabase.from('expenses').insert([{ expense_title: desc, amount: totalCost, category: 'Inventory', expense_date: dateStr }]);
+                if (res.error) res = await supabase.from('expenses').insert([{ description: desc, amount: totalCost, category: 'Inventory', expense_date: dateStr }]);
+                if(!res.error) showToast("Expense logged to Day Book!");
+            } catch(e) {}
+        }
+
+        // ================= CATEGORIES =================
+        function loadCategories() {
+            let saved = localStorage.getItem('globus_inv_categories');
+            if (saved) { invCategories = JSON.parse(saved); } 
+            else { invCategories = ['General', 'Tools', 'Spares']; saveCategories(); }
+            populateCategoryDropdowns();
+            renderCategoriesList();
+        }
+
+        function saveCategories() {
+            localStorage.setItem('globus_inv_categories', JSON.stringify(invCategories));
+            populateCategoryDropdowns();
+        }
+
+        function populateCategoryDropdowns() {
+            const filterSelect = document.getElementById('filterCat');
+            const addSelect = document.getElementById('newItemCat');
+            filterSelect.innerHTML = '<option value="All">All Categories</option>' + invCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+            addSelect.innerHTML = invCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+
+        window.renderCategoriesList = function() {
+            const list = document.getElementById('categoriesList');
+            if(invCategories.length === 0) { list.innerHTML = '<div style="font-size:12px;color:#94a3b8;text-align:center;padding:10px;">No categories added.</div>'; return; }
+            list.innerHTML = invCategories.map((c, index) => `
+                <div class="cat-item">
+                    <span>${c}</span>
+                    <button type="button" class="cat-del-btn" onclick="deleteCategory(${index})">X</button>
+                </div>
+            `).join('');
+        }
+
+        window.addCategory = function() {
+            const input = document.getElementById('newCatInput');
+            const val = input.value.trim();
+            if(!val) return;
+            if(invCategories.includes(val)) { showToast("Category already exists!", "error"); return; }
+            invCategories.push(val);
+            saveCategories();
+            renderCategoriesList();
+            input.value = '';
+            showToast("Category added!");
+        }
+
+        window.deleteCategory = function(index) {
+            if(!confirm("Delete this category?")) return;
+            invCategories.splice(index, 1);
+            saveCategories();
+            renderCategoriesList();
+        }
+
+        // ================= DATA FETCHING =================
+        async function fetchData() {
+            try {
+                const [iRes, lRes, instRes] = await Promise.all([
+                    supabase.from('inventory_items').select('*').order('item_name'),
+                    supabase.from('inventory_logs').select('*').order('created_at', { ascending: false }),
+                    supabase.from('institute_settings').select('*').eq('id', 1).single()
+                ]);
+                itemsData = iRes.data || [];
+                logsData = lRes.data || [];
+                instSettings = instRes.data || null;
+
+                if(instSettings) {
+                    document.getElementById('rptInstName').innerText = instSettings.institute_name || 'GLOBUS';
+                    document.getElementById('rptSubName').innerText = instSettings.sub_name || 'Technical Academy';
+                    if(instSettings.logo_url) document.getElementById('rptLogo').src = instSettings.logo_url;
+                }
+                
+                renderItems();
+                renderLogs();
+            } catch(e) {
+                showToast("Error loading data", "error");
+            }
+        }
+
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.btab').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            
+            const activeBtn = document.querySelector(`.btab[onclick="switchTab('${tab}')"]`);
+            if(activeBtn) activeBtn.classList.add('active');
+            const panel = document.getElementById('panel-' + tab);
+            if(panel) panel.classList.add('active');
+        };
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.innerHTML = (type === 'success' ? '✅ ' : '⚠️ ') + msg;
+            t.className = 'toast ' + type + ' show';
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // ================= RENDER ITEMS =================
+        window.renderItems = function() {
+            const search = document.getElementById('searchItem').value.toLowerCase();
+            const cat = document.getElementById('filterCat').value;
+            const container = document.getElementById('itemsContainer');
+
+            let filtered = itemsData.filter(i => {
+                const matchSearch = i.item_name.toLowerCase().includes(search);
+                const matchCat = cat === 'All' || i.category === cat; 
+                return matchSearch && matchCat;
+            });
+
+            if(filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state">No items found.</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => {
+                const isLow = item.quantity <= item.min_stock_level;
+                const lowClass = isLow ? 'low-stock' : '';
+                return `
+                <div class="inv-card ${lowClass}">
+                    <div class="inv-header">
+                        <div>
+                            <div class="inv-title">${item.item_name}</div>
+                            <div class="inv-cat">${item.category}</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="inv-qty">${item.quantity}</div>
+                            <div style="font-size:9px;font-weight:800;color:#64748b">IN STOCK</div>
+                        </div>
+                    </div>
+                    <div class="inv-actions">
+                        <button class="btn-stock-in" onclick="openModal('${item.id}', 'IN')">➕ IN</button>
+                        <button class="btn-stock-out" onclick="openModal('${item.id}', 'OUT')">➖ OUT</button>
+                        <button class="btn-edit-item" onclick="openEditModal('${item.id}')" title="Edit Item">✏️</button>
+                    </div>
+                </div>`;
+            }).join('');
+        };
+
+        // ================= EDIT DIRECT ITEM =================
+        window.openEditModal = function(id) {
+            const item = itemsData.find(i => i.id === id);
+            if(!item) return;
+            document.getElementById('editItemId').value = id;
+            document.getElementById('editItemName').value = item.item_name;
+            document.getElementById('editItemPrice').value = item.unit_price;
+            document.getElementById('editItemModal').style.display = 'flex';
+        }
+
+        window.saveEditedItem = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('editItemId').value;
+            const newName = document.getElementById('editItemName').value.trim();
+            const newPrice = parseFloat(document.getElementById('editItemPrice').value) || 0;
+
+            const btn = document.getElementById('editSaveBtn');
+            btn.innerHTML = '⏳...'; btn.disabled = true;
+
+            try {
+                const { error } = await supabase.from('inventory_items').update({ item_name: newName, unit_price: newPrice }).eq('id', id);
+                if(error) throw error;
+                showToast("Updated successfully!");
+                closeModal('editItemModal');
+                await fetchData();
+            } catch(err) {
+                showToast("Error updating.", "error");
+            } finally {
+                btn.innerHTML = 'Verify & Save'; btn.disabled = false;
+            }
+        }
+
+        // ================= RENDER LOGS =================
+        window.renderLogs = function() {
+            const container = document.getElementById('logsContainer');
+            const fromDate = document.getElementById('logFromDate').value;
+            const toDate = document.getElementById('logToDate').value;
+            const typeFilter = document.getElementById('logType').value;
+
+            let filteredLogs = [...logsData];
+
+            if(fromDate && toDate) {
+                filteredLogs = filteredLogs.filter(log => {
+                    const logDate = log.created_at.split('T')[0];
+                    return logDate >= fromDate && logDate <= toDate;
+                });
+            }
+
+            if(typeFilter !== 'All') { filteredLogs = filteredLogs.filter(log => log.transaction_type === typeFilter); }
+
+            if(filteredLogs.length === 0) {
+                container.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;font-weight:700;">No transactions found.</td></tr>';
+            } else {
+                container.innerHTML = filteredLogs.map(log => {
+                    const item = itemsData.find(i => i.id === log.item_id);
+                    const itemName = item ? item.item_name : 'Unknown Item';
+                    const d = new Date(log.created_at);
+                    const dateStr = d.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}) + ' ' + d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+                    
+                    const isIN = log.transaction_type === 'IN';
+                    const badgeClass = isIN ? 'in' : 'out';
+                    const symbol = isIN ? '+' : '-';
+
+                    return `
+                    <tr>
+                        <td style="color:#475569;font-weight:600;">${dateStr}</td>
+                        <td style="font-weight:800;color:#0f172a;">${itemName}</td>
+                        <td><span class="badge ${badgeClass}">${log.transaction_type}</span></td>
+                        <td style="font-weight:900;color:${isIN ? '#15803d' : '#dc2626'}">${symbol}${log.quantity}</td>
+                        <td style="color:#64748b;">${log.remarks || '-'}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            const now = new Date();
+            document.getElementById('rptGeneratedMeta').textContent = `Generated: ${now.toLocaleDateString('en-IN')} ${now.toLocaleTimeString('en-IN')}`;
+        };
+
+        // ================= ADVANCED IMAGE SHARE =================
+        window.shareReport = async function() {
+            const btn = document.getElementById('shareBtnObj');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '⏳ Wait...'; btn.disabled = true;
+
+            try {
+                const reportElement = document.getElementById('printableReport');
+                const canvas = await html2canvas(reportElement, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+                
+                canvas.toBlob(async function(blob) {
+                    const file = new File([blob], 'Inventory_Report.png', { type: 'image/png' });
+                    
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            title: 'Stock Report',
+                            text: 'Please find the attached Stock Report.',
+                            files: [file]
+                        });
+                        showToast("Shared successfully!");
+                    } else {
+                        // Fallback Download if Share is not supported
+                        const link = document.createElement('a');
+                        link.download = 'Inventory_Report.png';
+                        link.href = canvas.toDataURL("image/png");
+                        link.click();
+                        showToast("Downloaded Image (Share not supported)");
+                    }
+                    btn.innerHTML = originalHTML; btn.disabled = false;
+                });
+            } catch (err) {
+                console.error('Share Error:', err);
+                showToast("Failed to generate image.", "error");
+                btn.innerHTML = originalHTML; btn.disabled = false;
+            }
+        };
+
+        // ================= ADD ITEM =================
+        window.handleAddItem = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('addBtn');
+            btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
+
+            const qty = parseInt(document.getElementById('newItemQty').value) || 0;
+            const price = parseFloat(document.getElementById('newItemPrice').value) || 0;
+            const logExpense = document.getElementById('addLogExpenseCheck').checked;
+
+            const newItem = {
+                item_name: document.getElementById('newItemName').value.trim(),
+                category: document.getElementById('newItemCat').value,
+                quantity: qty,
+                unit_price: price,
+                min_stock_level: parseInt(document.getElementById('newItemAlert').value) || 5
+            };
+
+            try {
+                const { data, error } = await supabase.from('inventory_items').insert([newItem]).select();
+                if(error) throw error;
+                
+                if (qty > 0 && data && data.length > 0) {
+                    await supabase.from('inventory_logs').insert([{ item_id: data[0].id, transaction_type: 'IN', quantity: qty, remarks: 'Initial Stock' }]);
+                    if (logExpense && price > 0) { await logExpenseSafely(newItem.item_name, (qty * price)); }
+                }
+                
+                showToast("Item Added Successfully!");
+                e.target.reset();
+                await fetchData();
+                switchTab('list');
+            } catch(err) {
+                showToast("Error: " + err.message, "error");
+            } finally {
+                btn.innerHTML = 'Save Item'; btn.disabled = false;
+            }
+        };
+
+        // ================= STOCK IN/OUT MODAL =================
+        window.openModal = function(id, type) {
+            const item = itemsData.find(i => i.id === id);
+            if(!item) return;
+
+            document.getElementById('modalItemId').value = id;
+            document.getElementById('modalType').value = type;
+            document.getElementById('modalItemName').innerText = `${type === 'IN' ? '📥 Add Stock To:' : '📤 Remove Stock From:'} ${item.item_name} (Current: ${item.quantity})`;
+            document.getElementById('modalQty').value = '';
+            document.getElementById('modalRemarks').value = '';
+            
+            const expWrapper = document.getElementById('stockExpenseWrapper');
+            if (type === 'IN' && item.unit_price > 0) {
+                expWrapper.style.display = 'block'; document.getElementById('stockExpenseCheck').checked = true;
+            } else {
+                expWrapper.style.display = 'none'; document.getElementById('stockExpenseCheck').checked = false;
+            }
+
+            const btn = document.getElementById('modalBtn');
+            btn.innerText = type === 'IN' ? 'Confirm Stock IN' : 'Confirm Stock OUT';
+            btn.className = type === 'IN' ? 'btn-primary btn-success' : 'btn-primary btn-danger';
+            
+            document.getElementById('stockModal').style.display = 'flex';
+        };
+
+        window.closeModal = function(modalId) { document.getElementById(modalId).style.display = 'none'; };
+
+        window.handleStockUpdate = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('modalItemId').value;
+            const type = document.getElementById('modalType').value;
+            const qty = parseInt(document.getElementById('modalQty').value);
+            const remarks = document.getElementById('modalRemarks').value.trim();
+            const logExpense = document.getElementById('stockExpenseCheck').checked;
+
+            if(!qty || qty <= 0) { showToast("Invalid quantity", "error"); return; }
+            const item = itemsData.find(i => i.id === id);
+            let newQty = item.quantity;
+
+            if(type === 'IN') { newQty += qty; } 
+            else {
+                if(qty > item.quantity) { showToast("Not enough stock!", "error"); return; }
+                newQty -= qty;
+            }
+
+            const btn = document.getElementById('modalBtn');
+            btn.innerHTML = '⏳ Updating...'; btn.disabled = true;
+
+            try {
+                const { error: err1 } = await supabase.from('inventory_items').update({ quantity: newQty }).eq('id', id);
+                if(err1) throw err1;
+
+                const { error: err2 } = await supabase.from('inventory_logs').insert([{ item_id: id, transaction_type: type, quantity: qty, remarks: remarks }]);
+                if(err2) throw err2;
+
+                if (type === 'IN' && logExpense && item.unit_price > 0) { await logExpenseSafely(item.item_name, (qty * item.unit_price)); }
+
+                showToast(`Stock ${type} updated!`);
+                closeModal('stockModal');
+                await fetchData();
+            } catch(err) {
+                showToast("Error updating.", "error");
+            } finally {
+                btn.innerHTML = 'Update Stock'; btn.disabled = false;
+            }
+        };
+
+        init();
+    </script>
+</body>
+</html>
