@@ -235,17 +235,17 @@
 
             <!-- Printable Report Area -->
             <div id="printableReport" style="background:#fff; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom: 20px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #1e293b;">
-                    <div style="display:flex; align-items:center; gap:12px; width: 50%;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #1e293b;">
+                    <div style="display:flex; align-items:center; gap:10px;">
                         <img id="rptLogo" src="assets/images/logo.png" style="height: 40px; width: auto;" onerror="this.style.display='none'">
-                        <div>
-                            <h2 id="rptInstName" style="font-size:14px; font-weight:900; color:#0f172a; margin:0; text-transform:uppercase;">GLOBUS</h2>
-                            <div id="rptSubName" style="font-size:9px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-top:1px;">Technical Academy</div>
+                        <div style="text-align:left;">
+                            <h2 id="rptInstName" style="font-size:16px; font-weight:900; color:#0f172a; margin:0; text-transform:uppercase;">GLOBUS</h2>
+                            <div id="rptSubName" style="font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-top:2px;">Technical Academy</div>
                         </div>
                     </div>
-                    <div style="text-align:right; width: 50%;">
-                        <h2 style="font-size:14px;font-weight:900;color:#0f172a;text-transform:uppercase;margin:0;">Stock Report</h2>
-                        <div style="font-size:9px;color:#64748b;font-weight:600;margin-top:4px;" id="rptGeneratedMeta">Generated: -</div>
+                    <div style="text-align:right;">
+                        <h2 style="font-size:15px;font-weight:900;color:#0f172a;text-transform:uppercase;margin:0;">Stock Report</h2>
+                        <div style="font-size:10px;color:#64748b;font-weight:600;margin-top:4px;" id="rptGeneratedMeta">Generated: -</div>
                     </div>
                 </div>
 
@@ -605,7 +605,7 @@
                     <tr>
                         <td style="color:#475569;font-weight:600;">${dateStr}</td>
                         <td style="font-weight:800;color:#0f172a;">${itemName}</td>
-                        <td><span class="badge ${badgeClass}">${log.transaction_type}</span></td>
+                        <td style="font-weight:900;color:${isIN ? '#15803d' : '#dc2626'};">${log.transaction_type}</td>
                         <td style="font-weight:900;color:${isIN ? '#15803d' : '#dc2626'}">${symbol}${log.quantity}</td>
                         <td style="color:#64748b;">${log.remarks || '-'}</td>
                     </tr>`;
