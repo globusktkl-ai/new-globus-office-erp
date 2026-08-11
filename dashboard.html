@@ -693,23 +693,29 @@
             if (userCaptcha !== expectedCaptchaAns) { showToast("Math Captcha is incorrect!", "error"); return; }
             if (userText !== "WIPE") { showToast("You must type exactly 'WIPE' to confirm.", "error"); return; }
 
+            const finalWarning = confirm("🚨 FINAL WARNING: ALL student data, staff details, attendance, fees, inventory, enquiries, and expenses will be permanently deleted. Only Courses will remain. Are you absolutely sure?");
+            if(!finalWarning) return;
+
             const btn = document.getElementById('executeWipeBtn');
             btn.innerHTML = "⏳ WIPING DATA..."; btn.disabled = true;
 
             try {
-                await Promise.all([
+                // Using Promise.allSettled so if a table (like 'enquiries') doesn't exist yet, it won't crash the whole process!
+                await Promise.allSettled([
                     supabase.from('attendance_records').delete().not('id', 'is', null),
                     supabase.from('fee_payments').delete().not('id', 'is', null),
                     supabase.from('expenses').delete().not('id', 'is', null),
-                    supabase.from('module_assignments').delete().not('id', 'is', null)
+                    supabase.from('module_assignments').delete().not('id', 'is', null),
+                    supabase.from('inventory_logs').delete().not('id', 'is', null),
+                    supabase.from('inventory_items').delete().not('id', 'is', null),
+                    supabase.from('enquiries').delete().not('id', 'is', null) 
                 ]);
 
-                await Promise.all([
+                await Promise.allSettled([
                     supabase.from('students').delete().not('id', 'is', null),
                     supabase.from('staff').delete().not('id', 'is', null)
                 ]);
 
-                // Replacing alert() with custom toast
                 showToast("All User Data wiped successfully!");
                 setTimeout(() => { window.location.reload(); }, 2000);
 
