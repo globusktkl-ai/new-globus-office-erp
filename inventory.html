@@ -10,15 +10,12 @@
         body{background:#f1f5f9;min-height:100vh;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;overflow-x:hidden;padding-bottom:80px}
         .main-content{padding:12px;max-width:800px;margin:0 auto;width:100%}
 
-        /* FIXED: Top Nav Overlap Issue - Using Flexbox instead of Absolute Positioning */
         .top-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;border-bottom:2px solid #e2e8f0;padding-bottom:14px;min-height:45px}
         .btn-back{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #cbd5e1;padding:8px 12px;border-radius:10px;color:#1e293b;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.04);transition:.2s;flex-shrink:0;}
         .btn-back:active{transform:scale(.95)}
         .btn-back svg{width:18px;height:18px;stroke:#4c1d95;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
         .page-title{font-size:16px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:-.3px;text-align:right;margin:0;flex:1;}
-        @media(max-width:400px){.btn-back span{display:none}.btn-back{padding:9px}}
 
-        /* Bottom Tab Bar */
         .bottom-tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;z-index:90;box-shadow:0 -4px 16px rgba(15,23,42,.06);padding:6px 8px 10px}
         .btab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border:none;background:none;cursor:pointer;border-radius:10px;transition:.2s;font-size:10px;font-weight:700;color:#94a3b8}
         .btab svg{width:22px;height:22px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:.2s}
@@ -26,25 +23,36 @@
         .btab.active svg{stroke:#1e3a8a;stroke-width:2.5}
         .btab:active{transform:scale(.92)}
 
-        /* Tab Panels */
         .tab-panel{display:none;animation:fadeUp .25s ease}
         .tab-panel.active{display:block}
         @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-        /* Form Elements */
         .card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(15,23,42,.04)}
+        
+        /* FIXED: Small Icons for Card Titles */
+        .card-title{font-size:15px;font-weight:900;color:#0f172a;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+        .card-title svg{width:20px;height:20px;stroke:currentColor;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+        /* Form Elements Alignment Fix */
         .frm-label{font-size:10px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:block}
         .frm-select,.frm-input{width:100%;padding:11px 12px;border:1.5px solid #cbd5e1;border-radius:10px;font-size:14px;font-weight:600;outline:none;background:#f8fafc;transition:.2s;margin-bottom:12px;-webkit-appearance:none;appearance:none}
         .frm-select:focus,.frm-input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1);background:#fff}
-        .frm-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:12px}
         
+        .frm-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:12px;align-items:end;}
+        
+        /* FIXED: Hide Number Input Spinners */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
         .btn-primary{width:100%;padding:13px;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;color:#fff;background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25);transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
         .btn-primary:active{transform:scale(.97)}
         .btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626);}
         .btn-success{background:linear-gradient(135deg,#10b981,#059669);}
+        .btn-secondary{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;box-shadow:none;}
         .btn-sm{padding:8px 14px;font-size:12px;border-radius:8px;}
 
-        /* Inventory Items */
+        /* Inventory Cards */
         .inv-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px rgba(15,23,42,.03)}
         .inv-card.low-stock{border-left:4px solid #ef4444; background:#fef2f2;}
         .inv-header{display:flex;justify-content:space-between;align-items:flex-start}
@@ -59,16 +67,20 @@
         .btn-stock-out{flex:1;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;padding:8px;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;transition:.2s;}
         .btn-stock-out:active{transform:scale(.95);}
         
-        /* Modal */
+        /* Modal & Toast */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
         .modal-container { background: #fff; width: 100%; max-width: 400px; border-radius: 14px; padding: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         
-        .toast { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-left: 4px solid #3b82f6; transition: all 0.4s ease; display: flex; align-items: center; gap: 10px; max-width: 90%; text-align: left; }
-        .toast.show { top: 20px; }
+        .toast { position: fixed; top: -150px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-left: 4px solid #3b82f6; transition: all 0.4s ease; display: flex; align-items: center; gap: 10px; max-width: 90%; text-align: left; opacity: 0; visibility: hidden; }
+        .toast.show { top: 20px; opacity: 1; visibility: visible; }
         .toast.success { border-left-color: #10b981; }
         .toast.error { border-left-color: #ef4444; }
 
         .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;font-weight:700;font-size:13px;background:#fff;border-radius:12px;border:1px dashed #cbd5e1;}
+
+        /* Category Items in Settings */
+        .cat-item{display:flex;justify-content:space-between;align-items:center;background:#f8fafc;padding:10px 12px;border-radius:8px;margin-bottom:8px;border:1px solid #e2e8f0;font-size:13px;font-weight:800;color:#334155;}
+        .cat-del-btn{background:#fee2e2;color:#dc2626;border:none;width:24px;height:24px;border-radius:6px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 
         /* Print Table Styles */
         .print-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:10px;background:#fff;border:1px solid #e2e8f0;}
@@ -91,7 +103,6 @@
 <body>
 
     <main class="main-content">
-        <!-- FIXED TOP NAV -->
         <div class="top-nav">
             <a href="dashboard.html" class="btn-back">
                 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
@@ -103,13 +114,10 @@
         <!-- TAB 1: ITEMS LIST -->
         <div id="panel-list" class="tab-panel active">
             <div style="display:flex;gap:8px;margin-bottom:12px;">
-                <input type="text" id="searchItem" class="frm-input" placeholder="Search items..." style="margin-bottom:0;" oninput="renderItems()">
+                <input type="text" id="searchItem" class="frm-input" placeholder="Search..." style="margin-bottom:0;" oninput="renderItems()">
                 <select id="filterCat" class="frm-select" style="margin-bottom:0;width:120px;flex-shrink:0;" onchange="renderItems()">
-                    <option value="All">All</option>
-                    <option value="Tools">Tools</option>
-                    <option value="Spares">Spares</option>
-                    <option value="Books">Books</option>
-                    <option value="Others">Others</option>
+                    <option value="All">All Categories</option>
+                    <!-- Dynamically populated -->
                 </select>
             </div>
             <div id="itemsContainer">
@@ -121,83 +129,83 @@
         <div id="panel-add" class="tab-panel">
             <div class="card">
                 <div class="card-title" style="color:#1e3a8a">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                    <!-- FIXED: Small Icon -->
+                    <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                     Add New Item
                 </div>
                 
-                <form onsubmit="handleAddItem(event)">
+                <form id="addItemForm" onsubmit="handleAddItem(event)">
                     <label class="frm-label">Item Name</label>
-                    <input type="text" id="newItemName" class="frm-input" placeholder="e.g. Multimeter, Display Screen" required>
+                    <input type="text" id="newItemName" class="frm-input" required>
                     
                     <div class="frm-row">
-                        <div>
+                        <div style="margin-bottom:0;">
                             <label class="frm-label">Category</label>
-                            <select id="newItemCat" class="frm-select" required>
-                                <option value="Tools">Tools & Equipment</option>
-                                <option value="Spares">Mobile Spares</option>
-                                <option value="Books">Study Materials</option>
-                                <option value="Others">Others</option>
+                            <select id="newItemCat" class="frm-select" style="margin-bottom:0;" required>
+                                <!-- Dynamically populated -->
                             </select>
                         </div>
-                        <div>
+                        <div style="margin-bottom:0;">
                             <label class="frm-label">Initial Quantity</label>
-                            <input type="number" id="newItemQty" class="frm-input" value="0" min="0" required>
+                            <input type="number" id="newItemQty" class="frm-input" style="margin-bottom:0;" required>
                         </div>
                     </div>
 
                     <div class="frm-row">
-                        <div>
+                        <div style="margin-bottom:0;">
                             <label class="frm-label">Unit Price (₹)</label>
-                            <input type="number" id="newItemPrice" class="frm-input" value="0" min="0" step="0.01">
+                            <input type="number" id="newItemPrice" class="frm-input" style="margin-bottom:0;" step="0.01">
                         </div>
-                        <div>
+                        <div style="margin-bottom:0;">
                             <label class="frm-label">Min Stock Alert Level</label>
-                            <input type="number" id="newItemAlert" class="frm-input" value="5" min="1" required>
+                            <input type="number" id="newItemAlert" class="frm-input" style="margin-bottom:0;" required>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-primary" id="addBtn">➕ Save Item</button>
+                    <div style="display:flex; gap:10px; margin-top:16px;">
+                        <button type="button" class="btn-primary btn-secondary" onclick="cancelAddItem()">Cancel</button>
+                        <button type="submit" class="btn-primary" id="addBtn">Save Item</button>
+                    </div>
                 </form>
             </div>
         </div>
 
-        <!-- TAB 3: STOCK HISTORY & REPORT -->
+        <!-- TAB 3: REPORTS -->
         <div id="panel-history" class="tab-panel">
             <div class="card">
                 <div class="card-title" style="color:#0f766e">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="12 8 12 12 14 14"/><circle cx="12" cy="12" r="10"/></svg>
+                    <!-- FIXED: Small Icon -->
+                    <svg width="20" height="20" viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><circle cx="12" cy="12" r="10"/></svg>
                     Stock Report Filters
                 </div>
                 <div class="frm-row">
-                    <div>
+                    <div style="margin-bottom:0;">
                         <label class="frm-label">From Date</label>
-                        <input type="date" id="logFromDate" class="frm-input" onchange="renderLogs()">
+                        <input type="date" id="logFromDate" class="frm-input" style="margin-bottom:0;" onchange="renderLogs()">
                     </div>
-                    <div>
+                    <div style="margin-bottom:0;">
                         <label class="frm-label">To Date</label>
-                        <input type="date" id="logToDate" class="frm-input" onchange="renderLogs()">
+                        <input type="date" id="logToDate" class="frm-input" style="margin-bottom:0;" onchange="renderLogs()">
                     </div>
                 </div>
-                <div class="frm-row">
-                    <div>
+                <div class="frm-row" style="margin-top:12px;">
+                    <div style="margin-bottom:0;">
                         <label class="frm-label">Transaction Type</label>
-                        <select id="logType" class="frm-select" onchange="renderLogs()">
+                        <select id="logType" class="frm-select" style="margin-bottom:0;" onchange="renderLogs()">
                             <option value="All">All (IN & OUT)</option>
                             <option value="IN">Stock IN Only (+)</option>
                             <option value="OUT">Stock OUT Only (-)</option>
                         </select>
                     </div>
-                    <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:12px;">
+                    <div style="display:flex; gap:8px; align-items:flex-end;">
                         <button class="btn-primary btn-sm" onclick="window.print()" style="background:#4338ca; flex:1;" title="Print Report">🖨️</button>
-                        <button class="btn-primary btn-sm" onclick="window.shareReport()" style="background:#059669; flex:1;" title="Share via WhatsApp/Mobile">📤 Share</button>
+                        <button class="btn-primary btn-sm" onclick="window.shareReport()" style="background:#059669; flex:1;" title="Share">📤 Share</button>
                     </div>
                 </div>
             </div>
 
             <!-- Printable Report Area -->
             <div id="printableReport" style="background:#fff; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom: 20px;">
-                
-                <!-- Print Report Institute Header -->
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #1e293b;">
                     <div style="display:flex; align-items:center; gap:12px; width: 50%;">
                         <img id="rptLogo" src="assets/images/logo.png" style="height: 40px; width: auto;" onerror="this.style.display='none'">
@@ -220,13 +228,32 @@
                                 <th>Item Name</th>
                                 <th>Type</th>
                                 <th>Qty</th>
-                                <th>Remarks / Reason</th>
+                                <th>Remarks</th>
                             </tr>
                         </thead>
                         <tbody id="logsContainer">
-                            <!-- Logs will render here -->
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: SETTINGS (DYNAMIC CATEGORIES) -->
+        <div id="panel-settings" class="tab-panel">
+            <div class="card">
+                <div class="card-title" style="color:#d97706">
+                    <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Manage Categories
+                </div>
+                <p style="font-size:11px;color:#64748b;margin-bottom:12px;font-weight:600;">Add your own custom categories for inventory items.</p>
+                
+                <div style="display:flex; gap:8px; margin-bottom:15px;">
+                    <input type="text" id="newCatInput" class="frm-input" placeholder="New Category Name" style="margin-bottom:0;">
+                    <button class="btn-primary" onclick="addCategory()" style="width:auto; padding:0 15px;">Add</button>
+                </div>
+
+                <div id="categoriesList">
+                    <!-- Categories rendered here -->
                 </div>
             </div>
         </div>
@@ -238,7 +265,7 @@
         <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 id="modalTitle" style="margin: 0; color: #1e3a8a; font-size:16px;">Stock Update</h3>
-                <button onclick="closeModal()" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight:bold;">X</button>
+                <button type="button" onclick="closeModal()" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight:bold;">X</button>
             </div>
             
             <p id="modalItemName" style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:15px;background:#f1f5f9;padding:10px;border-radius:8px;"></p>
@@ -248,10 +275,10 @@
                 <input type="hidden" id="modalType">
                 
                 <label class="frm-label">Quantity</label>
-                <input type="number" id="modalQty" class="frm-input" min="1" required placeholder="Enter number of items">
+                <input type="number" id="modalQty" class="frm-input" min="1" required>
                 
                 <label class="frm-label">Remarks / Reason</label>
-                <input type="text" id="modalRemarks" class="frm-input" required placeholder="e.g. Purchased new, Given to student">
+                <input type="text" id="modalRemarks" class="frm-input" required>
                 
                 <button type="submit" class="btn-primary" id="modalBtn" style="margin-top:10px;">Update Stock</button>
             </form>
@@ -272,6 +299,10 @@
             <svg viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><circle cx="12" cy="12" r="10"/></svg>
             Reports
         </button>
+        <button class="btab" onclick="switchTab('settings')">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Settings
+        </button>
     </nav>
 
     <div class="toast" id="toast"></div>
@@ -282,19 +313,85 @@
         let itemsData = [];
         let logsData = [];
         let instSettings = null;
+        let invCategories = [];
 
         async function init() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
             
-            // Set default dates for report
             const today = new Date();
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
             document.getElementById('logFromDate').value = firstDay.toISOString().split('T')[0];
             document.getElementById('logToDate').value = today.toISOString().split('T')[0];
 
+            loadCategories();
             await fetchData();
         }
+
+        // ================= DYNAMIC CATEGORIES =================
+        function loadCategories() {
+            let saved = localStorage.getItem('globus_inv_categories');
+            if (saved) {
+                invCategories = JSON.parse(saved);
+            } else {
+                invCategories = ['General']; // Only one simple default if completely empty
+                saveCategories();
+            }
+            populateCategoryDropdowns();
+            renderCategoriesList();
+        }
+
+        function saveCategories() {
+            localStorage.setItem('globus_inv_categories', JSON.stringify(invCategories));
+            populateCategoryDropdowns();
+        }
+
+        function populateCategoryDropdowns() {
+            const filterSelect = document.getElementById('filterCat');
+            const addSelect = document.getElementById('newItemCat');
+            
+            filterSelect.innerHTML = '<option value="All">All Categories</option>' + 
+                invCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+            
+            addSelect.innerHTML = invCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+
+        window.renderCategoriesList = function() {
+            const list = document.getElementById('categoriesList');
+            if(invCategories.length === 0) {
+                list.innerHTML = '<div style="font-size:12px;color:#94a3b8;text-align:center;padding:10px;">No categories added yet.</div>';
+                return;
+            }
+            list.innerHTML = invCategories.map((c, index) => `
+                <div class="cat-item">
+                    <span>${c}</span>
+                    <button type="button" class="cat-del-btn" onclick="deleteCategory(${index})">X</button>
+                </div>
+            `).join('');
+        }
+
+        window.addCategory = function() {
+            const input = document.getElementById('newCatInput');
+            const val = input.value.trim();
+            if(!val) return;
+            if(invCategories.includes(val)) {
+                showToast("Category already exists!", "error");
+                return;
+            }
+            invCategories.push(val);
+            saveCategories();
+            renderCategoriesList();
+            input.value = '';
+            showToast("Category added!");
+        }
+
+        window.deleteCategory = function(index) {
+            if(!confirm("Delete this category?")) return;
+            invCategories.splice(index, 1);
+            saveCategories();
+            renderCategoriesList();
+        }
+        // ======================================================
 
         async function fetchData() {
             try {
@@ -342,12 +439,12 @@
 
             let filtered = itemsData.filter(i => {
                 const matchSearch = i.item_name.toLowerCase().includes(search);
-                const matchCat = cat === 'All' || i.category.includes(cat); 
+                const matchCat = cat === 'All' || i.category === cat; 
                 return matchSearch && matchCat;
             });
 
             if(filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state">No items found matching criteria.</div>';
+                container.innerHTML = '<div class="empty-state">No items found.</div>';
                 return;
             }
 
@@ -367,8 +464,8 @@
                         </div>
                     </div>
                     <div class="inv-actions">
-                        <button class="btn-stock-in" onclick="openModal('${item.id}', 'IN')">➕ STOCK IN</button>
-                        <button class="btn-stock-out" onclick="openModal('${item.id}', 'OUT')">➖ STOCK OUT</button>
+                        <button class="btn-stock-in" onclick="openModal('${item.id}', 'IN')">➕ IN</button>
+                        <button class="btn-stock-out" onclick="openModal('${item.id}', 'OUT')">➖ OUT</button>
                     </div>
                 </div>`;
             }).join('');
@@ -394,7 +491,7 @@
             }
 
             if(filteredLogs.length === 0) {
-                container.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;font-weight:700;">No transactions found for selected filters.</td></tr>';
+                container.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;font-weight:700;">No transactions found.</td></tr>';
             } else {
                 container.innerHTML = filteredLogs.map(log => {
                     const item = itemsData.find(i => i.id === log.item_id);
@@ -419,8 +516,6 @@
 
             const now = new Date();
             document.getElementById('rptGeneratedMeta').textContent = `Generated: ${now.toLocaleDateString('en-IN')} ${now.toLocaleTimeString('en-IN')}`;
-            
-            // Store for sharing
             window._currentShareText = generateShareText(filteredLogs);
         };
 
@@ -446,7 +541,6 @@
                         title: 'Inventory Report',
                         text: window._currentShareText
                     });
-                    showToast("Shared successfully!");
                 } catch (err) {
                     console.log('Error sharing:', err);
                 }
@@ -455,13 +549,18 @@
             }
         };
 
+        window.cancelAddItem = function() {
+            document.getElementById('addItemForm').reset();
+            switchTab('list');
+        };
+
         window.handleAddItem = async function(e) {
             e.preventDefault();
             const btn = document.getElementById('addBtn');
             btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
 
             const newItem = {
-                item_name: document.getElementById('newItemName').value,
+                item_name: document.getElementById('newItemName').value.trim(),
                 category: document.getElementById('newItemCat').value,
                 quantity: parseInt(document.getElementById('newItemQty').value) || 0,
                 unit_price: parseFloat(document.getElementById('newItemPrice').value) || 0,
@@ -479,7 +578,7 @@
             } catch(err) {
                 showToast("Error: " + err.message, "error");
             } finally {
-                btn.innerHTML = '➕ Save Item'; btn.disabled = false;
+                btn.innerHTML = 'Save Item'; btn.disabled = false;
             }
         };
 
@@ -494,7 +593,7 @@
             document.getElementById('modalRemarks').value = '';
             
             const btn = document.getElementById('modalBtn');
-            btn.innerText = type === 'IN' ? '➕ Confirm Stock IN' : '➖ Confirm Stock OUT';
+            btn.innerText = type === 'IN' ? 'Confirm Stock IN' : 'Confirm Stock OUT';
             btn.className = type === 'IN' ? 'btn-primary btn-success' : 'btn-primary btn-danger';
             
             document.getElementById('stockModal').style.display = 'flex';
@@ -509,7 +608,7 @@
             const id = document.getElementById('modalItemId').value;
             const type = document.getElementById('modalType').value;
             const qty = parseInt(document.getElementById('modalQty').value);
-            const remarks = document.getElementById('modalRemarks').value;
+            const remarks = document.getElementById('modalRemarks').value.trim();
 
             if(!qty || qty <= 0) { showToast("Invalid quantity", "error"); return; }
 
