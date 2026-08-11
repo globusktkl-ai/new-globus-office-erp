@@ -527,7 +527,7 @@
                 <!-- DANGER ZONE / WIPE USER DATA INSIDE INSTITUTE SETTINGS -->
                 <div style="margin-top: 20px; padding: 12px; border: 2px dashed #fca5a5; border-radius: 10px; background: #fef2f2; text-align: center;">
                     <h4 style="color: #dc2626; font-size: 13px; font-weight: 900; margin: 0 0 6px 0; text-transform: uppercase;">⚠️ Danger Zone</h4>
-                    <p style="color: #991b1b; font-size: 10px; font-weight: 700; margin-bottom: 10px; line-height: 1.3;">Permanently delete all test students, fee payments, attendance, & expense records.</p>
+                    <p style="color: #991b1b; font-size: 10px; font-weight: 700; margin-bottom: 10px; line-height: 1.3;">Permanently delete all students, staff, fee payments, attendance, & expense records.</p>
                     <button type="button" onclick="window.showWipeConfirmation()" style="background: #dc2626; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 12px; box-shadow: 0 2px 5px rgba(220,38,38,0.2);">🗑️ WIPE USER DATA</button>
                 </div>
             </div>
@@ -535,7 +535,7 @@
             <!-- CAPTCHA & SECURE CONFIRMATION STEP -->
             <div id="settingsWipeView" style="display:none; background:#fff; border:1px solid #fecaca; border-radius:10px; padding:15px; text-align:left;">
                 <h4 style="color:#dc2626; margin:0 0 8px 0; font-size:14px; font-weight:900;">🔥 CRITICAL VERIFICATION</h4>
-                <p style="font-size:11px; color:#475569; margin-bottom:12px; font-weight:700; line-height:1.4;">This will permanently clear all student test data, fee records, attendance logs, and expenses. Courses and Staff will NOT be deleted.</p>
+                <p style="font-size:11px; color:#475569; margin-bottom:12px; font-weight:700; line-height:1.4;">This will permanently clear all student test data, <b>staff data</b>, fee records, attendance logs, and expenses. Only Courses will remain.</p>
                 
                 <div style="display:flex; align-items:center; gap:10px; background:#f8fafc; padding:8px 10px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:10px;">
                     <span id="captchaEq" style="font-size:16px; font-weight:900; color:#0f172a; letter-spacing:1px;">0 + 0 =</span>
@@ -715,16 +715,14 @@
         
         window.closeSettingsModal = function() {
             document.getElementById('settingsModal').style.display = 'none';
-            clearTimeout(settingsTimer); // Stop timers when closed
+            clearTimeout(settingsTimer); 
         };
 
         window.resetSettingsActivity = function() {
             const modal = document.getElementById('settingsModal');
-            // Only reset if modal is actually open
             if (modal.style.display === 'flex') {
                 settingsInteracted = true;
                 clearTimeout(settingsTimer);
-                // After activity, wait 2 minutes (120000 ms) before auto-closing
                 settingsTimer = setTimeout(() => {
                     window.closeSettingsModal();
                     alert("⏳ Security Alert: Settings automatically closed due to 2 minutes of inactivity.");
@@ -764,7 +762,6 @@
             
             document.getElementById('settingsModal').style.display = 'flex';
             
-            // Start initial 1-minute auto-close timer (60000 ms)
             settingsInteracted = false;
             clearTimeout(settingsTimer);
             settingsTimer = setTimeout(() => {
@@ -794,7 +791,7 @@
                 btn.disabled = false;
             } else { 
                 alert("Settings Saved Successfully!"); 
-                window.closeSettingsModal(); // Safely closes & clears timers
+                window.closeSettingsModal(); 
                 loadSettings(); 
             }
         };
@@ -845,7 +842,7 @@
                 return;
             }
 
-            const finalWarning = confirm("🚨 FINAL WARNING: ALL student data, attendance, fees, and expenses will be permanently deleted. Are you absolutely sure?");
+            const finalWarning = confirm("🚨 FINAL WARNING: ALL student data, staff details, attendance, fees, and expenses will be permanently deleted. Only Courses will remain. Are you absolutely sure?");
             if(!finalWarning) return;
 
             const btn = document.getElementById('executeWipeBtn');
@@ -853,13 +850,19 @@
             btn.disabled = true;
 
             try {
+                // Wipe module_assignments first to prevent foreign key issues before deleting staff
                 await Promise.all([
                     supabase.from('attendance_records').delete().not('id', 'is', null),
                     supabase.from('fee_payments').delete().not('id', 'is', null),
-                    supabase.from('expenses').delete().not('id', 'is', null)
+                    supabase.from('expenses').delete().not('id', 'is', null),
+                    supabase.from('module_assignments').delete().not('id', 'is', null)
                 ]);
 
-                await supabase.from('students').delete().not('id', 'is', null);
+                // Wipe students and staff
+                await Promise.all([
+                    supabase.from('students').delete().not('id', 'is', null),
+                    supabase.from('staff').delete().not('id', 'is', null)
+                ]);
 
                 alert("✅ SUCCESS: All User Data has been securely wiped out. The system is clean.");
                 window.location.reload();
