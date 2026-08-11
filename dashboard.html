@@ -203,7 +203,6 @@
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
         }
         
-        /* Special buttons keep their soft tint */
         .nav-btn.fee-btn {
             background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%) !important;
             border-color: #bbf7d0 !important;
@@ -233,11 +232,10 @@
         .nav-btn:active .nav-icon { transform: scale(0.9); }
         .nav-icon svg { width: 22px; height: 22px; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
         
-        /* Premium Icon Backgrounds - Soft, no top shade */
         .icon-bg-adm { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
         .icon-bg-dir { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
         .icon-bg-staff { background: linear-gradient(135deg, #ccfbf1, #99f6e4); }
-        .icon-bg-att { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); } /* New Attendance Indigo Tint */
+        .icon-bg-att { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); } 
         .icon-bg-crs { background: linear-gradient(135deg, #fef3c7, #fde68a); }
         .icon-bg-exm { background: linear-gradient(135deg, #fee2e2, #fecaca); }
         .icon-bg-rpt-adm { background: linear-gradient(135deg, #e0f2fe, #bae6fd); }
@@ -246,7 +244,6 @@
         .icon-bg-exp { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
         .icon-bg-rpt { background: linear-gradient(135deg, #ccfbf1, #99f6e4); }
         
-        /* Notification badge */
         .nav-badge {
             position: absolute;
             top: 8px;
@@ -513,7 +510,7 @@
         <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
-                <button onclick="document.getElementById('settingsModal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
+                <button onclick="window.closeSettingsModal()" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">X</button>
             </div>
             
             <div id="settingsNormalView">
@@ -523,7 +520,7 @@
                     <label>Full Address</label><input type="text" id="set_address" class="form-control">
                     <div style="display: flex; gap: 10px;"><div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control"></div><div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div></div>
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save</button>
+                        <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
                     </div>
                 </form>
 
@@ -561,6 +558,10 @@
         import { supabase } from './assets/js/supabase-config.js';
         
         let expectedCaptchaAns = 0;
+        
+        // SECURITY IDLE TIMEOUT VARIABLES
+        let settingsTimer;
+        let settingsInteracted = false;
 
         async function checkAuth() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -571,6 +572,12 @@
             loadDashboardData();
             buildSmartTicker();
             setInterval(buildSmartTicker, 30000); 
+
+            // ATTACH IDLE TIMEOUT EVENT LISTENERS TO MODAL
+            const sModal = document.getElementById('settingsModal');
+            ['input', 'click', 'touchstart', 'keydown'].forEach(evt => {
+                sModal.addEventListener(evt, window.resetSettingsActivity);
+            });
         }
 
         window.buildSmartTicker = async function() {
@@ -702,6 +709,29 @@
             } catch (err) { console.error("Dashboard Loading Error:", err); }
         }
 
+        // ==========================================
+        // SECURITY AUTO-CLOSE (IDLE TIMEOUT) LOGIC
+        // ==========================================
+        
+        window.closeSettingsModal = function() {
+            document.getElementById('settingsModal').style.display = 'none';
+            clearTimeout(settingsTimer); // Stop timers when closed
+        };
+
+        window.resetSettingsActivity = function() {
+            const modal = document.getElementById('settingsModal');
+            // Only reset if modal is actually open
+            if (modal.style.display === 'flex') {
+                settingsInteracted = true;
+                clearTimeout(settingsTimer);
+                // After activity, wait 2 minutes (120000 ms) before auto-closing
+                settingsTimer = setTimeout(() => {
+                    window.closeSettingsModal();
+                    alert("⏳ Security Alert: Settings automatically closed due to 2 minutes of inactivity.");
+                }, 120000); 
+            }
+        };
+
         window.triggerSettingsSecurity = function() {
             let warn1 = confirm("⚠️ WARNING 1: This section contains critical core settings of the institute. Any wrong changes will break the receipts and reports. Do you want to proceed?");
             if (!warn1) return;
@@ -731,7 +761,16 @@
                     document.getElementById('set_email').value = data.email || '';
                 }
             } catch (e) {}
+            
             document.getElementById('settingsModal').style.display = 'flex';
+            
+            // Start initial 1-minute auto-close timer (60000 ms)
+            settingsInteracted = false;
+            clearTimeout(settingsTimer);
+            settingsTimer = setTimeout(() => {
+                window.closeSettingsModal();
+                alert("⏳ Security Alert: Settings closed automatically because there was no activity for 1 minute.");
+            }, 60000); 
         };
 
         window.saveSettings = async function(e) {
@@ -749,13 +788,15 @@
             };
             
             const { error } = await supabase.from('institute_settings').update(updates).eq('id', 1);
-            if(error) { alert("Error saving settings."); } 
-            else { 
+            if(error) { 
+                alert("Error saving settings."); 
+                btn.innerHTML = oldText; 
+                btn.disabled = false;
+            } else { 
                 alert("Settings Saved Successfully!"); 
-                document.getElementById('settingsModal').style.display = 'none';
+                window.closeSettingsModal(); // Safely closes & clears timers
                 loadSettings(); 
             }
-            btn.innerHTML = oldText; btn.disabled = false;
         };
 
         async function loadSettings() {
