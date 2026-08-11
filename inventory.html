@@ -10,12 +10,13 @@
         body{background:#f1f5f9;min-height:100vh;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;overflow-x:hidden;padding-bottom:80px}
         .main-content{padding:12px;max-width:800px;margin:0 auto;width:100%}
 
-        /* Top Nav */
-        .top-nav{display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:16px;border-bottom:2px solid #e2e8f0;padding-bottom:14px;min-height:45px}
-        .btn-back{position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #cbd5e1;padding:8px 14px;border-radius:10px;color:#1e293b;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.04);transition:.2s}
-        .btn-back:active{transform:translateY(-50%) scale(.95)}
-        .btn-back svg{width:20px;height:20px;stroke:#4c1d95;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
-        .page-title{font-size:16px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:-.3px;text-align:center;padding:0 50px}
+        /* FIXED: Top Nav Overlap Issue - Using Flexbox instead of Absolute Positioning */
+        .top-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;border-bottom:2px solid #e2e8f0;padding-bottom:14px;min-height:45px}
+        .btn-back{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #cbd5e1;padding:8px 12px;border-radius:10px;color:#1e293b;font-weight:800;font-size:13px;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.04);transition:.2s;flex-shrink:0;}
+        .btn-back:active{transform:scale(.95)}
+        .btn-back svg{width:18px;height:18px;stroke:#4c1d95;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+        .page-title{font-size:16px;font-weight:900;color:#0f172a;text-transform:uppercase;letter-spacing:-.3px;text-align:right;margin:0;flex:1;}
+        @media(max-width:400px){.btn-back span{display:none}.btn-back{padding:9px}}
 
         /* Bottom Tab Bar */
         .bottom-tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;z-index:90;box-shadow:0 -4px 16px rgba(15,23,42,.06);padding:6px 8px 10px}
@@ -37,10 +38,11 @@
         .frm-select:focus,.frm-input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1);background:#fff}
         .frm-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:12px}
         
-        .btn-primary{width:100%;padding:13px;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;color:#fff;background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25);transition:.2s}
+        .btn-primary{width:100%;padding:13px;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;color:#fff;background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25);transition:.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
         .btn-primary:active{transform:scale(.97)}
         .btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626);}
         .btn-success{background:linear-gradient(135deg,#10b981,#059669);}
+        .btn-sm{padding:8px 14px;font-size:12px;border-radius:8px;}
 
         /* Inventory Items */
         .inv-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 8px rgba(15,23,42,.03)}
@@ -52,34 +54,44 @@
         .low-stock .inv-qty{color:#dc2626;}
         
         .inv-actions{display:flex;gap:8px;}
-        .btn-stock-in{flex:1;background:#dcfce7;color:#16a34a;border:1px solid #86efac;padding:8px;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;}
-        .btn-stock-out{flex:1;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;padding:8px;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;}
+        .btn-stock-in{flex:1;background:#dcfce7;color:#16a34a;border:1px solid #86efac;padding:8px;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;transition:.2s;}
+        .btn-stock-in:active{transform:scale(.95);}
+        .btn-stock-out{flex:1;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;padding:8px;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;transition:.2s;}
+        .btn-stock-out:active{transform:scale(.95);}
         
-        /* Logs */
-        .log-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e2e8f0;padding:12px;border-radius:10px;margin-bottom:8px;}
-        .log-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;flex-shrink:0;}
-        .log-icon.in{background:#dcfce7;color:#16a34a;}
-        .log-icon.out{background:#fee2e2;color:#dc2626;}
-        .log-details{flex:1;min-width:0;}
-        .log-name{font-size:13px;font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-        .log-meta{font-size:11px;color:#64748b;margin-top:2px;}
-        .log-qty{font-size:15px;font-weight:900;}
-
         /* Modal */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
         .modal-container { background: #fff; width: 100%; max-width: 400px; border-radius: 14px; padding: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         
-        .toast { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-left: 4px solid #3b82f6; transition: all 0.4s ease; display: flex; align-items: center; gap: 10px; max-width: 90%; text-align: left; }
+        .toast { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-left: 4px solid #3b82f6; transition: all 0.4s ease; display: flex; align-items: center; gap: 10px; max-width: 90%; text-align: left; }
         .toast.show { top: 20px; }
         .toast.success { border-left-color: #10b981; }
         .toast.error { border-left-color: #ef4444; }
 
         .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;font-weight:700;font-size:13px;background:#fff;border-radius:12px;border:1px dashed #cbd5e1;}
+
+        /* Print Table Styles */
+        .print-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:10px;background:#fff;border:1px solid #e2e8f0;}
+        .print-table th,.print-table td{border:1px solid #cbd5e1;padding:8px 10px;text-align:left;}
+        .print-table th{background:#f8fafc;font-weight:800;color:#0f172a;text-transform:uppercase;}
+        .print-table tr:nth-child(even){background:#fbfbfb;}
+        
+        .badge{padding:3px 6px;border-radius:4px;font-size:9px;font-weight:900;text-transform:uppercase;}
+        .badge.in{background:#dcfce7;color:#15803d;}
+        .badge.out{background:#fee2e2;color:#dc2626;}
+
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; background:white; padding: 20px;}
+            .btn-primary, .bottom-tabs, .top-nav, .card { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
     <main class="main-content">
+        <!-- FIXED TOP NAV -->
         <div class="top-nav">
             <a href="dashboard.html" class="btn-back">
                 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
@@ -109,7 +121,7 @@
         <div id="panel-add" class="tab-panel">
             <div class="card">
                 <div class="card-title" style="color:#1e3a8a">
-                    <svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                     Add New Item
                 </div>
                 
@@ -149,11 +161,73 @@
             </div>
         </div>
 
-        <!-- TAB 3: STOCK HISTORY -->
+        <!-- TAB 3: STOCK HISTORY & REPORT -->
         <div id="panel-history" class="tab-panel">
-            <h3 style="font-size:13px;font-weight:900;color:#1e3a8a;text-transform:uppercase;margin-bottom:12px">Stock Transactions</h3>
-            <div id="logsContainer">
-                <div style="text-align:center;padding:20px;">Loading logs...</div>
+            <div class="card">
+                <div class="card-title" style="color:#0f766e">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="12 8 12 12 14 14"/><circle cx="12" cy="12" r="10"/></svg>
+                    Stock Report Filters
+                </div>
+                <div class="frm-row">
+                    <div>
+                        <label class="frm-label">From Date</label>
+                        <input type="date" id="logFromDate" class="frm-input" onchange="renderLogs()">
+                    </div>
+                    <div>
+                        <label class="frm-label">To Date</label>
+                        <input type="date" id="logToDate" class="frm-input" onchange="renderLogs()">
+                    </div>
+                </div>
+                <div class="frm-row">
+                    <div>
+                        <label class="frm-label">Transaction Type</label>
+                        <select id="logType" class="frm-select" onchange="renderLogs()">
+                            <option value="All">All (IN & OUT)</option>
+                            <option value="IN">Stock IN Only (+)</option>
+                            <option value="OUT">Stock OUT Only (-)</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:flex-end; padding-bottom:12px;">
+                        <button class="btn-primary btn-sm" onclick="window.print()" style="background:#4338ca; flex:1;" title="Print Report">🖨️</button>
+                        <button class="btn-primary btn-sm" onclick="window.shareReport()" style="background:#059669; flex:1;" title="Share via WhatsApp/Mobile">📤 Share</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Printable Report Area -->
+            <div id="printableReport" style="background:#fff; padding:15px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom: 20px;">
+                
+                <!-- Print Report Institute Header -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #1e293b;">
+                    <div style="display:flex; align-items:center; gap:12px; width: 50%;">
+                        <img id="rptLogo" src="assets/images/logo.png" style="height: 40px; width: auto;" onerror="this.style.display='none'">
+                        <div>
+                            <h2 id="rptInstName" style="font-size:14px; font-weight:900; color:#0f172a; margin:0; text-transform:uppercase;">GLOBUS</h2>
+                            <div id="rptSubName" style="font-size:9px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-top:1px;">Technical Academy</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right; width: 50%;">
+                        <h2 style="font-size:14px;font-weight:900;color:#0f172a;text-transform:uppercase;margin:0;">Stock Report</h2>
+                        <div style="font-size:9px;color:#64748b;font-weight:600;margin-top:4px;" id="rptGeneratedMeta">Generated: -</div>
+                    </div>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table class="print-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Item Name</th>
+                                <th>Type</th>
+                                <th>Qty</th>
+                                <th>Remarks / Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsContainer">
+                            <!-- Logs will render here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -164,7 +238,7 @@
         <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 id="modalTitle" style="margin: 0; color: #1e3a8a; font-size:16px;">Stock Update</h3>
-                <button onclick="closeModal()" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">X</button>
+                <button onclick="closeModal()" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight:bold;">X</button>
             </div>
             
             <p id="modalItemName" style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:15px;background:#f1f5f9;padding:10px;border-radius:8px;"></p>
@@ -196,7 +270,7 @@
         </button>
         <button class="btab" onclick="switchTab('history')">
             <svg viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><circle cx="12" cy="12" r="10"/></svg>
-            History
+            Reports
         </button>
     </nav>
 
@@ -207,21 +281,37 @@
 
         let itemsData = [];
         let logsData = [];
+        let instSettings = null;
 
         async function init() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
+            
+            // Set default dates for report
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            document.getElementById('logFromDate').value = firstDay.toISOString().split('T')[0];
+            document.getElementById('logToDate').value = today.toISOString().split('T')[0];
+
             await fetchData();
         }
 
         async function fetchData() {
             try {
-                const [iRes, lRes] = await Promise.all([
+                const [iRes, lRes, instRes] = await Promise.all([
                     supabase.from('inventory_items').select('*').order('item_name'),
-                    supabase.from('inventory_logs').select('*').order('created_at', { ascending: false }).limit(100)
+                    supabase.from('inventory_logs').select('*').order('created_at', { ascending: false }),
+                    supabase.from('institute_settings').select('*').eq('id', 1).single()
                 ]);
                 itemsData = iRes.data || [];
                 logsData = lRes.data || [];
+                instSettings = instRes.data || null;
+
+                if(instSettings) {
+                    document.getElementById('rptInstName').innerText = instSettings.institute_name || 'GLOBUS';
+                    document.getElementById('rptSubName').innerText = instSettings.sub_name || 'Technical Academy';
+                    if(instSettings.logo_url) document.getElementById('rptLogo').src = instSettings.logo_url;
+                }
                 
                 renderItems();
                 renderLogs();
@@ -252,12 +342,12 @@
 
             let filtered = itemsData.filter(i => {
                 const matchSearch = i.item_name.toLowerCase().includes(search);
-                const matchCat = cat === 'All' || i.category.includes(cat); // Simple includes due to value mismatch slightly
+                const matchCat = cat === 'All' || i.category.includes(cat); 
                 return matchSearch && matchCat;
             });
 
             if(filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state">No items found</div>';
+                container.innerHTML = '<div class="empty-state">No items found matching criteria.</div>';
                 return;
             }
 
@@ -273,7 +363,7 @@
                         </div>
                         <div style="text-align:right">
                             <div class="inv-qty">${item.quantity}</div>
-                            <div style="font-size:9px;font-weight:700;color:#64748b">IN STOCK</div>
+                            <div style="font-size:9px;font-weight:800;color:#64748b">IN STOCK</div>
                         </div>
                     </div>
                     <div class="inv-actions">
@@ -286,31 +376,83 @@
 
         window.renderLogs = function() {
             const container = document.getElementById('logsContainer');
-            if(logsData.length === 0) {
-                container.innerHTML = '<div class="empty-state">No transactions yet</div>';
-                return;
+            const fromDate = document.getElementById('logFromDate').value;
+            const toDate = document.getElementById('logToDate').value;
+            const typeFilter = document.getElementById('logType').value;
+
+            let filteredLogs = [...logsData];
+
+            if(fromDate && toDate) {
+                filteredLogs = filteredLogs.filter(log => {
+                    const logDate = log.created_at.split('T')[0];
+                    return logDate >= fromDate && logDate <= toDate;
+                });
             }
 
-            container.innerHTML = logsData.map(log => {
-                const item = itemsData.find(i => i.id === log.item_id);
-                const itemName = item ? item.item_name : 'Unknown Item';
-                const d = new Date(log.created_at);
-                const dateStr = d.toLocaleDateString('en-IN', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
-                
-                const isIN = log.transaction_type === 'IN';
-                const iconClass = isIN ? 'in' : 'out';
-                const symbol = isIN ? '+' : '-';
+            if(typeFilter !== 'All') {
+                filteredLogs = filteredLogs.filter(log => log.transaction_type === typeFilter);
+            }
 
-                return `
-                <div class="log-item">
-                    <div class="log-icon ${iconClass}">${isIN ? 'IN' : 'OUT'}</div>
-                    <div class="log-details">
-                        <div class="log-name">${itemName}</div>
-                        <div class="log-meta">${dateStr} • ${log.remarks}</div>
-                    </div>
-                    <div class="log-qty" style="color: ${isIN ? '#16a34a' : '#dc2626'}">${symbol}${log.quantity}</div>
-                </div>`;
-            }).join('');
+            if(filteredLogs.length === 0) {
+                container.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;font-weight:700;">No transactions found for selected filters.</td></tr>';
+            } else {
+                container.innerHTML = filteredLogs.map(log => {
+                    const item = itemsData.find(i => i.id === log.item_id);
+                    const itemName = item ? item.item_name : 'Unknown Item';
+                    const d = new Date(log.created_at);
+                    const dateStr = d.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}) + ' ' + d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+                    
+                    const isIN = log.transaction_type === 'IN';
+                    const badgeClass = isIN ? 'in' : 'out';
+                    const symbol = isIN ? '+' : '-';
+
+                    return `
+                    <tr>
+                        <td style="color:#475569;font-weight:600;">${dateStr}</td>
+                        <td style="font-weight:800;color:#0f172a;">${itemName}</td>
+                        <td><span class="badge ${badgeClass}">${log.transaction_type}</span></td>
+                        <td style="font-weight:900;color:${isIN ? '#15803d' : '#dc2626'}">${symbol}${log.quantity}</td>
+                        <td style="color:#64748b;">${log.remarks || '-'}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            const now = new Date();
+            document.getElementById('rptGeneratedMeta').textContent = `Generated: ${now.toLocaleDateString('en-IN')} ${now.toLocaleTimeString('en-IN')}`;
+            
+            // Store for sharing
+            window._currentShareText = generateShareText(filteredLogs);
+        };
+
+        function generateShareText(logs) {
+            let instName = instSettings ? instSettings.institute_name : "Globus";
+            let text = `📦 *${instName} - Stock Report*\n\n`;
+            if(logs.length === 0) return text + "No transactions found.";
+            
+            logs.forEach(log => {
+                const item = itemsData.find(i => i.id === log.item_id);
+                const itemName = item ? item.item_name : 'Unknown';
+                const d = new Date(log.created_at).toLocaleDateString('en-IN', {day:'numeric', month:'short'});
+                const symbol = log.transaction_type === 'IN' ? '🟢 IN: +' : '🔴 OUT: -';
+                text += `▪️ *${itemName}* | ${d}\n   ${symbol}${log.quantity} (${log.remarks})\n\n`;
+            });
+            return text;
+        }
+
+        window.shareReport = async function() {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Inventory Report',
+                        text: window._currentShareText
+                    });
+                    showToast("Shared successfully!");
+                } catch (err) {
+                    console.log('Error sharing:', err);
+                }
+            } else {
+                showToast("Web Share API not supported on this device.", "error");
+            }
         };
 
         window.handleAddItem = async function(e) {
@@ -385,11 +527,9 @@
             btn.innerHTML = '⏳ Updating...'; btn.disabled = true;
 
             try {
-                // Update Item quantity
                 const { error: err1 } = await supabase.from('inventory_items').update({ quantity: newQty }).eq('id', id);
                 if(err1) throw err1;
 
-                // Insert Log
                 const { error: err2 } = await supabase.from('inventory_logs').insert([{
                     item_id: id,
                     transaction_type: type,
