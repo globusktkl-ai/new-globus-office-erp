@@ -50,35 +50,32 @@
     </style>
 </head>
 <body>
-    <nav class="app-header">
-        <div class="header-left" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;">
-            <img src="assets/images/logo.png" class="logo-small" alt="Logo" id="navLogo" onerror="this.style.display='none'">
-            <div style="display: flex; flex-direction: column; overflow: hidden;">
-                <span class="brand-top" id="navInstName" style="font-size: 16px; font-weight: bold;">Globus</span>
-                <span class="brand-bottom" id="navSubName" style="font-size: 11px; color: #64748b;">Technical Academy</span>
-            </div>
+    <nav class="app-header" style="position: relative; display: flex; align-items: center; justify-content: center; padding: 12px 15px; min-height: 60px;">
+        <!-- JS Error ഒഴിവാക്കാനുള്ള അദൃശ്യമായ IDs -->
+        <div style="display: none;">
+            <img id="navLogo">
+            <span id="navInstName"></span>
+            <span id="navSubName"></span>
         </div>
-        <div class="header-right">
-            <!-- 3D RETURN TO DASHBOARD BUTTON (HEADER) -->
-            <a href="dashboard.html" class="btn-back-dashboard">
-                <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
-                    <defs>
-                        <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#2563eb" />
-                            <stop offset="100%" stop-color="#9333ea" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M9 14L4 9l5-5" />
-                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
-                </svg>
-                <span>Dashboard</span>
-            </a>
-        </div>
+        
+        <a href="dashboard.html" class="btn-back-dashboard" style="position: absolute; left: 15px; padding: 8px 12px;">
+            <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
+                <defs>
+                    <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#2563eb" />
+                        <stop offset="100%" stop-color="#9333ea" />
+                    </linearGradient>
+                </defs>
+                <path d="M9 14L4 9l5-5" />
+                <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+            </svg>
+        </a>
+        <h1 style="font-size: 16px; font-weight: 900; color: #1e3a8a; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">New Admission</h1>
     </nav>
     
     <main class="main-content">
         <div class="form-card">
-            <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--primary-dark);">New Student Admission</h2>
+           
             
             <form id="admissionForm">
                 <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="fullName" class="form-control" required></div>

@@ -73,33 +73,25 @@
 </head>
 <body>
 
-    <nav class="app-header">
-        <div class="header-left" style="display: flex; align-items: center; gap: 10px; flex: 1;">
-            <img src="assets/images/logo.png" class="logo-small" alt="Logo" onerror="this.style.display='none'">
-            <div style="display: flex; flex-direction: column;">
-                <span class="brand-top" style="font-size: 16px; font-weight: 900;">Globus</span>
-                <span class="brand-bottom">Technical Academy</span>
-            </div>
-        </div>
-        <div class="header-right">
-            <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
-                <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
-                    <defs>
-                        <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#2563eb" />
-                            <stop offset="100%" stop-color="#9333ea" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M9 14L4 9l5-5" />
-                    <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
-                </svg>
-            </a>
-        </div>
+    <nav class="app-header" style="position: relative; display: flex; align-items: center; justify-content: center; padding: 12px 15px; min-height: 60px;">
+        <a href="dashboard.html" class="btn-back-dashboard" style="position: absolute; left: 15px; padding: 8px 12px;" title="Back to Dashboard">
+            <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
+                <defs>
+                    <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#2563eb" />
+                        <stop offset="100%" stop-color="#9333ea" />
+                    </linearGradient>
+                </defs>
+                <path d="M9 14L4 9l5-5" />
+                <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+            </svg>
+        </a>
+        <h1 style="font-size: 16px; font-weight: 900; color: #1e3a8a; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">DAY BOOK</h1>
     </nav>
 
     <div class="main-content">
         <div class="form-card">
-            <h2 class="form-title">Add New Expense</h2>
+            
             
             <form id="expenseForm">
                 <div class="form-group">

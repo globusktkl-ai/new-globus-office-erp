@@ -96,9 +96,8 @@
 </head>
 <body>
     
-    <div class="top-nav">
-        <!-- Premium 3D Back Button Added -->
-        <a href="dashboard.html" class="btn-back-dashboard">
+    <div class="top-nav no-print" style="position: relative; display: flex; align-items: center; justify-content: center; padding: 12px 0; min-height: 50px; margin-bottom: 20px;">
+        <a href="dashboard.html" class="btn-back-dashboard" style="position: absolute; left: 0; padding: 8px 12px;">
             <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
                 <defs>
                     <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -109,13 +108,14 @@
                 <path d="M9 14L4 9l5-5" />
                 <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
             </svg>
-            <span>Dashboard</span>
         </a>
-        <button class="btn-all-data" onclick="window.fetchReports('all')">All Data</button>
+        <h1 style="font-size: 16px; font-weight: 900; color: #1e3a8a; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">MASTER DAY BOOK</h1>
     </div>
 
     <div id="printable-area">
-        <h2>Master Day Book</h2>
+        <div style="display: flex; justify-content: center; margin-bottom: 15px;" class="no-print">
+            <button class="btn-all-data" onclick="window.fetchReports('all')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 10px 25px; font-size: 14px; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); border-radius: 8px; text-transform: uppercase;">View All Data</button>
+        </div>
         <div class="summary-cards">
             <div class="card income-card">Income<br>₹<span id="total-income">0</span></div>
             <div class="card expense-card">Expense<br>₹<span id="total-expense">0</span></div>
