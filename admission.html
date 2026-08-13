@@ -161,6 +161,21 @@
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
+       // --- MAGIC ALERT OVERRIDE ---
+        window.alert = function(msg) {
+            const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
+            const box = document.createElement('div'); box.id = 'customAlertBox';
+            let borderColor = '#3b82f6'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error')) borderColor = '#ef4444'; 
+            else if (msg.includes('✅') || msg.includes('success')) borderColor = '#10b981'; 
+            box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
+            box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
+            if(!document.querySelector('style#alertAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="alertAnim">@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}</style>'); }
+            document.body.appendChild(box); setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
+        };
+        // ----------------------------
+
+        let studentsData = [], paymentsData = [], coursesData = [], globalUniqueModules = [];
         let globalCourses = [];
         let institutePrefix = "GLB"; 
 
@@ -169,8 +184,47 @@
         });
 
         async function checkAuth() {
+            const userRole = localStorage.getItem('userRole') || 'Admin';
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
+            
+            // 1. ഗസ്റ്റ് അല്ലെങ്കിലും, ലോഗിൻ ചെയ്തിട്ടില്ലെങ്കിലും ലോഗിൻ പേജിലേക്ക് മാറ്റുക
+            if (!session && userRole !== 'Guest') { 
+                window.location.href = 'login.html'; 
+                return; 
+            }
+
+            // 2. ഗസ്റ്റ് (Guest) ആണെങ്കിൽ സബ്മിറ്റ് ബട്ടൺ ഡിസേബിൾ ചെയ്യുക (Read-Only Mode)
+            if (userRole === 'Guest') {
+                setTimeout(() => {
+                    // ബട്ടൺ ക്ലിക്ക് ചെയ്യുന്നത് തടയാൻ
+                    const actionButtons = document.querySelectorAll('button[type="submit"], button');
+                    actionButtons.forEach(btn => {
+                        const btnText = btn.innerText.toLowerCase();
+                        if(btnText.includes('submit') || btnText.includes('save')) {
+                            btn.onclick = function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                alert("⚠️ This action is disabled in Guest/Demo mode.");
+                                return false;
+                            };
+                        }
+                    });
+                    
+                    // ഫോമിൽ Enter അമർത്തി സബ്മിറ്റ് ചെയ്യുന്നത് തടയാൻ
+                    const form = document.getElementById('admissionForm');
+                    if(form) {
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            alert("⚠️ This action is disabled in Guest/Demo mode.");
+                            // Stop further event listeners (like the database insert)
+                            e.stopImmediatePropagation();
+                            return false;
+                        }, true); // Use capture phase to intercept early
+                    }
+                }, 1000);
+            }
+
             document.getElementById('admissionDate').value = new Date().toISOString().split('T')[0];
             await loadSettings();
             fetchCourses();
@@ -318,6 +372,7 @@
 
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault(); 
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
             const phoneVal = document.getElementById('phone').value.trim();
             if (phoneVal.length !== 10) { alert('Phone number must be exactly 10 digits.'); return; }
 
