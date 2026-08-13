@@ -654,13 +654,17 @@
             }
         };
 
-        async function loadSettings() {
+       async function loadSettings() {
     try {
         const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
         if (data) {
             document.getElementById('navInstName').innerText = data.institute_name || '';
             document.getElementById('navSubName').innerText = data.sub_name || '';
-            if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
+            if(data.logo_url) {
+                let logoEl = document.getElementById('navLogo');
+                logoEl.src = data.logo_url;
+                logoEl.style.display = 'block'; /* അദൃശ്യമായ ലോഗോ തിരികെ കൊണ്ടുവരാൻ */
+            }
         }
     } catch (e) {}
 }
