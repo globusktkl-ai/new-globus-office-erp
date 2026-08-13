@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard - Globus</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="assets/css/style.css">
 
     <style>
@@ -655,15 +655,15 @@
         };
 
         async function loadSettings() {
-            try {
-                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
-                if (data) {
-                    document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
-                    document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
-                    if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
-                }
-            } catch (e) {}
+    try {
+        const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+        if (data) {
+            document.getElementById('navInstName').innerText = data.institute_name || '';
+            document.getElementById('navSubName').innerText = data.sub_name || '';
+            if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
         }
+    } catch (e) {}
+}
 
         // ==========================================
         // DANGER ZONE WIPE DATA LOGIC
