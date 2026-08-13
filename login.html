@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Login - Your Firm</title>
+    <title>Login - Dashboard</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
         /* Fixed scrolling issue */
@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden; /* Prevents scrolling */
+            overflow: hidden;
         }
         body { 
             display: flex; 
@@ -27,9 +27,9 @@
             border-radius: 24px; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
             text-align: center; 
-            box-sizing: border-box; /* Keeps padding inside width */
-            max-height: 95vh; /* Ensures it doesn't overflow small screens */
-            overflow-y: auto; /* Adds internal scroll ONLY if screen is very tiny */
+            box-sizing: border-box; 
+            max-height: 95vh; 
+            overflow-y: auto; 
         }
         .login-logo { 
             height: 100px; 
@@ -37,89 +37,151 @@
             border-radius: 8px; 
             object-fit: contain; 
         }
-        .login-title { 
-            font-size: 24px; 
-            font-weight: 800; 
-            color: var(--primary-dark, #1e293b); 
-            margin-bottom: 8px; 
-            line-height: 1.2;
-        }
         .login-subtitle { 
             font-size: 14px; 
             color: var(--text-muted, #64748b); 
             margin-bottom: 30px; 
+            font-weight: 600;
         }
-        /* Custom Button Styling */
+        
         .btn-custom {
-            background-color: #3B82F6; /* Attractive Blue */
+            background-color: #3B82F6;
             color: white;
             border: none;
             padding: 14px 20px;
             border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 800;
             width: 100%;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
         }
-        .btn-custom:hover {
-            background-color: #2563eb;
+        .btn-custom:hover { background-color: #2563eb; transform: translateY(-2px); }
+        .btn-custom:active { transform: scale(0.98); }
+        .btn-custom:disabled { background-color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .btn-guest {
+            background-color: transparent;
+            color: #475569;
+            border: 2px solid #cbd5e1;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 800;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
         }
-        .btn-custom:active {
-            transform: scale(0.98);
+        .btn-guest:hover { background-color: #f8fafc; border-color: #94a3b8; color: #1e293b; }
+        .btn-guest:active { transform: scale(0.98); }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0 5px 0;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
         }
-        .btn-custom:disabled {
-            background-color: #94a3b8;
-            cursor: not-allowed;
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
         }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
     </style>
 </head>
 <body>
 
     <div class="login-card">
-       
         <img src="assets/images/logo.png" alt="Institution Logo" class="login-logo">
-        <p class="login-subtitle" style="margin-top: 20px;">Sign in to access your dashboard</p>
-       
+        <p class="login-subtitle" style="margin-top: 10px;">Sign in to access your dashboard</p>
+
         <form id="loginForm">
-            <div class="form-group" style="text-align: left;">
-                <label class="form-label">Email Address</label>
-                <input type="email" id="email" class="form-control" required placeholder="admin@example.com">
+            <div class="form-group" style="text-align: left; margin-bottom: 15px;">
+                <label class="form-label" style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block;">Email Address</label>
+                <input type="email" id="email" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box;" required placeholder="admin@example.com">
             </div>
             <div class="form-group" style="text-align: left; margin-bottom: 24px;">
-                <label class="form-label">Password</label>
-                <input type="password" id="password" class="form-control" required placeholder="••••••••">
+                <label class="form-label" style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block;">Password</label>
+                <input type="password" id="password" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box;" required placeholder="••••••••">
             </div>
             
-            <!-- Changed Text and Styling -->
-            <button type="submit" class="btn-custom" id="loginBtn">Sign In</button>
+            <button type="submit" class="btn-custom" id="loginBtn">Secure Sign In</button>
         </form>
+
+        <div class="divider">OR</div>
+        
+        <button type="button" class="btn-guest" onclick="window.guestLogin()">👀 Explore as Guest (Demo)</button>
     </div>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) window.location.href = 'dashboard.html';
-        });
+        // Check if already logged in (Admin/Staff OR Guest)
+        const checkExistingSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            const userRole = localStorage.getItem('userRole');
+            if (session || userRole === 'Guest') {
+                window.location.href = 'dashboard.html';
+            }
+        };
+        checkExistingSession();
 
+        // 1. NORMAL LOGIN (Admin & Staff)
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
             btn.textContent = 'Validating...'; btn.disabled = true;
 
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            // Supabase Authentication
+            const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
 
             if (error) {
-                alert('Login Failed: ' + error.message);
-                btn.textContent = 'Sign In'; btn.disabled = false;
+                alert('Login Failed: Invalid Email or Password.');
+                btn.textContent = 'Secure Sign In'; btn.disabled = false;
             } else {
+                // Role Checking
+                let userRole = 'Admin'; // Default assumption for the original owner
+                
+                // Check if this email exists in our new 'staff' table
+                const { data: staffData } = await supabase.from('staff').select('role, status').eq('email', email).single();
+                
+                if (staffData) {
+                    if (staffData.status !== 'Active') {
+                        alert('Account Disabled: Your access has been revoked by the Administrator.');
+                        await supabase.auth.signOut();
+                        btn.textContent = 'Secure Sign In'; btn.disabled = false;
+                        return;
+                    }
+                    userRole = staffData.role; // e.g., 'Teacher', 'Office Staff', 'Office Manager'
+                }
+
+                // Save role in local storage for access control in dashboard
+                localStorage.setItem('userRole', userRole);
+                localStorage.setItem('userEmail', email);
+                
                 window.location.href = 'dashboard.html';
             }
         });
+
+        // 2. GUEST LOGIN (Read-Only Demo)
+        window.guestLogin = function() {
+            // Bypass Supabase Auth, just set local storage flags
+            localStorage.setItem('userRole', 'Guest');
+            localStorage.setItem('userEmail', 'guest@demo.com');
+            localStorage.setItem('guestLoginTime', Date.now()); // For the 30-min timer
+            
+            window.location.href = 'dashboard.html';
+        };
     </script>
 </body>
 </html>
