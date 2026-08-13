@@ -282,12 +282,37 @@
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
+        
+        // --- MAGIC ALERT OVERRIDE (Hides Domain Name) ---
+        window.alert = function(msg) {
+            const oldBox = document.getElementById('customAlertBox');
+            if (oldBox) oldBox.remove();
+            const box = document.createElement('div');
+            box.id = 'customAlertBox';
+            let borderColor = '#3b82f6'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed')) borderColor = '#ef4444'; 
+            else if (msg.includes('✅') || msg.includes('success')) borderColor = '#10b981'; 
+            
+            box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
+            box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
+            if(!document.querySelector('style#alertAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="alertAnim">@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}</style>'); }
+            document.body.appendChild(box);
+            setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
+        };
+        // ------------------------------------------------
+
         let allStudents = [], globalCourses = [], currentStudentData = null;
 
         async function checkAuth() {
             try {
+                const userRole = localStorage.getItem('userRole') || 'Admin';
                 const { data: { session } } = await supabase.auth.getSession();
-                if (!session) { window.location.href = 'login.html'; return; }
+                
+                if (!session && userRole !== 'Guest') { 
+                    window.location.href = 'login.html'; 
+                    return; 
+                }
+                
                 loadSettings();
                 fetchStudents();
             } catch(e) { console.log("Supabase not connected."); }
@@ -346,7 +371,6 @@
             } catch (err) { console.error("Database Error:", err); }
         }
 
-        // FIX 2: Added function to filter modules based on selected course
         window.updateFilterModules = function() {
             const courseValue = document.getElementById('courseSelect').value;
             const moduleSelect = document.getElementById('moduleSelect');
@@ -379,8 +403,7 @@
             const courseSelect = document.getElementById('courseSelect');
             courseSelect.innerHTML = '<option value="" disabled selected hidden>Select Course</option>';
             globalCourses.forEach(c => { courseSelect.add(new Option(c.course_name, c.course_name)); });
-
-            window.updateFilterModules(); // Call the new function
+            window.updateFilterModules();
         }
 
         window.applyFilters = function() {
@@ -564,6 +587,8 @@
 
         window.saveFullEdit = async function(e, id) {
             e.preventDefault();
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            
             let hasMarks = false;
             try {
                 const { data: pastMarks, error: marksErr } = await supabase.from('exam_results').select('id').eq('student_id', id).limit(1);
@@ -624,6 +649,8 @@
 
         window.saveCardDataToDB = async function() {
             if (!currentStudentData) return;
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            
             const newName = document.getElementById('liveName').value.trim();
             const newPhone = document.getElementById('livePhone').value.trim();
             const newReg = document.getElementById('liveReg').value.trim();
@@ -691,7 +718,7 @@
             const btn = document.getElementById('sharePdfBtn'); const originalText = btn.innerHTML; 
             btn.innerHTML = '⏳ Generating PDF...'; btn.disabled = true;
             try {
-                const { jsPOS } = window.jspdf;
+                const { jsPDF } = window.jspdf;
                 const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
                 const imgData = canvas.toDataURL('image/png');
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] });
@@ -724,10 +751,11 @@
         };
 
         window.archiveStudent = async function(id, regNo) {
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+
             let n1 = Math.floor(Math.random() * 10) + 1; let n2 = Math.floor(Math.random() * 10) + 1;
             let ans = prompt(`⚠️ Security Verification\nTo Archive (Move to old students) Reg No: ${regNo}, solve:\n${n1} + ${n2} = ?`);
             if (ans !== null && parseInt(ans) === (n1 + n2)) {
-                // Here we just change the status to 'archived' instead of deleting
                 const { error } = await supabase.from('students').update({ status: 'archived' }).eq('id', id);
                 if (error) {
                     alert('Error archiving student: ' + error.message);
@@ -750,3 +778,4 @@
     </script>
 </body>
 </html>
+
