@@ -425,8 +425,6 @@
         import { supabase } from './assets/js/supabase-config.js';
         
         let expectedCaptchaAns = 0;
-        
-        // TIMEOUT VARIABLES (30s initial, 60s interaction)
         let settingsTimer;
         let settingsInteracted = false;
 
@@ -437,11 +435,50 @@
             setTimeout(() => t.classList.remove('show'), 3500);
         }
 
+        // ==========================================
+        // 1. AUTHENTICATION & GUEST TIMER LOGIC
+        // ==========================================
         async function checkAuth() {
+            const userRole = localStorage.getItem('userRole');
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
+
+            // A. GUEST MODE CHECK (Demo Account)
+            if (userRole === 'Guest') {
+                const loginTime = localStorage.getItem('guestLoginTime');
+                const timePassed = Date.now() - parseInt(loginTime || '0');
+                
+                if (timePassed > 30 * 60 * 1000) { // 30 Minutes limit
+                    alert("⏳ Guest session expired (30 minutes). Please login again.");
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                document.getElementById('authEmail').innerText = "Demo Guest";
+                
+                // Auto-kick out when 30 mins are up
+                const timeLeft = (30 * 60 * 1000) - timePassed;
+                setTimeout(() => {
+                    alert("⏳ Guest session expired!");
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                }, Math.max(0, timeLeft));
+
+                applyRoleAccess('Guest');
+                loadSettings();
+                loadDashboardData();
+                return; // Allow Guest to stay on dashboard
+            }
+
+            // B. NORMAL ADMIN / STAFF CHECK
+            if (!session) { 
+                window.location.href = 'login.html'; 
+                return; 
+            }
+            
             document.getElementById('authEmail').innerText = session.user.email.split('@')[0];
             
+            applyRoleAccess(userRole || 'Admin');
             loadSettings();
             loadDashboardData();
             buildSmartTicker();
@@ -453,6 +490,38 @@
             });
         }
 
+        // ==========================================
+        // 2. ROLE BASED ACCESS CONTROL (RBAC)
+        // ==========================================
+        window.applyRoleAccess = function(role) {
+            const settingsBtn = document.querySelector('.btn-settings-round');
+            const staffBtn = document.querySelector('a[href="staff.html"]');
+            const financeSection = document.querySelectorAll('.module-section')[1]; // The Finance Block
+            const masterDayBookBtn = document.querySelector('a[href="report.html"]');
+            
+            if (role === 'Guest') {
+                // Guest can see everything but cannot open settings
+                settingsBtn.onclick = () => showToast("Settings are locked in Demo Mode", "error");
+            } 
+            else if (role === 'Teacher') {
+                settingsBtn.style.display = 'none';
+                if(staffBtn) staffBtn.style.display = 'none';
+                if(financeSection) financeSection.style.display = 'none'; // Teachers don't see money
+            } 
+            else if (role === 'Office Staff') {
+                settingsBtn.style.display = 'none';
+                if(staffBtn) staffBtn.style.display = 'none';
+                if(masterDayBookBtn) masterDayBookBtn.style.display = 'none'; // Staff can collect fee, but no master reports
+            } 
+            else if (role === 'Office Manager') {
+                settingsBtn.style.display = 'none'; // Manager sees everything except Core Settings
+            }
+            // If 'Admin', do nothing (Full Access)
+        };
+
+        // ==========================================
+        // 3. DASHBOARD WIDGETS & TICKERS
+        // ==========================================
         window.buildSmartTicker = async function() {
             const eventSet = localStorage.getItem('globus_events_settings');
             let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
@@ -566,7 +635,7 @@
         }
 
         // ==========================================
-        // SECURITY AUTO-CLOSE (IDLE TIMEOUT) LOGIC
+        // 4. SECURITY & SETTINGS LOGIC
         // ==========================================
         
         window.closeSettingsModal = function() {
@@ -579,7 +648,6 @@
             if (modal.style.display === 'flex') {
                 settingsInteracted = true;
                 clearTimeout(settingsTimer);
-                // Reduced to 1 Minute (60000ms) after interaction starts
                 settingsTimer = setTimeout(() => {
                     window.closeSettingsModal();
                     showToast("Settings auto-closed due to 1 minute inactivity.", "error");
@@ -587,7 +655,6 @@
             }
         };
 
-        // CUSTOM SECURITY GATE (Replaces native browser prompt)
         window.openSecurityGate = function() {
             document.getElementById('adminPassInput').value = '';
             document.getElementById('securityGateModal').style.display = 'flex';
@@ -621,7 +688,6 @@
             
             document.getElementById('settingsModal').style.display = 'flex';
             
-            // Reduced Initial Timeout to 30 Seconds
             settingsInteracted = false;
             clearTimeout(settingsTimer);
             settingsTimer = setTimeout(() => {
@@ -655,23 +721,23 @@
             }
         };
 
-       async function loadSettings() {
-    try {
-        const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
-        if (data) {
-            document.getElementById('navInstName').innerText = data.institute_name || '';
-            document.getElementById('navSubName').innerText = data.sub_name || '';
-            if(data.logo_url) {
-                let logoEl = document.getElementById('navLogo');
-                logoEl.src = data.logo_url;
-                logoEl.style.display = 'block'; /* അദൃശ്യമായ ലോഗോ തിരികെ കൊണ്ടുവരാൻ */
-            }
+        async function loadSettings() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                if (data) {
+                    document.getElementById('navInstName').innerText = data.institute_name || '';
+                    document.getElementById('navSubName').innerText = data.sub_name || '';
+                    if(data.logo_url) {
+                        let logoEl = document.getElementById('navLogo');
+                        logoEl.src = data.logo_url;
+                        logoEl.style.display = 'block';
+                    }
+                }
+            } catch (e) {}
         }
-    } catch (e) {}
-}
 
         // ==========================================
-        // DANGER ZONE WIPE DATA LOGIC
+        // 5. DANGER ZONE WIPE DATA LOGIC
         // ==========================================
         window.showWipeConfirmation = function() {
             document.getElementById('settingsNormalView').style.display = 'none';
@@ -705,7 +771,6 @@
             btn.innerHTML = "⏳ WIPING DATA..."; btn.disabled = true;
 
             try {
-                // Using Promise.allSettled so if a table (like 'enquiries') doesn't exist yet, it won't crash the whole process!
                 await Promise.allSettled([
                     supabase.from('attendance_records').delete().not('id', 'is', null),
                     supabase.from('fee_payments').delete().not('id', 'is', null),
@@ -730,7 +795,16 @@
             }
         };
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
+        // ==========================================
+        // 6. LOGOUT
+        // ==========================================
+        document.getElementById('logoutBtn').addEventListener('click', async () => { 
+            await supabase.auth.signOut(); 
+            localStorage.clear(); 
+            window.location.replace('login.html'); 
+        });
+
+        // Initialize Dashboard
         checkAuth();
     </script>
 </body>
