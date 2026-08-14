@@ -70,7 +70,7 @@
         .modal-close:active{transform:scale(.9)}
         .modal-title{font-size:18px;font-weight:900;color:#0f172a;margin:0 0 18px;padding-right:40px}
 
-        /* FORM LABELS & INPUTS - FIXED LAYOUT */
+        /* FORM LABELS & INPUTS */
         .frm-label{font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;display:block}
         .frm-input,.frm-select{
             width:100%; max-width:100%; min-width:0; box-sizing:border-box; padding:11px 12px; border:1.5px solid #cbd5e1;
@@ -95,7 +95,7 @@
             .frm-input,.frm-select{padding:10px 10px;font-size:13px}
         }
 
-        /* ADVANCE CARD (FIXED OVERFLOW) */
+        /* ADVANCE CARD */
         .adv-card{
             background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:14px; margin-bottom:10px;
             box-shadow:0 2px 8px rgba(15,23,42,.03); width:100%; max-width:100%; box-sizing:border-box; overflow-x:hidden; word-wrap:break-word; overflow-wrap:break-word;
@@ -122,14 +122,6 @@
         .pay-net-value{font-size:28px;font-weight:900;color:#047857;word-break:break-word}
 
         @media (max-width: 500px) { .payroll-card{padding:16px 14px} }
-
-        /* Slip Hidden */
-        #slipWrapper{position:absolute;top:-9999px;left:-9999px;z-index:-1}
-        .slip-page{width:550px;height:780px;background:#fff;padding:25px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;position:relative}
-        .slip-border{border:2px solid #cbd5e1;height:100%;padding:20px;box-sizing:border-box;border-radius:8px;position:relative}
-        .slip-seal{position:absolute;right:30px;bottom:100px;width:130px;height:70px;border:3px solid #16a34a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-15deg);color:#16a34a;background:rgba(22,163,74,.03);box-shadow:inset 0 0 10px rgba(22,163,74,.1);mix-blend-mode:multiply}
-
-        .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;font-weight:700;font-size:14px;background:#fff;border-radius:12px;border:1px dashed #cbd5e1}
 
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button{ -webkit-appearance:none; -moz-appearance:none; appearance:none; margin:0; display:none;}
         input[type=number]{ -moz-appearance:textfield; appearance:textfield; }
@@ -165,16 +157,13 @@
 
         <div class="staff-tabs">
             <button class="staff-tab-btn active" onclick="switchStaffTab('directory')">
-                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                Directory
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Directory
             </button>
             <button class="staff-tab-btn" onclick="switchStaffTab('advances')">
-                <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                Advances
+                <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Advances
             </button>
             <button class="staff-tab-btn" onclick="switchStaffTab('payroll')">
-                <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                Payroll
+                <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Payroll
             </button>
         </div>
 
@@ -183,9 +172,7 @@
             <div class="search-filter-card">
                 <input type="text" class="sf-search" id="staffSearch" placeholder="Search name or phone..." oninput="renderDirectory()">
                 <div class="sf-row">
-                    <select class="sf-select" id="filterRole" onchange="renderDirectory()">
-                        <option value="all">All Roles</option>
-                    </select>
+                    <select class="sf-select" id="filterRole" onchange="renderDirectory()"><option value="all">All Roles</option></select>
                     <select class="sf-select" id="filterStatus" onchange="renderDirectory()">
                         <option value="active">🟢 Active</option>
                         <option value="archived">🗄️ Archived</option>
@@ -201,24 +188,12 @@
         <div id="panel-advances" class="tab-panel">
             <div class="payroll-card">
                 <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Record Staff Advance</h3>
-                <div class="frm-group">
-                    <label class="frm-label">Select Staff</label>
-                    <select class="frm-select" id="advStaffSelect"><option value="">-- Choose Staff --</option></select>
-                </div>
+                <div class="frm-group"><label class="frm-label">Select Staff</label><select class="frm-select" id="advStaffSelect"><option value="">-- Choose Staff --</option></select></div>
                 <div class="frm-row">
-                    <div>
-                        <label class="frm-label">Amount (₹)</label>
-                        <input type="number" class="frm-input" id="advAmount" placeholder="0" min="0">
-                    </div>
-                    <div>
-                        <label class="frm-label">Date</label>
-                        <input type="date" class="frm-input" id="advDate">
-                    </div>
+                    <div><label class="frm-label">Amount (₹)</label><input type="number" class="frm-input" id="advAmount" placeholder="0" min="0"></div>
+                    <div><label class="frm-label">Date</label><input type="date" class="frm-input" id="advDate"></div>
                 </div>
-                <div class="frm-group">
-                    <label class="frm-label">Remarks (Optional)</label>
-                    <input type="text" class="frm-input" id="advRemarks" placeholder="Purpose of advance...">
-                </div>
+                <div class="frm-group"><label class="frm-label">Remarks (Optional)</label><input type="text" class="frm-input" id="advRemarks" placeholder="Purpose of advance..."></div>
                 <button class="frm-submit" id="advSubmitBtn" onclick="saveAdvance()">💰 Record Advance</button>
             </div>
             <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Recent Advances</h3>
@@ -230,24 +205,15 @@
             <div class="payroll-card">
                 <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Process Monthly Salary</h3>
                 <div class="frm-row">
-                    <div>
-                        <label class="frm-label">Month</label>
-                        <input type="month" class="frm-input" id="payMonth">
-                    </div>
-                    <div>
-                        <label class="frm-label">Select Staff</label>
-                        <select class="frm-select" id="payStaffSelect" onchange="loadPayrollDetails()"><option value="">-- Choose --</option></select>
-                    </div>
+                    <div><label class="frm-label">Month</label><input type="month" class="frm-input" id="payMonth"></div>
+                    <div><label class="frm-label">Select Staff</label><select class="frm-select" id="payStaffSelect" onchange="loadPayrollDetails()"><option value="">-- Choose --</option></select></div>
                 </div>
                 <div id="payrollDetails" style="display:none">
                     <div class="pay-summary">
                         <div class="pay-box"><div class="pay-box-label">Basic Salary</div><div class="pay-box-value" id="paySalary" style="color:#1d4ed8">₹ 0</div></div>
                         <div class="pay-box"><div class="pay-box-label">Advance Deduction</div><div class="pay-box-value" id="payDeduction" style="color:#ef4444">₹ 0</div></div>
                     </div>
-                    <div class="pay-net">
-                        <div class="pay-net-label">Net Payable Amount</div>
-                        <div class="pay-net-value" id="payNet">₹ 0</div>
-                    </div>
+                    <div class="pay-net"><div class="pay-net-label">Net Payable Amount</div><div class="pay-net-value" id="payNet">₹ 0</div></div>
                     <button class="frm-submit" id="payProcessBtn" onclick="processSalary()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25)">💳 Process Salary</button>
                     <button class="frm-submit" id="paySlipBtn" onclick="downloadLastSlip()" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 12px rgba(245,158,11,.25);margin-top:10px;display:none">📄 Download Salary Slip</button>
                     <button class="frm-submit" id="payLedgerBtn" onclick="downloadStaffLedger()" style="background:linear-gradient(135deg,#4f46e5,#3b82f6);box-shadow:0 4px 12px rgba(79,70,229,.25);margin-top:10px;">📊 Download Full Payment Ledger</button>
@@ -295,10 +261,7 @@
                 <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="editSalary" min="0"></div>
                 <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="editJoinDate"></div>
             </div>
-            <div class="frm-group">
-                <label class="frm-label">Status</label>
-                <select class="frm-select" id="editStatus"><option value="active">Active</option><option value="archived">Archived</option></select>
-            </div>
+            <div class="frm-group"><label class="frm-label">Status</label><select class="frm-select" id="editStatus"><option value="active">Active</option><option value="archived">Archived</option></select></div>
             <div class="frm-group"><label class="frm-label">Address</label><input type="text" class="frm-input" id="editAddress"></div>
             <button class="frm-submit" onclick="updateStaff()">💾 Update Profile</button>
         </div>
@@ -327,10 +290,7 @@
                     </div>
 
                     <div style="height:3px;background:linear-gradient(90deg,#fbbf24 0%,#f59e0b 50%,#fbbf24 100%);width:100%;box-shadow:0 1px 3px rgba(251,191,36,.4)"></div>
-
-                    <div style="background:#f8fafc;padding:6px 16px;text-align:center;border-bottom:1px solid #e2e8f0">
-                        <div style="font-size:10px;font-weight:900;color:#0f172a;letter-spacing:3px;text-transform:uppercase;font-family:'Segoe UI',Arial,sans-serif">STAFF IDENTITY CARD</div>
-                    </div>
+                    <div style="background:#f8fafc;padding:6px 16px;text-align:center;border-bottom:1px solid #e2e8f0"><div style="font-size:10px;font-weight:900;color:#0f172a;letter-spacing:3px;text-transform:uppercase;font-family:'Segoe UI',Arial,sans-serif">STAFF IDENTITY CARD</div></div>
 
                     <div style="text-align:center;margin-top:-8px;position:relative;z-index:5">
                         <div style="display:inline-block;padding:4px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,.2),0 0 0 1px #e2e8f0">
@@ -354,14 +314,8 @@
                         </div>
 
                         <div style="display:flex;justify-content:space-between;margin-top:10px;padding:8px 10px;background:linear-gradient(135deg,#f1f5f9 0%,#f8fafc 100%);border-radius:8px;border-left:3px solid #0f172a">
-                            <div style="text-align:left;min-width:0;flex:1">
-                                <div style="font-size:6.5px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Employee ID</div>
-                                <div id="staffCardEmpId" style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div>
-                            </div>
-                            <div style="text-align:right;min-width:0;flex:1">
-                                <div style="font-size:6.5px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Contact</div>
-                                <div id="staffCardPhone" style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div>
-                            </div>
+                            <div style="text-align:left;min-width:0;flex:1"><div style="font-size:6.5px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Employee ID</div><div id="staffCardEmpId" style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div></div>
+                            <div style="text-align:right;min-width:0;flex:1"><div style="font-size:6.5px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Contact</div><div id="staffCardPhone" style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div></div>
                         </div>
                     </div>
 
@@ -379,9 +333,7 @@
                         </div>
                     </div>
 
-                    <div style="position:absolute;bottom:4px;left:0;right:0;font-size:6px;color:#94a3b8;font-weight:600;text-align:center;padding:0 6px;letter-spacing:.5px">
-                        Property of Institute • Return to: <span id="staffCardReturnPhone">+91 9846000000</span>
-                    </div>
+                    <div style="position:absolute;bottom:4px;left:0;right:0;font-size:6px;color:#94a3b8;font-weight:600;text-align:center;padding:0 6px;letter-spacing:.5px">Property of Institute • Return to: <span id="staffCardReturnPhone">+91 9846000000</span></div>
                 </div>
             </div>
 
@@ -406,28 +358,14 @@
                     <input type="file" id="liveStaffPhotoInput" accept="image/*" class="frm-input" onchange="window.updateLiveStaffPhoto(event)" style="padding:8px;font-size:12px">
                 </div>
 
-                <div class="frm-group">
-                    <label class="frm-label">Staff Name</label>
-                    <input type="text" class="frm-input" id="liveStaffName" oninput="document.getElementById('staffCardName').innerText = (this.value || 'N/A').toUpperCase()">
-                </div>
-
-                <div class="frm-group">
-                    <label class="frm-label">Role / Designation</label>
-                    <input type="text" class="frm-input" id="liveStaffRole" oninput="document.getElementById('staffCardRole').innerText = (this.value || 'N/A').toUpperCase()">
-                </div>
+                <div class="frm-group"><label class="frm-label">Staff Name</label><input type="text" class="frm-input" id="liveStaffName" oninput="document.getElementById('staffCardName').innerText = (this.value || 'N/A').toUpperCase()"></div>
+                <div class="frm-group"><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="liveStaffRole" oninput="document.getElementById('staffCardRole').innerText = (this.value || 'N/A').toUpperCase()"></div>
 
                 <div class="frm-row">
-                    <div>
-                        <label class="frm-label">Emp ID</label>
-                        <input type="text" class="frm-input" id="liveStaffEmpId" oninput="document.getElementById('staffCardEmpId').innerText = this.value || 'N/A'; document.getElementById('staffCardBarcodeText').innerText = '||| ' + (this.value || 'STAFF') + ' |||';">
-                    </div>
-                    <div>
-                        <label class="frm-label">Phone</label>
-                        <input type="text" class="frm-input" id="liveStaffPhone" maxlength="10" oninput="document.getElementById('staffCardPhone').innerText = this.value || 'N/A'">
-                    </div>
+                    <div><label class="frm-label">Emp ID</label><input type="text" class="frm-input" id="liveStaffEmpId" oninput="document.getElementById('staffCardEmpId').innerText = this.value || 'N/A'; document.getElementById('staffCardBarcodeText').innerText = '||| ' + (this.value || 'STAFF') + ' |||';"></div>
+                    <div><label class="frm-label">Phone</label><input type="text" class="frm-input" id="liveStaffPhone" maxlength="10" oninput="document.getElementById('staffCardPhone').innerText = this.value || 'N/A'"></div>
                 </div>
 
-                <!-- 3 BUTTONS (PDF, IMAGE, RESET) -->
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;margin-bottom:12px;">
                     <button type="button" id="staffSharePdfBtn" onclick="window.shareStaffPDF()" class="id-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 6px rgba(239,68,68,.25)">📄 PDF</button>
                     <button type="button" id="staffShareCardBtn" onclick="window.shareStaffCard()" class="id-btn" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 6px rgba(16,185,129,.25)">🔗 Image</button>
@@ -533,29 +471,48 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // --- MAGIC ALERT OVERRIDE ---
+        // 1. MAGIC ALERT OVERRIDE
         window.alert = function(msg) {
-            const oldBox = document.getElementById('customAlertBox');
-            if (oldBox) oldBox.remove();
-            const box = document.createElement('div');
-            box.id = 'customAlertBox';
+            const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
+            const box = document.createElement('div'); box.id = 'customAlertBox';
             let borderColor = '#3b82f6'; 
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('failed') || msg.includes('required') || msg.includes('Please')) borderColor = '#ef4444'; 
-            else if (msg.includes('✅') || msg.includes('success') || msg.includes('added') || msg.includes('recorded') || msg.includes('processed')) borderColor = '#10b981'; 
-            
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('failed') || msg.includes('required')) borderColor = '#ef4444'; 
+            else if (msg.includes('✅') || msg.includes('success') || msg.includes('Complete')) borderColor = '#10b981'; 
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
             box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
             if(!document.querySelector('style#alertAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="alertAnim">@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}</style>'); }
-            document.body.appendChild(box);
-            setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
+            document.body.appendChild(box); setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
         };
-        // -----------------------------
+
+        // 2. MAGIC PROMPT (Replaces domain browser prompt completely)
+        window.magicPrompt = function(msg) {
+            return new Promise((resolve) => {
+                const old = document.getElementById('magicPromptBox'); if(old) old.remove();
+                const box = document.createElement('div'); box.id = 'magicPromptBox';
+                box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.8); z-index: 10005; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
+                box.innerHTML = `
+                    <div style="background: #fff; padding: 20px; border-radius: 12px; max-width: 320px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; animation: sheetUp 0.3s ease;">
+                        <div style="font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 12px; white-space: pre-wrap;">${msg}</div>
+                        <input type="number" id="mpInput" style="width: 100%; padding: 10px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 18px; font-weight: 900; text-align: center; margin-bottom: 15px; outline: none;">
+                        <div style="display: flex; gap: 10px;">
+                            <button id="mpCancel" style="flex: 1; padding: 10px; background: #e2e8f0; color: #475569; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">Cancel</button>
+                            <button id="mpOk" style="flex: 1; padding: 10px; background: #3b82f6; color: #fff; border: none; border-radius: 8px; font-weight: 800; cursor: pointer;">Submit</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(box);
+                const input = document.getElementById('mpInput');
+                input.focus();
+                
+                input.addEventListener('keypress', function(e) { if (e.key === 'Enter') document.getElementById('mpOk').click(); });
+                document.getElementById('mpCancel').onclick = () => { box.remove(); resolve(null); };
+                document.getElementById('mpOk').onclick = () => { box.remove(); resolve(input.value); };
+            });
+        };
 
         let allStaff = [], allAdvances = [], allSalaryPayments = [];
-        let instSettings = null;
-        let payrollAdvances = []; 
-        let currentStaffCardData = null; 
-        let lastProcessedPaymentId = null; 
+        let instSettings = null; let payrollAdvances = []; 
+        let currentStaffCardData = null; let lastProcessedPaymentId = null; 
 
         // ===================== AUTH & GUEST SECURITY =====================
         async function init() {
@@ -563,10 +520,7 @@
                 const userRole = localStorage.getItem('userRole') || 'Admin';
                 const { data: { session } } = await supabase.auth.getSession();
                 
-                if (!session && userRole !== 'Guest') { 
-                    window.location.href = 'login.html'; 
-                    return; 
-                }
+                if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
 
                 if (userRole === 'Guest') {
                     setTimeout(() => {
@@ -574,22 +528,14 @@
                         actionButtons.forEach(btn => {
                             const btnText = btn.innerText.toLowerCase();
                             if(btnText.includes('save') || btnText.includes('update') || btnText.includes('archive') || btnText.includes('record') || btnText.includes('process')) {
-                                btn.onclick = function(e) {
-                                    e.preventDefault(); e.stopPropagation();
-                                    alert("⚠️ This action is disabled in Guest/Demo mode.");
-                                    return false;
-                                };
+                                btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); alert("⚠️ This action is disabled in Guest/Demo mode."); return false; };
                             }
                         });
                         const fabBtn = document.querySelector('.fab-add');
-                        if(fabBtn) {
-                            fabBtn.onclick = function(e) { e.preventDefault(); alert("⚠️ This action is disabled in Guest/Demo mode."); return false; }
-                        }
+                        if(fabBtn) fabBtn.onclick = function(e) { e.preventDefault(); alert("⚠️ This action is disabled in Guest/Demo mode."); return false; }
                     }, 1000);
                 }
-
-                await loadInstSettings();
-                await fetchAllData();
+                await loadInstSettings(); await fetchAllData();
             } catch(e) { console.error("Init error:", e); }
         }
 
@@ -599,12 +545,9 @@
                 if (data) {
                     instSettings = data;
                     if (data.logo_url) { 
-                        const cardLogo = document.getElementById('staffCardLogo');
-                        if(cardLogo) cardLogo.src = data.logo_url;
-                        const salLogo = document.getElementById('salaryLogo');
-                        if(salLogo) salLogo.src = data.logo_url;
+                        const cardLogo = document.getElementById('staffCardLogo'); if(cardLogo) cardLogo.src = data.logo_url;
+                        const salLogo = document.getElementById('salaryLogo'); if(salLogo) salLogo.src = data.logo_url;
                     }
-
                     const cin = document.getElementById('staffCardInstName'); if(cin) cin.innerText = data.institute_name || 'GLOBUS';
                     const csn = document.getElementById('staffCardSubName'); if(csn) csn.innerText = data.sub_name || 'TECHNICAL ACADEMY';
                     const cad = document.getElementById('staffCardAddress'); if(cad) cad.innerText = data.address || '';
@@ -628,45 +571,21 @@
                     supabase.from('staff_advances').select('*').order('advance_date', { ascending: false }),
                     supabase.from('salary_payments').select('*').order('created_at', { ascending: false })
                 ]);
-                allStaff = staffRes.data || [];
-                allAdvances = advRes.data || [];
-                allSalaryPayments = salRes.data || [];
-
-                populateRoleFilter();
-                populateStaffDropdowns();
-                renderDirectory();
-                renderAdvances();
-                renderSalaryHistory();
+                allStaff = staffRes.data || []; allAdvances = advRes.data || []; allSalaryPayments = salRes.data || [];
+                populateRoleFilter(); populateStaffDropdowns(); renderDirectory(); renderAdvances(); renderSalaryHistory();
             } catch(e) { console.error("Fetch error:", e); }
         }
 
-        // ===================== HELPERS =====================
         function generateAvatar(name, gender) {
             const color = gender === 'Female' ? '%23ec4899' : '%233b82f6';
             return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${color}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
         }
-
-        function formatDate(d) {
-            if (!d) return '-';
-            if (d.includes('T')) d = d.split('T')[0];
-            const parts = d.split('-');
-            if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
-            return d;
-        }
-
-        function formatMonthDisplay(m) {
-            if (!m) return '-';
-            const parts = m.split('-');
-            if (parts.length !== 2) return m;
-            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-            return months[parseInt(parts[1])-1] + ' ' + parts[0];
-        }
-
+        function formatDate(d) { if (!d) return '-'; if (d.includes('T')) d = d.split('T')[0]; const parts = d.split('-'); if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`; return d; }
+        function formatMonthDisplay(m) { if (!m) return '-'; const parts = m.split('-'); if (parts.length !== 2) return m; const months = ['January','February','March','April','May','June','July','August','September','October','November','December']; return months[parseInt(parts[1])-1] + ' ' + parts[0]; }
         function numberToWords(num) {
             if (num === 0) return 'Rupees Zero Only';
             const a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
             const b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
-            
             function inWords(n) {
                 if (n < 20) return a[n];
                 if (n < 100) return b[Math.floor(n/10)] + (n%10 ? ' ' + a[n%10] : '');
@@ -675,65 +594,49 @@
                 if (n < 10000000) return inWords(Math.floor(n/100000)) + ' Lakh' + (n%100000 ? ' ' + inWords(n%100000) : '');
                 return inWords(Math.floor(n/10000000)) + ' Crore' + (n%10000000 ? ' ' + inWords(n%10000000) : '');
             }
-            
             return 'Rupees ' + inWords(Math.floor(num)).trim() + ' Only';
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
         window.switchStaffTab = function(tab) {
             document.querySelectorAll('.staff-tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             event.currentTarget.classList.add('active');
             document.getElementById('panel-' + tab).classList.add('active');
         };
-
-        window.openModal = openModal;
-        window.closeModal = closeModal;
+        window.openModal = openModal; window.closeModal = closeModal;
 
         // ===================== TAB 1: DIRECTORY =====================
         function populateRoleFilter() {
-            const roleSet = new Set();
-            allStaff.forEach(s => { if (s.role) roleSet.add(s.role); });
-            const sel = document.getElementById('filterRole');
-            sel.innerHTML = '<option value="all">All Roles</option>';
+            const roleSet = new Set(); allStaff.forEach(s => { if (s.role) roleSet.add(s.role); });
+            const sel = document.getElementById('filterRole'); sel.innerHTML = '<option value="all">All Roles</option>';
             [...roleSet].sort().forEach(r => { sel.add(new Option(r, r)); });
         }
-
         function populateStaffDropdowns() {
             const active = allStaff.filter(s => (s.status || 'active') === 'active');
             ['advStaffSelect', 'payStaffSelect'].forEach(id => {
-                const sel = document.getElementById(id);
-                if (!sel) return;
+                const sel = document.getElementById(id); if (!sel) return;
                 sel.innerHTML = '<option value="">-- Choose Staff --</option>';
                 active.forEach(s => { sel.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)); });
             });
             document.getElementById('advDate').value = new Date().toISOString().split('T')[0];
-            const now = new Date();
-            document.getElementById('payMonth').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+            const now = new Date(); document.getElementById('payMonth').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
         }
-
         window.renderDirectory = function() {
             const search = document.getElementById('staffSearch').value.toLowerCase();
             const role = document.getElementById('filterRole').value;
             const status = document.getElementById('filterStatus').value;
-
             let filtered = allStaff.filter(s => {
                 const sStatus = (s.status || 'active').toLowerCase();
                 if (status === 'active' && sStatus !== 'active') return false;
                 if (status === 'archived' && sStatus !== 'archived') return false;
                 if (role !== 'all' && s.role !== role) return false;
-                if (search) {
-                    const str = `${s.full_name || ''} ${s.phone || ''}`.toLowerCase();
-                    if (!str.includes(search)) return false;
-                }
+                if (search) { const str = `${s.full_name || ''} ${s.phone || ''}`.toLowerCase(); if (!str.includes(search)) return false; }
                 return true;
             });
-
             const container = document.getElementById('staffList');
             if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No staff found.</div>'; return; }
-
             container.innerHTML = filtered.map(s => {
                 const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
                 const statusColor = (s.status || 'active') === 'active' ? '#10b981' : '#94a3b8';
@@ -754,16 +657,13 @@
                         <button class="sc-btn sc-btn-view" onclick="openEditStaff('${s.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> View / Edit</button>
                         <button class="sc-btn sc-btn-id" onclick="window.openStaffCardStudio('${s.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="10" r="2.5"/><path d="M8 16.5c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5"/></svg> ID Card</button>
                     </div>
-                    <div class="sc-actions-full">
-                        <button class="sc-btn sc-btn-archive" onclick="archiveStaff('${s.id}','${s.full_name}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg> Archive Staff</button>
-                    </div>
+                    <div class="sc-actions-full"><button class="sc-btn sc-btn-archive" onclick="archiveStaff('${s.id}','${s.full_name}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg> Archive Staff</button></div>
                 </div>`;
             }).join('');
         };
 
         window.openEditStaff = function(id) {
-            const s = allStaff.find(x => x.id === id);
-            if (!s) return;
+            const s = allStaff.find(x => x.id === id); if (!s) return;
             document.getElementById('editId').value = s.id;
             document.getElementById('editName').value = s.full_name || '';
             document.getElementById('editPhone').value = s.phone || '';
@@ -779,32 +679,26 @@
         window.updateStaff = async function() {
             const id = document.getElementById('editId').value;
             const updates = {
-                full_name: document.getElementById('editName').value.trim(),
-                phone: document.getElementById('editPhone').value.trim(),
-                gender: document.getElementById('editGender').value,
-                role: document.getElementById('editRole').value.trim(),
-                basic_salary: Number(document.getElementById('editSalary').value) || 0,
-                joining_date: document.getElementById('editJoinDate').value || null,
-                status: document.getElementById('editStatus').value,
-                address: document.getElementById('editAddress').value.trim()
+                full_name: document.getElementById('editName').value.trim(), phone: document.getElementById('editPhone').value.trim(),
+                gender: document.getElementById('editGender').value, role: document.getElementById('editRole').value.trim(),
+                basic_salary: Number(document.getElementById('editSalary').value) || 0, joining_date: document.getElementById('editJoinDate').value || null,
+                status: document.getElementById('editStatus').value, address: document.getElementById('editAddress').value.trim()
             };
             if (!updates.full_name) { alert('Name is required!'); return; }
             const { error } = await supabase.from('staff').update(updates).eq('id', id);
             if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Staff updated!');
-            closeModal('editStaffModal');
-            await fetchAllData();
+            alert('✅ Staff updated!'); closeModal('editStaffModal'); await fetchAllData();
         };
 
+        // 3. APPLY MAGIC PROMPT TO ARCHIVE
         window.archiveStaff = async function(id, name) {
             const n1 = Math.floor(Math.random()*10)+1, n2 = Math.floor(Math.random()*10)+1;
-            const ans = prompt(`⚠️ To archive "${name}", solve: ${n1} + ${n2} = ?`);
+            const ans = await window.magicPrompt(`⚠️ To archive "${name}", solve:\n\n${n1} + ${n2} = ?`);
             if (ans === null) return;
             if (parseInt(ans) !== (n1+n2)) { alert('❌ Wrong answer! Cancelled.'); return; }
             const { error } = await supabase.from('staff').update({ status: 'archived' }).eq('id', id);
             if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Staff archived successfully.');
-            await fetchAllData();
+            alert('✅ Staff archived successfully.'); await fetchAllData();
         };
 
         window.saveNewStaff = async function() {
@@ -815,30 +709,22 @@
             if (phone && phone.length !== 10) { alert('Phone must be 10 digits!'); return; }
             btn.disabled = true; btn.textContent = '⏳ Saving...';
             const { error } = await supabase.from('staff').insert([{
-                full_name: name,
-                phone: phone,
-                gender: document.getElementById('addGender').value,
-                role: document.getElementById('addRole').value.trim() || 'Staff',
-                basic_salary: Number(document.getElementById('addSalary').value) || 0,
-                joining_date: document.getElementById('addJoinDate').value || null,
-                qualification: document.getElementById('addQual').value.trim(),
-                address: document.getElementById('addAddress').value.trim(),
-                status: 'active'
+                full_name: name, phone: phone, gender: document.getElementById('addGender').value,
+                role: document.getElementById('addRole').value.trim() || 'Staff', basic_salary: Number(document.getElementById('addSalary').value) || 0,
+                joining_date: document.getElementById('addJoinDate').value || null, qualification: document.getElementById('addQual').value.trim(),
+                address: document.getElementById('addAddress').value.trim(), status: 'active'
             }]);
             btn.disabled = false; btn.textContent = '✅ Save Staff Member';
             if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Staff added!');
-            closeModal('addStaffModal');
+            alert('✅ Staff added!'); closeModal('addStaffModal');
             ['addName','addPhone','addRole','addSalary','addJoinDate','addQual','addAddress'].forEach(id => document.getElementById(id).value = '');
             await fetchAllData();
         };
 
         // ===================== STAFF ID CARD STUDIO =====================
         window.openStaffCardStudio = function(id) {
-            const s = allStaff.find(x => x.id === id);
-            if (!s) return;
+            const s = allStaff.find(x => x.id === id); if (!s) return;
             currentStaffCardData = s;
-
             document.getElementById('liveStaffName').value = s.full_name || '';
             document.getElementById('liveStaffRole').value = s.role || 'Staff';
             const empId = s.emp_id || ('EMP-' + s.id.substring(0, 6).toUpperCase());
@@ -851,18 +737,14 @@
                 document.getElementById('liveInstSub').value = instSettings.sub_name || '';
                 document.getElementById('liveInstAddress').value = instSettings.address || '';
             }
-
             document.getElementById('staffCardName').innerText = (s.full_name || 'N/A').toUpperCase();
             document.getElementById('staffCardRole').innerText = (s.role || 'STAFF').toUpperCase();
             document.getElementById('staffCardEmpId').innerText = empId;
             document.getElementById('staffCardPhone').innerText = s.phone || 'N/A';
-            
-            const barcodeEl = document.getElementById('staffCardBarcodeText');
-            if (barcodeEl) barcodeEl.innerText = '||| ' + empId + ' |||';
+            const barcodeEl = document.getElementById('staffCardBarcodeText'); if (barcodeEl) barcodeEl.innerText = '||| ' + empId + ' |||';
 
             const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
             document.getElementById('staffCardAvatarImg').src = avatar;
-
             openModal('staffCardModal');
         };
 
@@ -870,42 +752,36 @@
             const n = document.getElementById('liveInstName').value || 'GLOBUS';
             const s = document.getElementById('liveInstSub').value || 'TECHNICAL ACADEMY';
             const a = document.getElementById('liveInstAddress').value || '';
-
             document.getElementById('staffCardInstName').innerText = n;
             document.getElementById('staffCardSubName').innerText = s;
             document.getElementById('staffCardAddress').innerText = a;
             document.getElementById('staffSealMainName').innerText = n;
-            const ssn = document.getElementById('staffSealSubName');
-            if(ssn) ssn.innerText = s || 'OFFICIAL';
+            const ssn = document.getElementById('staffSealSubName'); if(ssn) ssn.innerText = s || 'OFFICIAL';
             document.getElementById('staffSealAddress').innerText = a;
         };
 
-        // PRO FIX: Convert Image to Base64 for 100% html2canvas Compatibility
+        // 4. DOM CLONING FIX FOR PHOTO (PRO FIX)
         window.updateLiveStaffPhoto = function(event) {
             const file = event.target.files[0];
             if (file) {
-                const imgEl = document.getElementById('staffCardAvatarImg');
-                imgEl.removeAttribute('crossorigin'); // ബ്രൗസർ സെക്യൂരിറ്റി ബ്ലോക്ക് ഒഴിവാക്കുന്നു
+                const oldImg = document.getElementById('staffCardAvatarImg');
+                const newImg = oldImg.cloneNode(true);
+                newImg.removeAttribute('crossorigin'); 
+                oldImg.parentNode.replaceChild(newImg, oldImg);
                 
-                // ഫോട്ടോയെ നേരിട്ട് Base64 ഡാറ്റ ആക്കി മാറ്റുന്നു
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    imgEl.src = e.target.result;
-                };
+                reader.onload = function(e) { newImg.src = e.target.result; };
                 reader.readAsDataURL(file);
             }
         };
 
-        // NEW RESET BUTTON FUNCTION
-        window.confirmStaffStudioReset = function() {
+        // 5. APPLY MAGIC PROMPT TO RESET BUTTON
+        window.confirmStaffStudioReset = async function() {
             let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
-            let userInput = prompt(`Security Verification\nTo unlock and clear settings, please solve this math question:\n${num1} + ${num2} = ?`);
+            let userInput = await window.magicPrompt(`🔒 Security Verification\nTo unlock and clear settings, please solve:\n\n${num1} + ${num2} = ?`);
             if (userInput !== null && parseInt(userInput) === (num1+num2)) {
-                document.getElementById('liveInstName').value = ''; 
-                document.getElementById('liveInstSub').value = '';
-                document.getElementById('liveInstAddress').value = ''; 
-                window.updateStaffInstUI(); 
-                
+                document.getElementById('liveInstName').value = ''; document.getElementById('liveInstSub').value = '';
+                document.getElementById('liveInstAddress').value = ''; window.updateStaffInstUI(); 
                 ['liveStaffName', 'liveStaffRole', 'liveStaffEmpId', 'liveStaffPhone'].forEach(id => {
                     let el = document.getElementById(id);
                     if(el) { el.readOnly = false; el.style.backgroundColor = '#ffffff'; el.style.color = '#000000'; el.style.cursor = 'text'; }
@@ -935,9 +811,7 @@
                 const fileName = `staff_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
                 try {
                     const { data, error } = await supabase.storage.from('staff-photos').upload(fileName, file);
-                    if (!error) {
-                        photoUrlToSave = supabase.storage.from('staff-photos').getPublicUrl(fileName).data.publicUrl;
-                    } else { console.warn('Upload issue:', error.message); }
+                    if (!error) { photoUrlToSave = supabase.storage.from('staff-photos').getPublicUrl(fileName).data.publicUrl; }
                 } catch (e) { console.warn(e); }
             }
 
@@ -952,13 +826,11 @@
                     if (err2) { alert('Error: ' + err2.message); return; }
                 } else { alert('Error saving data: ' + error.message); return; }
             }
-            alert('✅ Details Saved Successfully!');
-            await fetchAllData();
+            alert('✅ Details Saved Successfully!'); await fetchAllData();
         };
 
         window.shareStaffPDF = async function() {
-            const btn = document.getElementById('staffSharePdfBtn');
-            const originalText = btn.innerHTML;
+            const btn = document.getElementById('staffSharePdfBtn'); const originalText = btn.innerHTML;
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
                 const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
@@ -970,16 +842,13 @@
                 const pdfBlob = pdf.output('blob');
                 const file = new File([pdfBlob], filename, { type: 'application/pdf' });
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try { await navigator.share({ files: [file], title: 'Staff ID Card' }); }
-                    catch (err) { pdf.save(filename); }
+                    try { await navigator.share({ files: [file], title: 'Staff ID Card' }); } catch (err) { pdf.save(filename); }
                 } else { pdf.save(filename); }
-            } catch (error) { alert("Could not generate PDF: " + error.message);
-            } finally { btn.innerHTML = originalText; btn.disabled = false; }
+            } catch (error) { alert("Could not generate PDF: " + error.message); } finally { btn.innerHTML = originalText; btn.disabled = false; }
         };
 
         window.shareStaffCard = async function() {
-            const btn = document.getElementById('staffShareCardBtn');
-            const originalText = btn.innerHTML;
+            const btn = document.getElementById('staffShareCardBtn'); const originalText = btn.innerHTML;
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
                 const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
@@ -989,10 +858,8 @@
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         try { await navigator.share({ files: [file], title: 'Staff ID Card', text: `ID Card for ${name}` }); } catch (err) {}
                     } else {
-                        const link = document.createElement('a');
-                        link.download = `Staff_ID_${name.replace(/ /g,'_')}.jpg`;
-                        link.href = canvas.toDataURL('image/jpeg', 0.9);
-                        link.click();
+                        const link = document.createElement('a'); link.download = `Staff_ID_${name.replace(/ /g,'_')}.jpg`;
+                        link.href = canvas.toDataURL('image/jpeg', 0.9); link.click();
                     }
                     btn.innerHTML = originalText; btn.disabled = false;
                 }, 'image/jpeg', 0.9);
@@ -1032,8 +899,7 @@
             if (advanceAmount <= 0) { alert('Enter a valid amount!'); return; }
             if (!advanceDate) { alert('Select a date!'); return; }
 
-            const btn = document.getElementById('advSubmitBtn');
-            btn.disabled = true; btn.textContent = '⏳ Saving...';
+            const btn = document.getElementById('advSubmitBtn'); btn.disabled = true; btn.textContent = '⏳ Saving...';
 
             try {
                 const { error: advErr } = await supabase.from('staff_advances').insert([{
@@ -1041,32 +907,16 @@
                 }]);
                 if (advErr) throw advErr;
 
-                const staff = allStaff.find(s => s.id === staffId);
-                const staffName = staff ? staff.full_name : 'Unknown';
-                
+                const staff = allStaff.find(s => s.id === staffId); const staffName = staff ? staff.full_name : 'Unknown';
                 let expenseInserted = false;
                 const { error: expErr } = await supabase.from('expenses').insert([{
-                    expense_date: advanceDate,
-                    category: 'Staff Advance',
-                    purpose: 'Advance to ' + staffName + (remarks ? ' - ' + remarks : ''),
-                    amount: advanceAmount
+                    expense_date: advanceDate, category: 'Staff Advance', purpose: 'Advance to ' + staffName + (remarks ? ' - ' + remarks : ''), amount: advanceAmount
                 }]);
-                
-                if (!expErr) {
-                    expenseInserted = true;
-                } else {
-                    console.warn('Day Book insert failed:', expErr.message);
-                }
+                if (!expErr) { expenseInserted = true; } else { console.warn('Day Book insert failed:', expErr.message); }
 
                 alert('✅ Advance recorded' + (expenseInserted ? ' & added to Day Book!' : '! (Day Book update failed - check console)'));
-                document.getElementById('advAmount').value = '';
-                document.getElementById('advRemarks').value = '';
-                await fetchAllData();
-            } catch(e) {
-                alert('Error: ' + e.message);
-            } finally {
-                btn.disabled = false; btn.textContent = '💰 Record Advance';
-            }
+                document.getElementById('advAmount').value = ''; document.getElementById('advRemarks').value = ''; await fetchAllData();
+            } catch(e) { alert('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = '💰 Record Advance'; }
         };
 
         // ===================== TAB 3: PAYROLL =====================
@@ -1074,9 +924,7 @@
             const staffId = document.getElementById('payStaffSelect').value;
             const detailsDiv = document.getElementById('payrollDetails');
             if (!staffId) { detailsDiv.style.display = 'none'; return; }
-
-            const staff = allStaff.find(s => s.id === staffId);
-            if (!staff) return;
+            const staff = allStaff.find(s => s.id === staffId); if (!staff) return;
 
             const salary = Number(staff.basic_salary) || 0;
             payrollAdvances = allAdvances.filter(a => a.staff_id === staffId && (a.status || 'unpaid').toLowerCase() === 'unpaid');
@@ -1097,18 +945,11 @@
             const month = document.getElementById('payMonth').value;
             if (!staffId || !month) { alert('Select staff and month!'); return; }
 
-            const today = new Date();
-            const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-            if (month > currentMonthStr) {
-                alert('⚠️Cannot process future month salary');
-                return;
-            }
+            const today = new Date(); const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+            if (month > currentMonthStr) { alert('⚠️Cannot process future month salary'); return; }
 
             const isDuplicate = allSalaryPayments.some(p => p.staff_id === staffId && p.month === month);
-            if (isDuplicate) {
-                alert(`⚠️ Salary already processed for this month ${formatMonthDisplay(month)} `);
-                return;
-            }
+            if (isDuplicate) { alert(`⚠️ Salary already processed for this month ${formatMonthDisplay(month)} `); return; }
 
             const staff = allStaff.find(s => s.id === staffId);
             const salary = Number(staff.basic_salary) || 0;
@@ -1116,48 +957,29 @@
             const netSalary = salary - totalDeduction > 0 ? salary - totalDeduction : 0;
             const todayDate = new Date().toISOString().split('T')[0];
 
-            const btn = document.getElementById('payProcessBtn');
-            btn.disabled = true; btn.textContent = '⏳ Processing...';
+            const btn = document.getElementById('payProcessBtn'); btn.disabled = true; btn.textContent = '⏳ Processing...';
 
             try {
                 const { data: newSal, error: salErr } = await supabase.from('salary_payments').insert([{
-                    staff_id: staffId, month: month, basic_salary: salary,
-                    deductions: totalDeduction, net_salary: netSalary, payment_date: todayDate
+                    staff_id: staffId, month: month, basic_salary: salary, deductions: totalDeduction, net_salary: netSalary, payment_date: todayDate
                 }]).select();
                 if (salErr) throw salErr;
                 if (newSal && newSal[0]) lastProcessedPaymentId = newSal[0].id;
 
-                for (const adv of payrollAdvances) {
-                    await supabase.from('staff_advances').update({ status: 'paid' }).eq('id', adv.id);
-                }
+                for (const adv of payrollAdvances) { await supabase.from('staff_advances').update({ status: 'paid' }).eq('id', adv.id); }
 
                 const staffName = staff.full_name || 'Unknown';
                 const formattedMonthForDayBook = formatMonthDisplay(month); 
-                
                 let expenseInserted = false;
                 const { error: expErr } = await supabase.from('expenses').insert([{
-                    expense_date: todayDate,
-                    category: 'Salary',
-                    purpose: `Salary for ${staffName} (${formattedMonthForDayBook})`, 
-                    amount: netSalary
+                    expense_date: todayDate, category: 'Salary', purpose: `Salary for ${staffName} (${formattedMonthForDayBook})`, amount: netSalary
                 }]);
-                
-                if (!expErr) {
-                    expenseInserted = true;
-                } else {
-                    console.warn('Day Book insert failed:', expErr.message);
-                }
+                if (!expErr) { expenseInserted = true; } else { console.warn('Day Book insert failed:', expErr.message); }
 
                 alert('✅ Salary processed' + (expenseInserted ? ' & added to Day Book!' : '! (Day Book update failed - check console)'));
-                document.getElementById('payProcessBtn').style.display = 'none';
-                document.getElementById('paySlipBtn').style.display = 'block';
-
+                document.getElementById('payProcessBtn').style.display = 'none'; document.getElementById('paySlipBtn').style.display = 'block';
                 await fetchAllData();
-            } catch(e) {
-                alert('Error: ' + e.message);
-            } finally {
-                btn.disabled = false; btn.textContent = '💳 Process Salary';
-            }
+            } catch(e) { alert('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = '💳 Process Salary'; }
         };
 
         function renderSalaryHistory() {
@@ -1176,38 +998,25 @@
                         <span>💰 Basic: ₹${p.basic_salary || 0}</span>
                         <span style="color:#ef4444">Ded: ₹${p.deductions || 0}</span>
                     </div>
-                    <button class="slip-dl-btn" onclick="window.downloadSalarySlip('${p.id}')">
-                        📄 Download Slip
-                    </button>
+                    <button class="slip-dl-btn" onclick="window.downloadSalarySlip('${p.id}')">📄 Download Slip</button>
                 </div>`;
             }).join('');
         }
 
         window.downloadLastSlip = function() {
-            if (lastProcessedPaymentId) {
-                window.downloadSalarySlip(lastProcessedPaymentId);
-            } else if (allSalaryPayments && allSalaryPayments.length > 0) {
-                window.downloadSalarySlip(allSalaryPayments[0].id);
-            } else {
-                alert('No salary payment available.');
-            }
+            if (lastProcessedPaymentId) { window.downloadSalarySlip(lastProcessedPaymentId); } 
+            else if (allSalaryPayments && allSalaryPayments.length > 0) { window.downloadSalarySlip(allSalaryPayments[0].id); } 
+            else { alert('No salary payment available.'); }
         };
 
         window.downloadSalarySlip = async function(paymentId) {
-            const payment = allSalaryPayments.find(p => p.id === paymentId);
-            if (!payment) { alert('Payment record not found!'); return; }
-
-            const staff = allStaff.find(s => s.id === payment.staff_id);
-            if (!staff) { alert('Staff record not found!'); return; }
-
+            const payment = allSalaryPayments.find(p => p.id === paymentId); if (!payment) { alert('Payment record not found!'); return; }
+            const staff = allStaff.find(s => s.id === payment.staff_id); if (!staff) { alert('Staff record not found!'); return; }
             try {
                 const empId = staff.emp_id || ('EMP-' + staff.id.substring(0, 6).toUpperCase());
-                const d = new Date();
-                const issueDate = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
+                const d = new Date(); const issueDate = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
                 const slipNo = 'SAL-' + (payment.id || '').substring(0, 8).toUpperCase();
-                const grossAmt = Number(payment.basic_salary) || 0;
-                const dedAmt = Number(payment.deductions) || 0;
-                const netAmt = Number(payment.net_salary) || 0;
+                const grossAmt = Number(payment.basic_salary) || 0; const dedAmt = Number(payment.deductions) || 0; const netAmt = Number(payment.net_salary) || 0;
 
                 document.getElementById('salaryStaffName').innerText = staff.full_name || '-';
                 document.getElementById('salaryStaffRole').innerText = staff.role || 'Staff';
@@ -1224,21 +1033,12 @@
                 document.getElementById('salarySealDate').innerText = issueDate;
 
                 const wrapper = document.getElementById('salarySlipTemplate');
-                wrapper.style.left = '0';
-                wrapper.style.top = '0';
-                wrapper.style.zIndex = '-9999';
-                wrapper.style.opacity = '0';
-
+                wrapper.style.left = '0'; wrapper.style.top = '0'; wrapper.style.zIndex = '-9999'; wrapper.style.opacity = '0';
                 const target = document.getElementById('salarySlipRender');
                 await new Promise(r => setTimeout(r, 100));
-
                 const canvas = await html2canvas(target, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false });
                 
-                wrapper.style.left = '-9999px';
-                wrapper.style.top = '-9999px';
-                wrapper.style.opacity = '1';
-                wrapper.style.zIndex = '-1';
-
+                wrapper.style.left = '-9999px'; wrapper.style.top = '-9999px'; wrapper.style.opacity = '1'; wrapper.style.zIndex = '-1';
                 const imgData = canvas.toDataURL('image/jpeg', 0.85);
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
@@ -1246,70 +1046,39 @@
 
                 const cleanName = (staff.full_name || 'Staff').replace(/[^a-zA-Z0-9]/g, '_');
                 const cleanMonth = (payment.month || 'Month').replace(/[^a-zA-Z0-9-]/g, '_');
-                const filename = `Salary_Slip_${cleanName}_${cleanMonth}.pdf`;
-                pdf.save(filename);
-            } catch(e) {
-                alert('Error generating slip: ' + e.message);
-                console.error(e);
-            }
+                pdf.save(`Salary_Slip_${cleanName}_${cleanMonth}.pdf`);
+            } catch(e) { alert('Error generating slip: ' + e.message); console.error(e); }
         };
 
         window.downloadStaffLedger = function() {
             const staffId = document.getElementById('payStaffSelect').value;
             if (!staffId) { alert('Please select a staff member first'); return; }
-            
-            const staff = allStaff.find(s => s.id === staffId);
-            if (!staff) return;
-
-            const staffPayments = allSalaryPayments
-                .filter(p => p.staff_id === staffId)
-                .sort((a, b) => new Date(a.month) - new Date(b.month));
-
+            const staff = allStaff.find(s => s.id === staffId); if (!staff) return;
+            const staffPayments = allSalaryPayments.filter(p => p.staff_id === staffId).sort((a, b) => new Date(a.month) - new Date(b.month));
             if (staffPayments.length === 0) { alert('No payment history found'); return; }
 
             try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
+                const { jsPDF } = window.jspdf; const doc = new jsPDF();
+                const instName = instSettings?.institute_name || 'GLOBUS'; const subName = instSettings?.sub_name || 'TECHNICAL ACADEMY';
                 
-                const instName = instSettings?.institute_name || 'GLOBUS';
-                const subName = instSettings?.sub_name || 'TECHNICAL ACADEMY';
-                
-                doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.setTextColor(15, 23, 42);
-                doc.text(instName, 105, 15, { align: 'center' });
-                
-                doc.setFontSize(10); doc.setTextColor(100, 116, 139);
-                doc.text(subName, 105, 21, { align: 'center' });
-                
-                doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 58, 138);
-                doc.text("STAFF PAYMENT LEDGER", 105, 30, { align: 'center' });
-                
+                doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.setTextColor(15, 23, 42); doc.text(instName, 105, 15, { align: 'center' });
+                doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text(subName, 105, 21, { align: 'center' });
+                doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 58, 138); doc.text("STAFF PAYMENT LEDGER", 105, 30, { align: 'center' });
                 doc.setFontSize(11); doc.setTextColor(15, 23, 42);
-                doc.text(`Employee Name: ${staff.full_name}`, 14, 40);
-                doc.text(`Designation: ${staff.role || 'Staff'}`, 14, 46);
-                doc.text(`Contact: ${staff.phone || '-'}`, 14, 52);
+                doc.text(`Employee Name: ${staff.full_name}`, 14, 40); doc.text(`Designation: ${staff.role || 'Staff'}`, 14, 46); doc.text(`Contact: ${staff.phone || '-'}`, 14, 52);
 
                 let totalPaid = 0;
                 const tableData = staffPayments.map(p => {
-                    const net = Number(p.net_salary) || 0;
-                    totalPaid += net;
-                    return [
-                        formatDate(p.payment_date || p.created_at), formatMonthDisplay(p.month),
-                        `Rs. ${(Number(p.basic_salary) || 0).toLocaleString('en-IN')}`,
-                        `Rs. ${(Number(p.deductions) || 0).toLocaleString('en-IN')}`,
-                        `Rs. ${net.toLocaleString('en-IN')}`
-                    ];
+                    const net = Number(p.net_salary) || 0; totalPaid += net;
+                    return [ formatDate(p.payment_date || p.created_at), formatMonthDisplay(p.month), `Rs. ${(Number(p.basic_salary) || 0).toLocaleString('en-IN')}`, `Rs. ${(Number(p.deductions) || 0).toLocaleString('en-IN')}`, `Rs. ${net.toLocaleString('en-IN')}` ];
                 });
-
                 doc.autoTable({
                     startY: 58, head: [['Payment Date', 'Salary Month', 'Basic Salary', 'Deductions', 'Net Paid']],
-                    body: tableData, theme: 'grid', headStyles: { fillColor: [15, 23, 42], textColor: 255 },
-                    styles: { fontSize: 10, cellPadding: 4 }, columnStyles: { 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right', fontStyle: 'bold', textColor: [22, 163, 74] } }
+                    body: tableData, theme: 'grid', headStyles: { fillColor: [15, 23, 42], textColor: 255 }, styles: { fontSize: 10, cellPadding: 4 }, columnStyles: { 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right', fontStyle: 'bold', textColor: [22, 163, 74] } }
                 });
-
                 const finalY = doc.lastAutoTable.finalY + 10;
                 doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.setTextColor(22, 163, 74);
                 doc.text(`Total Amount Paid: Rs. ${totalPaid.toLocaleString('en-IN')}`, 196, finalY, { align: 'right' });
-
                 doc.save(`Ledger_${staff.full_name.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
             } catch (error) { alert("Error generating report! " + error.message); }
         };
