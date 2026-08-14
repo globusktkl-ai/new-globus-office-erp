@@ -260,8 +260,7 @@
                     <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);height:95px;width:100%;position:relative;padding:12px 16px 0;box-sizing:border-box;clip-path:polygon(0 0,100% 0,100% 88%,0 100%);">
                         <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:2">
                             <div style="width:44px;height:44px;background:rgba(255,255,255,.95);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:4px;box-shadow:0 3px 8px rgba(0,0,0,.25);flex-shrink:0">
-                                <!-- Security tag removed intentionally for html2canvas -->
-                                <img id="staffCardLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" alt="Logo" onerror="this.style.display='none'">
+                                <img id="staffCardLogo" crossorigin="anonymous" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" alt="Logo" onerror="this.style.display='none'">
                             </div>
                             <div style="flex:1;min-width:0">
                                 <div id="staffCardInstName" style="font-size:15px;font-weight:900;color:#fff;line-height:1.1;letter-spacing:1.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Segoe UI',Arial,sans-serif">GLOBUS</div>
@@ -277,7 +276,7 @@
 
                     <div style="text-align:center;margin-top:-8px;position:relative;z-index:5">
                         <div style="display:inline-block;padding:4px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,.2),0 0 0 1px #e2e8f0">
-                            <!-- Security tag removed intentionally for html2canvas -->
+                            <!-- Removed crossorigin to allow local file selection perfectly -->
                             <img id="staffCardAvatarImg" src="" style="width:90px;height:105px;object-fit:cover;border-radius:10px;display:block">
                         </div>
                     </div>
@@ -369,8 +368,7 @@
                 <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2">
                     <div style="display:flex;align-items:center;gap:14px">
                         <div style="width:60px;height:60px;background:#fff;border-radius:10px;padding:6px;box-shadow:0 4px 12px rgba(0,0,0,.3);flex-shrink:0">
-                            <!-- Security tag removed intentionally for html2canvas -->
-                            <img id="salaryLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+                            <img id="salaryLogo" crossorigin="anonymous" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
                         </div>
                         <div>
                             <div id="salaryInstName" style="font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;line-height:1.1;text-transform:uppercase">GLOBUS</div>
@@ -734,8 +732,11 @@
             document.getElementById('staffCardPhone').innerText = s.phone || 'N/A';
             const barcodeEl = document.getElementById('staffCardBarcodeText'); if (barcodeEl) barcodeEl.innerText = '||| ' + empId + ' |||';
 
+            // ADDED crossorigin='anonymous' when loading Supabase URL to prevent cross-origin issues
+            const imgEl = document.getElementById('staffCardAvatarImg');
             const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
-            document.getElementById('staffCardAvatarImg').src = avatar;
+            imgEl.src = avatar;
+            
             openModal('staffCardModal');
         };
 
@@ -751,15 +752,11 @@
             document.getElementById('staffSealAddress').innerText = a;
         };
 
-        // 4. PHOTO FIX (Like students.html - without CrossOrigin restrictions)
+        // 4. PHOTO FIX: Same exactly as students.html without crossorigin property
         window.updateLiveStaffPhoto = function(event) {
             const file = event.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('staffCardAvatarImg').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                document.getElementById('staffCardAvatarImg').src = URL.createObjectURL(file);
             }
         };
 
@@ -820,30 +817,32 @@
             alert('✅ Details Saved Successfully!'); await fetchAllData();
         };
 
-        // 6. NEW PRINT FUNCTION (Replaces PDF, prints exactly 54x86mm without borders)
+        // 6. NEW PRINT FUNCTION (Removed window.close() completely to avoid flashing)
         window.printStaffCard = async function() {
             const btn = document.getElementById('staffSharePdfBtn'); 
             const originalText = btn.innerHTML;
             btn.innerHTML = '⏳ Preparing...'; btn.disabled = true;
             try {
-                const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                // added allowTaint: true just to be 100% safe with photos
+                const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 3, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' });
                 const imgData = canvas.toDataURL('image/jpeg', 1.0);
                 
                 const printWindow = window.open('', '_blank');
                 if(!printWindow) { alert("Popup blocked! Please allow popups to print."); return; }
                 
+                // Pure print HTML without window.close() to keep it stable
                 printWindow.document.write(`
                     <html>
                     <head>
                         <title>Print ID Card</title>
                         <style>
                             @page { size: 54mm 86mm; margin: 0; }
-                            body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: #fff; width: 54mm; height: 86mm; }
+                            body { margin: 0; display: flex; justify-content: center; align-items: center; background: #fff; height: 100vh; overflow: hidden; }
                             img { width: 54mm; height: 86mm; object-fit: contain; }
                         </style>
                     </head>
                     <body>
-                        <img src="${imgData}" onload="window.print(); window.close();" />
+                        <img src="${imgData}" onload="window.print();" />
                     </body>
                     </html>
                 `);
@@ -852,23 +851,24 @@
             finally { btn.innerHTML = originalText; btn.disabled = false; }
         };
 
+        // 7. IMAGE BUTTON FIX (Removed navigator.share API which causes flashing on Windows)
         window.shareStaffCard = async function() {
             const btn = document.getElementById('staffShareCardBtn'); const originalText = btn.innerHTML;
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
-                const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-                canvas.toBlob(async (blob) => {
-                    const name = document.getElementById('liveStaffName').value || 'Staff';
-                    const file = new File([blob], `Staff_ID_${name.replace(/ /g,'_')}.jpg`, { type: 'image/jpeg' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Staff ID Card', text: `ID Card for ${name}` }); } catch (err) {}
-                    } else {
-                        const link = document.createElement('a'); link.download = `Staff_ID_${name.replace(/ /g,'_')}.jpg`;
-                        link.href = canvas.toDataURL('image/jpeg', 0.9); link.click();
-                    }
-                    btn.innerHTML = originalText; btn.disabled = false;
-                }, 'image/jpeg', 0.9);
-            } catch (error) { alert("Error generating image: " + error.message); btn.innerHTML = originalText; btn.disabled = false; }
+                // added allowTaint: true just to be 100% safe with photos
+                const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 3, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' });
+                
+                const name = document.getElementById('liveStaffName').value || 'Staff';
+                const link = document.createElement('a'); 
+                link.download = `Staff_ID_${name.replace(/ /g,'_')}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.9); 
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+            } catch (error) { alert("Error generating image: " + error.message); } 
+            finally { btn.innerHTML = originalText; btn.disabled = false; }
         };
 
         // ===================== TAB 2: ADVANCES =====================
@@ -1041,7 +1041,7 @@
                 wrapper.style.left = '0'; wrapper.style.top = '0'; wrapper.style.zIndex = '-9999'; wrapper.style.opacity = '0';
                 const target = document.getElementById('salarySlipRender');
                 await new Promise(r => setTimeout(r, 100));
-                const canvas = await html2canvas(target, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false });
+                const canvas = await html2canvas(target, { scale: 1.5, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', logging: false });
                 
                 wrapper.style.left = '-9999px'; wrapper.style.top = '-9999px'; wrapper.style.opacity = '1'; wrapper.style.zIndex = '-1';
                 const imgData = canvas.toDataURL('image/jpeg', 0.85);
