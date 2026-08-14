@@ -126,6 +126,7 @@
         .card-edit-col{flex:1;min-width:290px;background:#f8fafc;padding:18px;border-radius:14px;border:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
         @media(max-width:700px){ .card-preview-col,.card-edit-col{min-width:100%;width:100%} .card-modal-container{padding:15px;margin-top:10px} }
 
+        /* FIXED STAFF CARD STYLES FOR PERFECT PRINTING */
         #staffCardContent{width:280px;height:445px;background:#fff;border:1px solid #cbd5e1;border-radius:12px;position:relative;box-sizing:border-box;overflow:hidden;box-shadow:0 12px 30px rgba(15,23,42,.15);margin:0 auto;font-family:'Segoe UI',Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
         .id-btn{padding:11px 6px;border:none;border-radius:10px;font-weight:800;cursor:pointer;font-size:12px;color:#fff;transition:.2s;box-shadow:0 3px 6px rgba(0,0,0,.1)}
         .id-btn:active{transform:scale(.95)}
@@ -259,7 +260,7 @@
                     <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);height:95px;width:100%;position:relative;padding:12px 16px 0;box-sizing:border-box;clip-path:polygon(0 0,100% 0,100% 88%,0 100%);">
                         <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:2">
                             <div style="width:44px;height:44px;background:rgba(255,255,255,.95);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:4px;box-shadow:0 3px 8px rgba(0,0,0,.25);flex-shrink:0">
-                                <!-- Removed crossorigin here -->
+                                <!-- Security tag removed intentionally for html2canvas -->
                                 <img id="staffCardLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" alt="Logo" onerror="this.style.display='none'">
                             </div>
                             <div style="flex:1;min-width:0">
@@ -276,7 +277,7 @@
 
                     <div style="text-align:center;margin-top:-8px;position:relative;z-index:5">
                         <div style="display:inline-block;padding:4px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,.2),0 0 0 1px #e2e8f0">
-                            <!-- Removed crossorigin here to fix photo download block -->
+                            <!-- Security tag removed intentionally for html2canvas -->
                             <img id="staffCardAvatarImg" src="" style="width:90px;height:105px;object-fit:cover;border-radius:10px;display:block">
                         </div>
                     </div>
@@ -303,7 +304,8 @@
                     </div>
 
                     <div style="position:absolute;bottom:28px;left:14px;width:140px">
-                        <div style="height:26px;background:repeating-linear-gradient(90deg,#0f172a 0,#0f172a 1px,#fff 1px,#fff 3px,#0f172a 3px,#0f172a 5px,#fff 5px,#fff 6px,#0f172a 6px,#0f172a 9px,#fff 9px,#fff 10px,#0f172a 10px,#0f172a 11px,#fff 11px,#fff 13px);border:1px solid #e2e8f0;border-radius:2px"></div>
+                        <!-- Barcode Fixed: Converted CSS gradient to SVG background for 100% html2canvas compatibility -->
+                        <div style="height:26px;background: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2226%22><rect width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%224%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%227%22 width=%223%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2212%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2215%22 width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2219%22 width=%224%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2225%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2228%22 width=%223%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2233%22 width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2237%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/></svg>') repeat-x;border:1px solid #e2e8f0;border-radius:2px"></div>
                         <div id="staffCardBarcodeText" style="font-size:7px;font-family:'Courier New',monospace;font-weight:700;color:#0f172a;letter-spacing:2px;text-align:center;margin-top:2px">||| STAFF |||</div>
                     </div>
 
@@ -348,7 +350,8 @@
                 </div>
 
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;margin-bottom:12px;">
-                    <button type="button" id="staffSharePdfBtn" onclick="window.shareStaffPDF()" class="id-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 6px rgba(239,68,68,.25)">📄 PDF</button>
+                    <!-- REPLACED PDF WITH PRINT BUTTON -->
+                    <button type="button" id="staffSharePdfBtn" onclick="window.printStaffCard()" class="id-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 6px rgba(239,68,68,.25)">🖨️ Print</button>
                     <button type="button" id="staffShareCardBtn" onclick="window.shareStaffCard()" class="id-btn" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 6px rgba(16,185,129,.25)">🔗 Image</button>
                     <button type="button" onclick="window.confirmStaffStudioReset()" class="id-btn" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 6px rgba(245,158,11,.25)">🔄 Reset</button>
                 </div>
@@ -366,7 +369,7 @@
                 <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2">
                     <div style="display:flex;align-items:center;gap:14px">
                         <div style="width:60px;height:60px;background:#fff;border-radius:10px;padding:6px;box-shadow:0 4px 12px rgba(0,0,0,.3);flex-shrink:0">
-                            <!-- Removed crossorigin here -->
+                            <!-- Security tag removed intentionally for html2canvas -->
                             <img id="salaryLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
                         </div>
                         <div>
@@ -466,7 +469,7 @@
             document.body.appendChild(box); setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
         };
 
-        // 2. BRAND NEW CUSTOM MAGIC PROMPT UI (Removes default browser domain prompt completely)
+        // 2. BRAND NEW CUSTOM MAGIC PROMPT UI
         window.magicPrompt = function(msg) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox');
@@ -677,7 +680,6 @@
             alert('✅ Staff updated!'); closeModal('editStaffModal'); await fetchAllData();
         };
 
-        // 3. APPLIED MAGIC PROMPT TO ARCHIVE ACTION
         window.archiveStaff = async function(id, name) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
             const n1 = Math.floor(Math.random()*10)+1, n2 = Math.floor(Math.random()*10)+1;
@@ -749,11 +751,15 @@
             document.getElementById('staffSealAddress').innerText = a;
         };
 
-        // 4. PHOTO FIX (Same exact working method as students.html)
+        // 4. PHOTO FIX (Like students.html - without CrossOrigin restrictions)
         window.updateLiveStaffPhoto = function(event) {
             const file = event.target.files[0];
             if (file) {
-                document.getElementById('staffCardAvatarImg').src = URL.createObjectURL(file);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('staffCardAvatarImg').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
         };
 
@@ -814,22 +820,36 @@
             alert('✅ Details Saved Successfully!'); await fetchAllData();
         };
 
-        window.shareStaffPDF = async function() {
-            const btn = document.getElementById('staffSharePdfBtn'); const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
+        // 6. NEW PRINT FUNCTION (Replaces PDF, prints exactly 54x86mm without borders)
+        window.printStaffCard = async function() {
+            const btn = document.getElementById('staffSharePdfBtn'); 
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Preparing...'; btn.disabled = true;
             try {
                 const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
-                const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] });
-                pdf.addImage(imgData, 'JPEG', 0, 0, 54, 86);
-                const filename = `Staff_ID_${(document.getElementById('liveStaffName').value || 'Staff').replace(/ /g,'_')}.pdf`;
-                const pdfBlob = pdf.output('blob');
-                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try { await navigator.share({ files: [file], title: 'Staff ID Card' }); } catch (err) { pdf.save(filename); }
-                } else { pdf.save(filename); }
-            } catch (error) { alert("Could not generate PDF: " + error.message); } finally { btn.innerHTML = originalText; btn.disabled = false; }
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                
+                const printWindow = window.open('', '_blank');
+                if(!printWindow) { alert("Popup blocked! Please allow popups to print."); return; }
+                
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Print ID Card</title>
+                        <style>
+                            @page { size: 54mm 86mm; margin: 0; }
+                            body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; background: #fff; width: 54mm; height: 86mm; }
+                            img { width: 54mm; height: 86mm; object-fit: contain; }
+                        </style>
+                    </head>
+                    <body>
+                        <img src="${imgData}" onload="window.print(); window.close();" />
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+            } catch (error) { alert("Print failed: " + error.message); } 
+            finally { btn.innerHTML = originalText; btn.disabled = false; }
         };
 
         window.shareStaffCard = async function() {
