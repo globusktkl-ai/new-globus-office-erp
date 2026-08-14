@@ -880,13 +880,19 @@
             document.getElementById('staffSealAddress').innerText = a;
         };
 
-        // PHOTO FIX (CORS OMIT)
+        // PRO FIX: Convert Image to Base64 for 100% html2canvas Compatibility
         window.updateLiveStaffPhoto = function(event) {
             const file = event.target.files[0];
             if (file) {
                 const imgEl = document.getElementById('staffCardAvatarImg');
-                imgEl.removeAttribute('crossorigin'); 
-                imgEl.src = URL.createObjectURL(file);
+                imgEl.removeAttribute('crossorigin'); // ബ്രൗസർ സെക്യൂരിറ്റി ബ്ലോക്ക് ഒഴിവാക്കുന്നു
+                
+                // ഫോട്ടോയെ നേരിട്ട് Base64 ഡാറ്റ ആക്കി മാറ്റുന്നു
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imgEl.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
         };
 
