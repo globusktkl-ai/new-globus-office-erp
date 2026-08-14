@@ -1125,7 +1125,12 @@
         window.updateLiveStaffPhoto = function(event) {
             const file = event.target.files[0];
             if (file) {
-                document.getElementById('staffCardAvatarImg').src = URL.createObjectURL(file);
+                // ഫോട്ടോയെ നേരിട്ട് Base64 ഫോർമാറ്റിലേക്ക് മാറ്റുന്നു (html2canvas സപ്പോർട്ട് ചെയ്യാൻ)
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('staffCardAvatarImg').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
         };
 
