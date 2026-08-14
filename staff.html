@@ -544,7 +544,7 @@
                     <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);height:95px;width:100%;position:relative;padding:12px 16px 0;box-sizing:border-box;clip-path:polygon(0 0,100% 0,100% 88%,0 100%);">
                         <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:2">
                             <div style="width:44px;height:44px;background:rgba(255,255,255,.95);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:4px;box-shadow:0 3px 8px rgba(0,0,0,.25);flex-shrink:0">
-                                <img id="staffCardLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" alt="Logo" onerror="this.style.display='none'">
+                                <img id="staffCardLogo" crossorigin="anonymous" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" alt="Logo" onerror="this.style.display='none'">
                             </div>
                             <div style="flex:1;min-width:0">
                                 <div id="staffCardInstName" style="font-size:15px;font-weight:900;color:#fff;line-height:1.1;letter-spacing:1.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Segoe UI',Arial,sans-serif">GLOBUS</div>
@@ -563,7 +563,7 @@
 
                     <div style="text-align:center;margin-top:-8px;position:relative;z-index:5">
                         <div style="display:inline-block;padding:4px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,.2),0 0 0 1px #e2e8f0">
-                            <img id="staffCardAvatarImg" src="" style="width:90px;height:105px;object-fit:cover;border-radius:10px;display:block">
+                            <img id="staffCardAvatarImg" crossorigin="anonymous" src="" style="width:90px;height:105px;object-fit:cover;border-radius:10px;display:block">
                         </div>
                     </div>
 
@@ -678,7 +678,7 @@
                 <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2">
                     <div style="display:flex;align-items:center;gap:14px">
                         <div style="width:60px;height:60px;background:#fff;border-radius:10px;padding:6px;box-shadow:0 4px 12px rgba(0,0,0,.3);flex-shrink:0">
-                            <img id="salaryLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
+                            <img id="salaryLogo" crossorigin="anonymous" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
                         </div>
                         <div>
                             <div id="salaryInstName" style="font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;line-height:1.1;text-transform:uppercase">GLOBUS</div>
@@ -810,17 +810,62 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
+        // --- MAGIC ALERT OVERRIDE (Applies to ALL alerts in this file) ---
+        window.alert = function(msg) {
+            const oldBox = document.getElementById('customAlertBox');
+            if (oldBox) oldBox.remove();
+            const box = document.createElement('div');
+            box.id = 'customAlertBox';
+            let borderColor = '#3b82f6'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('failed') || msg.includes('required') || msg.includes('Please')) borderColor = '#ef4444'; 
+            else if (msg.includes('✅') || msg.includes('success') || msg.includes('added') || msg.includes('recorded') || msg.includes('processed')) borderColor = '#10b981'; 
+            
+            box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
+            box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
+            if(!document.querySelector('style#alertAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="alertAnim">@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}</style>'); }
+            document.body.appendChild(box);
+            setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
+        };
+        // ------------------------------------------------------------------
+
         let allStaff = [], allAdvances = [], allSalaryPayments = [];
         let instSettings = null;
         let payrollAdvances = []; 
         let currentStaffCardData = null; 
         let lastProcessedPaymentId = null; 
 
-        // ===================== AUTH =====================
+        // ===================== AUTH & GUEST SECURITY =====================
         async function init() {
             try {
+                const userRole = localStorage.getItem('userRole') || 'Admin';
                 const { data: { session } } = await supabase.auth.getSession();
-                if (!session) { window.location.href = 'login.html'; return; }
+                
+                if (!session && userRole !== 'Guest') { 
+                    window.location.href = 'login.html'; 
+                    return; 
+                }
+
+                // Guest Restrictions for Staff Page
+                if (userRole === 'Guest') {
+                    setTimeout(() => {
+                        const actionButtons = document.querySelectorAll('.frm-submit, .sc-btn-archive');
+                        actionButtons.forEach(btn => {
+                            const btnText = btn.innerText.toLowerCase();
+                            if(btnText.includes('save') || btnText.includes('update') || btnText.includes('archive') || btnText.includes('record') || btnText.includes('process')) {
+                                btn.onclick = function(e) {
+                                    e.preventDefault(); e.stopPropagation();
+                                    alert("⚠️ This action is disabled in Guest/Demo mode.");
+                                    return false;
+                                };
+                            }
+                        });
+                        const fabBtn = document.querySelector('.fab-add');
+                        if(fabBtn) {
+                            fabBtn.onclick = function(e) { e.preventDefault(); alert("⚠️ This action is disabled in Guest/Demo mode."); return false; }
+                        }
+                    }, 1000);
+                }
+
                 await loadInstSettings();
                 await fetchAllData();
             } catch(e) { console.error("Init error:", e); }
