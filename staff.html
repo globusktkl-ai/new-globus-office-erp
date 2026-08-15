@@ -2,486 +2,183 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Staff & HR - Globus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directory - Globus Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
     <style>
-        *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-        body{background:#f8fafc;min-height:100vh;padding-bottom:90px;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;overflow-x:hidden}
-        .main-content{padding:12px;max-width:800px;margin:0 auto;width:100%}
+        /* Shared Styles */
+        * { box-sizing: border-box; }
+        body { background-color: #f8fafc; padding-bottom: 80px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden;}
+        .main-content { padding: 15px; max-width: 800px; margin: 0 auto; width: 100%; }
 
-        /* Back Button */
-        .btn-back-dashboard{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #cbd5e1;padding:8px 16px;border-radius:10px;color:#1e293b;font-weight:800;font-size:14px;text-decoration:none;box-shadow:0 4px 6px rgba(0,0,0,.05),inset 0 -2px 0 rgba(226,232,240,.8);transition:.2s;cursor:pointer}
-        .btn-back-dashboard:hover{transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,.08),inset 0 -2px 0 rgba(226,232,240,.8);border-color:#94a3b8;}
-        .btn-back-dashboard:active{transform:translateY(1px);box-shadow:0 1px 2px rgba(0,0,0,.05)}
-        .btn-back-dashboard svg{width:22px;height:22px;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none;stroke:#4c1d95}
-        .top-nav{display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:20px;border-bottom:2px solid #e2e8f0;padding-bottom:15px;min-height:45px}
-        .top-nav .btn-back-dashboard{position:absolute;left:0;top:50%;transform:translateY(-50%)}
-        .page-title{font-size:18px;font-weight:900;color:#0f172a;margin:0;text-transform:uppercase;letter-spacing:-.5px;text-align:center;width:100%;padding:0 50px}
-        @media(max-width:600px){.btn-back-dashboard span{display:none}.btn-back-dashboard{padding:10px}.page-title{font-size:15px;padding:0 42px}}
-
-        /* Tabs */
-        .staff-tabs{display:flex;gap:6px;margin-bottom:18px}
-        .staff-tab-btn{flex:1;padding:10px 4px;background:#fff;border:1.5px solid #cbd5e1;border-radius:10px;font-size:11px;font-weight:800;color:#475569;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;box-shadow:0 2px 4px rgba(0,0,0,.02)}
-        .staff-tab-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
-        .staff-tab-btn.active{background:#1e3a8a;color:#fff;border-color:#1e3a8a;box-shadow:0 4px 12px rgba(30,58,138,.25)}
-        .staff-tab-btn:active{transform:scale(.96)}
-        .tab-panel{display:none;animation:fadeUp .3s ease;width:100%;box-sizing:border-box;overflow-x:hidden}
-        .tab-panel.active{display:block}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-        /* Search & Filters */
-        .search-filter-card{background:#fff;border-radius:14px;padding:12px;margin-bottom:16px;box-shadow:0 4px 14px rgba(15,23,42,.04);border:1px solid #e2e8f0}
-        .sf-search{width:100%;padding:10px 12px 10px 36px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:13px;font-weight:600;outline:none;background:#f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>') no-repeat 10px center;margin-bottom:10px;transition:.2s}
-        .sf-search:focus{border-color:#3b82f6;background-color:#fff;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
-        .sf-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-        .sf-select{width:100%;padding:9px 8px;border:1.5px solid #cbd5e1;border-radius:9px;font-size:12px;font-weight:700;color:#1e293b;background:#f8fafc;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
-
-        /* Staff Card */
-        .staff-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(15,23,42,.04);transition:.2s}
-        .sc-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;border-bottom:1px dashed #e2e8f0;padding-bottom:12px}
-        .sc-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f1f5f9}
-        .sc-avatar img,.sc-avatar svg{width:100%;height:100%;object-fit:cover;object-position:center top;}
-        .sc-name{font-size:17px;font-weight:900;color:#0f172a;text-transform:uppercase;line-height:1.2;margin-bottom:4px}
-        .sc-role-badge{display:inline-block;background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1d4ed8;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px}
-        .sc-row{display:flex;align-items:flex-start;margin-bottom:6px;font-size:13px}
-        .sc-label{width:100px;color:#64748b;font-weight:700;flex-shrink:0;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
-        .sc-value{flex:1;color:#1e293b;font-weight:800}
-        .sc-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;border-top:1px dashed #e2e8f0;padding-top:12px}
-        .sc-actions-full{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px}
-        .sc-btn{border:none;padding:11px 6px;border-radius:10px;font-weight:800;cursor:pointer;font-size:12px;text-align:center;transition:.2s;display:flex;justify-content:center;align-items:center;gap:5px;box-shadow:0 3px 6px rgba(0,0,0,.08)}
-        .sc-btn:active{transform:scale(.95)}
-        .sc-btn-view{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff}
-        .sc-btn-id{background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff}
-        .sc-btn-archive{background:transparent;color:#ea580c;border:1.5px solid #fdba74}
-
-        /* FAB */
-        .fab-add{position:fixed;bottom:24px;right:20px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;font-size:28px;font-weight:300;cursor:pointer;box-shadow:0 8px 20px rgba(37,99,235,.35);z-index:50;display:flex;align-items:center;justify-content:center;transition:.2s}
-        .fab-add:active{transform:scale(.9)}
-
-        /* Modal */
-        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,.88);z-index:100;justify-content:center;align-items:flex-start;padding:15px;overflow-y:auto;backdrop-filter:blur(4px)}
-        .modal-sheet{background:#fff;width:100%;max-width:500px;border-radius:16px;padding:22px;margin:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,.4);animation:sheetUp .3s ease;position:relative;overflow:hidden}
-        @keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
-        .modal-close{position:absolute;top:12px;right:12px;background:#ef4444;color:#fff;border:2px solid #fff;border-radius:50%;width:34px;height:34px;font-weight:bold;cursor:pointer;box-shadow:0 4px 8px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:15px;z-index:10}
-        .modal-close:active{transform:scale(.9)}
-        .modal-title{font-size:18px;font-weight:900;color:#0f172a;margin:0 0 18px;padding-right:40px}
-
-        /* FORM LABELS & INPUTS */
-        .frm-label{font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;display:block}
-        .frm-input,.frm-select{
-            width:100%; max-width:100%; min-width:0; box-sizing:border-box; padding:11px 12px; border:1.5px solid #cbd5e1;
-            border-radius:9px; font-size:14px; font-weight:600; outline:none; margin:0 0 12px 0; background:#f8fafc; transition:.2s; display:block;
-        }
-        .frm-input:focus,.frm-select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1);background:#fff}
-        .frm-group{width:100%;max-width:100%;margin-bottom:12px;min-width:0;box-sizing:border-box;}
-        .frm-group .frm-input,.frm-group .frm-select{margin-bottom:0;}
-        .frm-row{display:grid;grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);gap:10px;width:100%;max-width:100%;margin-bottom:12px;min-width:0;box-sizing:border-box;}
-        .frm-row > div{min-width:0;width:100%;max-width:100%;box-sizing:border-box;overflow:hidden;}
-        .frm-row .frm-input, .frm-row .frm-select{width:100%;max-width:100%;min-width:0;box-sizing:border-box;margin:0;}
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 1000; justify-content: center; align-items: flex-start; padding: 20px; overflow-y: auto; backdrop-filter: blur(5px); }
+        .modal-container { background: #fff; width: 100%; max-width: 780px; border-radius: 16px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); margin: auto; display: flex; gap: 20px; flex-wrap: wrap; position: relative; }
         
-        .frm-submit{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;color:#fff;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 12px rgba(16,185,129,.25);margin-top:10px;box-sizing:border-box}
-        .frm-submit:active{transform:scale(.97)}
-        .frm-submit:disabled{background:#94a3b8;cursor:not-allowed;box-shadow:none}
+        /* Premium 3D Back to Dashboard Button (100% Original user CSS) */
+        .btn-back-dashboard { display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; position: absolute; left: 0; top: 50%; transform: translateY(-50%); z-index: 10;}
+        .btn-back-dashboard:hover { transform: translateY(-50%) scale(0.98); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
+        .btn-back-dashboard:active { transform: translateY(-50%) scale(0.95); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); stroke: #4c1d95;}
 
-        @media (max-width: 500px) { .modal-sheet{padding:18px 16px} .frm-row{gap:8px} .frm-input,.frm-select{padding:10px 10px;font-size:13px} }
+        .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; min-height: 45px;}
+        .page-title { font-size: 20px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; text-align: center; width: 100%; padding: 0 45px;}
 
-        /* ADVANCE CARD */
-        .adv-card{
-            background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:14px; margin-bottom:10px;
-            box-shadow:0 2px 8px rgba(15,23,42,.03); width:100%; max-width:100%; box-sizing:border-box; overflow-x:hidden; word-wrap:break-word; overflow-wrap:break-word;
+        @media (max-width: 600px) { .btn-back-dashboard span { display: none; } .btn-back-dashboard { padding: 10px; } .page-title { padding: 0 50px; } }
+
+        /* --------------------------------------------------- */
+        /* PERFECT ADVANCED FILTER UI (Original Match + Dropdown Fix) */
+        /* --------------------------------------------------- */
+        .search-container { background: white; border-radius: 12px; padding: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; width: 100%;}
+        
+        .main-search-box { width: 100%; padding: 10px 12px 10px 35px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 10px center; margin-bottom: 10px; transition: 0.2s;}
+        .main-search-box:focus { border-color: #4c1d95; background-color: #fff; box-shadow: 0 0 0 3px rgba(76, 29, 149, 0.1); }
+
+        .filter-layout { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 8px; align-items: stretch; width: 100%; }
+        .filter-left { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .filter-row { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 8px; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 0; }
+        .filter-checkbox { width: 18px; height: 18px; accent-color: #4c1d95; cursor: pointer; flex-shrink: 0; margin: 0; }
+        
+        /* Dropdown arrow overflow fix: Added background SVG and padding */
+        .filter-select { flex: 1; min-width: 0; max-width: 100%; padding: 4px; padding-right: 18px; border: none; background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%231e293b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>') no-repeat right center; font-size: 13px; font-weight: 700; color: #1e293b; appearance: none; -webkit-appearance: none; outline: none; transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;}
+        .filter-select:invalid { color: #94a3b8; font-weight: 600; }
+
+        .filter-right { display: flex; min-width: 0; }
+        .status-select { width: 100%; min-width: 0; padding: 8px 5px; border: 2px solid #bbf7d0; border-radius: 8px; font-size: 13px; font-weight: 800; background: #f0fdf4; color: #15803d; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .status-select option { font-weight: 700; }
+
+        @media(max-width: 450px) {
+            .filter-layout { grid-template-columns: minmax(0, 1fr) 100px; }
+            .filter-select { font-size: 12px; }
+            .status-select { font-size: 12px; }
         }
-        .adv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:10px;flex-wrap:wrap;min-width:0;}
-        .adv-name{font-weight:900;color:#0f172a;font-size:14px;word-wrap:break-word;overflow-wrap:break-word;white-space:normal;min-width:0;flex:1;}
-        .adv-amount{font-weight:900;color:#ef4444;font-size:16px;white-space:nowrap;flex-shrink:0;}
-        .adv-meta{font-size:11px;color:#64748b;font-weight:600;display:flex;gap:12px;flex-wrap:wrap;word-wrap:break-word;overflow-wrap:break-word;}
-        .adv-meta span{word-wrap:break-word;overflow-wrap:break-word;white-space:normal;min-width:0;}
-        .adv-status{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:800;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
-        .adv-status.unpaid{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
-        .adv-status.paid{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
 
-        #advancesList, #salaryHistory, #staffList {width:100%;max-width:100%;box-sizing:border-box;overflow-x:hidden;}
+        /* --------------------------------------------------- */
+        /* Student Cards (100% Original User CSS)              */
+        /* --------------------------------------------------- */
+        .student-mobile-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s; width: 100%; }
+        .smc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 15px; }
+        .smc-name { font-size: 19px; font-weight: 900; color: #0f172a; margin-bottom: 4px; line-height: 1.2; text-transform: uppercase;}
+        .smc-reg { font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .avatar-circle { width: 65px; height: 65px; border-radius: 50%; background: #fbcfe8; border: 3px solid #fdf2f8; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; flex-shrink: 0;}
+        .avatar-circle svg { width: 40px; height: 40px; fill: #ec4899; margin-top: 10px;}
+        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .smc-row { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 14px; }
+        .smc-label { width: 110px; color: #64748b; font-weight: 700; flex-shrink: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .smc-value { flex: 1; color: #1e293b; font-weight: 800; }
+        .badge-sslc { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 800; color: #334155; display: inline-block;}
 
-        /* PAYROLL CARD */
-        .payroll-card{background:#fff;border-radius:16px;padding:20px;border:1px solid #e2e8f0;box-shadow:0 4px 14px rgba(15,23,42,.04);margin-bottom:16px;overflow:hidden;width:100%;max-width:100%;box-sizing:border-box;}
-        .pay-summary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:16px 0;width:100%;box-sizing:border-box}
-        .pay-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;min-width:0;overflow:hidden;box-sizing:border-box}
-        .pay-box-label{font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
-        .pay-box-value{font-size:18px;font-weight:900;line-height:1.1;word-break:break-word}
-        .pay-net{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid #10b981;border-radius:12px;padding:16px;text-align:center;margin:14px 0}
-        .pay-net-label{font-size:12px;font-weight:800;color:#047857;text-transform:uppercase;margin-bottom:4px}
-        .pay-net-value{font-size:28px;font-weight:900;color:#047857;word-break:break-word}
+        /* PROGRESS BAR STYLES */
+        .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 10px; height: 16px; margin: 10px 0 15px; position: relative; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+        .progress-fill { height: 100%; border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 10px; font-weight: 900; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: width 0.5s ease-in-out; }
+        .progress-fill.active { background: linear-gradient(90deg, #3b82f6, #6366f1); }
+        .progress-fill.completed { background: linear-gradient(90deg, #10b981, #059669); }
+        .progress-text-out { position: absolute; width: 100%; text-align: center; top: 0; left: 0; font-size: 10px; font-weight: 800; color: #475569; line-height: 16px; z-index: 1; mix-blend-mode: overlay;}
 
-        @media (max-width: 500px) { .payroll-card{padding:16px 14px} }
+        /* PROFESSIONAL BUTTON STYLES (Original user CSS restored) */
+        .card-action-btns { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
+        .btn-card { border: none; padding: 12px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 13px; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .btn-view { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #fff; }
+        .btn-del-full { background: transparent; color: #ef4444; border: 1px solid #fca5a5; width: 100%; padding: 12px; margin-top: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 14px; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-del-full:hover { background: #fef2f2; }
 
-        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button{ -webkit-appearance:none; -moz-appearance:none; appearance:none; margin:0; display:none;}
-        input[type=number]{ -moz-appearance:textfield; appearance:textfield; }
+        /* MODAL LAYOUTS */
+        .close-modal-btn { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; border: 2px solid white; border-radius: 50%; width: 36px; height: 36px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.2s; }
+        .form-control-cert { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; margin-bottom: 12px; outline: none; font-weight: 500; }
+        
+        .loading-state, .empty-state { text-align: center; padding: 40px 20px; color: #64748b; font-weight: 700; font-size: 15px; background: white; border-radius: 12px; border: 1px dashed #cbd5e1; }
 
-        /* STUDIO MODAL LAYOUT */
-        .card-modal-container{background:#fff;width:100%;max-width:780px;border-radius:16px;padding:25px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5);margin:auto;display:flex;gap:20px;flex-wrap:wrap;position:relative;}
-        .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; padding-top: 20px; position: relative; }
-        .card-edit-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
-        @media(max-width:650px){ .card-preview-col,.card-edit-col{min-width:100%;width:100%} .card-modal-container{padding:15px;margin-top:10px} }
-
-        /* MODERN PREMIUM STUDIO BUTTONS */
-        .studio-btn {
-            padding: 12px;
-            border: none;
-            outline: none;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 13px;
-            color: #ffffff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        @media (max-width: 650px) {
+            .modal-container { padding: 15px; margin-top: 10px; }
+            .close-modal-btn { top: 10px; right: 10px; }
         }
-        .studio-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 10px -1px rgba(0,0,0,0.15); }
-        .studio-btn:active { transform: scale(0.96); }
-
-        .btn-print { background: linear-gradient(135deg, #ef4444, #b91c1c); }
-        .btn-image { background: linear-gradient(135deg, #10b981, #047857); }
-        .btn-reset { background: linear-gradient(135deg, #f59e0b, #b45309); }
-        .btn-save-full { background: linear-gradient(135deg, #4f46e5, #1d4ed8); width: 100%; padding: 14px; font-size: 14px; margin-top: 5px;}
 
     </style>
 </head>
-<body>
-    <main class="main-content">
+<body class="bg-slate-50">
+    
+    <main class="main-content no-print">
         <div class="top-nav">
             <a href="dashboard.html" class="btn-back-dashboard">
-                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
-                <span>Dashboard</span>
+                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
-            <h1 class="page-title">Staff & HR Management</h1>
+            <h1 class="page-title">Student Directory</h1>
         </div>
-
-        <div class="staff-tabs">
-            <button class="staff-tab-btn active" onclick="switchStaffTab('directory')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Directory</button>
-            <button class="staff-tab-btn" onclick="switchStaffTab('advances')"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Advances</button>
-            <button class="staff-tab-btn" onclick="switchStaffTab('payroll')"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> Payroll</button>
-        </div>
-
-        <!-- TAB 1: DIRECTORY -->
-        <div id="panel-directory" class="tab-panel active">
-            <div class="search-filter-card">
-                <input type="text" class="sf-search" id="staffSearch" placeholder="Search name or phone..." oninput="renderDirectory()">
-                <div class="sf-row">
-                    <select class="sf-select" id="filterRole" onchange="renderDirectory()"><option value="all">All Roles</option></select>
-                    <select class="sf-select" id="filterStatus" onchange="renderDirectory()">
-                        <option value="active">🟢 Active</option>
-                        <option value="archived">🗄️ Archived</option>
-                        <option value="all">📁 All</option>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" class="main-search-box" placeholder="Search Name, Reg No, Phone..." oninput="window.applyFilters()">
+            
+            <div class="filter-layout">
+                <div class="filter-left">
+                    <div class="filter-row">
+                        <input type="checkbox" id="chkCourse" class="filter-checkbox" onchange="window.applyFilters()">
+                        <select id="courseSelect" class="filter-select" required onchange="document.getElementById('chkCourse').checked = true; window.updateFilterModules(); window.applyFilters();">
+                            <option value="" disabled selected hidden>Select Course</option>
+                        </select>
+                    </div>
+                    <div class="filter-row">
+                        <input type="checkbox" id="chkModule" class="filter-checkbox" onchange="window.applyFilters()">
+                        <select id="moduleSelect" class="filter-select" required onchange="document.getElementById('chkModule').checked = true; window.applyFilters();">
+                            <option value="" disabled selected hidden>Select Module</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="filter-right">
+                    <select id="statusFilter" class="status-select" onchange="window.updateStatusColor(this); window.applyFilters();">
+                        <option value="active" selected>🟢 Active</option>
+                        <option value="completed">🎓 Completed</option>
+                        <option value="archived">🗄️ Archived (Old Students)</option>
+                        <option value="all">📁 All Students</option>
                     </select>
                 </div>
             </div>
-            <div id="staffList"><div class="empty-state">Loading staff data...</div></div>
-            <button class="fab-add" onclick="openModal('addStaffModal')" title="Add New Staff">+</button>
         </div>
-
-        <!-- TAB 2: ADVANCES -->
-        <div id="panel-advances" class="tab-panel">
-            <div class="payroll-card">
-                <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Record Staff Advance</h3>
-                <div class="frm-group"><label class="frm-label">Select Staff</label><select class="frm-select" id="advStaffSelect"><option value="">-- Choose Staff --</option></select></div>
-                <div class="frm-row">
-                    <div><label class="frm-label">Amount (₹)</label><input type="number" class="frm-input" id="advAmount" placeholder="0" min="0"></div>
-                    <div><label class="frm-label">Date</label><input type="date" class="frm-input" id="advDate"></div>
-                </div>
-                <div class="frm-group"><label class="frm-label">Remarks (Optional)</label><input type="text" class="frm-input" id="advRemarks" placeholder="Purpose of advance..."></div>
-                <button class="frm-submit" id="advSubmitBtn" onclick="saveAdvance()">💰 Record Advance</button>
-            </div>
-            <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Recent Advances</h3>
-            <div id="advancesList"><div class="empty-state">Loading advances...</div></div>
-        </div>
-
-        <!-- TAB 3: PAYROLL -->
-        <div id="panel-payroll" class="tab-panel">
-            <div class="payroll-card">
-                <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Process Monthly Salary</h3>
-                <div class="frm-row">
-                    <div><label class="frm-label">Month</label><input type="month" class="frm-input" id="payMonth"></div>
-                    <div><label class="frm-label">Select Staff</label><select class="frm-select" id="payStaffSelect" onchange="loadPayrollDetails()"><option value="">-- Choose --</option></select></div>
-                </div>
-                <div id="payrollDetails" style="display:none">
-                    <div class="pay-summary">
-                        <div class="pay-box"><div class="pay-box-label">Basic Salary</div><div class="pay-box-value" id="paySalary" style="color:#1d4ed8">₹ 0</div></div>
-                        <div class="pay-box"><div class="pay-box-label">Advance Deduction</div><div class="pay-box-value" id="payDeduction" style="color:#ef4444">₹ 0</div></div>
-                    </div>
-                    <div class="pay-net"><div class="pay-net-label">Net Payable Amount</div><div class="pay-net-value" id="payNet">₹ 0</div></div>
-                    <button class="frm-submit" id="payProcessBtn" onclick="processSalary()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25)">💳 Process Salary</button>
-                    <button class="frm-submit" id="paySlipBtn" onclick="downloadLastSlip()" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 12px rgba(245,158,11,.25);margin-top:10px;display:none">📄 Download Salary Slip</button>
-                    <button class="frm-submit" id="payLedgerBtn" onclick="downloadStaffLedger()" style="background:linear-gradient(135deg,#4f46e5,#3b82f6);box-shadow:0 4px 12px rgba(79,70,229,.25);margin-top:10px;">📊 Download Full Payment Ledger</button>
-                </div>
-            </div>
-            <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Payment History</h3>
-            <div id="salaryHistory"><div class="empty-state">Process a salary to see history.</div></div>
-        </div>
+        
+        <div id="studentsList"><div class="loading-state">Loading students database...</div></div>
     </main>
 
-    <!-- ADD STAFF MODAL -->
-    <div id="addStaffModal" class="modal-overlay">
-        <div class="modal-sheet">
-            <button class="modal-close" onclick="closeModal('addStaffModal')">×</button>
-            <h2 class="modal-title">➕ Add New Staff</h2>
-            <div class="frm-group"><label class="frm-label">Full Name *</label><input type="text" class="frm-input" id="addName" required></div>
-            <div class="frm-row">
-                <div><label class="frm-label">Phone *</label><input type="tel" class="frm-input" id="addPhone" maxlength="10"></div>
-                <div><label class="frm-label">Gender</label><select class="frm-select" id="addGender"><option value="Male">Male</option><option value="Female">Female</option></select></div>
-            </div>
-            <div class="frm-group"><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="addRole" placeholder="e.g. Teacher"></div>
-            <div class="frm-row">
-                <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="addSalary" min="0"></div>
-                <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="addJoinDate"></div>
-            </div>
-            <div class="frm-group"><label class="frm-label">Qualification</label><input type="text" class="frm-input" id="addQual" placeholder="e.g. B.Ed"></div>
-            <div class="frm-group"><label class="frm-label">Address</label><input type="text" class="frm-input" id="addAddress" placeholder="Full address"></div>
-            <button class="frm-submit" id="addStaffBtn" onclick="saveNewStaff()">✅ Save Staff Member</button>
-        </div>
-    </div>
-
-    <!-- VIEW/EDIT STAFF MODAL -->
-    <div id="editStaffModal" class="modal-overlay">
-        <div class="modal-sheet">
-            <button class="modal-close" onclick="closeModal('editStaffModal')">×</button>
-            <h2 class="modal-title">✏️ Edit Staff Profile</h2>
-            <input type="hidden" id="editId">
-            <div class="frm-group"><label class="frm-label">Full Name *</label><input type="text" class="frm-input" id="editName"></div>
-            <div class="frm-row">
-                <div><label class="frm-label">Phone *</label><input type="tel" class="frm-input" id="editPhone" maxlength="10"></div>
-                <div><label class="frm-label">Gender</label><select class="frm-select" id="editGender"><option value="Male">Male</option><option value="Female">Female</option></select></div>
-            </div>
-            <div class="frm-group"><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="editRole"></div>
-            <div class="frm-row">
-                <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="editSalary" min="0"></div>
-                <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="editJoinDate"></div>
-            </div>
-            <div class="frm-group"><label class="frm-label">Status</label><select class="frm-select" id="editStatus"><option value="active">Active</option><option value="archived">Archived</option></select></div>
-            <div class="frm-group"><label class="frm-label">Address</label><input type="text" class="frm-input" id="editAddress"></div>
-            <button class="frm-submit" onclick="updateStaff()">💾 Update Profile</button>
-        </div>
-    </div>
-
-    <!-- NEW ID CARD STUDIO MODAL (Replicated exactly from students.html) -->
-    <div id="staffCardModal" class="modal-overlay">
-        <div class="card-modal-container">
-            <button class="modal-close" onclick="closeModal('staffCardModal')">×</button>
-            
-            <div class="card-preview-col">
-                <!-- SIMPLE, BULLETPROOF DESIGN FOR HTML2CANVAS -->
-                <div id="smartCardContent" style="width: 280px; height: 445px; background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin:0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
-                    
-                    <!-- Staff specific design: Sleek banner instead of circle -->
-                    <div style="background: #0f172a; height: 110px; width: 100%; position: absolute; top: 0; left: 0; z-index: 1;"></div>
-                    <div style="background: #fbbf24; height: 5px; width: 100%; position: absolute; top: 110px; left: 0; z-index: 1;"></div>
-            
-                    <div style="position: relative; width: 100%; height: 50px; margin-top: 15px; margin-bottom: 20px; z-index: 2;">
-                        <img id="cardInstLogo" src="assets/images/logo.png" style="position: absolute; left: 15px; top: -4px; width: 50px; height: 50px; object-fit: contain; border: none; padding: 0; background: transparent;" alt="Logo" onerror="this.style.display='none'">
-                        <div style="position: absolute; left: 75px; right: 10px; top: 4px; text-align: left; z-index: 3;">
-                            <div id="cardInstName" style="font-size: 16px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GLOBUS</div>
-                            <div id="cardSubName" style="font-size: 7px; font-weight: 700; color: #fbbf24; letter-spacing: 0.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TECHNICAL ACADEMY</div>
-                            <div id="cardAddress" style="font-size: 5px; color: #e2e8f0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;"></div>
-                        </div>
-                    </div>
-            
-                    <div style="background: #f1f5f9; color: #0f172a; font-size: 11px; font-weight: 900; text-align: center; padding: 4px 0; width: 60%; margin: 0 auto 15px; border-radius: 4px; position: relative; z-index: 2; letter-spacing: 1px;">STAFF ID CARD</div>
-            
-                    <div style="text-align: center; margin-bottom: 15px; position: relative; z-index: 2;">
-                        <!-- FIX FOR ASPECT RATIO: object-fit:cover and object-position: center top added -->
-                        <img id="cardAvatarImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>" style="width: 95px; height: 120px; object-fit: cover !important; object-position: center top !important; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 4px; background: #fff; display: inline-block;">
-                    </div>
-            
-                    <div style="padding: 0 20px; text-align: left; position: relative; z-index: 2;">
-                        <div style="margin-bottom: 10px;">
-                            <div style="font-size: 8px; color: #64748b; font-weight: 800; letter-spacing: 1px;">EMPLOYEE NAME</div>
-                            <div id="cardStaffName" style="font-size: 16px; font-weight: 900; color: #0f172a;">STAFF NAME</div>
-                        </div>
-                        <div style="margin-bottom: 15px;">
-                            <div style="font-size: 8px; color: #64748b; font-weight: 800; letter-spacing: 1px;">DESIGNATION</div>
-                            <div id="cardStaffRole" style="font-size: 13px; font-weight: 800; color: #2563eb;">DESIGNATION</div>
-                        </div>
-            
-                        <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; width: 100%; box-sizing: border-box;">
-                            <div style="text-align:left;">
-                                <div style="font-size: 7px; color: #64748b; font-weight: 800;">EMP ID</div>
-                                <div id="cardEmpId" style="font-size: 12px; font-weight: 900; color: #0f172a;">-</div>
-                            </div>
-                            <div style="text-align:right;">
-                                <div style="font-size: 7px; color: #64748b; font-weight: 800;">CONTACT</div>
-                                <div id="cardPhone" style="font-size: 12px; font-weight: 900; color: #0f172a;">-</div>
-                            </div>
-                        </div>
-                    </div>
-            
-                    <div style="position: absolute; bottom: 8px; left: 0; width: 100%; font-size: 6px; color: #94a3b8; font-weight: 700; text-align: center; z-index: 2;">Property of Institute • Return to: <span id="cardReturnPhone">+91 9846000000</span></div>
+    <!-- STUDENT MODAL -->
+    <div id="studentModal" class="modal-overlay">
+        
+        <!-- View/Edit Profile -->
+        <div id="viewEditContainer" class="modal-container no-print" style="display:none; max-width:550px;">
+            <button onclick="window.closeModal()" class="close-modal-btn">×</button>
+            <div style="width: 100%;">
+                <div style="margin-bottom:20px;">
+                    <h3 style="font-size:20px; font-weight:900; color:#1e293b; margin:0;">Profile Details</h3>
+                    <p style="color:#64748b; font-size:13px; font-weight:600; margin-top:2px;">View and update student information</p>
                 </div>
-            </div>
-
-            <div class="card-edit-col">
-                <div style="margin-bottom:14px;border-bottom:2px dashed #e2e8f0;padding-bottom:10px">
-                    <h3 style="font-size:16px;font-weight:900;color:#0f172a;margin:0">🎨 ID Card Studio</h3>
-                    <p style="color:#64748b;font-size:11px;font-weight:600;margin:2px 0 0">Edit and generate premium ID card</p>
-                </div>
-
-                <div style="background:#fff;padding:12px;border-radius:10px;margin-bottom:14px;border:1px solid #cbd5e1">
-                    <label class="frm-label" style="margin-bottom:8px">🏢 Institute Settings (Card Only)</label>
-                    <div class="frm-row" style="margin-bottom:8px">
-                        <div><input type="text" class="frm-input" id="liveInstName" placeholder="Institute Name" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px"></div>
-                        <div><input type="text" class="frm-input" id="liveInstSub" placeholder="Sub Name" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px"></div>
-                    </div>
-                    <input type="text" class="frm-input" id="liveInstAddress" placeholder="Full Address" oninput="window.updateStaffInstUI()" style="margin-bottom:0;font-size:12px;padding:8px">
-                </div>
-
-                <div class="frm-group">
-                    <label class="frm-label">Upload Photo (Auto-preview)</label>
-                    <input type="file" id="liveStaffPhotoInput" accept="image/*" class="frm-input" onchange="window.updateLiveStaffPhoto(event)" style="padding:8px;font-size:12px">
-                </div>
-
-                <div class="frm-group"><label class="frm-label">Staff Name</label><input type="text" class="frm-input" id="liveStaffName" oninput="document.getElementById('cardStaffName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')"></div>
-                <div class="frm-group"><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="liveStaffRole" oninput="document.getElementById('cardStaffRole').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')"></div>
-
-                <div class="frm-row">
-                    <div><label class="frm-label">Emp ID</label><input type="text" class="frm-input" id="liveStaffEmpId" oninput="document.getElementById('cardEmpId').innerText = this.value || 'N/A'"></div>
-                    <div><label class="frm-label">Phone</label><input type="text" class="frm-input" id="liveStaffPhone" maxlength="10" oninput="document.getElementById('cardPhone').innerText = this.value || 'N/A'"></div>
-                </div>
-
-                <!-- NEW MODERN BUTTONS UI FIX -->
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:15px;margin-bottom:15px;">
-                    <button type="button" id="staffSharePdfBtn" onclick="window.printStaffCard()" class="studio-btn btn-print">🖨️ Print (PDF)</button>
-                    <button type="button" id="staffShareCardBtn" onclick="window.shareStaffCard()" class="studio-btn btn-image">🔗 Image</button>
-                    <button type="button" onclick="window.confirmStaffStudioReset()" class="studio-btn btn-reset">🔄 Reset</button>
-                </div>
-
-                <hr style="border:none;border-top:1px dashed #cbd5e1;margin:6px 0 12px">
-                <button type="button" onclick="window.saveStaffCardDataToDB()" class="studio-btn btn-save-full">💾 Save Changes</button>
+                <div id="viewEditContent"></div>
             </div>
         </div>
-    </div>
 
-    <!-- SALARY SLIP TEMPLATE -->
-    <div id="salarySlipTemplate" style="position:absolute;top:-9999px;left:-9999px;z-index:-1;display:block">
-        <div id="salarySlipRender" style="width:550px;height:780px;background:#fff;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif;position:relative;overflow:hidden">
-            <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);padding:24px 30px 22px;position:relative;overflow:hidden">
-                <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2">
-                    <div style="display:flex;align-items:center;gap:14px">
-                        <div style="width:60px;height:60px;background:#fff;border-radius:10px;padding:6px;box-shadow:0 4px 12px rgba(0,0,0,.3);flex-shrink:0">
-                            <img id="salaryLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
-                        </div>
-                        <div>
-                            <div id="salaryInstName" style="font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;line-height:1.1;text-transform:uppercase">GLOBUS</div>
-                            <div id="salaryInstSub" style="font-size:10px;font-weight:700;color:#fbbf24;letter-spacing:1.5px;margin-top:3px;text-transform:uppercase">TECHNICAL ACADEMY</div>
-                            <div id="salaryInstAddress" style="font-size:9px;color:#cbd5e1;font-weight:500;margin-top:4px"></div>
-                        </div>
-                    </div>
-                    <div style="text-align:right">
-                        <div style="background:#fbbf24;color:#0f172a;padding:8px 14px;border-radius:6px;font-size:14px;font-weight:900;letter-spacing:2px;box-shadow:0 3px 8px rgba(0,0,0,.2)">SALARY SLIP</div>
-                        <div id="salarySlipNo" style="font-size:10px;color:#cbd5e1;margin-top:6px;font-weight:700;letter-spacing:1px">SLIP #: ---</div>
-                    </div>
-                </div>
-                <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:linear-gradient(135deg,transparent 60%,rgba(251,191,36,.12) 60%);pointer-events:none"></div>
-            </div>
-
-            <div style="height:4px;background:linear-gradient(90deg,#fbbf24 0%,#f59e0b 50%,#fbbf24 100%);box-shadow:0 2px 4px rgba(251,191,36,.4)"></div>
-
-            <div style="padding:22px 30px;position:relative">
-                <div style="background:#f1f5f9;border-left:4px solid #1e3a8a;padding:10px 14px;border-radius:4px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center">
-                    <div>
-                        <div style="font-size:9px;color:#64748b;font-weight:800;letter-spacing:1.2px;text-transform:uppercase">Pay Period</div>
-                        <div id="salaryMonthDisplay" style="font-size:16px;font-weight:900;color:#0f172a;letter-spacing:.5px">MONTH YEAR</div>
-                    </div>
-                    <div style="text-align:right">
-                        <div style="font-size:9px;color:#64748b;font-weight:800;letter-spacing:1.2px;text-transform:uppercase">Issued On</div>
-                        <div id="salaryIssueDate" style="font-size:13px;font-weight:800;color:#334155">DD-MM-YYYY</div>
-                    </div>
-                </div>
-
-                <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:20px;box-shadow:0 2px 6px rgba(15,23,42,.04)">
-                    <div style="font-size:10px;color:#1e3a8a;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px dashed #cbd5e1;padding-bottom:6px;margin-bottom:10px">👤 Employee Details</div>
-                    <table style="width:100%;font-size:13px;line-height:1.9">
-                        <tr><td style="width:130px;color:#64748b;font-weight:700">Employee Name</td><td style="color:#64748b;font-weight:700">:</td><td style="font-weight:900;color:#0f172a;text-transform:uppercase" id="salaryStaffName">-</td></tr>
-                        <tr><td style="color:#64748b;font-weight:700">Designation</td><td style="color:#64748b;font-weight:700">:</td><td style="font-weight:800;color:#1e3a8a" id="salaryStaffRole">-</td></tr>
-                        <tr><td style="color:#64748b;font-weight:700">Employee ID</td><td style="color:#64748b;font-weight:700">:</td><td style="font-weight:800;color:#1e293b;font-family:'Courier New',monospace" id="salaryStaffEmpId">-</td></tr>
-                        <tr><td style="color:#64748b;font-weight:700">Contact</td><td style="color:#64748b;font-weight:700">:</td><td style="font-weight:800;color:#1e293b" id="salaryStaffPhone">-</td></tr>
-                    </table>
-                </div>
-
-                <table style="width:100%;border-collapse:collapse;margin-bottom:18px;font-size:13px">
-                    <thead>
-                        <tr style="background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff">
-                            <th style="padding:12px 14px;text-align:left;border:1px solid #0f172a;font-weight:800;letter-spacing:.5px">DESCRIPTION</th>
-                            <th style="padding:12px 14px;text-align:right;border:1px solid #0f172a;font-weight:800;letter-spacing:.5px;width:130px">AMOUNT (₹)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td style="padding:12px 14px;border:1px solid #cbd5e1;font-weight:700;color:#1e293b"><span style="color:#16a34a;font-weight:900">▸</span> Basic Salary</td><td style="padding:12px 14px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#16a34a;font-size:14px" id="salaryBasicAmt">0</td></tr>
-                        <tr style="background:#fafafa"><td style="padding:12px 14px;border:1px solid #cbd5e1;font-weight:800;color:#0f172a;text-align:right">Gross Earnings</td><td style="padding:12px 14px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#0f172a" id="salaryGrossAmt">0</td></tr>
-                        <tr><td style="padding:12px 14px;border:1px solid #cbd5e1;font-weight:700;color:#1e293b"><span style="color:#dc2626;font-weight:900">▸</span> Advance Deduction</td><td style="padding:12px 14px;border:1px solid #cbd5e1;text-align:right;font-weight:900;color:#dc2626;font-size:14px" id="salaryDedAmt">0</td></tr>
-                        <tr style="background:linear-gradient(135deg,#ecfdf5,#d1fae5)"><td style="padding:14px;border:2px solid #10b981;font-weight:900;color:#047857;text-align:right;font-size:14px;letter-spacing:.5px">NET PAYABLE AMOUNT</td><td style="padding:14px;border:2px solid #10b981;text-align:right;font-weight:900;color:#047857;font-size:20px" id="salaryNetAmt">0</td></tr>
-                    </tbody>
-                </table>
-
-                <div style="background:#fffbeb;border:1px dashed #fbbf24;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:11px">
-                    <span style="color:#92400e;font-weight:800;text-transform:uppercase;letter-spacing:.8px">Amount in Words:</span>
-                    <span id="salaryAmountWords" style="color:#0f172a;font-weight:700;margin-left:5px;font-style:italic">Rupees Zero Only</span>
-                </div>
-
-                <div style="display:flex;justify-content:space-between;gap:10px;margin-bottom:20px">
-                    <div style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px"><div style="font-size:8px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Payment Mode</div><div style="font-size:12px;font-weight:800;color:#0f172a;margin-top:2px">Bank Transfer</div></div>
-                    <div style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px"><div style="font-size:8px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Status</div><div style="font-size:12px;font-weight:800;color:#16a34a;margin-top:2px">✓ Processed</div></div>
-                </div>
-
-                <div style="position:absolute;bottom:24px;left:30px;right:30px;display:flex;justify-content:space-between;align-items:flex-end">
-                    <div style="font-size:9px;color:#94a3b8;line-height:1.6;max-width:200px"><strong style="color:#475569">Note:</strong> This is a computer-generated salary slip and does not require a physical signature. For any queries, contact HR.</div>
-                    <div style="text-align:center"><div style="border-bottom:1.5px solid #0f172a;width:150px;height:38px;margin-bottom:6px"></div><div style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.5px">Authorized Signatory</div><div style="font-size:8px;color:#64748b;font-weight:600;margin-top:1px">HR Department</div></div>
-                </div>
-
-                <div style="position:absolute;bottom:110px;right:38px;width:120px;height:120px;border:4px solid #16a34a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-14deg);color:#16a34a;background:rgba(22,163,74,.06);box-shadow:inset 0 0 15px rgba(22,163,74,.15);mix-blend-mode:multiply">
-                    <div style="width:104px;height:104px;border:2px dashed rgba(22,163,74,.6);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;box-sizing:border-box">
-                        <div id="salarySealInst" style="font-size:8px;font-weight:900;letter-spacing:.5px;line-height:1.1;margin-bottom:2px">GLOBUS</div>
-                        <div style="font-size:24px;font-weight:900;letter-spacing:2px;line-height:1;margin:3px 0">PAID</div>
-                        <div style="font-size:6.5px;font-weight:700;letter-spacing:.8px;line-height:1.1">DIGITALLY SIGNED</div>
-                        <div id="salarySealDate" style="font-size:6px;font-weight:700;margin-top:2px;letter-spacing:.5px">DD-MM-YYYY</div>
-                    </div>
-                </div>
-                <div style="position:absolute;bottom:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#0f172a 0%,#1e293b 50%,#0f172a 100%)"></div>
-            </div>
-        </div>
     </div>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-
-        // 1. MAGIC ALERT OVERRIDE
+        
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let borderColor = '#3b82f6'; 
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('failed') || msg.includes('required')) borderColor = '#ef4444'; 
-            else if (msg.includes('✅') || msg.includes('success') || msg.includes('Complete')) borderColor = '#10b981'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed')) borderColor = '#ef4444'; 
+            else if (msg.includes('✅') || msg.includes('success')) borderColor = '#10b981'; 
+            
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
             box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
             if(!document.querySelector('style#alertAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="alertAnim">@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}</style>'); }
-            document.body.appendChild(box); setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
+            document.body.appendChild(box);
+            setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
         };
 
-        // 2. BRAND NEW CUSTOM MAGIC PROMPT UI
         window.magicPrompt = function(msg) {
             return new Promise((resolve) => {
-                const oldBox = document.getElementById('customPromptBox');
-                if (oldBox) oldBox.remove();
-                
-                const box = document.createElement('div');
-                box.id = 'customPromptBox';
+                const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
+                const box = document.createElement('div'); box.id = 'customPromptBox';
                 box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
-                
                 box.innerHTML = `
                     <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
                         <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 16px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
@@ -493,586 +190,295 @@
                     </div>
                 `;
                 document.body.appendChild(box);
-                
-                const input = document.getElementById('cPromptInput');
-                input.focus();
-                
+                const input = document.getElementById('cPromptInput'); input.focus();
                 document.getElementById('cPromptCancel').onclick = () => { box.remove(); resolve(null); };
                 document.getElementById('cPromptOk').onclick = () => { box.remove(); resolve(input.value); };
                 input.addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('cPromptOk').click(); });
             });
         };
 
-        let allStaff = [], allAdvances = [], allSalaryPayments = [];
-        let instSettings = null; let payrollAdvances = []; 
-        let currentStaffCardData = null; let lastProcessedPaymentId = null; 
+        let allStudents = [], globalCourses = [], currentStudentData = null;
 
-        // ===================== AUTH & GUEST SECURITY =====================
-        async function init() {
+        async function checkAuth() {
             try {
                 const userRole = localStorage.getItem('userRole') || 'Admin';
                 const { data: { session } } = await supabase.auth.getSession();
-                
                 if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
-
-                if (userRole === 'Guest') {
-                    setTimeout(() => {
-                        const actionButtons = document.querySelectorAll('.frm-submit, .sc-btn-archive');
-                        actionButtons.forEach(btn => {
-                            const btnText = btn.innerText.toLowerCase();
-                            if(btnText.includes('save') || btnText.includes('update') || btnText.includes('archive') || btnText.includes('record') || btnText.includes('process')) {
-                                btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); alert("⚠️ This action is disabled in Guest/Demo mode."); return false; };
-                            }
-                        });
-                        const fabBtn = document.querySelector('.fab-add');
-                        if(fabBtn) fabBtn.onclick = function(e) { e.preventDefault(); alert("⚠️ This action is disabled in Guest/Demo mode."); return false; }
-                    }, 1000);
-                }
-                await loadInstSettings(); await fetchAllData();
-            } catch(e) { console.error("Init error:", e); }
+                fetchStudents();
+            } catch(e) { console.log("Supabase not connected."); }
         }
 
-        async function loadInstSettings() {
-            try {
-                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
-                if (data) {
-                    instSettings = data;
-                    if (data.logo_url) { 
-                        const cardLogo = document.getElementById('cardInstLogo'); if(cardLogo) cardLogo.src = data.logo_url;
-                        const salLogo = document.getElementById('salaryLogo'); if(salLogo) salLogo.src = data.logo_url;
-                    }
-                    const cin = document.getElementById('cardInstName'); if(cin) cin.innerText = data.institute_name || 'GLOBUS';
-                    const csn = document.getElementById('cardSubName'); if(csn) csn.innerText = data.sub_name || 'TECHNICAL ACADEMY';
-                    const cad = document.getElementById('cardAddress'); if(cad) cad.innerText = data.address || '';
-                    const rp = document.getElementById('cardReturnPhone'); if(rp && data.phone) rp.innerText = '+91 ' + data.phone;
-
-                    const sin = document.getElementById('salaryInstName'); if(sin) sin.innerText = data.institute_name || 'GLOBUS';
-                    const sisub = document.getElementById('salaryInstSub'); if(sisub) sisub.innerText = data.sub_name || 'TECHNICAL ACADEMY';
-                    const siadr = document.getElementById('salaryInstAddress'); if(siadr) siadr.innerText = data.address || '';
-                    const ssealName = document.getElementById('salarySealInst'); if(ssealName) ssealName.innerText = data.institute_name || 'GLOBUS';
-                }
-            } catch(e) {}
-        }
-
-        async function fetchAllData() {
-            try {
-                const [staffRes, advRes, salRes] = await Promise.all([
-                    supabase.from('staff').select('*').order('created_at', { ascending: false }),
-                    supabase.from('staff_advances').select('*').order('advance_date', { ascending: false }),
-                    supabase.from('salary_payments').select('*').order('created_at', { ascending: false })
-                ]);
-                allStaff = staffRes.data || []; allAdvances = advRes.data || []; allSalaryPayments = salRes.data || [];
-                populateRoleFilter(); populateStaffDropdowns(); renderDirectory(); renderAdvances(); renderSalaryHistory();
-            } catch(e) { console.error("Fetch error:", e); }
-        }
-
-        function generateAvatar(name, gender) {
-            const color = gender === 'Female' ? '%23ec4899' : '%233b82f6';
-            return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${color}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
-        }
-        function formatDate(d) { if (!d) return '-'; if (d.includes('T')) d = d.split('T')[0]; const parts = d.split('-'); if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`; return d; }
-        function formatMonthDisplay(m) { if (!m) return '-'; const parts = m.split('-'); if (parts.length !== 2) return m; const months = ['January','February','March','April','May','June','July','August','September','October','November','December']; return months[parseInt(parts[1])-1] + ' ' + parts[0]; }
-        function numberToWords(num) {
-            if (num === 0) return 'Rupees Zero Only';
-            const a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
-            const b = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
-            function inWords(n) {
-                if (n < 20) return a[n];
-                if (n < 100) return b[Math.floor(n/10)] + (n%10 ? ' ' + a[n%10] : '');
-                if (n < 1000) return a[Math.floor(n/100)] + ' Hundred' + (n%100 ? ' ' + inWords(n%100) : '');
-                if (n < 100000) return inWords(Math.floor(n/1000)) + ' Thousand' + (n%1000 ? ' ' + inWords(n%1000) : '');
-                if (n < 10000000) return inWords(Math.floor(n/100000)) + ' Lakh' + (n%100000 ? ' ' + inWords(n%100000) : '');
-                return inWords(Math.floor(n/10000000)) + ' Crore' + (n%10000000 ? ' ' + inWords(n%10000000) : '');
-            }
-            return 'Rupees ' + inWords(Math.floor(num)).trim() + ' Only';
-        }
-
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        window.switchStaffTab = function(tab) {
-            document.querySelectorAll('.staff-tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            document.getElementById('panel-' + tab).classList.add('active');
+        window.toggleFilter = function(selectId, isChecked) { document.getElementById(selectId).disabled = !isChecked; };
+        window.updateStatusColor = function(select) {
+            if(select.value === 'active') { select.style.color = '#15803d'; select.style.borderColor = '#bbf7d0'; select.style.backgroundColor = '#f0fdf4'; }
+            else if(select.value === 'completed') { select.style.color = '#1d4ed8'; select.style.borderColor = '#bfdbfe'; select.style.backgroundColor = '#eff6ff'; }
+            else if(select.value === 'archived') { select.style.color = '#ea580c'; select.style.borderColor = '#fdba74'; select.style.backgroundColor = '#fff7ed'; }
+            else { select.style.color = '#0f172a'; select.style.borderColor = '#cbd5e1'; select.style.backgroundColor = '#ffffff'; }
         };
-        window.openModal = openModal; window.closeModal = closeModal;
 
-        // ===================== TAB 1: DIRECTORY =====================
-        function populateRoleFilter() {
-            const roleSet = new Set(); allStaff.forEach(s => { if (s.role) roleSet.add(s.role); });
-            const sel = document.getElementById('filterRole'); sel.innerHTML = '<option value="all">All Roles</option>';
-            [...roleSet].sort().forEach(r => { sel.add(new Option(r, r)); });
+        async function fetchStudents() {
+            try {
+                const { data: studentsData } = await supabase.from('students').select('*').order('created_at', { ascending: false });
+                const { data: coursesData } = await supabase.from('courses').select('id, course_name, modules');
+                const { data: paymentsData } = await supabase.from('fee_payments').select('student_id, amount_paid');
+
+                globalCourses = coursesData || [];
+                const courseMap = {}; globalCourses.forEach(c => courseMap[c.id] = c.course_name);
+
+                allStudents = studentsData || [];
+                allStudents.forEach(s => {
+                    s.display_course_name = (s.course_id && courseMap[s.course_id]) ? courseMap[s.course_id] : (s.course_name || 'N/A');
+                    let paid = 0;
+                    if (paymentsData) paid = paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => sum + Number(p.amount_paid || 0), 0);
+                    s.total_paid_fees = paid;
+                });
+                populateDropdowns(); window.applyFilters(); 
+            } catch (err) { console.error("Database Error:", err); }
         }
-        function populateStaffDropdowns() {
-            const active = allStaff.filter(s => (s.status || 'active') === 'active');
-            ['advStaffSelect', 'payStaffSelect'].forEach(id => {
-                const sel = document.getElementById(id); if (!sel) return;
-                sel.innerHTML = '<option value="">-- Choose Staff --</option>';
-                active.forEach(s => { sel.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)); });
-            });
-            document.getElementById('advDate').value = new Date().toISOString().split('T')[0];
-            const now = new Date(); document.getElementById('payMonth').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+
+        window.updateFilterModules = function() {
+            const courseValue = document.getElementById('courseSelect').value;
+            const moduleSelect = document.getElementById('moduleSelect');
+            const currentMod = moduleSelect.value;
+            moduleSelect.innerHTML = '<option value="" disabled selected hidden>Select Module</option>';
+            
+            let modulesList = new Set();
+            if (courseValue) {
+                const course = globalCourses.find(c => c.course_name === courseValue);
+                if (course && course.modules && Array.isArray(course.modules)) { course.modules.forEach(m => modulesList.add(m)); }
+            } else {
+                globalCourses.forEach(c => { if (c.modules && Array.isArray(c.modules)) c.modules.forEach(m => modulesList.add(m)); });
+            }
+            
+            modulesList.forEach(m => { moduleSelect.add(new Option(m, m)); });
+            if (currentMod && Array.from(moduleSelect.options).some(opt => opt.value === currentMod)) { moduleSelect.value = currentMod; } 
+            else if (courseValue) { moduleSelect.value = ''; }
+        };
+
+        function populateDropdowns() {
+            const courseSelect = document.getElementById('courseSelect');
+            courseSelect.innerHTML = '<option value="" disabled selected hidden>Select Course</option>';
+            globalCourses.forEach(c => { courseSelect.add(new Option(c.course_name, c.course_name)); });
+            window.updateFilterModules();
         }
-        window.renderDirectory = function() {
-            const search = document.getElementById('staffSearch').value.toLowerCase();
-            const role = document.getElementById('filterRole').value;
-            const status = document.getElementById('filterStatus').value;
-            let filtered = allStaff.filter(s => {
-                const sStatus = (s.status || 'active').toLowerCase();
-                if (status === 'active' && sStatus !== 'active') return false;
-                if (status === 'archived' && sStatus !== 'archived') return false;
-                if (role !== 'all' && s.role !== role) return false;
-                if (search) { const str = `${s.full_name || ''} ${s.phone || ''}`.toLowerCase(); if (!str.includes(search)) return false; }
+
+        window.applyFilters = function() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusTerm = document.getElementById('statusFilter').value; 
+            const chkCourse = document.getElementById('chkCourse').checked;
+            const courseValue = document.getElementById('courseSelect').value;
+            const chkModule = document.getElementById('chkModule').checked;
+            const moduleValue = document.getElementById('moduleSelect').value;
+
+            let filtered = allStudents.filter(s => {
+                const searchStr = `${s.full_name || ''} ${s.register_number || ''} ${s.phone_number || ''}`.toLowerCase();
+                if (!searchStr.includes(searchTerm)) return false;
+                
+                const stuStatus = (s.status || 'active').toLowerCase();
+                if (statusTerm === 'active' && stuStatus !== 'active') return false;
+                if (statusTerm === 'completed' && stuStatus !== 'completed' && stuStatus !== 'inactive') return false;
+                if (statusTerm === 'archived' && stuStatus !== 'archived') return false;
+                
+                if (chkCourse && courseValue && s.display_course_name !== courseValue) return false;
+                if (chkModule && moduleValue && s.module !== moduleValue) return false;
                 return true;
             });
-            const container = document.getElementById('staffList');
-            if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No staff found.</div>'; return; }
-            container.innerHTML = filtered.map(s => {
-                const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
-                const statusColor = (s.status || 'active') === 'active' ? '#10b981' : '#94a3b8';
-                return `
-                <div class="staff-card">
-                    <div class="sc-header">
-                        <div class="sc-avatar"><img src="${avatar}" alt="${s.full_name}" onerror="this.src='${generateAvatar(s.full_name, s.gender)}'"></div>
-                        <div style="flex:1;min-width:0">
-                            <div class="sc-name">${s.full_name || 'N/A'}</div>
-                            <span class="sc-role-badge">${s.role || 'Staff'}</span>
-                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${statusColor};margin-left:8px;vertical-align:middle"></span>
+            renderList(filtered);
+        }
+
+        function renderList(data) {
+            const container = document.getElementById('studentsList'); container.innerHTML = '';
+            if (data.length === 0) { container.innerHTML = '<div class="empty-state">No students found matching your search/filters.</div>'; return; }
+            
+            data.forEach(s => {
+                const bal = (Number(s.total_fee)||0) - (Number(s.admission_fee)||0) - s.total_paid_fees;
+                const balColor = bal > 0 ? '#EF4444' : '#10B981';
+                const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
+                
+                let avatarUrl = s.photo_url || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${s.gender === "Female" ? "%23ec4899" : "%233b82f6"}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
+                let qualBadge = `<span class="badge-sslc">${s.qualification || 'N/A'}</span>`;
+
+                let progressPercent = 0; let progressClass = 'active'; let progressText = '0%';
+                if (s.status && s.status.toLowerCase() === 'completed') {
+                    progressPercent = 100; progressClass = 'completed'; progressText = 'Course Completed';
+                } else {
+                    const course = globalCourses.find(c => c.id == s.course_id);
+                    if (course && course.modules && Array.isArray(course.modules)) {
+                        const totalMods = course.modules.length;
+                        const currentModIndex = course.modules.indexOf(s.module) + 1; 
+                        if (totalMods > 0 && currentModIndex > 0) {
+                            progressPercent = Math.round((currentModIndex / totalMods) * 100);
+                            progressText = `${progressPercent}% (Mod ${currentModIndex}/${totalMods})`;
+                        } else if (totalMods > 0) {
+                            progressPercent = 5; progressText = 'Just Started';
+                        }
+                    }
+                }
+                
+                let progressBarHtml = `
+                    <div class="progress-container">
+                        <div class="progress-fill ${progressClass}" style="width: ${progressPercent}%;"></div>
+                        <div class="progress-text-out">${progressText}</div>
+                    </div>
+                `;
+
+                const card = document.createElement('div');
+                card.className = 'student-mobile-card';
+                
+                let actionBtnsHTML = `
+                    <div class="card-action-btns">
+                        <button onclick="window.viewAndEditStudent('${s.id}')" class="btn-card btn-view"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> View / Edit</button>
+                    </div>
+                    <button onclick="window.archiveStudent('${s.id}', '${s.register_number}')" class="btn-del-full" style="color: #ea580c; border-color: #fdba74;">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                        Archive Student
+                    </button>
+                `;
+
+                card.innerHTML = `
+                    <div class="smc-header">
+                        <div class="smc-header-left">
+                            <div class="smc-name">${s.full_name || 'N/A'}</div>
+                            <div class="smc-reg">Reg No: ${s.register_number || 'N/A'}</div>
+                        </div>
+                        <div class="smc-header-center avatar-circle"><img src="${avatarUrl}" alt="Photo"></div>
+                    </div>
+                    <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
+                    <div class="smc-row"><span class="smc-label">Qualification:</span> <span class="smc-value">${qualBadge}</span></div>
+                    <div class="smc-row" style="margin-bottom: 2px;"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:800; color:#1e3a8a;">${s.display_course_name}</span></div>
+                    
+                    ${progressBarHtml}
+                    
+                    <div class="smc-row"><span class="smc-label">Current Module:</span> <span class="smc-value">${s.module || '-'}</span></div>
+                    <div class="smc-row"><span class="smc-label">Fee Status:</span> <span class="smc-value" style="color:${balColor}; font-weight:900; font-size:16px;">${balText}</span></div>
+                    ${actionBtnsHTML}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.viewAndEditStudent = function(id) {
+            const s = allStudents.find(x => x.id === id); if (!s) return;
+            document.getElementById('studentModal').style.display = 'flex';
+            document.getElementById('viewEditContainer').style.display = 'flex'; 
+
+            let courseOptions = '<option value="">-- Select Course --</option>';
+            globalCourses.forEach(c => {
+                let selected = (c.id == s.course_id) ? 'selected' : '';
+                courseOptions += `<option value="${c.id}" ${selected}>${c.course_name}</option>`;
+            });
+
+            let moduleOptions = '<option value="">-- Select Module --</option>';
+            if (s.course_id) {
+                const currentCourse = globalCourses.find(c => c.id == s.course_id);
+                if (currentCourse && currentCourse.modules && Array.isArray(currentCourse.modules)) {
+                    currentCourse.modules.forEach(mod => {
+                        let selected = (mod === s.module) ? 'selected' : '';
+                        moduleOptions += `<option value="${mod}" ${selected}>${mod}</option>`;
+                    });
+                }
+            }
+
+            document.getElementById('viewEditContent').innerHTML = `
+                <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6; border: 1px solid #e2e8f0;">
+                    <p><b>Name:</b> ${s.full_name}</p>
+                    <p><b>Reg No:</b> ${s.register_number || 'N/A'}</p>
+                    <p><b>Phone:</b> ${s.phone_number}</p>
+                    <p><b>Course:</b> ${s.display_course_name}</p>
+                    <p><b>Module:</b> ${s.module || '-'}</p>
+                    <p><b>Qualification:</b> ${s.qualification || 'N/A'}</p>
+                    <p><b>Total Fee:</b> ₹ ${s.total_fee || 0}</p>
+                </div>
+                <hr style="border:0; border-top:1px solid #e5e7eb; margin-bottom:15px;">
+                <form onsubmit="window.saveFullEdit(event, '${s.id}')">
+                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Full Name</label><input type="text" id="fullEditName" value="${s.full_name}" class="form-control-cert" required></div>
+                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Phone Number</label><input type="text" id="fullEditPhone" value="${s.phone_number}" class="form-control-cert" required maxlength="10"></div>
+                    
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Course</label><select id="fullEditCourse" class="form-control-cert" required onchange="window.updateEditModules(this.value)">${courseOptions}</select></div>
+                        <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Module</label><select id="fullEditModule" class="form-control-cert">${moduleOptions}</select></div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <div style="flex:1;">
+                            <label style="font-size:12px; font-weight:600;">Course Status</label>
+                            <select id="fullEditStatus" class="form-control-cert">
+                                <option value="active" ${(!s.status || s.status==='active')?'selected':''}>Active</option>
+                                <option value="completed" ${s.status==='completed'?'selected':''}>Completed</option>
+                            </select>
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-size:12px; font-weight:600;">Qualification</label>
+                            <select id="fullEditQual" class="form-control-cert" required>
+                                <option value="SSLC" ${s.qualification==='SSLC'?'selected':''}>SSLC</option>
+                                <option value="Plus Two" ${s.qualification==='Plus Two'?'selected':''}>Plus Two</option>
+                                <option value="Degree" ${s.qualification==='Degree'?'selected':''}>Degree</option>
+                                <option value="Other" ${s.qualification==='Other'?'selected':''}>Other</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="sc-row"><span class="sc-label">Phone:</span><span class="sc-value">${s.phone || 'N/A'}</span></div>
-                    <div class="sc-row"><span class="sc-label">Salary:</span><span class="sc-value" style="color:#1d4ed8;font-size:15px">₹ ${s.basic_salary || 0}</span></div>
-                    <div class="sc-row"><span class="sc-label">Joined:</span><span class="sc-value">${formatDate(s.joining_date)}</span></div>
-                    <div class="sc-actions">
-                        <button class="sc-btn sc-btn-view" onclick="openEditStaff('${s.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> View / Edit</button>
-                        <button class="sc-btn sc-btn-id" onclick="window.openStaffCardStudio('${s.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="10" r="2.5"/><path d="M8 16.5c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5"/></svg> ID Card</button>
-                    </div>
-                    <div class="sc-actions-full"><button class="sc-btn sc-btn-archive" onclick="archiveStaff('${s.id}','${s.full_name}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg> Archive Staff</button></div>
-                </div>`;
-            }).join('');
+                    <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">Update Profile</button>
+                </form>
+            `;
         };
 
-        window.openEditStaff = function(id) {
-            const s = allStaff.find(x => x.id === id); if (!s) return;
-            document.getElementById('editId').value = s.id;
-            document.getElementById('editName').value = s.full_name || '';
-            document.getElementById('editPhone').value = s.phone || '';
-            document.getElementById('editGender').value = s.gender || 'Male';
-            document.getElementById('editRole').value = s.role || '';
-            document.getElementById('editSalary').value = s.basic_salary || '';
-            document.getElementById('editJoinDate').value = s.joining_date || '';
-            document.getElementById('editStatus').value = s.status || 'active';
-            document.getElementById('editAddress').value = s.address || '';
-            openModal('editStaffModal');
-        };
-
-        window.updateStaff = async function() {
-            const id = document.getElementById('editId').value;
-            const updates = {
-                full_name: document.getElementById('editName').value.trim(), phone: document.getElementById('editPhone').value.trim(),
-                gender: document.getElementById('editGender').value, role: document.getElementById('editRole').value.trim(),
-                basic_salary: Number(document.getElementById('editSalary').value) || 0, joining_date: document.getElementById('editJoinDate').value || null,
-                status: document.getElementById('editStatus').value, address: document.getElementById('editAddress').value.trim()
-            };
-            if (!updates.full_name) { alert('Name is required!'); return; }
-            const { error } = await supabase.from('staff').update(updates).eq('id', id);
-            if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Staff updated!'); closeModal('editStaffModal'); await fetchAllData();
-        };
-
-        window.archiveStaff = async function(id, name) {
-            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
-            const n1 = Math.floor(Math.random()*10)+1, n2 = Math.floor(Math.random()*10)+1;
-            const ans = await window.magicPrompt(`⚠️ Security Verification\nTo archive "${name}", solve:\n\n${n1} + ${n2} = ?`);
-            if (ans === null) return;
-            if (parseInt(ans) !== (n1+n2)) { alert('❌ Verification failed! Cancelled.'); return; }
-            
-            const { error } = await supabase.from('staff').update({ status: 'archived' }).eq('id', id);
-            if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Staff archived successfully.'); await fetchAllData();
-        };
-
-        window.saveNewStaff = async function() {
-            const btn = document.getElementById('addStaffBtn');
-            const name = document.getElementById('addName').value.trim();
-            const phone = document.getElementById('addPhone').value.trim();
-            if (!name) { alert('Name is required!'); return; }
-            if (phone && phone.length !== 10) { alert('Phone must be 10 digits!'); return; }
-            btn.disabled = true; btn.textContent = '⏳ Saving...';
-            const { error } = await supabase.from('staff').insert([{
-                full_name: name, phone: phone, gender: document.getElementById('addGender').value,
-                role: document.getElementById('addRole').value.trim() || 'Staff', basic_salary: Number(document.getElementById('addSalary').value) || 0,
-                joining_date: document.getElementById('addJoinDate').value || null, qualification: document.getElementById('addQual').value.trim(),
-                address: document.getElementById('addAddress').value.trim(), status: 'active'
-            }]);
-            btn.disabled = false; btn.textContent = '✅ Save Staff Member';
-            if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Staff added!'); closeModal('addStaffModal');
-            ['addName','addPhone','addRole','addSalary','addJoinDate','addQual','addAddress'].forEach(id => document.getElementById(id).value = '');
-            await fetchAllData();
-        };
-
-        // ===================== STAFF ID CARD STUDIO (PERFECT MATCH WITH STUDENTS.HTML) =====================
-        window.openStaffCardStudio = function(id) {
-            const s = allStaff.find(x => x.id === id); if (!s) return;
-            currentStaffCardData = s;
-            document.getElementById('liveStaffName').value = s.full_name || '';
-            document.getElementById('liveStaffRole').value = s.role || 'Staff';
-            const empId = s.emp_id || ('EMP-' + s.id.substring(0, 6).toUpperCase());
-            document.getElementById('liveStaffEmpId').value = empId;
-            document.getElementById('liveStaffPhone').value = s.phone || '';
-            document.getElementById('liveStaffPhotoInput').value = '';
-
-            if (instSettings) {
-                document.getElementById('liveInstName').value = instSettings.institute_name || '';
-                document.getElementById('liveInstSub').value = instSettings.sub_name || '';
-                document.getElementById('liveInstAddress').value = instSettings.address || '';
-            }
-            
-            document.getElementById('cardStaffName').innerHTML = (s.full_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
-            document.getElementById('cardStaffRole').innerHTML = (s.role || 'STAFF').toUpperCase().replace(/ /g, '&nbsp;');
-            document.getElementById('cardEmpId').innerText = empId;
-            document.getElementById('cardPhone').innerText = s.phone || 'N/A';
-
-            const avatar = s.photo_url || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
-            document.getElementById('cardAvatarImg').src = avatar;
-            
-            openModal('staffCardModal');
-        };
-
-        window.updateStaffInstUI = function() {
-            let n = document.getElementById('liveInstName').value || 'GLOBUS';
-            let s = document.getElementById('liveInstSub').value || 'TECHNICAL ACADEMY';
-            let a = document.getElementById('liveInstAddress').value || '';
-            
-            document.getElementById('cardInstName').innerText = n;
-            document.getElementById('cardSubName').innerText = s;
-            document.getElementById('cardAddress').innerText = a;
-        };
-
-        // EXACT SAME PHOTO FIX FROM STUDENTS.HTML
-        window.updateLiveStaffPhoto = function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                document.getElementById('cardAvatarImg').src = URL.createObjectURL(file);
+        window.updateEditModules = function(courseId) {
+            const moduleSelect = document.getElementById('fullEditModule');
+            moduleSelect.innerHTML = '<option value="">-- Select Module --</option>';
+            if (courseId) {
+                const courseInfo = globalCourses.find(c => c.id == courseId);
+                if (courseInfo && courseInfo.modules && Array.isArray(courseInfo.modules)) { courseInfo.modules.forEach(mod => { moduleSelect.add(new Option(mod, mod)); }); }
             }
         };
 
-        window.confirmStaffStudioReset = async function() {
-            let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
-            let userInput = await window.magicPrompt(`🔒 Security Verification\nTo unlock and clear settings, please solve:\n\n${num1} + ${num2} = ?`);
-            if (userInput !== null && parseInt(userInput) === (num1+num2)) {
-                document.getElementById('liveInstName').value = ''; 
-                document.getElementById('liveInstSub').value = '';
-                document.getElementById('liveInstAddress').value = ''; 
-                window.updateStaffInstUI(); 
-                
-                ['liveStaffName', 'liveStaffRole', 'liveStaffEmpId', 'liveStaffPhone'].forEach(id => {
-                    let el = document.getElementById(id);
-                    if(el) { el.readOnly = false; el.style.backgroundColor = '#ffffff'; el.style.color = '#000000'; el.style.cursor = 'text'; }
-                });
-                alert('✅ Reset Complete! Staff fields are now unlocked.');
-            } else {
-                if(userInput !== null) alert('❌ Verification failed! Reset aborted.');
-            }
-        };
-
-        window.saveStaffCardDataToDB = async function() {
-            if (!currentStaffCardData) return;
+        window.saveFullEdit = async function(e, id) {
+            e.preventDefault();
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
             
-            const newName = document.getElementById('liveStaffName').value.trim();
-            const newPhone = document.getElementById('liveStaffPhone').value.trim();
-            const newRole = document.getElementById('liveStaffRole').value.trim();
-            const newEmpId = document.getElementById('liveStaffEmpId').value.trim();
-            let photoUrlToSave = currentStaffCardData.photo_url;
+            let hasMarks = false;
+            try {
+                const { data: pastMarks, error: marksErr } = await supabase.from('exam_results').select('id').eq('student_id', id).limit(1);
+                if (!marksErr && pastMarks && pastMarks.length > 0) hasMarks = true;
+            } catch(err) {}
 
-            if (newPhone && newPhone.length !== 10) { alert('Phone must be 10 digits!'); return; }
-            if (!newName) { alert('Name is required!'); return; }
+            const newName = document.getElementById('fullEditName').value;
+            const newPhone = document.getElementById('fullEditPhone').value;
+            const newCourse = document.getElementById('fullEditCourse').value;
+            const newModule = document.getElementById('fullEditModule').value || null;
+            const newStatus = document.getElementById('fullEditStatus').value;
+            const newQual = document.getElementById('fullEditQual').value;
 
-            const fileInput = document.getElementById('liveStaffPhotoInput');
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const fileName = `staff_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-                try {
-                    const { data, error } = await supabase.storage.from('staff-photos').upload(fileName, file);
-                    if (!error) { photoUrlToSave = supabase.storage.from('staff-photos').getPublicUrl(fileName).data.publicUrl; }
-                } catch (e) { console.warn(e); }
+            if (hasMarks) {
+                let userInput = await window.magicPrompt(`🔒 Security Verification\nThis student has been assigned exam marks. Please solve this to edit:\n\n7 + 3 = ?`);
+                if (userInput === null || parseInt(userInput) !== 10) { alert("❌ Verification failed! Update aborted."); return; }
             }
 
-            const updates = { full_name: newName, phone: newPhone, role: newRole, photo_url: photoUrlToSave };
-            if (newEmpId) updates.emp_id = newEmpId;
+            if(newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
 
-            const { error } = await supabase.from('staff').update(updates).eq('id', currentStaffCardData.id);
-            if (error) {
-                if (error.message && error.message.includes('emp_id')) {
-                    delete updates.emp_id;
-                    const { error: err2 } = await supabase.from('staff').update(updates).eq('id', currentStaffCardData.id);
-                    if (err2) { alert('Error: ' + err2.message); return; }
-                } else { alert('Error saving data: ' + error.message); return; }
-            }
-            alert('✅ Details Saved Successfully!'); await fetchAllData();
+            const { error } = await supabase.from('students').update({
+                full_name: newName, phone_number: newPhone, qualification: newQual, status: newStatus, course_id: newCourse, module: newModule
+            }).eq('id', id);
+
+            if (error) alert('Error updating: ' + error.message);
+            else { alert('Profile updated successfully!'); window.closeModal(); fetchStudents(); }
         };
 
-        // NEW PRINT METHOD: PDF DOWNLOAD IN PERFECT SIZE 
-        window.shareStaffPDF = async function() {
-            const btn = document.getElementById('staffSharePdfBtn'); const originalText = btn.innerHTML; 
-            btn.innerHTML = '⏳ Generating PDF...'; btn.disabled = true;
-            try {
-                const { jsPDF } = window.jspdf;
-                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
-                const imgData = canvas.toDataURL('image/png');
-                
-                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] });
-                pdf.addImage(imgData, 'PNG', 0, 0, 54, 86);
-                
-                const filename = `Staff_ID_${(document.getElementById('liveStaffName').value || 'Staff').replace(/ /g,'_')}.pdf`;
-                pdf.save(filename);
-            } catch (error) { alert("Could not generate PDF: " + error.message); } 
-            finally { btn.innerHTML = originalText; btn.disabled = false; }
+        window.archiveStudent = async function(id, regNo) {
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            let ans = await window.magicPrompt(`⚠️ Security Verification\nTo Archive Reg No: ${regNo}, solve:\n\n5 + 5 = ?`);
+            if (ans !== null && parseInt(ans) === 10) {
+                const { error } = await supabase.from('students').update({ status: 'archived' }).eq('id', id);
+                if (error) { alert('Error archiving student: ' + error.message); } 
+                else { alert('✅ Student successfully moved to Archives.'); fetchStudents(); }
+            } else { if(ans !== null) alert('❌ Verification failed! Archiving aborted.'); }
         };
 
-        // EXACT SAME IMAGE SHARE AS STUDENTS.HTML
-        window.shareStaffCard = async function() {
-            const btn = document.getElementById('staffShareCardBtn'); const originalText = btn.innerHTML; 
-            btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
-            try {
-                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-                canvas.toBlob(async (blob) => {
-                    const name = document.getElementById('liveStaffName').value || 'Staff';
-                    const file = new File([blob], `Staff_ID_${name.replace(/ /g,'_')}.png`, { type: 'image/png' });
-                    
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Staff ID Card', text: `ID Card for ${name}` }); } catch (err) {}
-                    } else {
-                        const link = document.createElement('a'); 
-                        link.download = `Staff_ID_${name.replace(/ /g,'_')}.png`; 
-                        link.href = canvas.toDataURL('image/png'); 
-                        link.click();
-                    }
-                    btn.innerHTML = originalText; btn.disabled = false;
-                }, 'image/png');
-            } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
+        window.closeModal = function() { 
+            document.getElementById('studentModal').style.display = 'none';
+            document.getElementById('viewEditContainer').style.display = 'none';
         };
 
-        // ===================== TAB 2: ADVANCES =====================
-        function renderAdvances() {
-            const container = document.getElementById('advancesList');
-            if (allAdvances.length === 0) { container.innerHTML = '<div class="empty-state">No advances recorded yet.</div>'; return; }
-            container.innerHTML = allAdvances.slice(0, 50).map(a => {
-                const staff = allStaff.find(s => s.id === a.staff_id);
-                const sName = staff ? staff.full_name : 'Unknown';
-                const isPaid = (a.status || 'unpaid').toLowerCase() === 'paid';
-                return `
-                <div class="adv-card">
-                    <div class="adv-top">
-                        <div class="adv-name">${sName}</div>
-                        <div class="adv-amount">₹ ${a.amount || 0}</div>
-                    </div>
-                    <div class="adv-meta">
-                        <span>📅 ${formatDate(a.advance_date)}</span>
-                        <span class="adv-status ${isPaid ? 'paid' : 'unpaid'}">${isPaid ? 'Paid' : 'Unpaid'}</span>
-                        ${a.remarks ? `<span>📝 ${a.remarks}</span>` : ''}
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        window.saveAdvance = async function() {
-            const staffId = document.getElementById('advStaffSelect').value;
-            const advanceAmount = Number(document.getElementById('advAmount').value) || 0;
-            const advanceDate = document.getElementById('advDate').value;
-            const remarks = document.getElementById('advRemarks').value.trim();
-
-            if (!staffId) { alert('Please select a staff member!'); return; }
-            if (advanceAmount <= 0) { alert('Enter a valid amount!'); return; }
-            if (!advanceDate) { alert('Select a date!'); return; }
-
-            const btn = document.getElementById('advSubmitBtn'); btn.disabled = true; btn.textContent = '⏳ Saving...';
-
-            try {
-                const { error: advErr } = await supabase.from('staff_advances').insert([{
-                    staff_id: staffId, amount: advanceAmount, advance_date: advanceDate, remarks: remarks, status: 'unpaid'
-                }]);
-                if (advErr) throw advErr;
-
-                const staff = allStaff.find(s => s.id === staffId); const staffName = staff ? staff.full_name : 'Unknown';
-                let expenseInserted = false;
-                const { error: expErr } = await supabase.from('expenses').insert([{
-                    expense_date: advanceDate, category: 'Staff Advance', purpose: 'Advance to ' + staffName + (remarks ? ' - ' + remarks : ''), amount: advanceAmount
-                }]);
-                if (!expErr) { expenseInserted = true; } else { console.warn('Day Book insert failed:', expErr.message); }
-
-                alert('✅ Advance recorded' + (expenseInserted ? ' & added to Day Book!' : '! (Day Book update failed - check console)'));
-                document.getElementById('advAmount').value = ''; document.getElementById('advRemarks').value = ''; await fetchAllData();
-            } catch(e) { alert('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = '💰 Record Advance'; }
-        };
-
-        // ===================== TAB 3: PAYROLL =====================
-        window.loadPayrollDetails = function() {
-            const staffId = document.getElementById('payStaffSelect').value;
-            const detailsDiv = document.getElementById('payrollDetails');
-            if (!staffId) { detailsDiv.style.display = 'none'; return; }
-            const staff = allStaff.find(s => s.id === staffId); if (!staff) return;
-
-            const salary = Number(staff.basic_salary) || 0;
-            payrollAdvances = allAdvances.filter(a => a.staff_id === staffId && (a.status || 'unpaid').toLowerCase() === 'unpaid');
-            const totalDeduction = payrollAdvances.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
-            const net = salary - totalDeduction;
-
-            document.getElementById('paySalary').textContent = `₹ ${salary.toLocaleString('en-IN')}`;
-            document.getElementById('payDeduction').textContent = `₹ ${totalDeduction.toLocaleString('en-IN')}`;
-            document.getElementById('payNet').textContent = `₹ ${(net > 0 ? net : 0).toLocaleString('en-IN')}`;
-
-            document.getElementById('payProcessBtn').style.display = 'block';
-            document.getElementById('paySlipBtn').style.display = 'none';
-            detailsDiv.style.display = 'block';
-        };
-
-        window.processSalary = async function() {
-            const staffId = document.getElementById('payStaffSelect').value;
-            const month = document.getElementById('payMonth').value;
-            if (!staffId || !month) { alert('Select staff and month!'); return; }
-
-            const today = new Date(); const currentMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
-            if (month > currentMonthStr) { alert('⚠️Cannot process future month salary'); return; }
-
-            const isDuplicate = allSalaryPayments.some(p => p.staff_id === staffId && p.month === month);
-            if (isDuplicate) { alert(`⚠️ Salary already processed for this month ${formatMonthDisplay(month)} `); return; }
-
-            const staff = allStaff.find(s => s.id === staffId);
-            const salary = Number(staff.basic_salary) || 0;
-            const totalDeduction = payrollAdvances.reduce((sum, a) => sum + (Number(a.amount) || 0), 0);
-            const netSalary = salary - totalDeduction > 0 ? salary - totalDeduction : 0;
-            const todayDate = new Date().toISOString().split('T')[0];
-
-            const btn = document.getElementById('payProcessBtn'); btn.disabled = true; btn.textContent = '⏳ Processing...';
-
-            try {
-                const { data: newSal, error: salErr } = await supabase.from('salary_payments').insert([{
-                    staff_id: staffId, month: month, basic_salary: salary, deductions: totalDeduction, net_salary: netSalary, payment_date: todayDate
-                }]).select();
-                if (salErr) throw salErr;
-                if (newSal && newSal[0]) lastProcessedPaymentId = newSal[0].id;
-
-                for (const adv of payrollAdvances) { await supabase.from('staff_advances').update({ status: 'paid' }).eq('id', adv.id); }
-
-                const staffName = staff.full_name || 'Unknown';
-                const formattedMonthForDayBook = formatMonthDisplay(month); 
-                let expenseInserted = false;
-                const { error: expErr } = await supabase.from('expenses').insert([{
-                    expense_date: todayDate, category: 'Salary', purpose: `Salary for ${staffName} (${formattedMonthForDayBook})`, amount: netSalary
-                }]);
-                if (!expErr) { expenseInserted = true; } else { console.warn('Day Book insert failed:', expErr.message); }
-
-                alert('✅ Salary processed' + (expenseInserted ? ' & added to Day Book!' : '! (Day Book update failed - check console)'));
-                document.getElementById('payProcessBtn').style.display = 'none'; document.getElementById('paySlipBtn').style.display = 'block';
-                await fetchAllData();
-            } catch(e) { alert('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = '💳 Process Salary'; }
-        };
-
-        function renderSalaryHistory() {
-            const container = document.getElementById('salaryHistory');
-            if (allSalaryPayments.length === 0) { container.innerHTML = '<div class="empty-state">No salary payments yet.</div>'; return; }
-            container.innerHTML = allSalaryPayments.slice(0, 30).map(p => {
-                const staff = allStaff.find(s => s.id === p.staff_id);
-                return `
-                <div class="adv-card">
-                    <div class="adv-top">
-                        <div class="adv-name">${staff ? staff.full_name : 'Unknown'}</div>
-                        <div style="font-weight:900;color:#059669;font-size:16px">₹ ${p.net_salary || 0}</div>
-                    </div>
-                    <div class="adv-meta">
-                        <span>📅 ${formatMonthDisplay(p.month) || '-'}</span>
-                        <span>💰 Basic: ₹${p.basic_salary || 0}</span>
-                        <span style="color:#ef4444">Ded: ₹${p.deductions || 0}</span>
-                    </div>
-                    <button class="slip-dl-btn" onclick="window.downloadSalarySlip('${p.id}')">📄 Download Slip</button>
-                </div>`;
-            }).join('');
-        }
-
-        window.downloadLastSlip = function() {
-            if (lastProcessedPaymentId) { window.downloadSalarySlip(lastProcessedPaymentId); } 
-            else if (allSalaryPayments && allSalaryPayments.length > 0) { window.downloadSalarySlip(allSalaryPayments[0].id); } 
-            else { alert('No salary payment available.'); }
-        };
-
-        window.downloadSalarySlip = async function(paymentId) {
-            const payment = allSalaryPayments.find(p => p.id === paymentId); if (!payment) { alert('Payment record not found!'); return; }
-            const staff = allStaff.find(s => s.id === payment.staff_id); if (!staff) { alert('Staff record not found!'); return; }
-            try {
-                const empId = staff.emp_id || ('EMP-' + staff.id.substring(0, 6).toUpperCase());
-                const d = new Date(); const issueDate = `${d.getDate().toString().padStart(2,'0')}-${(d.getMonth()+1).toString().padStart(2,'0')}-${d.getFullYear()}`;
-                const slipNo = 'SAL-' + (payment.id || '').substring(0, 8).toUpperCase();
-                const grossAmt = Number(payment.basic_salary) || 0; const dedAmt = Number(payment.deductions) || 0; const netAmt = Number(payment.net_salary) || 0;
-
-                document.getElementById('salaryStaffName').innerText = staff.full_name || '-';
-                document.getElementById('salaryStaffRole').innerText = staff.role || 'Staff';
-                document.getElementById('salaryStaffEmpId').innerText = empId;
-                document.getElementById('salaryStaffPhone').innerText = staff.phone || '-';
-                document.getElementById('salaryMonthDisplay').innerText = formatMonthDisplay(payment.month) || '-';
-                document.getElementById('salaryIssueDate').innerText = payment.payment_date ? formatDate(payment.payment_date) : issueDate;
-                document.getElementById('salarySlipNo').innerText = 'SLIP #: ' + slipNo;
-                document.getElementById('salaryBasicAmt').innerText = grossAmt.toLocaleString('en-IN');
-                document.getElementById('salaryGrossAmt').innerText = grossAmt.toLocaleString('en-IN');
-                document.getElementById('salaryDedAmt').innerText = '- ' + dedAmt.toLocaleString('en-IN');
-                document.getElementById('salaryNetAmt').innerText = '₹ ' + netAmt.toLocaleString('en-IN');
-                document.getElementById('salaryAmountWords').innerText = numberToWords(netAmt);
-                document.getElementById('salarySealDate').innerText = issueDate;
-
-                const wrapper = document.getElementById('salarySlipTemplate');
-                wrapper.style.left = '0'; wrapper.style.top = '0'; wrapper.style.zIndex = '-9999'; wrapper.style.opacity = '0';
-                const target = document.getElementById('salarySlipRender');
-                await new Promise(r => setTimeout(r, 100));
-                const canvas = await html2canvas(target, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false });
-                
-                wrapper.style.left = '-9999px'; wrapper.style.top = '-9999px'; wrapper.style.opacity = '1'; wrapper.style.zIndex = '-1';
-                const imgData = canvas.toDataURL('image/jpeg', 0.85);
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
-                pdf.addImage(imgData, 'JPEG', 0, 0, 148, 210);
-
-                const cleanName = (staff.full_name || 'Staff').replace(/[^a-zA-Z0-9]/g, '_');
-                const cleanMonth = (payment.month || 'Month').replace(/[^a-zA-Z0-9-]/g, '_');
-                pdf.save(`Salary_Slip_${cleanName}_${cleanMonth}.pdf`);
-            } catch(e) { alert('Error generating slip: ' + e.message); console.error(e); }
-        };
-
-        window.downloadStaffLedger = function() {
-            const staffId = document.getElementById('payStaffSelect').value;
-            if (!staffId) { alert('Please select a staff member first'); return; }
-            const staff = allStaff.find(s => s.id === staffId); if (!staff) return;
-            const staffPayments = allSalaryPayments.filter(p => p.staff_id === staffId).sort((a, b) => new Date(a.month) - new Date(b.month));
-            if (staffPayments.length === 0) { alert('No payment history found'); return; }
-
-            try {
-                const { jsPDF } = window.jspdf; const doc = new jsPDF();
-                const instName = instSettings?.institute_name || 'GLOBUS'; const subName = instSettings?.sub_name || 'TECHNICAL ACADEMY';
-                
-                doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.setTextColor(15, 23, 42); doc.text(instName, 105, 15, { align: 'center' });
-                doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text(subName, 105, 21, { align: 'center' });
-                doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 58, 138); doc.text("STAFF PAYMENT LEDGER", 105, 30, { align: 'center' });
-                doc.setFontSize(11); doc.setTextColor(15, 23, 42);
-                doc.text(`Employee Name: ${staff.full_name}`, 14, 40); doc.text(`Designation: ${staff.role || 'Staff'}`, 14, 46); doc.text(`Contact: ${staff.phone || '-'}`, 14, 52);
-
-                let totalPaid = 0;
-                const tableData = staffPayments.map(p => {
-                    const net = Number(p.net_salary) || 0; totalPaid += net;
-                    return [ formatDate(p.payment_date || p.created_at), formatMonthDisplay(p.month), `Rs. ${(Number(p.basic_salary) || 0).toLocaleString('en-IN')}`, `Rs. ${(Number(p.deductions) || 0).toLocaleString('en-IN')}`, `Rs. ${net.toLocaleString('en-IN')}` ];
-                });
-                doc.autoTable({
-                    startY: 58, head: [['Payment Date', 'Salary Month', 'Basic Salary', 'Deductions', 'Net Paid']],
-                    body: tableData, theme: 'grid', headStyles: { fillColor: [15, 23, 42], textColor: 255 }, styles: { fontSize: 10, cellPadding: 4 }, columnStyles: { 2: { halign: 'right' }, 3: { halign: 'right' }, 4: { halign: 'right', fontStyle: 'bold', textColor: [22, 163, 74] } }
-                });
-                const finalY = doc.lastAutoTable.finalY + 10;
-                doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.setTextColor(22, 163, 74);
-                doc.text(`Total Amount Paid: Rs. ${totalPaid.toLocaleString('en-IN')}`, 196, finalY, { align: 'right' });
-                doc.save(`Ledger_${staff.full_name.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
-            } catch (error) { alert("Error generating report! " + error.message); }
-        };
-
-        init();
+        checkAuth();
     </script>
 </body>
 </html>
