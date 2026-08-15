@@ -43,7 +43,7 @@
         /* Staff Card */
         .staff-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(15,23,42,.04);transition:.2s}
         .sc-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;border-bottom:1px dashed #e2e8f0;padding-bottom:12px}
-        .sc-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f1f5f9; background-size: cover; background-position: center;}
+        .sc-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f1f5f9}
         .sc-avatar img,.sc-avatar svg{width:100%;height:100%;object-fit:cover}
         .sc-name{font-size:17px;font-weight:900;color:#0f172a;text-transform:uppercase;line-height:1.2;margin-bottom:4px}
         .sc-role-badge{display:inline-block;background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1d4ed8;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px}
@@ -131,6 +131,8 @@
         .id-btn{padding:11px 6px;border:none;border-radius:10px;font-weight:800;cursor:pointer;font-size:12px;color:#fff;transition:.2s;box-shadow:0 3px 6px rgba(0,0,0,.1)}
         .id-btn:active{transform:scale(.95)}
         .id-btn:disabled{opacity:.6;cursor:not-allowed}
+        .slip-dl-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;box-shadow:0 3px 6px rgba(245,158,11,.25);transition:.2s;display:inline-flex;align-items:center;gap:4px;margin-top:8px;max-width:100%;box-sizing:border-box}
+        .slip-dl-btn:active{transform:scale(.95)}
     </style>
 </head>
 <body>
@@ -274,8 +276,8 @@
 
                     <div style="text-align:center;margin-top:-8px;position:relative;z-index:5">
                         <div style="display:inline-block;padding:4px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,.2),0 0 0 1px #e2e8f0">
-                            <!-- MASTER FIX: Replaced <img> tag with a safe background-image div. This ensures 100% html2canvas compatibility! -->
-                            <div id="staffCardAvatarImg" style="width:90px;height:105px;border-radius:10px;background-color:#f1f5f9;background-size:cover;background-position:center;background-repeat:no-repeat;"></div>
+                            <!-- Security tag fully removed. Simple image setup. -->
+                            <img id="staffCardAvatarImg" src="" style="width:90px;height:105px;object-fit:cover;border-radius:10px;display:block">
                         </div>
                     </div>
 
@@ -301,6 +303,7 @@
                     </div>
 
                     <div style="position:absolute;bottom:28px;left:14px;width:140px">
+                        <!-- Barcode properly fixed for html2canvas -->
                         <div style="height:26px;background: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2226%22><rect width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%224%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%227%22 width=%223%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2212%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2215%22 width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2219%22 width=%224%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2225%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2228%22 width=%223%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2233%22 width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2237%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/></svg>') repeat-x;border:1px solid #e2e8f0;border-radius:2px"></div>
                         <div id="staffCardBarcodeText" style="font-size:7px;font-family:'Courier New',monospace;font-weight:700;color:#0f172a;letter-spacing:2px;text-align:center;margin-top:2px">||| STAFF |||</div>
                     </div>
@@ -345,6 +348,7 @@
                     <div><label class="frm-label">Phone</label><input type="text" class="frm-input" id="liveStaffPhone" maxlength="10" oninput="document.getElementById('staffCardPhone').innerText = this.value || 'N/A'"></div>
                 </div>
 
+                <!-- RENAMED BUTTONS & CORRECTED FUNCTIONS -->
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;margin-bottom:12px;">
                     <button type="button" id="staffSharePdfBtn" onclick="window.printStaffCard()" class="id-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 6px rgba(239,68,68,.25)">🖨️ Print</button>
                     <button type="button" id="staffShareCardBtn" onclick="window.shareStaffCard()" class="id-btn" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 6px rgba(16,185,129,.25)">⬇️ Image</button>
@@ -728,9 +732,9 @@
             document.getElementById('staffCardPhone').innerText = s.phone || 'N/A';
             const barcodeEl = document.getElementById('staffCardBarcodeText'); if (barcodeEl) barcodeEl.innerText = '||| ' + empId + ' |||';
 
-            // MASTER FIX: Safely setting background image for existing photo
+            const imgEl = document.getElementById('staffCardAvatarImg');
             const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
-            document.getElementById('staffCardAvatarImg').style.backgroundImage = `url('${avatar}')`;
+            imgEl.src = avatar;
             
             openModal('staffCardModal');
         };
@@ -747,17 +751,32 @@
             document.getElementById('staffSealAddress').innerText = a;
         };
 
-        // 4. MASTER PHOTO FIX: Setting as 'background-image' directly from Local File Input
+        // 4. PHOTO FIX (Blob URL + load tracking) - students.html പോലെ
         window.updateLiveStaffPhoto = function(event) {
             const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('staffCardAvatarImg').style.backgroundImage = `url('${e.target.result}')`;
-                };
-                reader.readAsDataURL(file);
+            if (!file) return;
+            const img = document.getElementById('staffCardAvatarImg');
+            if (window.currentStaffPhotoObjectUrl) {
+                URL.revokeObjectURL(window.currentStaffPhotoObjectUrl);
             }
+            window.currentStaffPhotoObjectUrl = URL.createObjectURL(file);
+            img.src = window.currentStaffPhotoObjectUrl;
+            img.onload = () => { img.dataset.loaded = 'true'; };
+            img.onerror = () => { img.dataset.loaded = 'false'; };
         };
+
+        // Helper: ഇമേജ് ലോഡ് ആകുന്നതുവരെ കാത്തിരിക്കുക
+        function waitForImageLoad(img, timeout = 3000) {
+            return new Promise((resolve) => {
+                if (!img || !img.src || (img.complete && img.naturalWidth > 0)) {
+                    resolve();
+                    return;
+                }
+                const timer = setTimeout(() => resolve(), timeout);
+                img.addEventListener('load', () => { clearTimeout(timer); resolve(); }, { once: true });
+                img.addEventListener('error', () => { clearTimeout(timer); resolve(); }, { once: true });
+            });
+        }
 
         window.confirmStaffStudioReset = async function() {
             let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
@@ -815,50 +834,72 @@
             alert('✅ Details Saved Successfully!'); await fetchAllData();
         };
 
-        // 6. NEW PRINT FUNCTION: Uses hidden iframe for 100% silent and perfectly sized printing
+        // 6. PRINT FUNCTION - Fixed for photos
         window.printStaffCard = async function() {
             const btn = document.getElementById('staffSharePdfBtn'); 
             const originalText = btn.innerHTML;
             btn.innerHTML = '⏳ Preparing...'; btn.disabled = true;
             try {
-                await new Promise(r => setTimeout(r, 300)); // Small delay for stable rendering
-                const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                const img = document.getElementById('staffCardAvatarImg');
+                const logo = document.getElementById('staffCardLogo');
+                await waitForImageLoad(img);
+                await waitForImageLoad(logo);
+
+                const src = img.src || '';
+                const useCORS = !(src.startsWith('blob:') || src.startsWith('data:'));
+
+                const canvas = await html2canvas(document.getElementById('staffCardContent'), { 
+                    scale: 3, 
+                    useCORS: useCORS, 
+                    backgroundColor: '#ffffff' 
+                });
                 const imgData = canvas.toDataURL('image/jpeg', 1.0);
                 
-                const iframe = document.createElement('iframe');
-                iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0';
-                iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
-                document.body.appendChild(iframe);
+                const printWindow = window.open('', '_blank');
+                if(!printWindow) { alert("Popup blocked! Please allow popups to print."); return; }
                 
-                const doc = iframe.contentWindow.document;
-                doc.open();
-                doc.write(`
+                printWindow.document.write(`
                     <html>
                     <head>
+                        <title>Print ID Card</title>
                         <style>
                             @page { size: 54mm 86mm; margin: 0; }
-                            body { margin: 0; padding: 0; background: #fff; display: flex; justify-content: center; align-items: center; }
-                            img { width: 54mm; height: 86mm; object-fit: cover; }
+                            @media print {
+                                body { margin: 0; padding: 0; width: 54mm; height: 86mm; background: #fff; }
+                                img { width: 54mm; height: 86mm; object-fit: cover; display: block; margin: 0; padding: 0; border: none; }
+                            }
+                            body { margin: 0; display: flex; justify-content: center; align-items: center; background: #525659; height: 100vh; overflow: hidden; }
+                            img { width: 54mm; height: 86mm; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
                         </style>
                     </head>
                     <body>
-                        <img src="${imgData}" onload="setTimeout(() => { window.print(); }, 500);" />
+                        <img src="${imgData}" onload="window.print();" />
                     </body>
                     </html>
                 `);
-                doc.close();
-                setTimeout(() => { document.body.removeChild(iframe); }, 10000);
+                printWindow.document.close();
             } catch (error) { alert("Print failed: " + error.message); } 
             finally { btn.innerHTML = originalText; btn.disabled = false; }
         };
 
-        // 7. DIRECT IMAGE DOWNLOAD
+        // 7. IMAGE DOWNLOAD - Fixed for photos
         window.shareStaffCard = async function() {
             const btn = document.getElementById('staffShareCardBtn'); const originalText = btn.innerHTML;
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
-                await new Promise(r => setTimeout(r, 300)); // Small delay for stable rendering
-                const canvas = await html2canvas(document.getElementById('staffCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                const img = document.getElementById('staffCardAvatarImg');
+                const logo = document.getElementById('staffCardLogo');
+                await waitForImageLoad(img);
+                await waitForImageLoad(logo);
+
+                const src = img.src || '';
+                const useCORS = !(src.startsWith('blob:') || src.startsWith('data:'));
+
+                const canvas = await html2canvas(document.getElementById('staffCardContent'), { 
+                    scale: 3, 
+                    useCORS: useCORS, 
+                    backgroundColor: '#ffffff' 
+                });
                 
                 const name = document.getElementById('liveStaffName').value || 'Staff';
                 const link = document.createElement('a'); 
