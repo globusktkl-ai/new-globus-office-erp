@@ -753,15 +753,17 @@
 
         // 4. PHOTO FIX (Direct Base64 conversion - NO Security Blocks)
         window.updateLiveStaffPhoto = function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('staffCardAvatarImg').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        };
+    const file = event.target.files[0];
+    if (file) {
+        // പഴയ object URL ഉണ്ടെങ്കിൽ അത് revoke ചെയ്യുക (മെമ്മറി ലീക്ക് ഒഴിവാക്കാൻ)
+        if (window.currentStaffPhotoObjectUrl) {
+            URL.revokeObjectURL(window.currentStaffPhotoObjectUrl);
+        }
+        // Blob URL സൃഷ്ടിച്ച് img src ആയി സെറ്റ് ചെയ്യുക (students.html പോലെ)
+        window.currentStaffPhotoObjectUrl = URL.createObjectURL(file);
+        document.getElementById('staffCardAvatarImg').src = window.currentStaffPhotoObjectUrl;
+    }
+};
 
         window.confirmStaffStudioReset = async function() {
             let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
