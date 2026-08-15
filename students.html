@@ -29,107 +29,102 @@
 
         @media (max-width: 600px) { .btn-back-dashboard span { display: none; } .btn-back-dashboard { padding: 10px; } }
 
-        /* --------------------------------------------------- */
-        /* PERFECT ADVANCED FILTER UI                          */
-        /* --------------------------------------------------- */
+        /* ADVANCED FILTER UI */
         .search-container { background: white; border-radius: 12px; padding: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; width: 100%;}
-        
         .main-search-box { width: 100%; padding: 10px 12px 10px 35px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 10px center; margin-bottom: 10px; transition: 0.2s;}
         .main-search-box:focus { border-color: #4c1d95; background-color: #fff; box-shadow: 0 0 0 3px rgba(76, 29, 149, 0.1); }
-
         .filter-layout { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 8px; align-items: stretch; width: 100%; }
-        
         .filter-left { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
         .filter-row { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 8px; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 0; }
-        
         .filter-checkbox { width: 18px; height: 18px; accent-color: #4c1d95; cursor: pointer; flex-shrink: 0; margin: 0; }
-        
-        .filter-select { flex: 1; min-width: 0; max-width: 100%; padding: 4px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #1e293b; appearance: none; -webkit-appearance: none; outline: none; transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;}
-        .filter-select:invalid { color: #94a3b8; font-weight: 600; }
-
+        .filter-select { flex: 1; min-width: 0; max-width: 100%; padding: 4px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #1e293b; appearance: none; outline: none; cursor: pointer;}
         .filter-right { display: flex; min-width: 0; }
-        .status-select { width: 100%; min-width: 0; padding: 8px 5px; border: 2px solid #bbf7d0; border-radius: 8px; font-size: 13px; font-weight: 800; background: #f0fdf4; color: #15803d; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .status-select option { font-weight: 700; }
-
+        .status-select { width: 100%; min-width: 0; padding: 8px 5px; border: 2px solid #bbf7d0; border-radius: 8px; font-size: 13px; font-weight: 800; background: #f0fdf4; color: #15803d; appearance: none; outline: none; cursor: pointer; text-align: center;}
+        
         @media(max-width: 450px) {
             .filter-layout { grid-template-columns: minmax(0, 1fr) 100px; }
-            .filter-select { font-size: 12px; }
-            .status-select { font-size: 12px; }
+            .filter-select, .status-select { font-size: 12px; }
         }
 
         /* Student Cards */
-        .student-mobile-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s; width: 100%; }
+        .student-mobile-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); width: 100%; }
         .smc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 15px; }
         .smc-name { font-size: 19px; font-weight: 900; color: #0f172a; margin-bottom: 4px; line-height: 1.2; text-transform: uppercase;}
-        .smc-reg { font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .avatar-circle { width: 65px; height: 65px; border-radius: 50%; background: #fbcfe8; border: 3px solid #fdf2f8; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; flex-shrink: 0;}
-        .avatar-circle svg { width: 40px; height: 40px; fill: #ec4899; margin-top: 10px;}
+        .smc-reg { font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase;}
+        .avatar-circle { width: 65px; height: 65px; border-radius: 50%; background: #fbcfe8; border: 3px solid #fdf2f8; display: flex; justify-content: center; align-items: center; overflow: hidden; flex-shrink: 0;}
         .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
         
         .smc-row { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 14px; }
-        .smc-label { width: 110px; color: #64748b; font-weight: 700; flex-shrink: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .smc-label { width: 110px; color: #64748b; font-weight: 700; flex-shrink: 0; font-size: 12px; text-transform: uppercase; }
         .smc-value { flex: 1; color: #1e293b; font-weight: 800; }
         .badge-sslc { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 800; color: #334155; display: inline-block;}
 
         /* PROGRESS BAR STYLES */
-        .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 10px; height: 16px; margin: 10px 0 15px; position: relative; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
-        .progress-fill { height: 100%; border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 10px; font-weight: 900; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: width 0.5s ease-in-out; }
+        .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 10px; height: 16px; margin: 10px 0 15px; position: relative; overflow: hidden;}
+        .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease-in-out; }
         .progress-fill.active { background: linear-gradient(90deg, #3b82f6, #6366f1); }
         .progress-fill.completed { background: linear-gradient(90deg, #10b981, #059669); }
-        .progress-text-out { position: absolute; width: 100%; text-align: center; top: 0; left: 0; font-size: 10px; font-weight: 800; color: #475569; line-height: 16px; z-index: 1; mix-blend-mode: overlay;}
+        .progress-text-out { position: absolute; width: 100%; text-align: center; top: 0; left: 0; font-size: 10px; font-weight: 800; color: #475569; line-height: 16px; mix-blend-mode: overlay;}
 
         /* PROFESSIONAL BUTTON STYLES */
         .card-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
-        .btn-card { border: none; padding: 12px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 13px; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 5px; }
-        .btn-view { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #fff; }
-        .btn-id { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; }
-        .btn-del-full { background: transparent; color: #ef4444; border: 1px solid #fca5a5; width: 100%; padding: 12px; margin-top: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 14px; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn-del-full:hover { background: #fef2f2; }
-
+        .btn-card { border: none; padding: 12px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 13px; color:#fff; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .btn-view { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+        .btn-id { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+        .btn-del-full { background: transparent; color: #ef4444; border: 1px solid #fca5a5; width: 100%; padding: 12px; margin-top: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 14px; display: flex; justify-content: center; gap: 8px; }
+        
         .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; padding-top: 20px; position: relative; }
         .card-edit-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
-        .close-modal-btn { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; border: 2px solid white; border-radius: 50%; width: 36px; height: 36px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.2s; }
+        .close-modal-btn { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; border: 2px solid white; border-radius: 50%; width: 36px; height: 36px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 16px;}
         .form-control-cert { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; margin-bottom: 12px; outline: none; font-weight: 500; }
-        
-        .loading-state, .empty-state { text-align: center; padding: 40px 20px; color: #64748b; font-weight: 700; font-size: 15px; background: white; border-radius: 12px; border: 1px dashed #cbd5e1; }
+        .loading-state, .empty-state { text-align: center; padding: 40px 20px; color: #64748b; font-weight: 700; font-size: 15px; border: 1px dashed #cbd5e1; }
 
         @media (max-width: 650px) {
             .card-preview-col, .card-edit-col { min-width: 100%; }
             .modal-container { padding: 15px; margin-top: 10px; }
             .close-modal-btn { top: 10px; right: 10px; }
         }
+
+        /* STUDIO BUTTONS */
+        .studio-btn { padding: 12px; border: none; border-radius: 10px; font-weight: 800; font-size: 13px; color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .btn-print { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+        .btn-image { background: linear-gradient(135deg, #10b981, #047857); }
+        .btn-reset { background: linear-gradient(135deg, #f59e0b, #b45309); }
+        .btn-save-full { background: linear-gradient(135deg, #4f46e5, #1d4ed8); width: 100%; padding: 14px; font-size: 14px;}
+
+        /* ID CARD BASE STYLES */
+        .id-card-template { width: 280px; height: 445px; background: #fff; border: 1px solid #cbd5e1; border-radius: 12px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin:0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; display: none;}
+        .id-card-template.active { display: block; }
+        
+        /* 100% BULLETPROOF BACKGROUND FIX FOR PHOTO STRETCHING */
+        .sync-avatar { width: 100px; height: 125px; border-radius: 8px; background-color: #f8fafc; background-size: cover !important; background-position: center top !important; background-repeat: no-repeat !important; display: inline-block; }
+        
+        .sync-logo { width: 50px; height: 50px; object-fit: contain; }
+        .barcode-bg { height:26px; background: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2226%22><rect width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%224%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%227%22 width=%223%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2212%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2215%22 width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2219%22 width=%224%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2225%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2228%22 width=%223%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2233%22 width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2237%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/></svg>') repeat-x; }
+
     </style>
 </head>
 <body class="bg-slate-50">
     
     <main class="main-content no-print">
         <div class="top-nav">
-            <a href="dashboard.html" class="btn-back-dashboard">
-                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
+            <a href="dashboard.html" class="btn-back-dashboard"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
             <h1 class="page-title">Student Directory</h1>
         </div>
         
         <div class="search-container">
             <input type="text" id="searchInput" class="main-search-box" placeholder="Search Name, Reg No, Phone..." oninput="window.applyFilters()">
-            
             <div class="filter-layout">
                 <div class="filter-left">
                     <div class="filter-row">
                         <input type="checkbox" id="chkCourse" class="filter-checkbox" onchange="window.applyFilters()">
-                        <select id="courseSelect" class="filter-select" required onchange="document.getElementById('chkCourse').checked = true; window.updateFilterModules(); window.applyFilters();">
-                            <option value="" disabled selected hidden>Select Course</option>
-                        </select>
+                        <select id="courseSelect" class="filter-select" required onchange="document.getElementById('chkCourse').checked = true; window.updateFilterModules(); window.applyFilters();"><option value="" disabled selected hidden>Select Course</option></select>
                     </div>
                     <div class="filter-row">
                         <input type="checkbox" id="chkModule" class="filter-checkbox" onchange="window.applyFilters()">
-                        <select id="moduleSelect" class="filter-select" required onchange="document.getElementById('chkModule').checked = true; window.applyFilters();">
-                            <option value="" disabled selected hidden>Select Module</option>
-                        </select>
+                        <select id="moduleSelect" class="filter-select" required onchange="document.getElementById('chkModule').checked = true; window.applyFilters();"><option value="" disabled selected hidden>Select Module</option></select>
                     </div>
                 </div>
-                
                 <div class="filter-right">
                     <select id="statusFilter" class="status-select" onchange="window.updateStatusColor(this); window.applyFilters();">
                         <option value="active" selected>🟢 Active</option>
@@ -144,9 +139,10 @@
         <div id="studentsList"><div class="loading-state">Loading students database...</div></div>
     </main>
 
-    <!-- STUDENT MODAL & ID CARD -->
+    <!-- STUDENT MODAL -->
     <div id="studentModal" class="modal-overlay">
         
+        <!-- EDIT PROFILE -->
         <div id="viewEditContainer" class="modal-container no-print" style="display:none; max-width:550px;">
             <button onclick="window.closeModal()" class="close-modal-btn">×</button>
             <div style="width: 100%;">
@@ -158,72 +154,180 @@
             </div>
         </div>
 
+        <!-- ID CARD STUDIO -->
         <div id="profileCardContainer" class="modal-container" style="display:none;">
             <button onclick="window.closeModal()" class="close-modal-btn no-print">×</button>
             
             <div class="card-preview-col">
-                <div id="smartCardContent" style="width: 280px; height: 445px; background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin:0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
-                    
+                
+                <!-- TEMPLATE 1: CLASSIC ACADEMIC -->
+                <div id="template-1" class="id-card-template active">
                     <div style="background: #1e3a8a; height: 110px; width: 150%; position: absolute; top: -25px; left: -25%; border-radius: 50%; z-index: 1;"></div>
-                    
                     <div style="position: relative; width: 100%; height: 50px; margin-top: 10px; margin-bottom: 15px; z-index: 2;">
-                        <img id="cardInstLogo" src="assets/images/logo.png" style="position: absolute; left: 15px; top: -4px; width: 50px; height: 50px; object-fit: contain; border: none; padding: 0; background: transparent;" alt="Logo" onerror="this.style.display='none'">
-                        
+                        <img class="sync-logo" src="assets/images/logo.png" style="position: absolute; left: 15px; top: -4px; border: none;" onerror="this.style.display='none'">
                         <div style="position: absolute; left: 0; right: 0; top: 4px; text-align: center; z-index: 3; padding: 0 10px;">
-                            <div id="cardInstName" style="font-size: 19px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GLOBUS</div>
-                            <div id="cardSubName" style="font-size: 8px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TECHNICAL ACADEMY</div>
-                            <div id="cardAddress" style="font-size: 5px; color: #e2e8f0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;"></div>
-                            <div id="cardEmail" style="font-size: 5px; color: #e2e8f0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                            <div class="sync-inst-name" style="font-size: 19px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GLOBUS</div>
+                            <div class="sync-inst-sub" style="font-size: 8px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TECHNICAL ACADEMY</div>
+                            <div class="sync-inst-addr" style="font-size: 5px; color: #e2e8f0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;"></div>
                         </div>
                     </div>
-                    
                     <div style="background: #f59e0b; color: #fff; font-size: 11px; font-weight: 800; text-align: center; padding: 4px 0; width: 65%; margin: 0 auto 10px; border-radius: 20px; position: relative; z-index: 2;">STUDENT ID CARD</div>
-                    
                     <div style="text-align: center; margin-bottom: 12px; position: relative; z-index: 2;">
-                        <!-- ASPECT RATIO FIX (object-fit cover added for students) -->
-                        <img id="cardAvatarImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>" style="width: 100px; height: 125px; object-fit: cover !important; object-position: center top !important; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 5px; background: #f8fafc;">
+                        <!-- DIV BACKGROUND USED TO PREVENT STRETCHING -->
+                        <div class="sync-avatar" style="border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); margin: 0 auto;"></div>
                     </div>
-                    
                     <div style="padding: 0 12px; text-align: center; position: relative; z-index: 2;">
                         <div style="margin-bottom: 8px;">
                             <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">STUDENT NAME</div>
-                            <div id="cardStudentName" style="font-size: 17px; font-weight: 600; color: #1e293b;">STUDENT NAME</div>
+                            <div class="sync-stu-name" style="font-size: 17px; font-weight: 600; color: #1e293b;">-</div>
                         </div>
                         <div style="margin-bottom: 12px;">
                             <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">COURSE</div>
-                            <div id="cardCourseName" style="font-size: 12px; font-weight: 800; color: #059669;">COURSE NAME</div>
+                            <div class="sync-course" style="font-size: 12px; font-weight: 800; color: #059669;">-</div>
                         </div>
-                        
-                        <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0; width: 100%; box-sizing: border-box;">
-                            <div style="text-align:left;">
-                                <div style="font-size: 8px; color: #64748b; font-weight: 800;">REG NO</div>
-                                <div id="cardRegNo" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
+                        <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                            <div style="text-align:left;"><div style="font-size: 8px; color: #64748b; font-weight: 800;">REG NO</div><div class="sync-reg" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div></div>
+                            <div style="text-align:right;"><div style="font-size: 8px; color: #64748b; font-weight: 800;">PHONE</div><div class="sync-phone" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div></div>
+                        </div>
+                    </div>
+                    <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 7px; color: #cbd5e1; font-weight: 700; text-align: center; z-index: 2;">If found, please return to: <span class="sync-return">+91 9846000000</span></div>
+                </div>
+
+                <!-- TEMPLATE 2: MODERN TECH -->
+                <div id="template-2" class="id-card-template">
+                    <div style="background: linear-gradient(135deg, #0f172a, #1e293b); height: 95px; width: 100%; position: absolute; top: 0; left: 0; z-index: 1;"></div>
+                    <div style="background: #10b981; height: 4px; width: 100%; position: absolute; top: 95px; left: 0; z-index: 1;"></div>
+                    <div style="position: relative; width: 100%; height: 50px; margin-top: 15px; margin-bottom: 20px; z-index: 2; padding: 0 15px; display: flex; align-items: center; gap: 10px;">
+                        <img class="sync-logo" src="assets/images/logo.png" style="background:#fff; padding:3px; border-radius:6px;" onerror="this.style.display='none'">
+                        <div>
+                            <div class="sync-inst-name" style="font-size: 15px; font-weight: 900; color: #fff; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GLOBUS</div>
+                            <div class="sync-inst-sub" style="font-size: 7px; font-weight: 700; color: #10b981; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TECHNICAL ACADEMY</div>
+                        </div>
+                    </div>
+                    <div style="background: #f1f5f9; color: #0f172a; font-size: 10px; font-weight: 900; text-align: center; padding: 5px 0; width: 50%; margin: 0 auto 15px; border-radius: 4px; z-index: 2; position: relative;">STUDENT ID</div>
+                    <div style="text-align: center; margin-bottom: 15px; position: relative; z-index: 2;">
+                        <div class="sync-avatar" style="border: 3px solid #10b981; margin: 0 auto;"></div>
+                    </div>
+                    <div style="padding: 0 20px; text-align: left; position: relative; z-index: 2;">
+                        <div style="margin-bottom: 8px;">
+                            <div style="font-size: 8px; color: #64748b; font-weight: 800;">STUDENT NAME</div>
+                            <div class="sync-stu-name" style="font-size: 16px; font-weight: 900; color: #0f172a;">-</div>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <div style="font-size: 8px; color: #64748b; font-weight: 800;">COURSE</div>
+                            <div class="sync-course" style="font-size: 12px; font-weight: 800; color: #10b981;">-</div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px;">
+                            <div><div style="font-size: 7px; color: #64748b; font-weight: 800;">REG NO</div><div class="sync-reg" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div></div>
+                            <div style="text-align:right;"><div style="font-size: 7px; color: #64748b; font-weight: 800;">PHONE</div><div class="sync-phone" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div></div>
+                        </div>
+                    </div>
+                    <div style="position: absolute; bottom: 8px; left: 0; width: 100%; font-size: 6px; color: #94a3b8; font-weight: 700; text-align: center;">Return to: <span class="sync-return"></span></div>
+                </div>
+
+                <!-- TEMPLATE 3: MINIMALIST WHITE -->
+                <div id="template-3" class="id-card-template">
+                    <div style="padding: 20px 15px 10px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+                        <img class="sync-logo" src="assets/images/logo.png" style="margin-bottom:5px;" onerror="this.style.display='none'">
+                        <div class="sync-inst-name" style="font-size: 16px; font-weight: 900; color: #0f172a; letter-spacing: 1px;">GLOBUS</div>
+                        <div class="sync-inst-sub" style="font-size: 7px; font-weight: 700; color: #64748b; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
+                    </div>
+                    <div style="display: flex; gap: 15px; padding: 20px 15px;">
+                        <div style="width: 85px;">
+                            <div class="sync-avatar" style="width:85px; height:110px; border-radius: 6px; border: 1px solid #cbd5e1;"></div>
+                            <div style="background: #3b82f6; color: #fff; font-size: 8px; font-weight: 800; text-align: center; padding: 4px; margin-top: 5px; border-radius: 4px;">STUDENT</div>
+                        </div>
+                        <div style="flex: 1; padding-top: 5px;">
+                            <div style="margin-bottom: 10px;">
+                                <div style="font-size: 7px; color: #94a3b8; font-weight: 800;">NAME</div>
+                                <div class="sync-stu-name" style="font-size: 14px; font-weight: 900; color: #0f172a; line-height:1.1;">-</div>
                             </div>
-                            <div style="text-align:right;">
-                                <div style="font-size: 8px; color: #64748b; font-weight: 800;">PHONE</div>
-                                <div id="cardPhone" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
+                            <div style="margin-bottom: 10px;">
+                                <div style="font-size: 7px; color: #94a3b8; font-weight: 800;">COURSE</div>
+                                <div class="sync-course" style="font-size: 11px; font-weight: 800; color: #3b82f6; line-height:1.1;">-</div>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <div style="font-size: 7px; color: #94a3b8; font-weight: 800;">ID NUMBER</div>
+                                <div class="sync-reg" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 7px; color: #94a3b8; font-weight: 800;">CONTACT</div>
+                                <div class="sync-phone" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 7px; color: #cbd5e1; font-weight: 700; text-align: center; z-index: 2;">If found, please return to: <span id="cardReturnPhone">+91 9846000000</span></div>
-                    
-                    <div style="position: absolute; bottom: 15px; right: 10px; width: 68px; height: 68px; border: 2px solid rgba(139, 92, 246, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; transform: rotate(-15deg); z-index: 10; box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.15); mix-blend-mode: multiply;">
-                        <div style="width: 60px; height: 60px; border: 1px dashed rgba(139, 92, 246, 0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2px; box-sizing: border-box;">
-                            <div id="sealMainName" style="font-size: 6.5px; font-weight: 900; color: rgba(139, 92, 246, 0.9); line-height: 1.1; text-transform: uppercase; word-wrap: break-word; overflow: hidden; max-height: 15px;">GLOBUS</div>
-                            <div id="sealSubName" style="font-size: 4px; font-weight: 800; color: rgba(139, 92, 246, 0.8); line-height: 1.1; text-transform: uppercase; margin-bottom: 2px; word-wrap: break-word; overflow: hidden; max-height: 10px;">TECHNICAL ACADEMY</div>
-                            <div id="sealAddress" style="font-size: 3.5px; font-weight: 600; color: rgba(139, 92, 246, 0.6); line-height: 1.1; text-transform: uppercase; word-wrap: break-word; overflow: hidden; max-height: 12px;">ADDRESS</div>
+                    <div style="position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 200px;">
+                        <div class="barcode-bg" style="border-radius:2px;"></div>
+                    </div>
+                    <div style="position: absolute; bottom: 8px; left: 0; width: 100%; font-size: 6px; color: #94a3b8; font-weight: 700; text-align: center;">Return to: <span class="sync-return"></span></div>
+                </div>
+
+                <!-- TEMPLATE 4: CREATIVE EDGE -->
+                <div id="template-4" class="id-card-template">
+                    <div style="background: #8b5cf6; height: 160px; width: 100%; position: absolute; top: 0; left: 0; border-bottom-left-radius: 50% 20%; border-bottom-right-radius: 50% 20%; z-index: 1;"></div>
+                    <div style="position: relative; z-index: 2; padding: 15px; text-align: center; color: #fff;">
+                        <div class="sync-inst-name" style="font-size: 18px; font-weight: 900; letter-spacing: 1px;">GLOBUS</div>
+                        <div class="sync-inst-sub" style="font-size: 8px; font-weight: 700; color: #ddd6fe; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 5px; position: relative; z-index: 2;">
+                        <div class="sync-avatar" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: 0 auto;"></div>
+                    </div>
+                    <div style="text-align: center; padding: 15px 20px;">
+                        <div style="background: #f1f5f9; color: #8b5cf6; font-size: 10px; font-weight: 900; display: inline-block; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px;">STUDENT</div>
+                        <div class="sync-stu-name" style="font-size: 18px; font-weight: 900; color: #0f172a; margin-bottom: 5px;">-</div>
+                        <div class="sync-course" style="font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 15px;">-</div>
+                        <div style="display: flex; justify-content: center; gap: 20px;">
+                            <div style="text-align:center;"><div style="font-size: 8px; color: #94a3b8; font-weight: 800;">ID NO</div><div class="sync-reg" style="font-size: 12px; font-weight: 900; color: #0f172a;">-</div></div>
+                            <div style="text-align:center;"><div style="font-size: 8px; color: #94a3b8; font-weight: 800;">PHONE</div><div class="sync-phone" style="font-size: 12px; font-weight: 900; color: #0f172a;">-</div></div>
                         </div>
+                    </div>
+                    <div style="position: absolute; bottom: 8px; left: 0; width: 100%; font-size: 6px; color: #94a3b8; font-weight: 700; text-align: center;">Return to: <span class="sync-return"></span></div>
+                </div>
+
+                <!-- TEMPLATE 5: VIBRANT GRADIENT -->
+                <div id="template-5" class="id-card-template" style="background: linear-gradient(135deg, #e0e7ff, #fae8ff);">
+                    <div style="background: rgba(255,255,255,0.7); margin: 15px; height: 415px; border-radius: 16px; box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1); border: 1px solid rgba(255,255,255,0.8); position: relative; overflow:hidden;">
+                        <div style="padding: 15px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <img class="sync-logo" src="assets/images/logo.png" style="width:40px; height:40px; margin-bottom:5px;" onerror="this.style.display='none'">
+                            <div class="sync-inst-name" style="font-size: 15px; font-weight: 900; color: #312e81; letter-spacing: 1px;">GLOBUS</div>
+                            <div class="sync-inst-sub" style="font-size: 7px; font-weight: 700; color: #6366f1;">TECHNICAL ACADEMY</div>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <div class="sync-avatar" style="width: 90px; height: 115px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: 0 auto;"></div>
+                        </div>
+                        <div style="text-align: center; padding: 15px;">
+                            <div class="sync-stu-name" style="font-size: 16px; font-weight: 900; color: #1e1b4b; margin-bottom: 5px;">-</div>
+                            <div class="sync-course" style="font-size: 11px; font-weight: 800; color: #4338ca; margin-bottom: 15px;">-</div>
+                            <div style="background: rgba(255,255,255,0.9); padding: 8px; border-radius: 8px; display: flex; justify-content: space-between;">
+                                <div style="text-align:left;"><div style="font-size: 7px; color: #64748b; font-weight: 800;">REG NO</div><div class="sync-reg" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div></div>
+                                <div style="text-align:right;"><div style="font-size: 7px; color: #64748b; font-weight: 800;">PHONE</div><div class="sync-phone" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div></div>
+                            </div>
+                        </div>
+                        <div style="background: #4f46e5; color: #fff; font-size: 9px; font-weight: 800; text-align: center; padding: 6px 0; position: absolute; bottom: 0; width: 100%; letter-spacing: 2px;">STUDENT ID</div>
                     </div>
                 </div>
+
             </div>
 
+            <!-- EDIT STUDIO COLUMN -->
             <div class="card-edit-col no-print">
                 <div style="margin-bottom:20px; border-bottom:2px dashed #e2e8f0; padding-bottom:10px;">
                     <h3 style="font-size:18px; font-weight:900; color:#1e293b; margin:0;">ID Card Studio</h3>
                     <p style="color:#64748b; font-size:12px; font-weight:600;">Edit details and generate card instantly</p>
                 </div>
                 
+                <!-- NEW DESIGN SELECTOR -->
+                <div style="background: #eff6ff; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #bfdbfe;">
+                    <label style="font-size:12px; font-weight:800; color:#1e3a8a; margin-bottom:6px; display:block;">🎨 Choose Card Design</label>
+                    <select class="form-control-cert" id="cardDesignSelect" onchange="window.changeCardDesign(this.value)" style="margin-bottom:0; border-color:#93c5fd; font-weight:700; color:#1e3a8a;">
+                        <option value="1">1. Classic Academic (Default)</option>
+                        <option value="2">2. Modern Tech</option>
+                        <option value="3">3. Minimalist White</option>
+                        <option value="4">4. Creative Edge</option>
+                        <option value="5">5. Vibrant Gradient</option>
+                    </select>
+                </div>
+
                 <div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1;">
                     <label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:8px; display:block; text-transform:uppercase;">🏢 Institute Settings (ID Card Only)</label>
                     <div style="display:flex; gap:10px; margin-bottom:8px;">
@@ -240,30 +344,30 @@
                 <input type="file" id="livePhotoInput" accept="image/*" class="form-control-cert" onchange="window.updateLivePhoto(event)">
                 
                 <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Student Name</label>
-                <input type="text" id="liveName" class="form-control-cert" oninput="document.getElementById('cardStudentName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
+                <input type="text" id="liveName" class="form-control-cert" oninput="window.setContent('sync-stu-name', (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;'), true)">
                 
                 <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Course Name</label>
-                <input type="text" id="liveCourse" class="form-control-cert" oninput="document.getElementById('cardCourseName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
+                <input type="text" id="liveCourse" class="form-control-cert" oninput="window.setContent('sync-course', (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;'), true)">
                 
                 <div style="display:flex; gap:12px; margin-bottom:10px;">
                     <div style="flex:1;">
                         <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Reg No</label>
-                        <input type="text" id="liveReg" class="form-control-cert" oninput="document.getElementById('cardRegNo').innerText = this.value || 'N/A'">
+                        <input type="text" id="liveReg" class="form-control-cert" oninput="window.setContent('sync-reg', this.value || 'N/A')">
                     </div>
                     <div style="flex:1;">
                         <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Phone</label>
-                        <input type="text" id="livePhone" class="form-control-cert" oninput="document.getElementById('cardPhone').innerText = this.value || 'N/A'">
+                        <input type="text" id="livePhone" class="form-control-cert" oninput="window.setContent('sync-phone', this.value || 'N/A')">
                     </div>
                 </div>
                 
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; margin-bottom:15px;">
-                    <button type="button" id="sharePdfBtn" onclick="window.sharePDF()" style="background: #ef4444; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2); font-size:11px;">📄 Share PDF</button>
-                    <button type="button" id="shareCardBtn" onclick="window.shareCard()" style="background: #10b981; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(16,185,129,0.2); font-size:11px;">🔗 Share Image</button>
-                    <button type="button" onclick="window.confirmStudioReset()" style="background: #f59e0b; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2); font-size:11px;">🔄 Reset</button>
+                    <button type="button" id="sharePdfBtn" onclick="window.sharePDF()" class="studio-btn btn-print">🖨️ Print (PDF)</button>
+                    <button type="button" id="shareCardBtn" onclick="window.shareCard()" class="studio-btn btn-image">🔗 Image</button>
+                    <button type="button" onclick="window.confirmStudioReset()" class="studio-btn btn-reset">🔄 Reset</button>
                 </div>
                 
                 <hr style="border:none; border-top:1px dashed #cbd5e1; margin: 10px 0 15px;">
-                <button type="button" onclick="window.saveCardDataToDB()" style="background: linear-gradient(135deg, #4f46e5, #3b82f6); color: #fff; border: none; padding: 14px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);">💾 Save Changes</button>
+                <button type="button" onclick="window.saveCardDataToDB()" class="studio-btn btn-save-full">💾 Save Changes</button>
             </div>
         </div>
     </div>
@@ -288,7 +392,50 @@
             setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
         };
 
+        window.magicPrompt = function(msg) {
+            return new Promise((resolve) => {
+                const oldBox = document.getElementById('customPromptBox');
+                if (oldBox) oldBox.remove();
+                const box = document.createElement('div');
+                box.id = 'customPromptBox';
+                box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
+                box.innerHTML = `
+                    <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
+                        <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 16px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
+                        <input type="number" id="cPromptInput" style="width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 20px; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; color: #1e293b;" autocomplete="off">
+                        <div style="display: flex; gap: 12px;">
+                            <button id="cPromptCancel" style="flex: 1; padding: 12px; background: #f1f5f9; color: #475569; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer;">Cancel</button>
+                            <button id="cPromptOk" style="flex: 1; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer;">Verify</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(box);
+                const input = document.getElementById('cPromptInput');
+                input.focus();
+                document.getElementById('cPromptCancel').onclick = () => { box.remove(); resolve(null); };
+                document.getElementById('cPromptOk').onclick = () => { box.remove(); resolve(input.value); };
+                input.addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('cPromptOk').click(); });
+            });
+        };
+
         let allStudents = [], globalCourses = [], currentStudentData = null;
+
+        // SYNC FUNCTIONS FOR MULTIPLE TEMPLATES
+        window.setContent = function(className, content, isHTML = false) {
+            document.querySelectorAll('.' + className).forEach(el => { if(isHTML) el.innerHTML = content; else el.innerText = content; });
+        };
+        window.setImage = function(className, src) {
+            document.querySelectorAll('.' + className).forEach(el => { el.src = src; });
+        };
+        // BULLETPROOF BACKGROUND FIX FOR IMAGES
+        window.setBackgroundImage = function(className, url) {
+            document.querySelectorAll('.' + className).forEach(el => { el.style.backgroundImage = `url('${url}')`; });
+        };
+        
+        window.changeCardDesign = function(val) {
+            document.querySelectorAll('.id-card-template').forEach(el => el.classList.remove('active'));
+            document.getElementById('template-' + val).classList.add('active');
+        };
 
         async function checkAuth() {
             try {
@@ -324,14 +471,11 @@
                     if(document.getElementById('navSubName')) document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
                     if(data.logo_url && document.getElementById('navLogo')) document.getElementById('navLogo').src = data.logo_url;
                     
-                    if(document.getElementById('cardInstName')) document.getElementById('cardInstName').innerText = data.institute_name || 'GLOBUS';
-                    if(document.getElementById('cardSubName')) document.getElementById('cardSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
-                    if(data.logo_url && document.getElementById('cardInstLogo')) document.getElementById('cardInstLogo').src = data.logo_url;
-                    
-                    if(document.getElementById('sealMainName')) document.getElementById('sealMainName').innerText = data.institute_name || 'GLOBUS';
-                    if(document.getElementById('sealSubName')) document.getElementById('sealSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
-                    if(document.getElementById('sealAddress')) document.getElementById('sealAddress').innerText = data.address || '';
-                    if(document.getElementById('cardReturnPhone') && data.phone) document.getElementById('cardReturnPhone').innerText = '+91 ' + data.phone;
+                    if(data.logo_url) window.setImage('sync-logo', data.logo_url);
+                    window.setContent('sync-inst-name', data.institute_name || 'GLOBUS');
+                    window.setContent('sync-inst-sub', data.sub_name || 'TECHNICAL ACADEMY');
+                    window.setContent('sync-inst-addr', data.address || '');
+                    window.setContent('sync-return', '+91 ' + (data.phone || ''));
                 }
             } catch (e) { }
         }
@@ -590,10 +734,8 @@
             const newQual = document.getElementById('fullEditQual').value;
 
             if (hasMarks) {
-                alert("🔒 Security Verification\nThis student has been assigned exam marks. Please complete verification to edit.");
-                let n1 = Math.floor(Math.random() * 10) + 1, n2 = Math.floor(Math.random() * 10) + 1;
-                let ans1 = prompt(`Solve ${n1} + ${n2} = ?`);
-                if (ans1 === null || parseInt(ans1) !== (n1 + n2)) { alert("❌ Verification failed! Update aborted."); return; }
+                let userInput = await window.magicPrompt(`🔒 Security Verification\nThis student has been assigned exam marks. Please solve this to edit:\n\n7 + 3 = ?`);
+                if (userInput === null || parseInt(userInput) !== 10) { alert("❌ Verification failed! Update aborted."); return; }
             }
 
             if(newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
@@ -610,6 +752,10 @@
             const s = allStudents.find(x => x.id === id);
             if (!s) return;
             currentStudentData = s;
+            
+            document.getElementById('cardDesignSelect').value = "1";
+            window.changeCardDesign("1");
+
             document.getElementById('viewEditContainer').style.display = 'none';
             document.getElementById('studentModal').style.display = 'flex';
             document.getElementById('profileCardContainer').style.display = 'flex';
@@ -620,22 +766,22 @@
             document.getElementById('livePhone').value = s.phone_number || '';
             document.getElementById('livePhotoInput').value = ''; 
 
-            document.getElementById('cardStudentName').innerHTML = (s.full_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
-            document.getElementById('cardCourseName').innerHTML = (s.display_course_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
-            document.getElementById('cardRegNo').innerText = s.register_number || 'N/A';
-            document.getElementById('cardPhone').innerText = s.phone_number || 'N/A';
+            window.setContent('sync-stu-name', (s.full_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;'), true);
+            window.setContent('sync-course', (s.display_course_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;'), true);
+            window.setContent('sync-reg', s.register_number || 'N/A');
+            window.setContent('sync-phone', s.phone_number || 'N/A');
 
-            if (s.photo_url) document.getElementById('cardAvatarImg').src = s.photo_url;
-            else document.getElementById('cardAvatarImg').src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${s.gender === "Female" ? "%23ec4899" : "%233b82f6"}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
+            // Set Photo using background-image technique
+            let avatarUrl = s.photo_url || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${s.gender === "Female" ? "%23ec4899" : "%233b82f6"}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
+            window.setBackgroundImage('sync-avatar', avatarUrl);
         };
 
+        // FIX FOR LIVE PHOTO PREVIEW - Sets Background Image Instead of src
         window.updateLivePhoto = function(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('cardAvatarImg').src = e.target.result;
-                };
+                reader.onload = function(e) { window.setBackgroundImage('sync-avatar', e.target.result); };
                 reader.readAsDataURL(file);
             }
         };
@@ -653,7 +799,7 @@
             const fileInput = document.getElementById('livePhotoInput');
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
-                const fileName = `student_${Date.now()}_${file.name}`;
+                const fileName = `student_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
                 try {
                     const { data, error } = await supabase.storage.from('student-photos').upload(fileName, file);
                     if (!error) { photoUrlToSave = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl; }
@@ -672,15 +818,9 @@
             let n = document.getElementById('liveInstName').value || 'GLOBUS';
             let s = document.getElementById('liveInstSub').value || 'TECHNICAL ACADEMY';
             let a = document.getElementById('liveInstAddress').value || '';
-            let e = document.getElementById('liveInstEmail').value || '';
-            
-            document.getElementById('cardInstName').innerText = n;
-            document.getElementById('sealMainName').innerText = n;
-            document.getElementById('cardSubName').innerText = s;
-            document.getElementById('sealSubName').innerText = s;
-            document.getElementById('cardAddress').innerText = a;
-            document.getElementById('sealAddress').innerText = a;
-            document.getElementById('cardEmail').innerText = e ? 'Email: ' + e : '';
+            window.setContent('sync-inst-name', n);
+            window.setContent('sync-inst-sub', s);
+            window.setContent('sync-inst-addr', a);
         };
 
         window.lockStudentFields = function() {
@@ -692,9 +832,9 @@
             }
         };
 
-        window.confirmStudioReset = function() {
+        window.confirmStudioReset = async function() {
             let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
-            let userInput = prompt(`Security Verification\nTo unlock and clear settings, please solve this math question:\n${num1} + ${num2} = ?`);
+            let userInput = await window.magicPrompt(`🔒 Security Verification\nTo unlock and clear settings, please solve:\n\n${num1} + ${num2} = ?`);
             if (userInput !== null && parseInt(userInput) === (num1+num2)) {
                 document.getElementById('liveInstName').value = ''; document.getElementById('liveInstSub').value = '';
                 document.getElementById('liveInstAddress').value = ''; document.getElementById('liveInstEmail').value = '';
@@ -703,63 +843,75 @@
                     let el = document.getElementById(id);
                     el.readOnly = false; el.style.backgroundColor = '#ffffff'; el.style.color = '#000000'; el.style.cursor = 'text';
                 });
-                alert('Reset Complete! Student fields are now unlocked.');
+                alert('✅ Reset Complete! Student fields are now unlocked.');
+            } else {
+                if(userInput !== null) alert('❌ Verification failed! Reset aborted.');
             }
         };
 
-        // LOW FILE SIZE FIX: Switched to JPEG with 85% quality instead of PNG
+        // NEW PRINT METHOD FOR VISIBLE TEMPLATE
         window.sharePDF = async function() {
             const btn = document.getElementById('sharePdfBtn'); const originalText = btn.innerHTML; 
-            btn.innerHTML = '⏳ Generating PDF...'; btn.disabled = true;
+            btn.innerHTML = '⏳ Preparing...'; btn.disabled = true;
             try {
-                const { jsPDF } = window.jspdf;
-                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
-                // LOW FILE SIZE (KB)
-                const imgData = canvas.toDataURL('image/jpeg', 0.85);
-                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] });
-                pdf.addImage(imgData, 'JPEG', 0, 0, 54, 86);
-                const filename = `ID_Card_${(document.getElementById('liveName').value || 'Student').replace(/ /g,'_')}.pdf`;
-                pdf.save(filename);
-            } catch (error) { alert("Could not generate PDF."); } finally { btn.innerHTML = originalText; btn.disabled = false; }
+                await new Promise(r => setTimeout(r, 300));
+                const activeTemplate = document.querySelector('.id-card-template.active');
+                const canvas = await html2canvas(activeTemplate, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                
+                const printWindow = window.open('', '_blank');
+                if(!printWindow) { alert("Popup blocked! Please allow popups to print."); return; }
+                
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Print ID Card</title>
+                        <style>
+                            @page { size: 54mm 86mm; margin: 0; }
+                            @media print {
+                                body { margin: 0; padding: 0; width: 54mm; height: 86mm; background: #fff; }
+                                img { width: 54mm; height: 86mm; object-fit: cover; display: block; margin: 0; padding: 0; border: none; }
+                            }
+                            body { margin: 0; display: flex; justify-content: center; align-items: center; background: #525659; height: 100vh; overflow: hidden; }
+                            img { width: 54mm; height: 86mm; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+                        </style>
+                    </head>
+                    <body><img src="${imgData}" onload="window.print();" /></body>
+                    </html>
+                `);
+                printWindow.document.close();
+            } catch (error) { alert("Print failed: " + error.message); } 
+            finally { btn.innerHTML = originalText; btn.disabled = false; }
         };
 
-        // LOW FILE SIZE FIX: Switched to JPEG with 85% quality instead of PNG
         window.shareCard = async function() {
             const btn = document.getElementById('shareCardBtn'); const originalText = btn.innerHTML; 
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
-                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-                // LOW FILE SIZE (KB)
-                canvas.toBlob(async (blob) => {
-                    const name = document.getElementById('liveName').value || 'Student';
-                    const file = new File([blob], `ID_Card_${name.replace(/ /g,'_')}.jpg`, { type: 'image/jpeg' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try { await navigator.share({ files: [file], title: 'Student ID Card', text: `ID Card for ${name}` }); } catch (err) {}
-                    } else {
-                        const link = document.createElement('a'); link.download = `ID_Card_${name.replace(/ /g,'_')}.jpg`; 
-                        link.href = canvas.toDataURL('image/jpeg', 0.85); link.click();
-                    }
-                    btn.innerHTML = originalText; btn.disabled = false;
-                }, 'image/jpeg', 0.85);
-            } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
+                await new Promise(r => setTimeout(r, 300));
+                const activeTemplate = document.querySelector('.id-card-template.active');
+                const canvas = await html2canvas(activeTemplate, { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                
+                const name = document.getElementById('liveName').value || 'Student';
+                const link = document.createElement('a'); 
+                link.download = `Student_ID_${name.replace(/ /g,'_')}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.85); // LOW FILE SIZE (KB)
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+            } catch (error) { alert("Error generating image."); } 
+            finally { btn.innerHTML = originalText; btn.disabled = false; }
         };
 
         window.archiveStudent = async function(id, regNo) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
-
-            let n1 = Math.floor(Math.random() * 10) + 1; let n2 = Math.floor(Math.random() * 10) + 1;
-            let ans = prompt(`⚠️ Security Verification\nTo Archive (Move to old students) Reg No: ${regNo}, solve:\n${n1} + ${n2} = ?`);
-            if (ans !== null && parseInt(ans) === (n1 + n2)) {
+            let ans = await window.magicPrompt(`⚠️ Security Verification\nTo Archive Reg No: ${regNo}, solve:\n\n5 + 5 = ?`);
+            if (ans !== null && parseInt(ans) === 10) {
                 const { error } = await supabase.from('students').update({ status: 'archived' }).eq('id', id);
-                if (error) {
-                    alert('Error archiving student: ' + error.message);
-                } else {
-                    alert('✅ Student successfully moved to Archives.'); 
-                    fetchStudents(); 
-                }
-            } else {
-                alert('❌ Verification failed! Archiving aborted.');
-            }
+                if (error) { alert('Error archiving student: ' + error.message); } 
+                else { alert('✅ Student successfully moved to Archives.'); fetchStudents(); }
+            } else { if(ans !== null) alert('❌ Verification failed! Archiving aborted.'); }
         };
 
         window.closeModal = function() { 
