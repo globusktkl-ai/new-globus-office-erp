@@ -120,19 +120,12 @@
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button{ -webkit-appearance:none; -moz-appearance:none; appearance:none; margin:0; display:none;}
         input[type=number]{ -moz-appearance:textfield; appearance:textfield; }
 
-        /* ID CARD STUDIO MODAL */
-        .card-modal-container{background:#fff;width:100%;max-width:820px;border-radius:16px;padding:20px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5);margin:auto;display:flex;gap:16px;flex-wrap:wrap;position:relative;animation:sheetUp .3s ease}
-        .card-preview-col{flex:1;min-width:290px;display:flex;justify-content:center;align-items:flex-start;padding-top:16px;position:relative}
-        .card-edit-col{flex:1;min-width:290px;background:#f8fafc;padding:18px;border-radius:14px;border:1px solid #e2e8f0;display:flex;flex-direction:column;overflow:hidden}
-        @media(max-width:700px){ .card-preview-col,.card-edit-col{min-width:100%;width:100%} .card-modal-container{padding:15px;margin-top:10px} }
+        /* STUDIO MODAL LAYOUT (Adopted from students.html) */
+        .card-modal-container{background:#fff;width:100%;max-width:780px;border-radius:16px;padding:25px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5);margin:auto;display:flex;gap:20px;flex-wrap:wrap;position:relative;}
+        .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; padding-top: 20px; position: relative; }
+        .card-edit-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        @media(max-width:650px){ .card-preview-col,.card-edit-col{min-width:100%;width:100%} .card-modal-container{padding:15px;margin-top:10px} }
 
-        /* FIXED STAFF CARD STYLES FOR PERFECT PRINTING */
-        #staffCardContent{width:280px;height:445px;background:#fff;border:1px solid #cbd5e1;border-radius:12px;position:relative;box-sizing:border-box;overflow:hidden;box-shadow:0 12px 30px rgba(15,23,42,.15);margin:0 auto;font-family:'Segoe UI',Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-        .id-btn{padding:11px 6px;border:none;border-radius:10px;font-weight:800;cursor:pointer;font-size:12px;color:#fff;transition:.2s;box-shadow:0 3px 6px rgba(0,0,0,.1)}
-        .id-btn:active{transform:scale(.95)}
-        .id-btn:disabled{opacity:.6;cursor:not-allowed}
-        .slip-dl-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;box-shadow:0 3px 6px rgba(245,158,11,.25);transition:.2s;display:inline-flex;align-items:center;gap:4px;margin-top:8px;max-width:100%;box-sizing:border-box}
-        .slip-dl-btn:active{transform:scale(.95)}
     </style>
 </head>
 <body>
@@ -251,72 +244,57 @@
         </div>
     </div>
 
-    <!-- ID CARD STUDIO MODAL -->
+    <!-- NEW ID CARD STUDIO MODAL (Replicated exactly from students.html) -->
     <div id="staffCardModal" class="modal-overlay">
         <div class="card-modal-container">
             <button class="modal-close" onclick="closeModal('staffCardModal')">×</button>
+            
             <div class="card-preview-col">
-                <div id="staffCardContent">
-                    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);height:95px;width:100%;position:relative;padding:12px 16px 0;box-sizing:border-box;clip-path:polygon(0 0,100% 0,100% 88%,0 100%);">
-                        <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:2">
-                            <div style="width:44px;height:44px;background:rgba(255,255,255,.95);border-radius:8px;display:flex;align-items:center;justify-content:center;padding:4px;box-shadow:0 3px 8px rgba(0,0,0,.25);flex-shrink:0">
-                                <img id="staffCardLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" alt="Logo" onerror="this.style.display='none'">
+                <!-- SIMPLE, BULLETPROOF DESIGN FOR HTML2CANVAS -->
+                <div id="smartCardContent" style="width: 280px; height: 445px; background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin:0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                    
+                    <!-- Staff specific design: Sleek banner instead of circle -->
+                    <div style="background: #0f172a; height: 110px; width: 100%; position: absolute; top: 0; left: 0; z-index: 1;"></div>
+                    <div style="background: #fbbf24; height: 5px; width: 100%; position: absolute; top: 110px; left: 0; z-index: 1;"></div>
+            
+                    <div style="position: relative; width: 100%; height: 50px; margin-top: 15px; margin-bottom: 20px; z-index: 2;">
+                        <img id="cardInstLogo" src="assets/images/logo.png" style="position: absolute; left: 15px; top: -4px; width: 50px; height: 50px; object-fit: contain; border: none; padding: 0; background: transparent;" alt="Logo" onerror="this.style.display='none'">
+                        <div style="position: absolute; left: 75px; right: 10px; top: 4px; text-align: left; z-index: 3;">
+                            <div id="cardInstName" style="font-size: 16px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GLOBUS</div>
+                            <div id="cardSubName" style="font-size: 7px; font-weight: 700; color: #fbbf24; letter-spacing: 0.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TECHNICAL ACADEMY</div>
+                            <div id="cardAddress" style="font-size: 5px; color: #e2e8f0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;"></div>
+                        </div>
+                    </div>
+            
+                    <div style="background: #f1f5f9; color: #0f172a; font-size: 11px; font-weight: 900; text-align: center; padding: 4px 0; width: 60%; margin: 0 auto 15px; border-radius: 4px; position: relative; z-index: 2; letter-spacing: 1px;">STAFF ID CARD</div>
+            
+                    <div style="text-align: center; margin-bottom: 15px; position: relative; z-index: 2;">
+                        <img id="cardAvatarImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>" style="width: 95px; height: 120px; object-fit: cover; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 5px; background: #fff;">
+                    </div>
+            
+                    <div style="padding: 0 20px; text-align: left; position: relative; z-index: 2;">
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-size: 8px; color: #64748b; font-weight: 800; letter-spacing: 1px;">EMPLOYEE NAME</div>
+                            <div id="cardStaffName" style="font-size: 16px; font-weight: 900; color: #0f172a;">STAFF NAME</div>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 8px; color: #64748b; font-weight: 800; letter-spacing: 1px;">DESIGNATION</div>
+                            <div id="cardStaffRole" style="font-size: 13px; font-weight: 800; color: #2563eb;">DESIGNATION</div>
+                        </div>
+            
+                        <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; width: 100%; box-sizing: border-box;">
+                            <div style="text-align:left;">
+                                <div style="font-size: 7px; color: #64748b; font-weight: 800;">EMP ID</div>
+                                <div id="cardEmpId" style="font-size: 12px; font-weight: 900; color: #0f172a;">-</div>
                             </div>
-                            <div style="flex:1;min-width:0">
-                                <div id="staffCardInstName" style="font-size:15px;font-weight:900;color:#fff;line-height:1.1;letter-spacing:1.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Segoe UI',Arial,sans-serif">GLOBUS</div>
-                                <div id="staffCardSubName" style="font-size:7.5px;font-weight:700;color:#fbbf24;letter-spacing:1.2px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase">TECHNICAL ACADEMY</div>
-                                <div id="staffCardAddress" style="font-size:6px;color:#cbd5e1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px"></div>
+                            <div style="text-align:right;">
+                                <div style="font-size: 7px; color: #64748b; font-weight: 800;">CONTACT</div>
+                                <div id="cardPhone" style="font-size: 12px; font-weight: 900; color: #0f172a;">-</div>
                             </div>
                         </div>
-                        <div style="position:absolute;top:0;right:0;width:60px;height:60px;background:linear-gradient(135deg,transparent 50%,rgba(251,191,36,.15) 50%);pointer-events:none"></div>
                     </div>
-
-                    <div style="height:3px;background:linear-gradient(90deg,#fbbf24 0%,#f59e0b 50%,#fbbf24 100%);width:100%;box-shadow:0 1px 3px rgba(251,191,36,.4)"></div>
-                    <div style="background:#f8fafc;padding:6px 16px;text-align:center;border-bottom:1px solid #e2e8f0"><div style="font-size:10px;font-weight:900;color:#0f172a;letter-spacing:3px;text-transform:uppercase;font-family:'Segoe UI',Arial,sans-serif">STAFF IDENTITY CARD</div></div>
-
-                    <div style="text-align:center;margin-top:-8px;position:relative;z-index:5">
-                        <div style="display:inline-block;padding:4px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,.2),0 0 0 1px #e2e8f0">
-                            <!-- Security tag fully removed. Simple image setup. -->
-                            <img id="staffCardAvatarImg" src="" style="width:90px;height:105px;object-fit:cover;border-radius:10px;display:block">
-                        </div>
-                    </div>
-
-                    <div style="padding:14px 16px 0;position:relative">
-                        <div style="display:flex;gap:10px;align-items:stretch">
-                            <div style="width:3px;background:linear-gradient(180deg,#fbbf24 0%,#f59e0b 100%);border-radius:2px;flex-shrink:0"></div>
-                            <div style="flex:1;min-width:0">
-                                <div style="margin-bottom:8px">
-                                    <div style="font-size:7px;color:#64748b;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:1px">Employee Name</div>
-                                    <div id="staffCardName" style="font-size:14px;font-weight:900;color:#0f172a;line-height:1.15;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">STAFF NAME</div>
-                                </div>
-                                <div style="margin-bottom:8px">
-                                    <div style="font-size:7px;color:#64748b;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:1px">Designation</div>
-                                    <div id="staffCardRole" style="font-size:12px;font-weight:800;color:#1e3a8a;line-height:1.1;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">DESIGNATION</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="display:flex;justify-content:space-between;margin-top:10px;padding:8px 10px;background:linear-gradient(135deg,#f1f5f9 0%,#f8fafc 100%);border-radius:8px;border-left:3px solid #0f172a">
-                            <div style="text-align:left;min-width:0;flex:1"><div style="font-size:6.5px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Employee ID</div><div id="staffCardEmpId" style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div></div>
-                            <div style="text-align:right;min-width:0;flex:1"><div style="font-size:6.5px;color:#64748b;font-weight:800;letter-spacing:1px;text-transform:uppercase">Contact</div><div id="staffCardPhone" style="font-size:11px;font-weight:900;color:#0f172a;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div></div>
-                        </div>
-                    </div>
-
-                    <div style="position:absolute;bottom:28px;left:14px;width:140px">
-                        <!-- Barcode properly fixed for html2canvas -->
-                        <div style="height:26px;background: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2226%22><rect width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%224%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%227%22 width=%223%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2212%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2215%22 width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2219%22 width=%224%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2225%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2228%22 width=%223%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2233%22 width=%222%22 height=%2226%22 fill=%22%230f172a%22/><rect x=%2237%22 width=%221%22 height=%2226%22 fill=%22%230f172a%22/></svg>') repeat-x;border:1px solid #e2e8f0;border-radius:2px"></div>
-                        <div id="staffCardBarcodeText" style="font-size:7px;font-family:'Courier New',monospace;font-weight:700;color:#0f172a;letter-spacing:2px;text-align:center;margin-top:2px">||| STAFF |||</div>
-                    </div>
-
-                    <div style="position:absolute;bottom:20px;right:14px;width:64px;height:64px;border:2px solid rgba(15,23,42,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;transform:rotate(-8deg);box-shadow:inset 0 0 8px rgba(15,23,42,.1);mix-blend-mode:multiply;background:rgba(251,191,36,.05)">
-                        <div style="width:56px;height:56px;border:1px dashed rgba(15,23,42,.6);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:2px;box-sizing:border-box">
-                            <div id="staffSealMainName" style="font-size:6px;font-weight:900;color:rgba(15,23,42,.85);line-height:1.1;text-transform:uppercase;word-wrap:break-word;overflow:hidden;max-height:14px">GLOBUS</div>
-                            <div style="font-size:8px;font-weight:900;color:#0f172a;margin:1px 0;letter-spacing:.5px">✓ VERIFIED</div>
-                            <div id="staffSealSubName" style="font-size:4px;font-weight:700;color:rgba(15,23,42,.65);line-height:1.1;text-transform:uppercase;word-wrap:break-word;overflow:hidden;max-height:8px">OFFICIAL</div>
-                            <div id="staffSealAddress" style="display:none">ADDRESS</div>
-                        </div>
-                    </div>
-                    <div style="position:absolute;bottom:4px;left:0;right:0;font-size:6px;color:#94a3b8;font-weight:600;text-align:center;padding:0 6px;letter-spacing:.5px">Property of Institute • Return to: <span id="staffCardReturnPhone">+91 9846000000</span></div>
+            
+                    <div style="position: absolute; bottom: 8px; left: 0; width: 100%; font-size: 6px; color: #94a3b8; font-weight: 700; text-align: center; z-index: 2;">Property of Institute • Return to: <span id="cardReturnPhone">+91 9846000000</span></div>
                 </div>
             </div>
 
@@ -340,18 +318,17 @@
                     <input type="file" id="liveStaffPhotoInput" accept="image/*" class="frm-input" onchange="window.updateLiveStaffPhoto(event)" style="padding:8px;font-size:12px">
                 </div>
 
-                <div class="frm-group"><label class="frm-label">Staff Name</label><input type="text" class="frm-input" id="liveStaffName" oninput="document.getElementById('staffCardName').innerText = (this.value || 'N/A').toUpperCase()"></div>
-                <div class="frm-group"><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="liveStaffRole" oninput="document.getElementById('staffCardRole').innerText = (this.value || 'N/A').toUpperCase()"></div>
+                <div class="frm-group"><label class="frm-label">Staff Name</label><input type="text" class="frm-input" id="liveStaffName" oninput="document.getElementById('cardStaffName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')"></div>
+                <div class="frm-group"><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="liveStaffRole" oninput="document.getElementById('cardStaffRole').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')"></div>
 
                 <div class="frm-row">
-                    <div><label class="frm-label">Emp ID</label><input type="text" class="frm-input" id="liveStaffEmpId" oninput="document.getElementById('staffCardEmpId').innerText = this.value || 'N/A'; document.getElementById('staffCardBarcodeText').innerText = '||| ' + (this.value || 'STAFF') + ' |||';"></div>
-                    <div><label class="frm-label">Phone</label><input type="text" class="frm-input" id="liveStaffPhone" maxlength="10" oninput="document.getElementById('staffCardPhone').innerText = this.value || 'N/A'"></div>
+                    <div><label class="frm-label">Emp ID</label><input type="text" class="frm-input" id="liveStaffEmpId" oninput="document.getElementById('cardEmpId').innerText = this.value || 'N/A'"></div>
+                    <div><label class="frm-label">Phone</label><input type="text" class="frm-input" id="liveStaffPhone" maxlength="10" oninput="document.getElementById('cardPhone').innerText = this.value || 'N/A'"></div>
                 </div>
 
-                <!-- RENAMED BUTTONS & CORRECTED FUNCTIONS -->
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;margin-bottom:12px;">
-                    <button type="button" id="staffSharePdfBtn" onclick="window.printStaffCard()" class="id-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 6px rgba(239,68,68,.25)">🖨️ Print</button>
-                    <button type="button" id="staffShareCardBtn" onclick="window.shareStaffCard()" class="id-btn" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 6px rgba(16,185,129,.25)">⬇️ Image</button>
+                    <button type="button" id="staffSharePdfBtn" onclick="window.shareStaffPDF()" class="id-btn" style="background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 6px rgba(239,68,68,.25)">🖨️ Print (PDF)</button>
+                    <button type="button" id="staffShareCardBtn" onclick="window.shareStaffCard()" class="id-btn" style="background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 6px rgba(16,185,129,.25)">🔗 Image</button>
                     <button type="button" onclick="window.confirmStaffStudioReset()" class="id-btn" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 6px rgba(245,158,11,.25)">🔄 Reset</button>
                 </div>
 
@@ -533,16 +510,13 @@
                 if (data) {
                     instSettings = data;
                     if (data.logo_url) { 
-                        const cardLogo = document.getElementById('staffCardLogo'); if(cardLogo) cardLogo.src = data.logo_url;
+                        const cardLogo = document.getElementById('cardInstLogo'); if(cardLogo) cardLogo.src = data.logo_url;
                         const salLogo = document.getElementById('salaryLogo'); if(salLogo) salLogo.src = data.logo_url;
                     }
-                    const cin = document.getElementById('staffCardInstName'); if(cin) cin.innerText = data.institute_name || 'GLOBUS';
-                    const csn = document.getElementById('staffCardSubName'); if(csn) csn.innerText = data.sub_name || 'TECHNICAL ACADEMY';
-                    const cad = document.getElementById('staffCardAddress'); if(cad) cad.innerText = data.address || '';
-                    const smn = document.getElementById('staffSealMainName'); if(smn) smn.innerText = data.institute_name || 'GLOBUS';
-                    const ssn = document.getElementById('staffSealSubName'); if(ssn) ssn.innerText = data.sub_name || 'OFFICIAL';
-                    const sad = document.getElementById('staffSealAddress'); if(sad) sad.innerText = data.address || '';
-                    const rp = document.getElementById('staffCardReturnPhone'); if(rp && data.phone) rp.innerText = '+91 ' + data.phone;
+                    const cin = document.getElementById('cardInstName'); if(cin) cin.innerText = data.institute_name || 'GLOBUS';
+                    const csn = document.getElementById('cardSubName'); if(csn) csn.innerText = data.sub_name || 'TECHNICAL ACADEMY';
+                    const cad = document.getElementById('cardAddress'); if(cad) cad.innerText = data.address || '';
+                    const rp = document.getElementById('cardReturnPhone'); if(rp && data.phone) rp.innerText = '+91 ' + data.phone;
 
                     const sin = document.getElementById('salaryInstName'); if(sin) sin.innerText = data.institute_name || 'GLOBUS';
                     const sisub = document.getElementById('salaryInstSub'); if(sisub) sisub.innerText = data.sub_name || 'TECHNICAL ACADEMY';
@@ -710,7 +684,7 @@
             await fetchAllData();
         };
 
-        // ===================== STAFF ID CARD STUDIO =====================
+        // ===================== STAFF ID CARD STUDIO (PERFECT MATCH WITH STUDENTS.HTML) =====================
         window.openStaffCardStudio = function(id) {
             const s = allStaff.find(x => x.id === id); if (!s) return;
             currentStaffCardData = s;
@@ -726,57 +700,35 @@
                 document.getElementById('liveInstSub').value = instSettings.sub_name || '';
                 document.getElementById('liveInstAddress').value = instSettings.address || '';
             }
-            document.getElementById('staffCardName').innerText = (s.full_name || 'N/A').toUpperCase();
-            document.getElementById('staffCardRole').innerText = (s.role || 'STAFF').toUpperCase();
-            document.getElementById('staffCardEmpId').innerText = empId;
-            document.getElementById('staffCardPhone').innerText = s.phone || 'N/A';
-            const barcodeEl = document.getElementById('staffCardBarcodeText'); if (barcodeEl) barcodeEl.innerText = '||| ' + empId + ' |||';
+            
+            document.getElementById('cardStaffName').innerHTML = (s.full_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
+            document.getElementById('cardStaffRole').innerHTML = (s.role || 'STAFF').toUpperCase().replace(/ /g, '&nbsp;');
+            document.getElementById('cardEmpId').innerText = empId;
+            document.getElementById('cardPhone').innerText = s.phone || 'N/A';
 
-            const imgEl = document.getElementById('staffCardAvatarImg');
-            const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
-            imgEl.src = avatar;
+            const avatar = s.photo_url || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
+            document.getElementById('cardAvatarImg').src = avatar;
             
             openModal('staffCardModal');
         };
 
         window.updateStaffInstUI = function() {
-            const n = document.getElementById('liveInstName').value || 'GLOBUS';
-            const s = document.getElementById('liveInstSub').value || 'TECHNICAL ACADEMY';
-            const a = document.getElementById('liveInstAddress').value || '';
-            document.getElementById('staffCardInstName').innerText = n;
-            document.getElementById('staffCardSubName').innerText = s;
-            document.getElementById('staffCardAddress').innerText = a;
-            document.getElementById('staffSealMainName').innerText = n;
-            const ssn = document.getElementById('staffSealSubName'); if(ssn) ssn.innerText = s || 'OFFICIAL';
-            document.getElementById('staffSealAddress').innerText = a;
+            let n = document.getElementById('liveInstName').value || 'GLOBUS';
+            let s = document.getElementById('liveInstSub').value || 'TECHNICAL ACADEMY';
+            let a = document.getElementById('liveInstAddress').value || '';
+            
+            document.getElementById('cardInstName').innerText = n;
+            document.getElementById('cardSubName').innerText = s;
+            document.getElementById('cardAddress').innerText = a;
         };
 
-        // 4. PHOTO FIX (Blob URL + load tracking) - students.html പോലെ
+        // EXACT SAME PHOTO FIX FROM STUDENTS.HTML
         window.updateLiveStaffPhoto = function(event) {
             const file = event.target.files[0];
-            if (!file) return;
-            const img = document.getElementById('staffCardAvatarImg');
-            if (window.currentStaffPhotoObjectUrl) {
-                URL.revokeObjectURL(window.currentStaffPhotoObjectUrl);
+            if (file) {
+                document.getElementById('cardAvatarImg').src = URL.createObjectURL(file);
             }
-            window.currentStaffPhotoObjectUrl = URL.createObjectURL(file);
-            img.src = window.currentStaffPhotoObjectUrl;
-            img.onload = () => { img.dataset.loaded = 'true'; };
-            img.onerror = () => { img.dataset.loaded = 'false'; };
         };
-
-        // Helper: ഇമേജ് ലോഡ് ആകുന്നതുവരെ കാത്തിരിക്കുക
-        function waitForImageLoad(img, timeout = 3000) {
-            return new Promise((resolve) => {
-                if (!img || !img.src || (img.complete && img.naturalWidth > 0)) {
-                    resolve();
-                    return;
-                }
-                const timer = setTimeout(() => resolve(), timeout);
-                img.addEventListener('load', () => { clearTimeout(timer); resolve(); }, { once: true });
-                img.addEventListener('error', () => { clearTimeout(timer); resolve(); }, { once: true });
-            });
-        }
 
         window.confirmStaffStudioReset = async function() {
             let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
@@ -834,83 +786,47 @@
             alert('✅ Details Saved Successfully!'); await fetchAllData();
         };
 
-        // 6. PRINT FUNCTION - Fixed for photos
-        window.printStaffCard = async function() {
-            const btn = document.getElementById('staffSharePdfBtn'); 
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ Preparing...'; btn.disabled = true;
+        // NEW PRINT METHOD: PDF DOWNLOAD IN PERFECT SIZE 
+        // Generates a 54x86mm PDF that prints perfectly without margins
+        window.shareStaffPDF = async function() {
+            const btn = document.getElementById('staffSharePdfBtn'); const originalText = btn.innerHTML; 
+            btn.innerHTML = '⏳ Generating PDF...'; btn.disabled = true;
             try {
-                const img = document.getElementById('staffCardAvatarImg');
-                const logo = document.getElementById('staffCardLogo');
-                await waitForImageLoad(img);
-                await waitForImageLoad(logo);
-
-                const src = img.src || '';
-                const useCORS = !(src.startsWith('blob:') || src.startsWith('data:'));
-
-                const canvas = await html2canvas(document.getElementById('staffCardContent'), { 
-                    scale: 3, 
-                    useCORS: useCORS, 
-                    backgroundColor: '#ffffff' 
-                });
-                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const { jsPDF } = window.jspdf;
+                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
+                const imgData = canvas.toDataURL('image/png');
                 
-                const printWindow = window.open('', '_blank');
-                if(!printWindow) { alert("Popup blocked! Please allow popups to print."); return; }
+                // Exactly 54mm x 86mm PDF
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] });
+                pdf.addImage(imgData, 'PNG', 0, 0, 54, 86);
                 
-                printWindow.document.write(`
-                    <html>
-                    <head>
-                        <title>Print ID Card</title>
-                        <style>
-                            @page { size: 54mm 86mm; margin: 0; }
-                            @media print {
-                                body { margin: 0; padding: 0; width: 54mm; height: 86mm; background: #fff; }
-                                img { width: 54mm; height: 86mm; object-fit: cover; display: block; margin: 0; padding: 0; border: none; }
-                            }
-                            body { margin: 0; display: flex; justify-content: center; align-items: center; background: #525659; height: 100vh; overflow: hidden; }
-                            img { width: 54mm; height: 86mm; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-                        </style>
-                    </head>
-                    <body>
-                        <img src="${imgData}" onload="window.print();" />
-                    </body>
-                    </html>
-                `);
-                printWindow.document.close();
-            } catch (error) { alert("Print failed: " + error.message); } 
+                const filename = `Staff_ID_${(document.getElementById('liveStaffName').value || 'Staff').replace(/ /g,'_')}.pdf`;
+                pdf.save(filename);
+            } catch (error) { alert("Could not generate PDF: " + error.message); } 
             finally { btn.innerHTML = originalText; btn.disabled = false; }
         };
 
-        // 7. IMAGE DOWNLOAD - Fixed for photos
+        // EXACT SAME IMAGE SHARE AS STUDENTS.HTML
         window.shareStaffCard = async function() {
-            const btn = document.getElementById('staffShareCardBtn'); const originalText = btn.innerHTML;
+            const btn = document.getElementById('staffShareCardBtn'); const originalText = btn.innerHTML; 
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
-                const img = document.getElementById('staffCardAvatarImg');
-                const logo = document.getElementById('staffCardLogo');
-                await waitForImageLoad(img);
-                await waitForImageLoad(logo);
-
-                const src = img.src || '';
-                const useCORS = !(src.startsWith('blob:') || src.startsWith('data:'));
-
-                const canvas = await html2canvas(document.getElementById('staffCardContent'), { 
-                    scale: 3, 
-                    useCORS: useCORS, 
-                    backgroundColor: '#ffffff' 
-                });
-                
-                const name = document.getElementById('liveStaffName').value || 'Staff';
-                const link = document.createElement('a'); 
-                link.download = `Staff_ID_${name.replace(/ /g,'_')}.jpg`;
-                link.href = canvas.toDataURL('image/jpeg', 1.0); 
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-            } catch (error) { alert("Error generating image: " + error.message); } 
-            finally { btn.innerHTML = originalText; btn.disabled = false; }
+                const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                canvas.toBlob(async (blob) => {
+                    const name = document.getElementById('liveStaffName').value || 'Staff';
+                    const file = new File([blob], `Staff_ID_${name.replace(/ /g,'_')}.png`, { type: 'image/png' });
+                    
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try { await navigator.share({ files: [file], title: 'Staff ID Card', text: `ID Card for ${name}` }); } catch (err) {}
+                    } else {
+                        const link = document.createElement('a'); 
+                        link.download = `Staff_ID_${name.replace(/ /g,'_')}.png`; 
+                        link.href = canvas.toDataURL('image/png'); 
+                        link.click();
+                    }
+                    btn.innerHTML = originalText; btn.disabled = false;
+                }, 'image/png');
+            } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
         };
 
         // ===================== TAB 2: ADVANCES =====================
