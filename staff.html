@@ -43,7 +43,7 @@
         /* Staff Card */
         .staff-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(15,23,42,.04);transition:.2s}
         .sc-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;border-bottom:1px dashed #e2e8f0;padding-bottom:12px}
-        .sc-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f1f5f9; background-size: cover; background-position: center;}
+        .sc-avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;border:3px solid #e2e8f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f1f5f9}
         .sc-avatar img,.sc-avatar svg{width:100%;height:100%;object-fit:cover;object-position:center top;}
         .sc-name{font-size:17px;font-weight:900;color:#0f172a;text-transform:uppercase;line-height:1.2;margin-bottom:4px}
         .sc-role-badge{display:inline-block;background:linear-gradient(135deg,#dbeafe,#bfdbfe);color:#1d4ed8;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px}
@@ -270,12 +270,13 @@
         </div>
     </div>
 
-    <!-- NEW ID CARD STUDIO MODAL (Replicated exactly from students.html with Low Size JPG fix) -->
+    <!-- NEW ID CARD STUDIO MODAL (Replicated exactly from students.html) -->
     <div id="staffCardModal" class="modal-overlay">
         <div class="card-modal-container">
             <button class="modal-close" onclick="closeModal('staffCardModal')">×</button>
             
             <div class="card-preview-col">
+                <!-- SIMPLE, BULLETPROOF DESIGN FOR HTML2CANVAS -->
                 <div id="smartCardContent" style="width: 280px; height: 445px; background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin:0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
                     
                     <!-- Staff specific design: Sleek banner instead of circle -->
@@ -295,7 +296,7 @@
             
                     <div style="text-align: center; margin-bottom: 15px; position: relative; z-index: 2;">
                         <!-- FIX FOR ASPECT RATIO: object-fit:cover and object-position: center top added -->
-                        <img id="cardAvatarImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>" style="width: 95px; height: 120px; object-fit: cover !important; object-position: center top !important; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 5px; background: #fff;">
+                        <img id="cardAvatarImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>" style="width: 95px; height: 120px; object-fit: cover !important; object-position: center top !important; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 4px; background: #fff; display: inline-block;">
                     </div>
             
                     <div style="padding: 0 20px; text-align: left; position: relative; z-index: 2;">
@@ -354,7 +355,7 @@
 
                 <!-- NEW MODERN BUTTONS UI FIX -->
                 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:15px;margin-bottom:15px;">
-                    <button type="button" id="staffSharePdfBtn" onclick="window.shareStaffPDF()" class="studio-btn btn-print">🖨️ Print (PDF)</button>
+                    <button type="button" id="staffSharePdfBtn" onclick="window.printStaffCard()" class="studio-btn btn-print">🖨️ Print (PDF)</button>
                     <button type="button" id="staffShareCardBtn" onclick="window.shareStaffCard()" class="studio-btn btn-image">🔗 Image</button>
                     <button type="button" onclick="window.confirmStaffStudioReset()" class="studio-btn btn-reset">🔄 Reset</button>
                 </div>
@@ -543,9 +544,6 @@
                     const cin = document.getElementById('cardInstName'); if(cin) cin.innerText = data.institute_name || 'GLOBUS';
                     const csn = document.getElementById('cardSubName'); if(csn) csn.innerText = data.sub_name || 'TECHNICAL ACADEMY';
                     const cad = document.getElementById('cardAddress'); if(cad) cad.innerText = data.address || '';
-                    const smn = document.getElementById('staffSealMainName'); if(smn) smn.innerText = data.institute_name || 'GLOBUS';
-                    const ssn = document.getElementById('staffSealSubName'); if(ssn) ssn.innerText = data.sub_name || 'OFFICIAL';
-                    const sad = document.getElementById('staffSealAddress'); if(sad) sad.innerText = data.address || '';
                     const rp = document.getElementById('cardReturnPhone'); if(rp && data.phone) rp.innerText = '+91 ' + data.phone;
 
                     const sin = document.getElementById('salaryInstName'); if(sin) sin.innerText = data.institute_name || 'GLOBUS';
@@ -756,11 +754,7 @@
         window.updateLiveStaffPhoto = function(event) {
             const file = event.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('cardAvatarImg').src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                document.getElementById('cardAvatarImg').src = URL.createObjectURL(file);
             }
         };
 
@@ -820,19 +814,17 @@
             alert('✅ Details Saved Successfully!'); await fetchAllData();
         };
 
-        // NEW PRINT METHOD: PDF DOWNLOAD IN PERFECT SIZE & HIGH-QUALITY JPEG format (Small Size KB)
+        // NEW PRINT METHOD: PDF DOWNLOAD IN PERFECT SIZE 
         window.shareStaffPDF = async function() {
             const btn = document.getElementById('staffSharePdfBtn'); const originalText = btn.innerHTML; 
             btn.innerHTML = '⏳ Generating PDF...'; btn.disabled = true;
             try {
                 const { jsPDF } = window.jspdf;
                 const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
-                // LOW FILE SIZE FIX: Switched to JPEG with 85% quality instead of PNG
-                const imgData = canvas.toDataURL('image/jpeg', 0.85); 
+                const imgData = canvas.toDataURL('image/png');
                 
-                // Exactly 54mm x 86mm PDF
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] });
-                pdf.addImage(imgData, 'JPEG', 0, 0, 54, 86); // Keep scale perfect
+                pdf.addImage(imgData, 'PNG', 0, 0, 54, 86);
                 
                 const filename = `Staff_ID_${(document.getElementById('liveStaffName').value || 'Staff').replace(/ /g,'_')}.pdf`;
                 pdf.save(filename);
@@ -840,27 +832,26 @@
             finally { btn.innerHTML = originalText; btn.disabled = false; }
         };
 
-        // EXACT SAME IMAGE SHARE AS STUDENTS.HTML but with LOW FILE SIZE (KB)
+        // EXACT SAME IMAGE SHARE AS STUDENTS.HTML
         window.shareStaffCard = async function() {
             const btn = document.getElementById('staffShareCardBtn'); const originalText = btn.innerHTML; 
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
                 const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-                // LOW FILE SIZE FIX: Switched to JPEG with 85% quality instead of PNG
                 canvas.toBlob(async (blob) => {
                     const name = document.getElementById('liveStaffName').value || 'Staff';
-                    const file = new File([blob], `Staff_ID_${name.replace(/ /g,'_')}.jpg`, { type: 'image/jpeg' });
+                    const file = new File([blob], `Staff_ID_${name.replace(/ /g,'_')}.png`, { type: 'image/png' });
                     
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         try { await navigator.share({ files: [file], title: 'Staff ID Card', text: `ID Card for ${name}` }); } catch (err) {}
                     } else {
                         const link = document.createElement('a'); 
-                        link.download = `Staff_ID_${name.replace(/ /g,'_')}.jpg`; 
-                        link.href = canvas.toDataURL('image/jpeg', 0.85); 
+                        link.download = `Staff_ID_${name.replace(/ /g,'_')}.png`; 
+                        link.href = canvas.toDataURL('image/png'); 
                         link.click();
                     }
                     btn.innerHTML = originalText; btn.disabled = false;
-                }, 'image/jpeg', 0.85);
+                }, 'image/png');
             } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
         };
 
@@ -1034,12 +1025,10 @@
                 wrapper.style.left = '0'; wrapper.style.top = '0'; wrapper.style.zIndex = '-9999'; wrapper.style.opacity = '0';
                 const target = document.getElementById('salarySlipRender');
                 await new Promise(r => setTimeout(r, 100));
-                
-                // LOW FILE SIZE FIX for Salary Slip
                 const canvas = await html2canvas(target, { scale: 1.5, useCORS: true, backgroundColor: '#ffffff', logging: false });
-                wrapper.style.left = '-9999px'; wrapper.style.top = '-9999px'; wrapper.style.opacity = '1'; wrapper.style.zIndex = '-1';
                 
-                const imgData = canvas.toDataURL('image/jpeg', 0.85); 
+                wrapper.style.left = '-9999px'; wrapper.style.top = '-9999px'; wrapper.style.opacity = '1'; wrapper.style.zIndex = '-1';
+                const imgData = canvas.toDataURL('image/jpeg', 0.85);
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
                 pdf.addImage(imgData, 'JPEG', 0, 0, 148, 210);
