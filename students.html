@@ -1,1560 +1,774 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Directory - Globus Technical Academy</title>
-
     <link rel="stylesheet" href="assets/css/style.css">
-
     
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-
-
     <style>
-
         /* Shared Styles */
-
         * { box-sizing: border-box; }
-
         body { background-color: #f8fafc; padding-bottom: 80px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden;}
-
         .main-content { padding: 15px; max-width: 800px; margin: 0 auto; width: 100%; }
 
-
-
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 1000; justify-content: center; align-items: flex-start; padding: 20px; overflow-y: auto; backdrop-filter: blur(5px); }
-
         .modal-container { background: #fff; width: 100%; max-width: 780px; border-radius: 16px; padding: 25px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); margin: auto; display: flex; gap: 20px; flex-wrap: wrap; position: relative; }
-
         
-
         /* Premium 3D Back to Dashboard Button */
-
         .btn-back-dashboard { display: flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; position: absolute; left: 0; top: 50%; transform: translateY(-50%);}
-
         .btn-back-dashboard:hover { transform: translateY(-50%) scale(0.98); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
-
         .btn-back-dashboard:active { transform: translateY(-50%) scale(0.95); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-
         .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); stroke: #4c1d95;}
 
-
-
         .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; min-height: 45px;}
-
         .page-title { font-size: 20px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: -0.5px; text-align: center; width: 100%; padding: 0 45px;}
-
-
 
         @media (max-width: 600px) { .btn-back-dashboard span { display: none; } .btn-back-dashboard { padding: 10px; } }
 
-
-
         /* --------------------------------------------------- */
-
         /* PERFECT ADVANCED FILTER UI                          */
-
         /* --------------------------------------------------- */
-
         .search-container { background: white; border-radius: 12px; padding: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; width: 100%;}
-
         
-
         .main-search-box { width: 100%; padding: 10px 12px 10px 35px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 10px center; margin-bottom: 10px; transition: 0.2s;}
-
         .main-search-box:focus { border-color: #4c1d95; background-color: #fff; box-shadow: 0 0 0 3px rgba(76, 29, 149, 0.1); }
 
-
-
-        /* FIX 1: Width constraint fix for mobile - minmax(0, 1fr) prevents long text from pushing the layout */
-
         .filter-layout { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 8px; align-items: stretch; width: 100%; }
-
         
-
         .filter-left { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-
         .filter-row { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 6px 8px; border-radius: 8px; border: 1px solid #e2e8f0; min-width: 0; }
-
         
-
         .filter-checkbox { width: 18px; height: 18px; accent-color: #4c1d95; cursor: pointer; flex-shrink: 0; margin: 0; }
-
         
-
         .filter-select { flex: 1; min-width: 0; max-width: 100%; padding: 4px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #1e293b; appearance: none; -webkit-appearance: none; outline: none; transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;}
-
         .filter-select:invalid { color: #94a3b8; font-weight: 600; }
 
-
-
         .filter-right { display: flex; min-width: 0; }
-
         .status-select { width: 100%; min-width: 0; padding: 8px 5px; border: 2px solid #bbf7d0; border-radius: 8px; font-size: 13px; font-weight: 800; background: #f0fdf4; color: #15803d; appearance: none; -webkit-appearance: none; outline: none; cursor: pointer; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
         .status-select option { font-weight: 700; }
 
-
-
         @media(max-width: 450px) {
-
-            /* Mobile adjustment for filter grid */
-
             .filter-layout { grid-template-columns: minmax(0, 1fr) 100px; }
-
             .filter-select { font-size: 12px; }
-
             .status-select { font-size: 12px; }
-
         }
-
-        /* --------------------------------------------------- */
-
-
 
         /* Student Cards */
-
         .student-mobile-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s; width: 100%; }
-
         .smc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 15px; }
-
         .smc-name { font-size: 19px; font-weight: 900; color: #0f172a; margin-bottom: 4px; line-height: 1.2; text-transform: uppercase;}
-
         .smc-reg { font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
         
-
         .avatar-circle { width: 65px; height: 65px; border-radius: 50%; background: #fbcfe8; border: 3px solid #fdf2f8; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; flex-shrink: 0;}
-
         .avatar-circle svg { width: 40px; height: 40px; fill: #ec4899; margin-top: 10px;}
-
         .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
-
         
-
         .smc-row { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 14px; }
-
         .smc-label { width: 110px; color: #64748b; font-weight: 700; flex-shrink: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-
         .smc-value { flex: 1; color: #1e293b; font-weight: 800; }
-
         .badge-sslc { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 800; color: #334155; display: inline-block;}
 
-
-
-        /* --- PROGRESS BAR STYLES --- */
-
+        /* PROGRESS BAR STYLES */
         .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 10px; height: 16px; margin: 10px 0 15px; position: relative; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
-
         .progress-fill { height: 100%; border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 10px; font-weight: 900; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: width 0.5s ease-in-out; }
-
         .progress-fill.active { background: linear-gradient(90deg, #3b82f6, #6366f1); }
-
         .progress-fill.completed { background: linear-gradient(90deg, #10b981, #059669); }
-
         .progress-text-out { position: absolute; width: 100%; text-align: center; top: 0; left: 0; font-size: 10px; font-weight: 800; color: #475569; line-height: 16px; z-index: 1; mix-blend-mode: overlay;}
 
-
-
         /* PROFESSIONAL BUTTON STYLES */
-
         .card-action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
-
         .btn-card { border: none; padding: 12px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 13px; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 5px; }
-
         .btn-view { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #fff; }
-
         .btn-id { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff; }
-
         .btn-del-full { background: transparent; color: #ef4444; border: 1px solid #fca5a5; width: 100%; padding: 12px; margin-top: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 14px; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
-
         .btn-del-full:hover { background: #fef2f2; }
 
-
-
         .card-preview-col { flex: 1; min-width: 320px; display: flex; justify-content: center; align-items: flex-start; padding-top: 20px; position: relative; }
-
         .card-edit-col { flex: 1; min-width: 300px; background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
-
         .close-modal-btn { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; border: 2px solid white; border-radius: 50%; width: 36px; height: 36px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.2s; }
-
         .form-control-cert { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; margin-bottom: 12px; outline: none; font-weight: 500; }
-
         
-
         .loading-state, .empty-state { text-align: center; padding: 40px 20px; color: #64748b; font-weight: 700; font-size: 15px; background: white; border-radius: 12px; border: 1px dashed #cbd5e1; }
 
-
-
         @media (max-width: 650px) {
-
             .card-preview-col, .card-edit-col { min-width: 100%; }
-
             .modal-container { padding: 15px; margin-top: 10px; }
-
             .close-modal-btn { top: 10px; right: 10px; }
-
         }
-
-
-
-        @media print {
-
-            body * { visibility: hidden; }
-
-            body.print-id #studentModal, body.print-id #smartCardContent, body.print-id #smartCardContent * { visibility: visible; }
-
-            body.print-id #studentModal { position: absolute; left: 0; top: 0; width: 100%; height: 100%; margin: 0; padding: 0; background: white !important; display: flex !important; justify-content: flex-start; align-items: flex-start; }
-
-            body.print-id .card-edit-col, body.print-id .close-modal-btn, body.print-id .no-print { display: none !important; }
-
-            body.print-id #smartCardContent { position: absolute !important; top: 15mm !important; left: 15mm !important; transform: none !important; border: 1px dashed #ccc !important; box-shadow: none !important; margin: 0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
-            @page { size: auto; margin: 10mm; }
-
-        }
-
     </style>
-
 </head>
-
 <body class="bg-slate-50">
-
     
-
     <main class="main-content no-print">
-
         <div class="top-nav">
-
             <a href="dashboard.html" class="btn-back-dashboard">
-
                 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
-
             </a>
-
             <h1 class="page-title">Student Directory</h1>
-
         </div>
-
         
-
         <div class="search-container">
-
             <input type="text" id="searchInput" class="main-search-box" placeholder="Search Name, Reg No, Phone..." oninput="window.applyFilters()">
-
             
-
             <div class="filter-layout">
-
                 <div class="filter-left">
-
                     <div class="filter-row">
-
-                        <!-- FIX 2: updateFilterModules added here so Module dropdown updates immediately -->
-
                         <input type="checkbox" id="chkCourse" class="filter-checkbox" onchange="window.applyFilters()">
-
                         <select id="courseSelect" class="filter-select" required onchange="document.getElementById('chkCourse').checked = true; window.updateFilterModules(); window.applyFilters();">
-
                             <option value="" disabled selected hidden>Select Course</option>
-
                         </select>
-
                     </div>
-
                     <div class="filter-row">
-
                         <input type="checkbox" id="chkModule" class="filter-checkbox" onchange="window.applyFilters()">
-
                         <select id="moduleSelect" class="filter-select" required onchange="document.getElementById('chkModule').checked = true; window.applyFilters();">
-
                             <option value="" disabled selected hidden>Select Module</option>
-
                         </select>
-
                     </div>
-
                 </div>
-
                 
-
                 <div class="filter-right">
-
                     <select id="statusFilter" class="status-select" onchange="window.updateStatusColor(this); window.applyFilters();">
-
                         <option value="active" selected>🟢 Active</option>
-
                         <option value="completed">🎓 Completed</option>
-
                         <option value="archived">🗄️ Archived (Old Students)</option>
-
                         <option value="all">📁 All Students</option>
-
                     </select>
-
                 </div>
-
             </div>
-
         </div>
-
         
-
         <div id="studentsList"><div class="loading-state">Loading students database...</div></div>
-
     </main>
 
-
-
-    <!-- STUDENT MODAL & ID CARD (UNTOUCHED) -->
-
+    <!-- STUDENT MODAL & ID CARD -->
     <div id="studentModal" class="modal-overlay">
-
         
-
         <div id="viewEditContainer" class="modal-container no-print" style="display:none; max-width:550px;">
-
             <button onclick="window.closeModal()" class="close-modal-btn">×</button>
-
             <div style="width: 100%;">
-
                 <div style="margin-bottom:20px;">
-
                     <h3 style="font-size:20px; font-weight:900; color:#1e293b; margin:0;">Profile Details</h3>
-
                     <p style="color:#64748b; font-size:13px; font-weight:600; margin-top:2px;">View and update student information</p>
-
                 </div>
-
                 <div id="viewEditContent"></div>
-
             </div>
-
         </div>
-
-
 
         <div id="profileCardContainer" class="modal-container" style="display:none;">
-
             <button onclick="window.closeModal()" class="close-modal-btn no-print">×</button>
-
             
-
             <div class="card-preview-col">
-
                 <div id="smartCardContent" style="width: 280px; height: 445px; background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; position: relative; box-sizing: border-box; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin:0 auto; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
-
                     
-
                     <div style="background: #1e3a8a; height: 110px; width: 150%; position: absolute; top: -25px; left: -25%; border-radius: 50%; z-index: 1;"></div>
-
                     
-
                     <div style="position: relative; width: 100%; height: 50px; margin-top: 10px; margin-bottom: 15px; z-index: 2;">
-
                         <img id="cardInstLogo" src="assets/images/logo.png" style="position: absolute; left: 15px; top: -4px; width: 50px; height: 50px; object-fit: contain; border: none; padding: 0; background: transparent;" alt="Logo" onerror="this.style.display='none'">
-
                         
-
                         <div style="position: absolute; left: 0; right: 0; top: 4px; text-align: center; z-index: 3; padding: 0 10px;">
-
                             <div id="cardInstName" style="font-size: 19px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GLOBUS</div>
-
                             <div id="cardSubName" style="font-size: 8px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">TECHNICAL ACADEMY</div>
-
                             <div id="cardAddress" style="font-size: 5px; color: #e2e8f0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px;"></div>
-
                             <div id="cardEmail" style="font-size: 5px; color: #e2e8f0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-
                         </div>
-
                     </div>
-
                     
-
                     <div style="background: #f59e0b; color: #fff; font-size: 11px; font-weight: 800; text-align: center; padding: 4px 0; width: 65%; margin: 0 auto 10px; border-radius: 20px; position: relative; z-index: 2;">STUDENT ID CARD</div>
-
                     
-
                     <div style="text-align: center; margin-bottom: 12px; position: relative; z-index: 2;">
-
-                        <img id="cardAvatarImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>" style="width: 100px; height: 125px; object-fit: cover; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 5px; background: #f8fafc;">
-
+                        <!-- ASPECT RATIO FIX (object-fit cover added for students) -->
+                        <img id="cardAvatarImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>" style="width: 100px; height: 125px; object-fit: cover !important; object-position: center top !important; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05); padding: 5px; background: #f8fafc;">
                     </div>
-
                     
-
                     <div style="padding: 0 12px; text-align: center; position: relative; z-index: 2;">
-
                         <div style="margin-bottom: 8px;">
-
                             <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">STUDENT NAME</div>
-
                             <div id="cardStudentName" style="font-size: 17px; font-weight: 600; color: #1e293b;">STUDENT NAME</div>
-
                         </div>
-
                         <div style="margin-bottom: 12px;">
-
                             <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">COURSE</div>
-
                             <div id="cardCourseName" style="font-size: 12px; font-weight: 800; color: #059669;">COURSE NAME</div>
-
                         </div>
-
                         
-
                         <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0; width: 100%; box-sizing: border-box;">
-
                             <div style="text-align:left;">
-
                                 <div style="font-size: 8px; color: #64748b; font-weight: 800;">REG NO</div>
-
                                 <div id="cardRegNo" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
-
                             </div>
-
                             <div style="text-align:right;">
-
                                 <div style="font-size: 8px; color: #64748b; font-weight: 800;">PHONE</div>
-
                                 <div id="cardPhone" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
-
                             </div>
-
                         </div>
-
                     </div>
-
                     
-
                     <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 7px; color: #cbd5e1; font-weight: 700; text-align: center; z-index: 2;">If found, please return to: <span id="cardReturnPhone">+91 9846000000</span></div>
-
                     
-
                     <div style="position: absolute; bottom: 15px; right: 10px; width: 68px; height: 68px; border: 2px solid rgba(139, 92, 246, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; transform: rotate(-15deg); z-index: 10; box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.15); mix-blend-mode: multiply;">
-
                         <div style="width: 60px; height: 60px; border: 1px dashed rgba(139, 92, 246, 0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2px; box-sizing: border-box;">
-
                             <div id="sealMainName" style="font-size: 6.5px; font-weight: 900; color: rgba(139, 92, 246, 0.9); line-height: 1.1; text-transform: uppercase; word-wrap: break-word; overflow: hidden; max-height: 15px;">GLOBUS</div>
-
                             <div id="sealSubName" style="font-size: 4px; font-weight: 800; color: rgba(139, 92, 246, 0.8); line-height: 1.1; text-transform: uppercase; margin-bottom: 2px; word-wrap: break-word; overflow: hidden; max-height: 10px;">TECHNICAL ACADEMY</div>
-
                             <div id="sealAddress" style="font-size: 3.5px; font-weight: 600; color: rgba(139, 92, 246, 0.6); line-height: 1.1; text-transform: uppercase; word-wrap: break-word; overflow: hidden; max-height: 12px;">ADDRESS</div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
-
 
             <div class="card-edit-col no-print">
-
                 <div style="margin-bottom:20px; border-bottom:2px dashed #e2e8f0; padding-bottom:10px;">
-
                     <h3 style="font-size:18px; font-weight:900; color:#1e293b; margin:0;">ID Card Studio</h3>
-
                     <p style="color:#64748b; font-size:12px; font-weight:600;">Edit details and generate card instantly</p>
-
                 </div>
-
                 
-
                 <div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1;">
-
                     <label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:8px; display:block; text-transform:uppercase;">🏢 Institute Settings (ID Card Only)</label>
-
                     <div style="display:flex; gap:10px; margin-bottom:8px;">
-
                         <input type="text" id="liveInstName" class="form-control-cert" placeholder="Institute Name" oninput="window.updateInstUI()" style="margin-bottom:0; font-size:12px; padding:8px;">
-
                         <input type="text" id="liveInstSub" class="form-control-cert" placeholder="Sub Name" oninput="window.updateInstUI()" style="margin-bottom:0; font-size:12px; padding:8px;">
-
                     </div>
-
                     <div style="display:flex; gap:10px;">
-
                         <input type="text" id="liveInstAddress" class="form-control-cert" placeholder="Full Address" oninput="window.updateInstUI(); window.lockStudentFields();" style="margin-bottom:0; font-size:12px; padding:8px; flex: 1.5;">
-
                         <input type="email" id="liveInstEmail" class="form-control-cert" placeholder="Email Address" oninput="window.updateInstUI()" style="margin-bottom:0; font-size:12px; padding:8px; flex: 1;">
-
                     </div>
-
                 </div>
-
                 
-
                 <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Upload Photo (Auto-preview)</label>
-
                 <input type="file" id="livePhotoInput" accept="image/*" class="form-control-cert" onchange="window.updateLivePhoto(event)">
-
                 
-
                 <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Student Name</label>
-
                 <input type="text" id="liveName" class="form-control-cert" oninput="document.getElementById('cardStudentName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
-
                 
-
                 <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Course Name</label>
-
                 <input type="text" id="liveCourse" class="form-control-cert" oninput="document.getElementById('cardCourseName').innerHTML = (this.value || 'N/A').toUpperCase().replace(/ /g, '&nbsp;')">
-
                 
-
                 <div style="display:flex; gap:12px; margin-bottom:10px;">
-
                     <div style="flex:1;">
-
                         <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Reg No</label>
-
                         <input type="text" id="liveReg" class="form-control-cert" oninput="document.getElementById('cardRegNo').innerText = this.value || 'N/A'">
-
                     </div>
-
                     <div style="flex:1;">
-
                         <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Phone</label>
-
                         <input type="text" id="livePhone" class="form-control-cert" oninput="document.getElementById('cardPhone').innerText = this.value || 'N/A'">
-
                     </div>
-
                 </div>
-
                 
-
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px; margin-bottom:15px;">
-
                     <button type="button" id="sharePdfBtn" onclick="window.sharePDF()" style="background: #ef4444; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2); font-size:11px;">📄 Share PDF</button>
-
                     <button type="button" id="shareCardBtn" onclick="window.shareCard()" style="background: #10b981; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(16,185,129,0.2); font-size:11px;">🔗 Share Image</button>
-
                     <button type="button" onclick="window.confirmStudioReset()" style="background: #f59e0b; color: #fff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2); font-size:11px;">🔄 Reset</button>
-
                 </div>
-
                 
-
                 <hr style="border:none; border-top:1px dashed #cbd5e1; margin: 10px 0 15px;">
-
                 <button type="button" onclick="window.saveCardDataToDB()" style="background: linear-gradient(135deg, #4f46e5, #3b82f6); color: #fff; border: none; padding: 14px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);">💾 Save Changes</button>
-
             </div>
-
         </div>
-
     </div>
 
-
-
     <script type="module">
-
         import { supabase } from './assets/js/supabase-config.js';
-
         
-
-        // --- MAGIC ALERT OVERRIDE (Hides Domain Name) ---
-
+        // --- MAGIC ALERT OVERRIDE ---
         window.alert = function(msg) {
-
             const oldBox = document.getElementById('customAlertBox');
-
             if (oldBox) oldBox.remove();
-
             const box = document.createElement('div');
-
             box.id = 'customAlertBox';
-
             let borderColor = '#3b82f6'; 
-
             if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed')) borderColor = '#ef4444'; 
-
             else if (msg.includes('✅') || msg.includes('success')) borderColor = '#10b981'; 
-
             
-
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
-
             box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
-
             if(!document.querySelector('style#alertAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="alertAnim">@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}</style>'); }
-
             document.body.appendChild(box);
-
             setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
-
         };
-
-        // ------------------------------------------------
-
-
 
         let allStudents = [], globalCourses = [], currentStudentData = null;
 
-
-
         async function checkAuth() {
-
             try {
-
                 const userRole = localStorage.getItem('userRole') || 'Admin';
-
                 const { data: { session } } = await supabase.auth.getSession();
-
                 
-
                 if (!session && userRole !== 'Guest') { 
-
                     window.location.href = 'login.html'; 
-
                     return; 
-
                 }
-
                 
-
                 loadSettings();
-
                 fetchStudents();
-
             } catch(e) { console.log("Supabase not connected."); }
-
         }
-
-
 
         window.toggleFilter = function(selectId, isChecked) {
-
             document.getElementById(selectId).disabled = !isChecked;
-
         };
-
-
 
         window.updateStatusColor = function(select) {
-
             if(select.value === 'active') { select.style.color = '#15803d'; select.style.borderColor = '#bbf7d0'; select.style.backgroundColor = '#f0fdf4'; }
-
             else if(select.value === 'completed') { select.style.color = '#1d4ed8'; select.style.borderColor = '#bfdbfe'; select.style.backgroundColor = '#eff6ff'; }
-
             else if(select.value === 'archived') { select.style.color = '#ea580c'; select.style.borderColor = '#fdba74'; select.style.backgroundColor = '#fff7ed'; }
-
             else { select.style.color = '#0f172a'; select.style.borderColor = '#cbd5e1'; select.style.backgroundColor = '#ffffff'; }
-
         };
-
-
 
         async function loadSettings() {
-
             try {
-
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
-
                 if (data) {
-
                     if(document.getElementById('navInstName')) document.getElementById('navInstName').innerText = data.institute_name || 'GLOBUS';
-
                     if(document.getElementById('navSubName')) document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
-
                     if(data.logo_url && document.getElementById('navLogo')) document.getElementById('navLogo').src = data.logo_url;
-
                     
-
                     if(document.getElementById('cardInstName')) document.getElementById('cardInstName').innerText = data.institute_name || 'GLOBUS';
-
                     if(document.getElementById('cardSubName')) document.getElementById('cardSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
-
                     if(data.logo_url && document.getElementById('cardInstLogo')) document.getElementById('cardInstLogo').src = data.logo_url;
-
                     
-
                     if(document.getElementById('sealMainName')) document.getElementById('sealMainName').innerText = data.institute_name || 'GLOBUS';
-
                     if(document.getElementById('sealSubName')) document.getElementById('sealSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
-
                     if(document.getElementById('sealAddress')) document.getElementById('sealAddress').innerText = data.address || '';
-
                     if(document.getElementById('cardReturnPhone') && data.phone) document.getElementById('cardReturnPhone').innerText = '+91 ' + data.phone;
-
                 }
-
             } catch (e) { }
-
         }
-
-
 
         async function fetchStudents() {
-
             try {
-
                 const { data: studentsData } = await supabase.from('students').select('*').order('created_at', { ascending: false });
-
                 const { data: coursesData } = await supabase.from('courses').select('id, course_name, modules');
-
                 const { data: paymentsData } = await supabase.from('fee_payments').select('student_id, amount_paid');
 
-
-
                 globalCourses = coursesData || [];
-
                 const courseMap = {}; globalCourses.forEach(c => courseMap[c.id] = c.course_name);
 
-
-
                 allStudents = studentsData || [];
-
                 allStudents.forEach(s => {
-
                     s.display_course_name = (s.course_id && courseMap[s.course_id]) ? courseMap[s.course_id] : (s.course_name || 'N/A');
-
                     let paid = 0;
-
                     if (paymentsData) paid = paymentsData.filter(p => p.student_id === s.id).reduce((sum, p) => sum + Number(p.amount_paid || 0), 0);
-
                     s.total_paid_fees = paid;
-
                 });
-
                 
-
                 populateDropdowns();
-
                 window.applyFilters(); 
-
             } catch (err) { console.error("Database Error:", err); }
-
         }
-
-
 
         window.updateFilterModules = function() {
-
             const courseValue = document.getElementById('courseSelect').value;
-
             const moduleSelect = document.getElementById('moduleSelect');
-
             const currentMod = moduleSelect.value;
-
             
-
             moduleSelect.innerHTML = '<option value="" disabled selected hidden>Select Module</option>';
-
             
-
             let modulesList = new Set();
-
             if (courseValue) {
-
                 const course = globalCourses.find(c => c.course_name === courseValue);
-
                 if (course && course.modules && Array.isArray(course.modules)) {
-
                     course.modules.forEach(m => modulesList.add(m));
-
                 }
-
             } else {
-
                 globalCourses.forEach(c => {
-
                     if (c.modules && Array.isArray(c.modules)) c.modules.forEach(m => modulesList.add(m));
-
                 });
-
             }
-
             
-
             modulesList.forEach(m => { moduleSelect.add(new Option(m, m)); });
-
             
-
             if (currentMod && Array.from(moduleSelect.options).some(opt => opt.value === currentMod)) {
-
                 moduleSelect.value = currentMod;
-
             } else if (courseValue) {
-
                 moduleSelect.value = '';
-
             }
-
         };
-
-
 
         function populateDropdowns() {
-
             const courseSelect = document.getElementById('courseSelect');
-
             courseSelect.innerHTML = '<option value="" disabled selected hidden>Select Course</option>';
-
             globalCourses.forEach(c => { courseSelect.add(new Option(c.course_name, c.course_name)); });
-
             window.updateFilterModules();
-
         }
-
-
 
         window.applyFilters = function() {
-
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-
             const statusTerm = document.getElementById('statusFilter').value; 
-
             const chkCourse = document.getElementById('chkCourse').checked;
-
             const courseValue = document.getElementById('courseSelect').value;
-
             const chkModule = document.getElementById('chkModule').checked;
-
             const moduleValue = document.getElementById('moduleSelect').value;
 
-
-
             let filtered = allStudents.filter(s => {
-
                 const searchStr = `${s.full_name || ''} ${s.register_number || ''} ${s.phone_number || ''}`.toLowerCase();
-
                 if (!searchStr.includes(searchTerm)) return false;
-
                 
-
                 const stuStatus = (s.status || 'active').toLowerCase();
-
                 if (statusTerm === 'active' && stuStatus !== 'active') return false;
-
                 if (statusTerm === 'completed' && stuStatus !== 'completed' && stuStatus !== 'inactive') return false;
-
                 if (statusTerm === 'archived' && stuStatus !== 'archived') return false;
-
                 
-
                 if (chkCourse && courseValue && s.display_course_name !== courseValue) return false;
-
                 if (chkModule && moduleValue && s.module !== moduleValue) return false;
-
                 
-
                 return true;
-
             });
-
             renderList(filtered);
-
         }
-
-
 
         function renderList(data) {
-
             const container = document.getElementById('studentsList'); container.innerHTML = '';
-
             if (data.length === 0) { container.innerHTML = '<div class="empty-state">No students found matching your search/filters.</div>'; return; }
-
             
-
             data.forEach(s => {
-
                 const bal = (Number(s.total_fee)||0) - (Number(s.admission_fee)||0) - s.total_paid_fees;
-
                 const balColor = bal > 0 ? '#EF4444' : '#10B981';
-
                 const balText = bal > 0 ? `₹ ${bal}` : 'Fully Paid';
-
                 
-
                 let avatarUrl = s.photo_url || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${s.gender === "Female" ? "%23ec4899" : "%233b82f6"}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
-
                 let qualBadge = `<span class="badge-sslc">${s.qualification || 'N/A'}</span>`;
 
-
-
                 let progressPercent = 0;
-
                 let progressClass = 'active';
-
                 let progressText = '0%';
-
                 
-
                 if (s.status && s.status.toLowerCase() === 'completed') {
-
                     progressPercent = 100; progressClass = 'completed'; progressText = 'Course Completed';
-
                 } else {
-
                     const course = globalCourses.find(c => c.id == s.course_id);
-
                     if (course && course.modules && Array.isArray(course.modules)) {
-
                         const totalMods = course.modules.length;
-
                         const currentModIndex = course.modules.indexOf(s.module) + 1; 
-
                         
-
                         if (totalMods > 0 && currentModIndex > 0) {
-
                             progressPercent = Math.round((currentModIndex / totalMods) * 100);
-
                             progressText = `${progressPercent}% (Mod ${currentModIndex}/${totalMods})`;
-
                         } else if (totalMods > 0) {
-
                             progressPercent = 5; progressText = 'Just Started';
-
                         }
-
                     }
-
                 }
-
                 
-
                 let progressBarHtml = `
-
                     <div class="progress-container">
-
                         <div class="progress-fill ${progressClass}" style="width: ${progressPercent}%;"></div>
-
                         <div class="progress-text-out">${progressText}</div>
-
                     </div>
-
                 `;
-
-
 
                 const card = document.createElement('div');
-
                 card.className = 'student-mobile-card';
-
                 
-
                 let actionBtnsHTML = `
-
                     <div class="card-action-btns">
-
                         <button onclick="window.viewAndEditStudent('${s.id}')" class="btn-card btn-view"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> View / Edit</button>
-
                         <button onclick="window.openProfileAndCard('${s.id}')" class="btn-card btn-id"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> ID Card</button>
-
                     </div>
-
                     <button onclick="window.archiveStudent('${s.id}', '${s.register_number}')" class="btn-del-full" style="color: #ea580c; border-color: #fdba74;">
-
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
-
                         Archive Student
-
                     </button>
-
                 `;
-
-
 
                 card.innerHTML = `
-
                     <div class="smc-header">
-
                         <div class="smc-header-left">
-
                             <div class="smc-name">${s.full_name || 'N/A'}</div>
-
                             <div class="smc-reg">Reg No: ${s.register_number || 'N/A'}</div>
-
                         </div>
-
                         <div class="smc-header-center avatar-circle"><img src="${avatarUrl}" alt="Photo"></div>
-
                     </div>
-
                     <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
-
                     <div class="smc-row"><span class="smc-label">Qualification:</span> <span class="smc-value">${qualBadge}</span></div>
-
                     <div class="smc-row" style="margin-bottom: 2px;"><span class="smc-label">Course:</span> <span class="smc-value" style="font-weight:800; color:#1e3a8a;">${s.display_course_name}</span></div>
-
                     
-
                     ${progressBarHtml}
-
                     
-
                     <div class="smc-row"><span class="smc-label">Current Module:</span> <span class="smc-value">${s.module || '-'}</span></div>
-
                     <div class="smc-row"><span class="smc-label">Fee Status:</span> <span class="smc-value" style="color:${balColor}; font-weight:900; font-size:16px;">${balText}</span></div>
-
                     ${actionBtnsHTML}
-
                 `;
-
                 container.appendChild(card);
-
             });
-
         }
 
-
-
         window.viewAndEditStudent = function(id) {
-
             const s = allStudents.find(x => x.id === id);
-
             if (!s) return;
-
             document.getElementById('profileCardContainer').style.display = 'none';
-
             document.getElementById('studentModal').style.display = 'flex';
-
             document.getElementById('viewEditContainer').style.display = 'flex'; 
 
-
-
             let courseOptions = '<option value="">-- Select Course --</option>';
-
             globalCourses.forEach(c => {
-
                 let selected = (c.id == s.course_id) ? 'selected' : '';
-
                 courseOptions += `<option value="${c.id}" ${selected}>${c.course_name}</option>`;
-
             });
 
-
-
             let moduleOptions = '<option value="">-- Select Module --</option>';
-
             if (s.course_id) {
-
                 const currentCourse = globalCourses.find(c => c.id == s.course_id);
-
                 if (currentCourse && currentCourse.modules && Array.isArray(currentCourse.modules)) {
-
                     currentCourse.modules.forEach(mod => {
-
                         let selected = (mod === s.module) ? 'selected' : '';
-
                         moduleOptions += `<option value="${mod}" ${selected}>${mod}</option>`;
-
                     });
-
                 }
-
             }
-
-
 
             document.getElementById('viewEditContent').innerHTML = `
-
                 <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6; border: 1px solid #e2e8f0;">
-
                     <p><b>Name:</b> ${s.full_name}</p>
-
                     <p><b>Reg No:</b> ${s.register_number || 'N/A'}</p>
-
                     <p><b>Phone:</b> ${s.phone_number}</p>
-
                     <p><b>Course:</b> ${s.display_course_name}</p>
-
                     <p><b>Module:</b> ${s.module || '-'}</p>
-
                     <p><b>Qualification:</b> ${s.qualification || 'N/A'}</p>
-
                     <p><b>Total Fee:</b> ₹ ${s.total_fee || 0}</p>
-
                 </div>
-
                 <hr style="border:0; border-top:1px solid #e5e7eb; margin-bottom:15px;">
-
                 <form onsubmit="window.saveFullEdit(event, '${s.id}')">
-
                     <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Full Name</label><input type="text" id="fullEditName" value="${s.full_name}" class="form-control-cert" required></div>
-
                     <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Phone Number</label><input type="text" id="fullEditPhone" value="${s.phone_number}" class="form-control-cert" required maxlength="10"></div>
-
                     
-
                     <div style="display:flex; gap:10px; margin-bottom:10px;">
-
                         <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Course</label><select id="fullEditCourse" class="form-control-cert" required onchange="window.updateEditModules(this.value)">${courseOptions}</select></div>
-
                         <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Module</label><select id="fullEditModule" class="form-control-cert">${moduleOptions}</select></div>
-
                     </div>
-
-
 
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
-
                         <div style="flex:1;">
-
                             <label style="font-size:12px; font-weight:600;">Course Status</label>
-
                             <select id="fullEditStatus" class="form-control-cert">
-
                                 <option value="active" ${(!s.status || s.status==='active')?'selected':''}>Active</option>
-
                                 <option value="completed" ${s.status==='completed'?'selected':''}>Completed</option>
-
                             </select>
-
                         </div>
-
                         <div style="flex:1;">
-
                             <label style="font-size:12px; font-weight:600;">Qualification</label>
-
                             <select id="fullEditQual" class="form-control-cert" required>
-
                                 <option value="SSLC" ${s.qualification==='SSLC'?'selected':''}>SSLC</option>
-
                                 <option value="Plus Two" ${s.qualification==='Plus Two'?'selected':''}>Plus Two</option>
-
                                 <option value="Degree" ${s.qualification==='Degree'?'selected':''}>Degree</option>
-
                                 <option value="Other" ${s.qualification==='Other'?'selected':''}>Other</option>
-
                             </select>
-
                         </div>
-
                     </div>
-
                     <button type="submit" style="width:100%; background:#10B981; color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">Update Profile</button>
-
                 </form>
-
             `;
-
         };
-
-
 
         window.updateEditModules = function(courseId) {
-
             const moduleSelect = document.getElementById('fullEditModule');
-
             moduleSelect.innerHTML = '<option value="">-- Select Module --</option>';
-
             if (courseId) {
-
                 const courseInfo = globalCourses.find(c => c.id == courseId);
-
                 if (courseInfo && courseInfo.modules && Array.isArray(courseInfo.modules)) {
-
                     courseInfo.modules.forEach(mod => { moduleSelect.add(new Option(mod, mod)); });
-
                 }
-
             }
-
         };
 
-
-
         window.saveFullEdit = async function(e, id) {
-
             e.preventDefault();
-
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
-
             
-
             let hasMarks = false;
-
             try {
-
                 const { data: pastMarks, error: marksErr } = await supabase.from('exam_results').select('id').eq('student_id', id).limit(1);
-
                 if (!marksErr && pastMarks && pastMarks.length > 0) hasMarks = true;
-
             } catch(err) {}
 
-
-
             const newName = document.getElementById('fullEditName').value;
-
             const newPhone = document.getElementById('fullEditPhone').value;
-
             const newCourse = document.getElementById('fullEditCourse').value;
-
             const newModule = document.getElementById('fullEditModule').value || null;
-
             const newStatus = document.getElementById('fullEditStatus').value;
-
             const newQual = document.getElementById('fullEditQual').value;
 
-
-
             if (hasMarks) {
-
                 alert("🔒 Security Verification\nThis student has been assigned exam marks. Please complete verification to edit.");
-
                 let n1 = Math.floor(Math.random() * 10) + 1, n2 = Math.floor(Math.random() * 10) + 1;
-
                 let ans1 = prompt(`Solve ${n1} + ${n2} = ?`);
-
                 if (ans1 === null || parseInt(ans1) !== (n1 + n2)) { alert("❌ Verification failed! Update aborted."); return; }
-
             }
-
-
 
             if(newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
 
-
-
             const { error } = await supabase.from('students').update({
-
                 full_name: newName, phone_number: newPhone, qualification: newQual, status: newStatus, course_id: newCourse, module: newModule
-
             }).eq('id', id);
 
-
-
             if (error) alert('Error updating: ' + error.message);
-
             else { alert('Profile updated successfully!'); window.closeModal(); fetchStudents(); }
-
         };
-
-
 
         window.openProfileAndCard = function(id) {
-
             const s = allStudents.find(x => x.id === id);
-
             if (!s) return;
-
             currentStudentData = s;
-
             document.getElementById('viewEditContainer').style.display = 'none';
-
             document.getElementById('studentModal').style.display = 'flex';
-
             document.getElementById('profileCardContainer').style.display = 'flex';
 
-
-
             document.getElementById('liveName').value = s.full_name || '';
-
             document.getElementById('liveCourse').value = s.display_course_name || '';
-
             document.getElementById('liveReg').value = s.register_number || '';
-
             document.getElementById('livePhone').value = s.phone_number || '';
-
             document.getElementById('livePhotoInput').value = ''; 
 
-
-
             document.getElementById('cardStudentName').innerHTML = (s.full_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
-
             document.getElementById('cardCourseName').innerHTML = (s.display_course_name || 'N/A').toUpperCase().replace(/ /g, '&nbsp;');
-
             document.getElementById('cardRegNo').innerText = s.register_number || 'N/A';
-
             document.getElementById('cardPhone').innerText = s.phone_number || 'N/A';
 
-
-
             if (s.photo_url) document.getElementById('cardAvatarImg').src = s.photo_url;
-
             else document.getElementById('cardAvatarImg').src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${s.gender === "Female" ? "%23ec4899" : "%233b82f6"}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
-
         };
-
-
 
         window.updateLivePhoto = function(event) {
-
             const file = event.target.files[0];
-
-            if (file) { document.getElementById('cardAvatarImg').src = URL.createObjectURL(file); }
-
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('cardAvatarImg').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
         };
-
-
 
         window.saveCardDataToDB = async function() {
-
             if (!currentStudentData) return;
-
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
-
             
-
             const newName = document.getElementById('liveName').value.trim();
-
             const newPhone = document.getElementById('livePhone').value.trim();
-
             const newReg = document.getElementById('liveReg').value.trim();
-
             let photoUrlToSave = currentStudentData.photo_url;
-
             if (newPhone && newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
 
-
-
             const fileInput = document.getElementById('livePhotoInput');
-
             if (fileInput.files.length > 0) {
-
                 const file = fileInput.files[0];
-
                 const fileName = `student_${Date.now()}_${file.name}`;
-
                 try {
-
                     const { data, error } = await supabase.storage.from('student-photos').upload(fileName, file);
-
                     if (!error) { photoUrlToSave = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl; }
-
                 } catch (e) { }
-
             }
-
-
 
             const { error } = await supabase.from('students').update({
-
                 full_name: newName, phone_number: newPhone, register_number: newReg, photo_url: photoUrlToSave
-
             }).eq('id', currentStudentData.id);
 
-
-
             if (error) alert('Error saving data: ' + error.message);
-
             else { alert('Details Saved Successfully!'); fetchStudents(); }
-
         };
-
-
 
         window.updateInstUI = function() {
-
             let n = document.getElementById('liveInstName').value || 'GLOBUS';
-
             let s = document.getElementById('liveInstSub').value || 'TECHNICAL ACADEMY';
-
             let a = document.getElementById('liveInstAddress').value || '';
-
             let e = document.getElementById('liveInstEmail').value || '';
-
             
-
             document.getElementById('cardInstName').innerText = n;
-
             document.getElementById('sealMainName').innerText = n;
-
             document.getElementById('cardSubName').innerText = s;
-
             document.getElementById('sealSubName').innerText = s;
-
             document.getElementById('cardAddress').innerText = a;
-
             document.getElementById('sealAddress').innerText = a;
-
             document.getElementById('cardEmail').innerText = e ? 'Email: ' + e : '';
-
         };
-
-
 
         window.lockStudentFields = function() {
-
             if(document.getElementById('liveInstAddress').value.trim() !== '') {
-
                 ['liveName', 'liveCourse', 'liveReg', 'livePhone'].forEach(id => {
-
                     let el = document.getElementById(id);
-
                     el.readOnly = true; el.style.backgroundColor = '#e2e8f0'; el.style.color = '#94a3b8'; el.style.cursor = 'not-allowed';
-
                 });
-
             }
-
         };
-
-
 
         window.confirmStudioReset = function() {
-
             let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
-
             let userInput = prompt(`Security Verification\nTo unlock and clear settings, please solve this math question:\n${num1} + ${num2} = ?`);
-
             if (userInput !== null && parseInt(userInput) === (num1+num2)) {
-
                 document.getElementById('liveInstName').value = ''; document.getElementById('liveInstSub').value = '';
-
                 document.getElementById('liveInstAddress').value = ''; document.getElementById('liveInstEmail').value = '';
-
                 window.updateInstUI(); 
-
                 ['liveName', 'liveCourse', 'liveReg', 'livePhone'].forEach(id => {
-
                     let el = document.getElementById(id);
-
                     el.readOnly = false; el.style.backgroundColor = '#ffffff'; el.style.color = '#000000'; el.style.cursor = 'text';
-
                 });
-
                 alert('Reset Complete! Student fields are now unlocked.');
-
             }
-
         };
 
-
-
+        // LOW FILE SIZE FIX: Switched to JPEG with 85% quality instead of PNG
         window.sharePDF = async function() {
-
             const btn = document.getElementById('sharePdfBtn'); const originalText = btn.innerHTML; 
-
             btn.innerHTML = '⏳ Generating PDF...'; btn.disabled = true;
-
             try {
-
                 const { jsPDF } = window.jspdf;
-
                 const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 3, useCORS: true, backgroundColor: '#ffffff' });
-
-                const imgData = canvas.toDataURL('image/png');
-
+                // LOW FILE SIZE (KB)
+                const imgData = canvas.toDataURL('image/jpeg', 0.85);
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [54, 86] });
-
-                pdf.addImage(imgData, 'PNG', 0, 0, 54, 86);
-
-                const filename = `ID_Card_${document.getElementById('liveName').value || 'Student'}.pdf`;
-
-                const pdfBlob = pdf.output('blob');
-
-                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
-
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-
-                    try { await navigator.share({ files: [file], title: 'Student ID Card' }); } catch (err) { pdf.save(filename); }
-
-                } else { pdf.save(filename); }
-
+                pdf.addImage(imgData, 'JPEG', 0, 0, 54, 86);
+                const filename = `ID_Card_${(document.getElementById('liveName').value || 'Student').replace(/ /g,'_')}.pdf`;
+                pdf.save(filename);
             } catch (error) { alert("Could not generate PDF."); } finally { btn.innerHTML = originalText; btn.disabled = false; }
-
         };
 
-
-
+        // LOW FILE SIZE FIX: Switched to JPEG with 85% quality instead of PNG
         window.shareCard = async function() {
-
             const btn = document.getElementById('shareCardBtn'); const originalText = btn.innerHTML; 
-
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
-
             try {
-
                 const canvas = await html2canvas(document.getElementById('smartCardContent'), { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-
+                // LOW FILE SIZE (KB)
                 canvas.toBlob(async (blob) => {
-
                     const name = document.getElementById('liveName').value || 'Student';
-
-                    const file = new File([blob], `ID_Card_${name}.png`, { type: 'image/png' });
-
+                    const file = new File([blob], `ID_Card_${name.replace(/ /g,'_')}.jpg`, { type: 'image/jpeg' });
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-
                         try { await navigator.share({ files: [file], title: 'Student ID Card', text: `ID Card for ${name}` }); } catch (err) {}
-
                     } else {
-
-                        const link = document.createElement('a'); link.download = `ID_Card_${name}.png`; link.href = canvas.toDataURL('image/png'); link.click();
-
+                        const link = document.createElement('a'); link.download = `ID_Card_${name.replace(/ /g,'_')}.jpg`; 
+                        link.href = canvas.toDataURL('image/jpeg', 0.85); link.click();
                     }
-
                     btn.innerHTML = originalText; btn.disabled = false;
-
-                }, 'image/png');
-
+                }, 'image/jpeg', 0.85);
             } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
-
         };
-
-
 
         window.archiveStudent = async function(id, regNo) {
-
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
 
-
-
             let n1 = Math.floor(Math.random() * 10) + 1; let n2 = Math.floor(Math.random() * 10) + 1;
-
             let ans = prompt(`⚠️ Security Verification\nTo Archive (Move to old students) Reg No: ${regNo}, solve:\n${n1} + ${n2} = ?`);
-
             if (ans !== null && parseInt(ans) === (n1 + n2)) {
-
                 const { error } = await supabase.from('students').update({ status: 'archived' }).eq('id', id);
-
                 if (error) {
-
                     alert('Error archiving student: ' + error.message);
-
                 } else {
-
                     alert('✅ Student successfully moved to Archives.'); 
-
                     fetchStudents(); 
-
                 }
-
             } else {
-
                 alert('❌ Verification failed! Archiving aborted.');
-
             }
-
         };
-
-
 
         window.closeModal = function() { 
-
             document.getElementById('studentModal').style.display = 'none';
-
             document.getElementById('viewEditContainer').style.display = 'none';
-
             document.getElementById('profileCardContainer').style.display = 'none';
-
         };
 
-
-
         checkAuth();
-
     </script>
-
 </body>
-
-</html> 
-
+</html>
