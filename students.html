@@ -111,7 +111,7 @@
         .btn-reset { background: linear-gradient(135deg, #f59e0b, #b45309); }
         .btn-save-full { background: linear-gradient(135deg, #4f46e5, #1d4ed8); width: 100%; padding: 14px; font-size: 14px; margin-top: 5px;}
 
-        /* ==================== ID CARD TEMPLATE ENGINE (WORLD CLASS DESIGN) ==================== */
+        /* ==================== ID CARD TEMPLATE ENGINE ==================== */
         .id-card-template { width:280px; height:445px; background:#fff; border:1px solid #cbd5e1; border-radius:12px; position:relative; box-sizing:border-box; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.1); margin:0 auto; display:none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .id-card-template.active { display:block; }
         
@@ -195,231 +195,58 @@
                 <div id="smartCardContent" style="position:relative; margin:0 auto;">
                     
                     <!-- ========================================== -->
-                    <!-- TEMPLATE 1: CLASSIC BLUE (DEFAULT) -->
+                    <!-- DYNAMIC CUSTOM THEME TEMPLATE -->
                     <!-- ========================================== -->
-                    <div id="template-1" class="id-card-template active">
-                        <div style="background: #1e3a8a; height: 110px; width: 150%; position: absolute; top: -25px; left: -25%; border-radius: 50%; z-index: 1;"></div>
-                        
-                        <div style="position: relative; width: 100%; height: 50px; margin-top: 10px; margin-bottom: 15px; z-index: 2;">
-                            <img class="sync-logo" src="assets/images/logo.png" style="position: absolute; left: 15px; top: -4px;" onerror="this.style.display='none'">
-                            <div style="position: absolute; left: 0; right: 0; top: 4px; text-align: center; z-index: 3; padding: 0 10px;">
-                                <div class="sync-inst-name" style="font-size: 19px; font-weight: 900; color: #fff; line-height: 1.1; letter-spacing: 1px; white-space: nowrap; overflow: hidden;">GLOBUS</div>
-                                <div class="sync-inst-sub" style="font-size: 8px; font-weight: 700; color: #bfdbfe; letter-spacing: 0.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden;">TECHNICAL ACADEMY</div>
+                    <div id="template-dynamic" class="id-card-template active" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #fff; display: block;">
+                        <!-- Header section (Colors change dynamically) -->
+                        <div id="dynamic-header" style="background: #1a56db; color: #ffffff; padding: 12px; display: flex; align-items: center; justify-content: space-between; height: 105px; box-sizing: border-box;">
+                            <!-- Logo -->
+                            <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid rgba(255,255,255,0.4); flex-shrink: 0;">
+                                <img class="sync-logo" src="assets/images/logo.png" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.style.display='none'">
                             </div>
-                        </div>
-                        
-                        <div style="background: #f59e0b; color: #fff; font-size: 11px; font-weight: 800; text-align: center; padding: 4px 0; width: 65%; margin: 0 auto 10px; border-radius: 20px; position: relative; z-index: 2;">STUDENT ID CARD</div>
-                        
-                        <div style="text-align: center; margin-bottom: 12px; position: relative; z-index: 2;">
-                            <div class="sync-avatar" style="border: 2px solid #e2e8f0; box-shadow: 0 4px 8px rgba(0,0,0,0.05);"></div>
-                        </div>
-                        
-                        <div style="padding: 0 12px; text-align: center; position: relative; z-index: 2;">
-                            <div style="margin-bottom: 8px;">
-                                <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">STUDENT NAME</div>
-                                <div class="sync-stu-name" style="font-size: 17px; font-weight: 600; color: #1e293b;">-</div>
-                            </div>
-                            <div style="margin-bottom: 12px;">
-                                <div style="font-size: 9px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">COURSE</div>
-                                <div class="sync-course" style="font-size: 12px; font-weight: 800; color: #059669;">-</div>
-                            </div>
-                            
-                            <div style="display: flex; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                <div style="text-align:left;">
-                                    <div style="font-size: 8px; color: #64748b; font-weight: 800;">REG NO</div>
-                                    <div class="sync-reg" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
-                                </div>
-                                <div style="text-align:right;">
-                                    <div style="font-size: 8px; color: #64748b; font-weight: 800;">PHONE</div>
-                                    <div class="sync-phone" style="font-size: 13px; font-weight: 900; color: #0f172a;">-</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="seal-base" style="bottom: 15px; right: 10px; border: 2px solid rgba(139, 92, 246, 0.4); box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.15);">
-                            <div class="seal-inner" style="border: 1px dashed rgba(139, 92, 246, 0.7);">
-                                <div class="sync-inst-name" style="font-size: 6.5px; font-weight: 900; color: rgba(139, 92, 246, 0.9); line-height: 1.1;">GLOBUS</div>
-                                <div class="sync-inst-sub" style="font-size: 4px; font-weight: 800; color: rgba(139, 92, 246, 0.8); line-height: 1.1; margin-bottom: 2px;">TECHNICAL ACADEMY</div>
-                            </div>
-                        </div>
-                        <div style="position: absolute; bottom: 6px; left: 0; width: 100%; font-size: 7px; color: #cbd5e1; font-weight: 700; text-align: center; z-index: 2;">If found, please return to: <span class="sync-return">+91 9846000000</span></div>
-                    </div>
-
-                    <!-- ========================================== -->
-                    <!-- TEMPLATE 2: NAVY STANDARD (SEAL ADDED) -->
-                    <!-- ========================================== -->
-                    <div id="template-2" class="id-card-template">
-                        <div style="background: linear-gradient(135deg, #0f172a, #1e293b); height: 95px; width: 100%; position: absolute; top: 0; left: 0; z-index: 1;"></div>
-                        <div style="background: #10b981; height: 4px; width: 100%; position: absolute; top: 95px; left: 0; z-index: 1;"></div>
-                        
-                        <div style="position: relative; width: 100%; height: 50px; margin-top: 15px; margin-bottom: 20px; z-index: 2; padding: 0 15px; display: flex; align-items: center; gap: 10px;">
-                            <img class="sync-logo" src="assets/images/logo.png" style="background:#fff; padding:3px; border-radius:6px;" onerror="this.style.display='none'">
-                            <div>
-                                <div class="sync-inst-name" style="font-size: 15px; font-weight: 900; color: #fff; letter-spacing: 1px;">GLOBUS</div>
-                                <div class="sync-inst-sub" style="font-size: 7px; font-weight: 700; color: #10b981; letter-spacing: 0.5px;">TECHNICAL ACADEMY</div>
-                            </div>
-                        </div>
-                        
-                        <div style="background: #f1f5f9; color: #0f172a; font-size: 10px; font-weight: 900; text-align: center; padding: 5px 0; width: 50%; margin: 0 auto 15px; border-radius: 4px; z-index: 2; position: relative;">STUDENT ID</div>
-                        
-                        <div style="text-align: center; margin-bottom: 15px; position: relative; z-index: 2;">
-                            <div class="sync-avatar" style="border: 3px solid #10b981; margin: 0 auto;"></div>
-                        </div>
-                        
-                        <div style="padding: 0 20px; text-align: left; position: relative; z-index: 2;">
-                            <div style="margin-bottom: 8px;">
-                                <div style="font-size: 8px; color: #64748b; font-weight: 800;">STUDENT NAME</div>
-                                <div class="sync-stu-name" style="font-size: 16px; font-weight: 900; color: #0f172a;">-</div>
-                            </div>
-                            <div style="margin-bottom: 12px;">
-                                <div style="font-size: 8px; color: #64748b; font-weight: 800;">COURSE</div>
-                                <div class="sync-course" style="font-size: 12px; font-weight: 800; color: #10b981;">-</div>
-                            </div>
-                            
-                            <div style="display: flex; justify-content: space-between; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px;">
-                                <div><div style="font-size: 7px; color: #64748b; font-weight: 800;">REG NO</div><div class="sync-reg" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div></div>
-                                <div style="text-align:right;"><div style="font-size: 7px; color: #64748b; font-weight: 800;">PHONE</div><div class="sync-phone" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div></div>
+                            <!-- Inst Info -->
+                            <div style="flex: 1; margin-left: 12px; text-align: right; display: flex; flex-direction: column; justify-content: center;">
+                                <div class="sync-inst-name" style="font-size: 15px; font-weight: 900; line-height: 1.1; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">GLOBUS</div>
+                                <div class="sync-inst-sub" style="font-size: 8px; font-weight: 700; opacity: 0.95; margin-bottom: 3px; text-transform: uppercase;">TECHNICAL ACADEMY</div>
+                                <div class="sync-inst-addr" style="font-size: 7px; opacity: 0.9; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 8px;">-</div>
+                                <div class="sync-inst-email" style="font-size: 7px; opacity: 0.9; line-height: 1.2; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 8px;">-</div>
                             </div>
                         </div>
 
-                        <div style="position: absolute; bottom: 25px; left: 15px; width: 120px;">
-                            <div class="barcode-bg" style="border-radius:2px;"></div>
-                        </div>
+                        <!-- Body Section -->
+                        <div style="padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; height: calc(100% - 105px);">
+                            <!-- Student Badge -->
+                            <div id="dynamic-badge" style="background: #1a56db; color: #ffffff; padding: 4px 25px; border-radius: 4px; font-size: 9px; font-weight: 900; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">STUDENT</div>
 
-                        <!-- FIX: ADDED ROUND SEAL TO THEME 2 -->
-                        <div class="seal-base" style="bottom: 15px; right: 15px; border: 2px solid rgba(15, 23, 42, 0.2);">
-                            <div class="seal-inner" style="border: 1px dashed rgba(15, 23, 42, 0.4);">
-                                <div class="sync-inst-name" style="font-size: 5px; font-weight: 900; color: #0f172a;">GLOBUS</div>
-                                <div style="font-size: 8px; font-weight: 900; color: #10b981; margin: 1px 0;">✓ VERIFIED</div>
+                            <!-- Photo -->
+                            <div id="dynamic-photo-border" style="width: 85px; height: 105px; border: 3px solid #1a56db; border-radius: 8px; padding: 2px; margin-bottom: 12px; background: #f8fafc; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                                <div class="sync-avatar" style="width: 100%; height: 100%; border-radius: 4px; background-size: cover !important; background-position: center !important;"></div>
                             </div>
-                        </div>
-                        
-                        <div style="position: absolute; bottom: 8px; left: 0; width: 100%; font-size: 6px; color: #94a3b8; font-weight: 700; text-align: center;">Return to: <span class="sync-return"></span></div>
-                    </div>
 
-                    <!-- ========================================== -->
-                    <!-- TEMPLATE 3: MAROON ACADEMIC -->
-                    <!-- ========================================== -->
-                    <div id="template-3" class="id-card-template">
-                        <div style="background:#831843; height:90px; width:100%; position:absolute; top:0; left:0; z-index:1;"></div>
-                        <div style="position: relative; z-index: 2; padding: 15px 15px 0; text-align: center;">
-                            <img class="sync-logo" src="assets/images/logo.png" style="margin-bottom:5px;" onerror="this.style.display='none'">
-                            <div class="sync-inst-name" style="font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 1px;">GLOBUS</div>
-                            <div class="sync-inst-sub" style="font-size: 7px; font-weight: 700; color: #fbcfe8;">TECHNICAL ACADEMY</div>
-                        </div>
-                        <div style="background: #fbcfe8; color: #831843; font-size: 10px; font-weight: 900; text-align: center; padding: 5px 0; width: 50%; margin: 10px auto 15px; border-radius: 4px; z-index: 2; position: relative;">STUDENT</div>
-                        
-                        <div style="text-align: center; margin-bottom: 15px; position: relative; z-index: 2;">
-                            <div class="sync-avatar" style="border: 3px solid #fbbf24; box-shadow: 0 0 0 2px #831843; margin: 0 auto;"></div>
-                        </div>
-                        
-                        <div style="padding: 0 20px; text-align: center; position: relative; z-index: 2;">
-                            <div style="margin-bottom: 8px;">
-                                <div style="font-size: 8px; color: #94a3b8; font-weight: 800;">STUDENT NAME</div>
-                                <div class="sync-stu-name" style="font-size: 18px; font-weight: 900; color: #831843;">-</div>
-                            </div>
-                            <div style="margin-bottom: 12px;">
-                                <div style="font-size: 8px; color: #94a3b8; font-weight: 800;">COURSE</div>
-                                <div class="sync-course" style="font-size: 12px; font-weight: 800; color: #b45309;">-</div>
-                            </div>
-                            
-                            <div style="display: flex; justify-content: space-between; background: #fff1f2; padding: 10px; border-radius: 8px; border: 1px solid #fecdd3;">
-                                <div style="text-align:left;"><div style="font-size: 7px; color: #be123c; font-weight: 800;">REG NO</div><div class="sync-reg" style="font-size: 12px; font-weight: 900; color: #831843;">-</div></div>
-                                <div style="text-align:right;"><div style="font-size: 7px; color: #be123c; font-weight: 800;">PHONE</div><div class="sync-phone" style="font-size: 12px; font-weight: 900; color: #831843;">-</div></div>
-                            </div>
-                        </div>
-                        <div style="position: absolute; bottom: 8px; left: 0; width: 100%; font-size: 6px; color: #94a3b8; font-weight: 700; text-align: center;">Return to: <span class="sync-return"></span></div>
-                    </div>
+                            <!-- Details -->
+                            <div style="width: 100%; margin-bottom: auto;">
+                                <div style="font-size: 8px; font-weight: 800; color: #94a3b8; margin-bottom: 2px;">STUDENT NAME</div>
+                                <div class="sync-stu-name" style="font-size: 16px; font-weight: 900; color: #1e293b; line-height: 1.1; margin-bottom: 8px; text-transform: uppercase;">-</div>
 
-                    <!-- ========================================== -->
-                    <!-- TEMPLATE 4: MINIMALIST WHITE (HEADER & SEAL FIXED) -->
-                    <!-- ========================================== -->
-                    <div id="template-4" class="id-card-template" style="border-top:5px solid #2563eb;">
-                        <!-- FIX: Added light blue background to header -->
-                        <div style="background: #f1f5f9; padding: 15px; border-bottom: 1px solid #e2e8f0; display:flex; align-items:center; gap:10px;">
-                            <img class="sync-logo" src="assets/images/logo.png" style="width:35px;height:35px;" onerror="this.style.display='none'">
-                            <div style="text-align:left;">
-                                <div class="sync-inst-name" style="font-size:16px; font-weight:900; color:#0f172a; letter-spacing:1px;">GLOBUS</div>
-                                <div class="sync-inst-sub" style="font-size:7px; font-weight:700; color:#64748b; letter-spacing:0.5px;">TECHNICAL ACADEMY</div>
+                                <div style="font-size: 8px; font-weight: 800; color: #94a3b8; margin-bottom: 2px;">COURSE</div>
+                                <div id="dynamic-course-text" class="sync-course" style="font-size: 12px; font-weight: 900; color: #1a56db; line-height: 1.1; text-transform: uppercase;">-</div>
                             </div>
-                        </div>
-                        
-                        <div style="display: flex; gap: 15px; padding: 20px 15px;">
-                            <div style="width: 85px;">
-                                <div class="sync-avatar" style="width:85px; height:110px; border-radius: 6px; border: 1px solid #cbd5e1;"></div>
-                                <div style="background: #3b82f6; color: #fff; font-size: 8px; font-weight: 800; text-align: center; padding: 4px; margin-top: 5px; border-radius: 4px;">STUDENT</div>
-                            </div>
-                            <div style="flex: 1; padding-top: 5px;">
-                                <div style="margin-bottom: 10px;">
-                                    <div style="font-size: 7px; color: #94a3b8; font-weight: 800;">NAME</div>
-                                    <div class="sync-stu-name" style="font-size: 14px; font-weight: 900; color: #0f172a; line-height:1.1;">-</div>
+
+                            <!-- Info Box -->
+                            <div id="dynamic-info-box" style="width: 100%; display: flex; justify-content: space-between; padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(26, 86, 219, 0.2); background: rgba(26, 86, 219, 0.05); margin-top: 10px; margin-bottom: 10px;">
+                                <div style="text-align: left;">
+                                    <div id="dynamic-label-reg" style="font-size: 7px; font-weight: 800; color: #1a56db;">REG NO</div>
+                                    <div class="sync-reg" style="font-size: 11px; font-weight: 900; color: #1e293b;">-</div>
                                 </div>
-                                <div style="margin-bottom: 10px;">
-                                    <div style="font-size: 7px; color: #94a3b8; font-weight: 800;">COURSE</div>
-                                    <div class="sync-course" style="font-size: 11px; font-weight: 800; color: #3b82f6; line-height:1.1;">-</div>
-                                </div>
-                                <div style="margin-bottom: 10px;">
-                                    <div style="font-size: 7px; color: #94a3b8; font-weight: 800;">ID NUMBER</div>
-                                    <div class="sync-reg" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div>
-                                </div>
-                                <div>
-                                    <div style="font-size: 7px; color: #94a3b8; font-weight: 800;">CONTACT</div>
-                                    <div class="sync-phone" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div>
+                                <div style="text-align: right;">
+                                    <div id="dynamic-label-phone" style="font-size: 7px; font-weight: 800; color: #1a56db;">PHONE</div>
+                                    <div class="sync-phone" style="font-size: 11px; font-weight: 900; color: #1e293b;">-</div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- FIX: Barcode moved to left, Seal added to right -->
-                        <div style="position: absolute; bottom: 20px; left: 15px; width: 120px;">
-                            <div class="barcode-bg" style="border-radius:2px;"></div>
+                            <!-- Footer -->
+                            <div style="font-size: 6px; font-weight: 700; color: #94a3b8; width: 100%; text-align: center;">Return to: <span class="sync-return"></span></div>
                         </div>
-                        <div class="seal-base" style="bottom: 15px; right: 15px; border: 2px solid rgba(37, 99, 235, 0.2);">
-                            <div class="seal-inner" style="border: 1px dashed rgba(37, 99, 235, 0.4);">
-                                <div class="sync-inst-name" style="font-size: 5px; font-weight: 900; color: #2563eb;">GLOBUS</div>
-                                <div style="font-size: 7px; font-weight: 900; color: #0f172a; margin: 1px 0;">VERIFIED</div>
-                            </div>
-                        </div>
-
-                        <div style="position: absolute; bottom: 8px; left: 0; width: 100%; font-size: 6px; color: #94a3b8; font-weight: 700; text-align: center;">Return to: <span class="sync-return"></span></div>
-                    </div>
-
-                    <!-- ========================================== -->
-                    <!-- TEMPLATE 5: EMERALD PROFESSIONAL (LOGO & SEAL FIXED) -->
-                    <!-- ========================================== -->
-                    <div id="template-5" class="id-card-template">
-                        <div style="background:#064e3b; height:140px; width:100%; position:absolute; top:0; left:0; z-index:1; border-bottom-left-radius:20px; border-bottom-right-radius:20px;"></div>
-                        <div style="position: relative; z-index: 2; padding: 15px 15px 0; text-align: center; color: #fff;">
-                            <!-- FIX: Restored Logo -->
-                            <img class="sync-logo" src="assets/images/logo.png" style="width:40px; height:40px; background:#fff; border-radius:8px; padding:3px; margin-bottom:5px;" onerror="this.style.display='none'">
-                            <div class="sync-inst-name" style="font-size: 16px; font-weight: 900; letter-spacing: 1px;">GLOBUS</div>
-                            <div class="sync-inst-sub" style="font-size: 7px; font-weight: 700; color: #34d399;">TECHNICAL ACADEMY</div>
-                        </div>
-                        
-                        <div style="text-align: center; margin-top: 10px; position: relative; z-index: 2;">
-                            <div class="sync-avatar" style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin: 0 auto;"></div>
-                        </div>
-                        
-                        <div style="text-align: center; padding: 15px 20px;">
-                            <div style="background: #d1fae5; color: #064e3b; font-size: 10px; font-weight: 900; display: inline-block; padding: 4px 15px; border-radius: 20px; margin-bottom: 10px;">STUDENT</div>
-                            <div class="sync-stu-name" style="font-size: 18px; font-weight: 900; color: #0f172a; margin-bottom: 5px;">-</div>
-                            <div class="sync-course" style="font-size: 12px; font-weight: 700; color: #059669; margin-bottom: 15px;">-</div>
-                            <div style="display: flex; justify-content: space-between; background: #f0fdf4; padding: 10px; border-radius: 8px; border: 1px solid #bbf7d0;">
-                                <div style="text-align:left;"><div style="font-size: 7px; color: #047857; font-weight: 800;">ID NO</div><div class="sync-reg" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div></div>
-                                <div style="text-align:right;"><div style="font-size: 7px; color: #047857; font-weight: 800;">PHONE</div><div class="sync-phone" style="font-size: 11px; font-weight: 900; color: #0f172a;">-</div></div>
-                            </div>
-                        </div>
-
-                        <!-- FIX: Added Barcode & Round Seal -->
-                        <div style="position: absolute; bottom: 30px; left: 15px; width: 110px;">
-                            <div class="barcode-bg" style="border-radius:2px; height:20px;"></div>
-                        </div>
-                        <div class="seal-base" style="bottom: 25px; right: 15px; width:50px; height:50px; border: 2px solid rgba(6, 78, 59, 0.2);">
-                            <div class="seal-inner" style="width:44px; height:44px; border: 1px dashed rgba(6, 78, 59, 0.5);">
-                                <div class="sync-inst-name" style="font-size: 4px; font-weight: 900; color: #064e3b;">GLOBUS</div>
-                            </div>
-                        </div>
-
-                        <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: #064e3b; color: #fff; font-size: 6px; font-weight: 700; text-align: center; padding: 6px 0;">Return to: <span class="sync-return"></span></div>
                     </div>
 
                 </div>
@@ -432,19 +259,27 @@
                     <p style="color:#64748b; font-size:12px; font-weight:600;">Edit details and generate card instantly</p>
                 </div>
                 
+                <!-- NEW CUSTOM COLOR PICKERS -->
                 <div style="background: #eff6ff; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #bfdbfe;">
-                    <label style="font-size:12px; font-weight:800; color:#1e3a8a; margin-bottom:6px; display:block;">🎨 Choose Card Design</label>
-                    <select class="form-control-cert" id="cardDesignSelect" onchange="window.changeCardDesign(this.value)" style="margin-bottom:0; border-color:#93c5fd; font-weight:700; color:#1e3a8a;">
-                        <option value="1">1. Classic Blue (Default)</option>
-                        <option value="2">2. Navy Standard</option>
-                        <option value="3">3. Maroon Academic</option>
-                        <option value="4">4. Minimalist White</option>
-                        <option value="5">5. Emerald Professional</option>
-                    </select>
+                    <label style="font-size:12px; font-weight:800; color:#1e3a8a; margin-bottom:10px; display:block;">🎨 Custom Theme Colors</label>
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label style="font-size:10px; font-weight:700; color:#3b82f6; display:block; margin-bottom:4px;">Header BG</label>
+                            <input type="color" id="colorHeaderBg" value="#1a56db" onchange="window.updateCardColors()" style="width: 100%; height: 35px; border: 1px solid #93c5fd; border-radius: 6px; cursor: pointer; padding: 2px;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size:10px; font-weight:700; color:#3b82f6; display:block; margin-bottom:4px;">Header Text</label>
+                            <input type="color" id="colorHeaderText" value="#ffffff" onchange="window.updateCardColors()" style="width: 100%; height: 35px; border: 1px solid #93c5fd; border-radius: 6px; cursor: pointer; padding: 2px;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="font-size:10px; font-weight:700; color:#3b82f6; display:block; margin-bottom:4px;">Accent (Theme)</label>
+                            <input type="color" id="colorAccent" value="#1a56db" onchange="window.updateCardColors()" style="width: 100%; height: 35px; border: 1px solid #93c5fd; border-radius: 6px; cursor: pointer; padding: 2px;">
+                        </div>
+                    </div>
                 </div>
 
                 <div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1;">
-                    <label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:8px; display:block; text-transform:uppercase;">🏢 Institute Settings (ID Card Only)</label>
+                    <label style="font-size:11px; font-weight:800; color:#334155; margin-bottom:8px; display:block; text-transform:uppercase;">🏢 Institute Settings</label>
                     <div style="display:flex; gap:10px; margin-bottom:8px;">
                         <input type="text" id="liveInstName" class="form-control-cert" placeholder="Institute Name" oninput="window.updateInstUI()" style="margin-bottom:0; font-size:12px; padding:8px;">
                         <input type="text" id="liveInstSub" class="form-control-cert" placeholder="Sub Name" oninput="window.updateInstUI()" style="margin-bottom:0; font-size:12px; padding:8px;">
@@ -455,7 +290,7 @@
                     </div>
                 </div>
                 
-                <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Upload Photo (Auto-preview)</label>
+                <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Upload Photo</label>
                 <input type="file" id="livePhotoInput" accept="image/*" class="form-control-cert" onchange="window.updateLivePhoto(event)">
                 
                 <label style="font-size:12px; font-weight:700; color:#475569; margin-bottom:4px;">Student Name</label>
@@ -476,7 +311,7 @@
                 </div>
                 
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:15px; margin-bottom:15px;">
-                    <button type="button" onclick="window.sharePDF()" class="studio-btn btn-print">🖨️ Print (PDF)</button>
+                    <button type="button" onclick="window.sharePDF()" class="studio-btn btn-print">🖨️ Print</button>
                     <button type="button" onclick="window.shareCard()" class="studio-btn btn-image">🔗 Image</button>
                     <button type="button" onclick="window.confirmStudioReset()" class="studio-btn btn-reset">🔄 Reset</button>
                 </div>
@@ -537,10 +372,6 @@
         };
         window.setBackgroundImage = function(className, url) {
             document.querySelectorAll('.' + className).forEach(el => { el.style.backgroundImage = `url('${url}')`; });
-        };
-        window.changeCardDesign = function(val) {
-            document.querySelectorAll('.id-card-template').forEach(el => el.classList.remove('active'));
-            document.getElementById('template-' + val).classList.add('active');
         };
 
         async function checkAuth() {
@@ -642,7 +473,6 @@
             renderList(filtered);
         }
 
-        /* 100% ORIGINAL RENDER LIST FUNCTION - ALL BUTTONS RESTORED */
         function renderList(data) {
             const container = document.getElementById('studentsList'); container.innerHTML = '';
             if (data.length === 0) { container.innerHTML = '<div class="empty-state">No students found matching your search/filters.</div>'; return; }
@@ -826,9 +656,6 @@
             const s = allStudents.find(x => x.id === id); if (!s) return;
             currentStudentData = s;
             
-            document.getElementById('cardDesignSelect').value = "1";
-            window.changeCardDesign("1");
-
             document.getElementById('viewEditContainer').style.display = 'none';
             document.getElementById('studentModal').style.display = 'flex';
             document.getElementById('profileCardContainer').style.display = 'flex';
@@ -846,6 +673,47 @@
 
             let avatarUrl = s.photo_url || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='${s.gender === "Female" ? "%23ec4899" : "%233b82f6"}'><circle cx='12' cy='8' r='5'/><path d='M3 21v-2a7 7 0 0 1 14 0v2'/></svg>`;
             window.setBackgroundImage('sync-avatar', avatarUrl);
+        };
+
+        window.updateInstUI = function() {
+            let n = document.getElementById('liveInstName').value || 'GLOBUS';
+            let s = document.getElementById('liveInstSub').value || 'TECHNICAL ACADEMY';
+            let a = document.getElementById('liveInstAddress').value || '';
+            let e = document.getElementById('liveInstEmail').value || '';
+            window.setContent('sync-inst-name', n);
+            window.setContent('sync-inst-sub', s);
+            window.setContent('sync-inst-addr', a);
+            window.setContent('sync-inst-email', e);
+        };
+
+        window.updateCardColors = function() {
+            const bg = document.getElementById('colorHeaderBg').value;
+            const text = document.getElementById('colorHeaderText').value;
+            const accent = document.getElementById('colorAccent').value;
+
+            const header = document.getElementById('dynamic-header');
+            if(header) { header.style.backgroundColor = bg; header.style.color = text; }
+
+            const badge = document.getElementById('dynamic-badge');
+            if(badge) { badge.style.backgroundColor = accent; }
+
+            const border = document.getElementById('dynamic-photo-border');
+            if(border) { border.style.borderColor = accent; }
+
+            const courseTxt = document.getElementById('dynamic-course-text');
+            if(courseTxt) { courseTxt.style.color = accent; }
+
+            const labelReg = document.getElementById('dynamic-label-reg');
+            if(labelReg) { labelReg.style.color = accent; }
+
+            const labelPhone = document.getElementById('dynamic-label-phone');
+            if(labelPhone) { labelPhone.style.color = accent; }
+
+            const infoBox = document.getElementById('dynamic-info-box');
+            if(infoBox) {
+                infoBox.style.borderColor = accent + '40';
+                infoBox.style.backgroundColor = accent + '10';
+            }
         };
 
         window.updateLivePhoto = function(event) {
@@ -885,15 +753,6 @@
             else { alert('Details Saved Successfully!'); fetchStudents(); }
         };
 
-        window.updateInstUI = function() {
-            let n = document.getElementById('liveInstName').value || 'GLOBUS';
-            let s = document.getElementById('liveInstSub').value || 'TECHNICAL ACADEMY';
-            let a = document.getElementById('liveInstAddress').value || '';
-            window.setContent('sync-inst-name', n);
-            window.setContent('sync-inst-sub', s);
-            window.setContent('sync-inst-addr', a);
-        };
-
         window.lockStudentFields = function() {
             if(document.getElementById('liveInstAddress').value.trim() !== '') {
                 ['liveName', 'liveCourse', 'liveReg', 'livePhone'].forEach(id => {
@@ -922,7 +781,9 @@
 
         // KB LOW FILE SIZE FIX & PRINT 
         window.sharePDF = async function() {
-            const btn = document.getElementById('sharePdfBtn'); const originalText = btn.innerHTML; 
+            const btn = document.getElementById('sharePdfBtn'); 
+            if(!btn) return;
+            const originalText = btn.innerHTML; 
             btn.innerHTML = '⏳ Preparing...'; btn.disabled = true;
             try {
                 await new Promise(r => setTimeout(r, 300));
@@ -941,7 +802,9 @@
         };
 
         window.shareCard = async function() {
-            const btn = document.getElementById('shareCardBtn'); const originalText = btn.innerHTML; 
+            const btn = document.getElementById('shareCardBtn'); 
+            if(!btn) return;
+            const originalText = btn.innerHTML; 
             btn.innerHTML = '⏳ Generating...'; btn.disabled = true;
             try {
                 await new Promise(r => setTimeout(r, 300));
