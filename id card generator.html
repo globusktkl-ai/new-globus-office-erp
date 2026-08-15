@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Card Studio - Universal Candidate Roles</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- html-to-image for accurate rendering -->
+    <script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js"></script>
+
+    <!-- jsPDF for PDF download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        .color-input {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 2px;
+            cursor: pointer;
+        }
+        .id-card {
+            width: 300px;
+            height: 480px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: white;
+            border: 1px solid #e5e7eb;
+        }
+        .id-card-header {
+            height: 110px;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            color: white;
+        }
+        .id-card-header .logo-container {
+            width: 60px;
+            height: 60px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+        .id-card-header .institution-info {
+            flex: 1;
+            text-align: center;
+            margin-left: 8px;
+        }
+        .id-card-header .institution-name,
+        .id-card-header .institution-sub,
+        .id-card-header .institution-address,
+        .id-card-header .institution-email {
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        .id-card-header .institution-name {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .id-card-header .institution-sub {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.95;
+            margin-bottom: 2px;
+        }
+        .id-card-header .institution-address {
+            opacity: 0.9;
+        }
+        .id-card-header .institution-email {
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+        .id-card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 14px 6px;
+        }
+        .badge {
+            padding: 4px 20px;
+            border-radius: 6px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
+        }
+        .photo-container {
+            width: 100px;
+            height: 120px;
+            border-radius: 8px;
+            border: 3px solid;
+            padding: 2px;
+            background: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .detail-label {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
+            margin-bottom: 1px;
+            line-height: 1.2;
+        }
+        .detail-value {
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #1f2937;
+            line-height: 1.2;
+            word-break: break-word;
+            margin-bottom: 6px;
+        }
+        .course-value {
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1.2;
+            word-break: break-word;
+            margin-bottom: 8px;
+        }
+        .info-box {
+            width: 100%;
+            margin-top: auto;
+            border: 1px solid;
+            border-radius: 8px;
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .info-label {
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+        .info-value {
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+        .footer-text {
+            font-size: 7px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-align: center;
+            width: 100%;
+            line-height: 1.2;
+        }
+        .download-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 0 4px;
+        }
+        .slider-group {
+            margin-bottom: 8px;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 500;
+            color: #4b5563;
+        }
+        .slider-input {
+            width: 100%;
+            margin-top: 4px;
+        }
+        .slot-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
+        .slot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .slot-name-input {
+            flex: 1;
+            margin-right: 8px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .logo-adjust-btn {
+            padding: 4px 8px;
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 0 2px;
+        }
+        .logo-adjust-btn:hover {
+            background: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useRef, useEffect } = React;
+
+        const SEAL_COLOR = '#4B0082'; 
+
+        const themes = {
+            classicBlue: {
+                id: 'classicBlue',
+                name: 'Classic Blue',
+                colors: {
+                    headerBg: '#1a56db',
+                    badgeBg: '#1a56db',
+                    badgeText: '#ffffff',
+                    photoBorder: '#1a56db',
+                    courseText: '#1a56db',
+                    infoBoxBg: '#eff6ff',
+                    infoLabel: '#2563eb',
+                    infoValue: '#1e3a8a'
+                }
+            },
+            maroonAcademic: {
+                id: 'maroonAcademic',
+                name: 'Maroon Academic',
+                colors: {
+                    headerBg: '#731c3a',
+                    badgeBg: '#fbcfe8',
+                    badgeText: '#731c3a',
+                    photoBorder: '#b45309',
+                    courseText: '#b45309',
+                    infoBoxBg: '#fdf2f8',
+                    infoLabel: '#e11d48',
+                    infoValue: '#731c3a'
+                }
+            },
+            minimalistWhite: {
+                id: 'minimalistWhite',
+                name: 'Minimalist White',
+                colors: {
+                    headerBg: '#f3f4f6',
+                    badgeBg: '#e5e7eb',
+                    badgeText: '#1f2937',
+                    photoBorder: '#d1d5db',
+                    courseText: '#374151',
+                    infoBoxBg: '#ffffff',
+                    infoLabel: '#6b7280',
+                    infoValue: '#1f2937'
+                }
+            },
+            emeraldPro: {
+                id: 'emeraldPro',
+                name: 'Emerald Professional',
+                colors: {
+                    headerBg: '#059669',
+                    badgeBg: '#059669',
+                    badgeText: '#ffffff',
+                    photoBorder: '#059669',
+                    courseText: '#059669',
+                    infoBoxBg: '#ecfdf5',
+                    infoLabel: '#059669',
+                    infoValue: '#064e3b'
+                }
+            }
+        };
+
+        const defaultHeaderStyle = {
+            fontFamily: 'Segoe UI, system-ui, sans-serif',
+            nameSize: 15,
+            subSize: 9,
+            addressSize: 7.5,
+            emailSize: 7.5,
+            offsetX: 0,
+            offsetY: 0
+        };
+        const defaultStudentStyle = {
+            fontFamily: 'Segoe UI, system-ui, sans-serif',
+            nameSize: 14,
+            courseSize: 13,
+            labelSize: 8,
+            offsetX: 0,
+            offsetY: 0
+        };
+        const defaultBadgeStyle = {
+            fontFamily: 'Segoe UI, system-ui, sans-serif',
+            fontSize: 10
+        };
+        const defaultLogoStyle = {
+            scale: 1,
+            x: 0,
+            y: 0
+        };
+
+        function getContrastText(hexColor) {
+            const r = parseInt(hexColor.slice(1,3), 16);
+            const g = parseInt(hexColor.slice(3,5), 16);
+            const b = parseInt(hexColor.slice(5,7), 16);
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            return luminance > 0.6 ? '#1f2937' : '#ffffff';
+        }
+
+        function OfficialSeal({ name, subName, address, color }) {
+            const arcId = "sealArc";
+            return (
+                <svg width="70" height="70" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="40" cy="40" r="38" fill="none" stroke={color} strokeWidth="1.5" />
+                    <circle cx="40" cy="40" r="34" fill="none" stroke={color} strokeWidth="0.8" strokeDasharray="2,1" />
+                    <path id={arcId} d="M 22,40 A 18,18 0 0 1 58,40" fill="none" stroke="none" />
+                    <text fontSize="3.8" fill={color} fontWeight="600">
+                        <textPath href={`#${arcId}`} startOffset="50%" textAnchor="middle">
+                            {address || ''}
+                        </textPath>
+                    </text>
+                    <text x="40" y="34" textAnchor="middle" fontSize="6.5" fontWeight="800" fill={color}>
+                        {name || 'INSTITUTION'}
+                    </text>
+                    {subName && (
+                        <text x="40" y="44" textAnchor="middle" fontSize="4.5" fontWeight="600" fill={color}>
+                            {subName}
+                        </text>
+                    )}
+                </svg>
+            );
+        }
+
+        function IDCardStudio() {
+            const loadSavedThemes = () => {
+                try {
+                    const saved = localStorage.getItem('savedThemes');
+                    return saved ? JSON.parse(saved) : [
+                        { id: 1, name: 'Student Theme', config: null },
+                        { id: 2, name: 'Faculty Theme', config: null }
+                    ];
+                } catch {
+                    return [
+                        { id: 1, name: 'Student Theme', config: null },
+                        { id: 2, name: 'Faculty Theme', config: null }
+                    ];
+                }
+            };
+
+            const [data, setData] = useState({
+                institutionName: 'GLOBUS',
+                institutionSubName: 'TECHNICAL ACADEMY',
+                institutionAddress: '123 Innovation Park, Tech Valley, Kerala 673001',
+                institutionEmail: 'contact@globusacademy.edu',
+                candidateName: 'HRFG',
+                candidateDetail: 'AI MASTERY',
+                idNumber: 'GLO-0001',
+                contact: '2222222200',
+                returnPhone: '+91 09895422220',
+                photo: null,
+                logo: null,
+                badgeText: 'STUDENT'
+            });
+
+            const [role, setRole] = useState('student');
+            const [customColors, setCustomColors] = useState(themes.maroonAcademic.colors);
+            const [selectedPreset, setSelectedPreset] = useState('maroonAcademic');
+            const [headerStyle, setHeaderStyle] = useState(defaultHeaderStyle);
+            const [studentStyle, setStudentStyle] = useState(defaultStudentStyle);
+            const [badgeStyle, setBadgeStyle] = useState(defaultBadgeStyle);
+            const [logoStyle, setLogoStyle] = useState(defaultLogoStyle);
+            const [savedThemes, setSavedThemes] = useState(loadSavedThemes);
+
+            const [showResetModal, setShowResetModal] = useState(false);
+            const [mathQuestion, setMathQuestion] = useState({ a: 0, b: 0, answer: 0 });
+            const [userAnswer, setUserAnswer] = useState('');
+
+            const cardRef = useRef(null);
+
+            useEffect(() => {
+                localStorage.setItem('savedThemes', JSON.stringify(savedThemes));
+            }, [savedThemes]);
+
+            const handleImageUpload = (e, field) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        setData({ ...data, [field]: reader.result });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const applyTheme = (themeId) => {
+                setSelectedPreset(themeId);
+                setCustomColors(themes[themeId].colors);
+                setHeaderStyle(defaultHeaderStyle);
+                setStudentStyle(defaultStudentStyle);
+                setBadgeStyle(defaultBadgeStyle);
+                setLogoStyle(defaultLogoStyle);
+            };
+
+            const updateColor = (key, value) => {
+                setCustomColors({ ...customColors, [key]: value });
+            };
+
+            const updateHeaderStyle = (key, value) => {
+                setHeaderStyle({ ...headerStyle, [key]: value });
+            };
+
+            const updateStudentStyle = (key, value) => {
+                setStudentStyle({ ...studentStyle, [key]: value });
+            };
+
+            const updateBadgeStyle = (key, value) => {
+                setBadgeStyle({ ...badgeStyle, [key]: value });
+            };
+
+            const updateLogoStyle = (key, value) => {
+                setLogoStyle({ ...logoStyle, [key]: value });
+            };
+
+            const resetTheme = () => {
+                if (selectedPreset && themes[selectedPreset]) {
+                    setCustomColors(themes[selectedPreset].colors);
+                    setHeaderStyle(defaultHeaderStyle);
+                    setStudentStyle(defaultStudentStyle);
+                    setBadgeStyle(defaultBadgeStyle);
+                    setLogoStyle(defaultLogoStyle);
+                }
+            };
+
+            const saveThemeToSlot = (slotId) => {
+                // Modified to save Institution data and Logo as well
+                const fullConfig = {
+                    colors: customColors,
+                    headerStyle: headerStyle,
+                    studentStyle: studentStyle,
+                    badgeStyle: badgeStyle,
+                    logoStyle: logoStyle,
+                    institutionData: {
+                        institutionName: data.institutionName,
+                        institutionSubName: data.institutionSubName,
+                        institutionAddress: data.institutionAddress,
+                        institutionEmail: data.institutionEmail,
+                        returnPhone: data.returnPhone,
+                        logo: data.logo,
+                        badgeText: data.badgeText
+                    }
+                };
+                setSavedThemes(prev => prev.map(slot => 
+                    slot.id === slotId ? { ...slot, config: fullConfig } : slot
+                ));
+            };
+
+            const loadThemeFromSlot = (slotId) => {
+                const slot = savedThemes.find(s => s.id === slotId);
+                if (slot && slot.config) {
+                    setCustomColors(slot.config.colors);
+                    setHeaderStyle(slot.config.headerStyle);
+                    setStudentStyle(slot.config.studentStyle);
+                    if (slot.config.badgeStyle) setBadgeStyle(slot.config.badgeStyle);
+                    if (slot.config.logoStyle) setLogoStyle(slot.config.logoStyle);
+                    
+                    // Modified to load Institution data and Logo if they exist in the slot
+                    if (slot.config.institutionData) {
+                        setData(prevData => ({
+                            ...prevData,
+                            institutionName: slot.config.institutionData.institutionName || prevData.institutionName,
+                            institutionSubName: slot.config.institutionData.institutionSubName || prevData.institutionSubName,
+                            institutionAddress: slot.config.institutionData.institutionAddress || prevData.institutionAddress,
+                            institutionEmail: slot.config.institutionData.institutionEmail || prevData.institutionEmail,
+                            returnPhone: slot.config.institutionData.returnPhone || prevData.returnPhone,
+                            logo: slot.config.institutionData.logo !== undefined ? slot.config.institutionData.logo : prevData.logo,
+                            badgeText: slot.config.institutionData.badgeText || prevData.badgeText
+                        }));
+                    }
+                    setSelectedPreset(null);
+                }
+            };
+
+            const updateSlotName = (slotId, name) => {
+                setSavedThemes(prev => prev.map(slot => 
+                    slot.id === slotId ? { ...slot, name } : slot
+                ));
+            };
+
+            const openResetModal = () => {
+                const a = Math.floor(Math.random() * 10) + 1;
+                const b = Math.floor(Math.random() * 10) + 1;
+                setMathQuestion({ a, b, answer: a + b });
+                setUserAnswer('');
+                setShowResetModal(true);
+            };
+
+            const confirmReset = () => {
+                if (parseInt(userAnswer) === mathQuestion.answer) {
+                    setSavedThemes([
+                        { id: 1, name: 'Student Theme', config: null },
+                        { id: 2, name: 'Faculty Theme', config: null }
+                    ]);
+                    setCustomColors(themes.maroonAcademic.colors);
+                    setSelectedPreset('maroonAcademic');
+                    setHeaderStyle(defaultHeaderStyle);
+                    setStudentStyle(defaultStudentStyle);
+                    setBadgeStyle(defaultBadgeStyle);
+                    setLogoStyle(defaultLogoStyle);
+                    setShowResetModal(false);
+                } else {
+                    alert('Wrong answer. Please try again.');
+                }
+            };
+
+            const downloadPNG = async () => {
+                if (!cardRef.current) return;
+                try {
+                    const dataUrl = await htmlToImage.toPng(cardRef.current, {
+                        width: 300,
+                        height: 480,
+                        pixelRatio: 3,
+                        backgroundColor: '#ffffff'
+                    });
+                    const link = document.createElement('a');
+                    link.download = 'id-card.png';
+                    link.href = dataUrl;
+                    link.click();
+                } catch (error) {
+                    console.error('PNG download failed:', error);
+                    alert('PNG download failed. Please try again.');
+                }
+            };
+
+            const downloadPDF = async () => {
+                if (!cardRef.current) return;
+                try {
+                    const dataUrl = await htmlToImage.toPng(cardRef.current, {
+                        width: 300,
+                        height: 480,
+                        pixelRatio: 3,
+                        backgroundColor: '#ffffff'
+                    });
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'px',
+                        format: [300, 480],
+                        hotfixes: ['px_scaling']
+                    });
+                    pdf.addImage(dataUrl, 'PNG', 0, 0, 300, 480);
+                    pdf.save('id-card.pdf');
+                } catch (error) {
+                    console.error('PDF download failed:', error);
+                    alert('PDF download failed. Please try again.');
+                }
+            };
+
+            // Derived labels based on role
+            const isStudent = role === 'student';
+            const isFaculty = role === 'faculty';
+            const nameLabel = isStudent ? 'Student Name' : isFaculty ? 'Faculty Name' : 'Name';
+            const detailLabel = isStudent ? 'Course' : 'Designation';
+            const regNoLabel = isStudent ? 'Registration No' : 'Employee ID';
+
+            const handleRoleChange = (newRole) => {
+                setRole(newRole);
+                const roleBadgeMap = {
+                    student: 'STUDENT',
+                    faculty: 'FACULTY',
+                    officeStaff: 'OFFICE STAFF',
+                    employee: 'EMPLOYEE'
+                };
+                setData({ ...data, badgeText: roleBadgeMap[newRole] });
+            };
+
+            const headerTextColor = getContrastText(customColors.headerBg);
+
+            return (
+                <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans text-gray-800">
+                    <div className="max-w-6xl mx-auto">
+                        <header className="mb-8 text-center md:text-left">
+                            <h1 className="text-3xl font-bold text-gray-900">ID Card Studio</h1>
+                            <p className="text-gray-500 mt-1">Professional ID Card Generator – Universal Candidate Roles</p>
+                        </header>
+
+                        <div className="flex flex-col lg:flex-row gap-8">
+                            {/* LEFT COLUMN: Controls */}
+                            <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
+                                
+                                {/* Theme Selection */}
+                                <div className="mb-8">
+                                    <div className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-700 border-b pb-2">
+                                        <span className="text-indigo-500">🎨</span>
+                                        <h2>Select Theme</h2>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                                        {Object.values(themes).map((theme) => (
+                                            <button
+                                                key={theme.id}
+                                                onClick={() => applyTheme(theme.id)}
+                                                className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
+                                                    selectedPreset === theme.id
+                                                        ? 'border-indigo-500 bg-indigo-50 text-indigo-700 shadow-sm'
+                                                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                                                }`}
+                                            >
+                                                {theme.name}
+                                            </button>
+                                        ))}
+                                        {savedThemes.map((slot) => (
+                                            slot.config && (
+                                                <button
+                                                    key={slot.id}
+                                                    onClick={() => loadThemeFromSlot(slot.id)}
+                                                    className="px-3 py-2 rounded-lg border text-sm font-medium transition-all border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100"
+                                                >
+                                                    {slot.name}
+                                                </button>
+                                            )
+                                        ))}
+                                    </div>
+
+                                    {/* Custom Color Pickers */}
+                                    <div className="border-t pt-4">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <h3 className="text-sm font-semibold text-gray-600">🎯 Customize Colors (overrides theme)</h3>
+                                            <button 
+                                                onClick={resetTheme}
+                                                className="px-3 py-1 bg-gray-200 text-gray-700 text-xs font-medium rounded-md hover:bg-gray-300 transition-colors"
+                                            >
+                                                Reset Colors
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Header Background</label>
+                                                <input type="color" className="color-input" value={customColors.headerBg} onChange={(e) => updateColor('headerBg', e.target.value)} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Badge Background</label>
+                                                <input type="color" className="color-input" value={customColors.badgeBg} onChange={(e) => updateColor('badgeBg', e.target.value)} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Badge Text</label>
+                                                <input type="color" className="color-input" value={customColors.badgeText} onChange={(e) => updateColor('badgeText', e.target.value)} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Photo Border</label>
+                                                <input type="color" className="color-input" value={customColors.photoBorder} onChange={(e) => updateColor('photoBorder', e.target.value)} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Course Text</label>
+                                                <input type="color" className="color-input" value={customColors.courseText} onChange={(e) => updateColor('courseText', e.target.value)} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Info Box Background</label>
+                                                <input type="color" className="color-input" value={customColors.infoBoxBg} onChange={(e) => updateColor('infoBoxBg', e.target.value)} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Info Label</label>
+                                                <input type="color" className="color-input" value={customColors.infoLabel} onChange={(e) => updateColor('infoLabel', e.target.value)} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Info Value</label>
+                                                <input type="color" className="color-input" value={customColors.infoValue} onChange={(e) => updateColor('infoValue', e.target.value)} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Custom Theme Slots */}
+                                <div className="mb-8">
+                                    <div className="flex items-center justify-between mb-4 text-lg font-semibold text-gray-700 border-b pb-2">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-indigo-500">💾</span>
+                                            <h2>Custom Theme Slots</h2>
+                                        </div>
+                                        <button 
+                                            onClick={openResetModal}
+                                            className="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-md hover:bg-red-200 transition-colors"
+                                        >
+                                            Reset Saved Themes
+                                        </button>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {savedThemes.map((slot) => (
+                                            <div key={slot.id} className="slot-card">
+                                                <div className="slot-header">
+                                                    <span className="text-sm font-semibold text-gray-600">Slot {slot.id}</span>
+                                                    {slot.config && (
+                                                        <span className="text-xs text-green-600 font-medium">Saved ✓</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    <input
+                                                        type="text"
+                                                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                                                        value={slot.name}
+                                                        onChange={(e) => updateSlotName(slot.id, e.target.value)}
+                                                        placeholder="Enter name"
+                                                    />
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => saveThemeToSlot(slot.id)}
+                                                        className="flex-1 px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors"
+                                                    >
+                                                        Save
+                                                    </button>
+                                                    <button
+                                                        onClick={() => loadThemeFromSlot(slot.id)}
+                                                        disabled={!slot.config}
+                                                        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                                                            slot.config
+                                                                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                                                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                                        }`}
+                                                    >
+                                                        Load
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Institution Details */}
+                                <div className="mb-8">
+                                    <div className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-700 border-b pb-2">
+                                        <span className="text-indigo-500">🏢</span>
+                                        <h2>Institution Details</h2>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Institution Name</label>
+                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.institutionName} onChange={(e) => setData({ ...data, institutionName: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Sub Name / Tagline</label>
+                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.institutionSubName} onChange={(e) => setData({ ...data, institutionSubName: e.target.value })} />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-4 mb-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Full Address</label>
+                                            <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none resize-none" rows="2" value={data.institutionAddress} onChange={(e) => setData({ ...data, institutionAddress: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Email ID</label>
+                                            <input type="email" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.institutionEmail} onChange={(e) => setData({ ...data, institutionEmail: e.target.value })} />
+                                        </div>
+                                    </div>
+
+                                    {/* Header Text Adjuster */}
+                                    <div className="border-t pt-4 mt-4">
+                                        <h3 className="text-sm font-semibold text-gray-600 mb-3">📐 Header Text Adjuster</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="slider-group">
+                                                <label className="slider-label">Font Family</label>
+                                                <select 
+                                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                                                    value={headerStyle.fontFamily}
+                                                    onChange={(e) => updateHeaderStyle('fontFamily', e.target.value)}
+                                                >
+                                                    <option value="Segoe UI, system-ui, sans-serif">Segoe UI</option>
+                                                    <option value="Arial, sans-serif">Arial</option>
+                                                    <option value="Helvetica, sans-serif">Helvetica</option>
+                                                    <option value="Times New Roman, serif">Times New Roman</option>
+                                                    <option value="Courier New, monospace">Courier New</option>
+                                                    <option value="Georgia, serif">Georgia</option>
+                                                    <option value="Verdana, sans-serif">Verdana</option>
+                                                    <option value="Tahoma, sans-serif">Tahoma</option>
+                                                </select>
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">Name Font Size: {headerStyle.nameSize}px</label>
+                                                <input type="range" min="10" max="30" step="0.5" value={headerStyle.nameSize} onChange={(e) => updateHeaderStyle('nameSize', parseFloat(e.target.value))} className="slider-input" />
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">Sub Name Font Size: {headerStyle.subSize}px</label>
+                                                <input type="range" min="6" max="16" step="0.5" value={headerStyle.subSize} onChange={(e) => updateHeaderStyle('subSize', parseFloat(e.target.value))} className="slider-input" />
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">Address Font Size: {headerStyle.addressSize}px</label>
+                                                <input type="range" min="5" max="12" step="0.5" value={headerStyle.addressSize} onChange={(e) => updateHeaderStyle('addressSize', parseFloat(e.target.value))} className="slider-input" />
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">Email Font Size: {headerStyle.emailSize}px</label>
+                                                <input type="range" min="5" max="12" step="0.5" value={headerStyle.emailSize} onChange={(e) => updateHeaderStyle('emailSize', parseFloat(e.target.value))} className="slider-input" />
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">X Offset: {headerStyle.offsetX}px</label>
+                                                <input type="range" min="-60" max="60" step="1" value={headerStyle.offsetX} onChange={(e) => updateHeaderStyle('offsetX', parseInt(e.target.value))} className="slider-input" />
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">Y Offset: {headerStyle.offsetY}px</label>
+                                                <input type="range" min="-40" max="40" step="1" value={headerStyle.offsetY} onChange={(e) => updateHeaderStyle('offsetY', parseInt(e.target.value))} className="slider-input" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Logo Upload & Adjust */}
+                                    <div className="mt-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Institution Logo</label>
+                                        <div className="flex items-center gap-4 mb-2">
+                                            <label className="flex items-center justify-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors text-sm font-medium">
+                                                ⬆️ Upload Logo
+                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'logo')} />
+                                            </label>
+                                            {data.logo && <span className="text-xs text-green-600 font-medium">Logo uploaded ✓</span>}
+                                        </div>
+                                        {data.logo && (
+                                            <div className="border rounded-lg p-3 bg-gray-50">
+                                                <p className="text-xs font-semibold text-gray-600 mb-2">Adjust Logo Position & Zoom</p>
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <span className="text-xs text-gray-600">Zoom:</span>
+                                                    <input 
+                                                        type="range" 
+                                                        min="0.5" 
+                                                        max="3" 
+                                                        step="0.1" 
+                                                        value={logoStyle.scale} 
+                                                        onChange={(e) => updateLogoStyle('scale', parseFloat(e.target.value))}
+                                                        className="flex-1"
+                                                    />
+                                                    <span className="text-xs">{logoStyle.scale.toFixed(1)}x</span>
+                                                </div>
+                                                <div className="flex gap-1 justify-center mb-2">
+                                                    <button className="logo-adjust-btn" onClick={() => updateLogoStyle('y', logoStyle.y - 2)}>▲</button>
+                                                </div>
+                                                <div className="flex gap-1 justify-center">
+                                                    <button className="logo-adjust-btn" onClick={() => updateLogoStyle('x', logoStyle.x - 2)}>◀</button>
+                                                    <button className="logo-adjust-btn" onClick={() => updateLogoStyle('x', logoStyle.x + 2)}>▶</button>
+                                                </div>
+                                                <div className="flex gap-1 justify-center mt-2">
+                                                    <button className="logo-adjust-btn" onClick={() => updateLogoStyle('y', logoStyle.y + 2)}>▼</button>
+                                                </div>
+                                                <div className="text-xs text-gray-500 mt-2 text-center">
+                                                    X: {logoStyle.x}px, Y: {logoStyle.y}px
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Candidate Details */}
+                                <div className="mb-4">
+                                    <div className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-700 border-b pb-2">
+                                        <span className="text-indigo-500">👤</span>
+                                        <h2>Candidate Details</h2>
+                                    </div>
+
+                                    {/* Role Dropdown */}
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                                        <select 
+                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                            value={role}
+                                            onChange={(e) => handleRoleChange(e.target.value)}
+                                        >
+                                            <option value="student">Student</option>
+                                            <option value="faculty">Faculty</option>
+                                            <option value="officeStaff">Office Staff</option>
+                                            <option value="employee">Employee</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">{nameLabel}</label>
+                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.candidateName} onChange={(e) => setData({ ...data, candidateName: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">{detailLabel}</label>
+                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.candidateDetail} onChange={(e) => setData({ ...data, candidateDetail: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">{regNoLabel}</label>
+                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.idNumber} onChange={(e) => setData({ ...data, idNumber: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Phone / Contact</label>
+                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.contact} onChange={(e) => setData({ ...data, contact: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Badge Text / Role</label>
+                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.badgeText} onChange={(e) => setData({ ...data, badgeText: e.target.value })} placeholder="e.g., STUDENT, FACULTY" />
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+                                        <div className="flex items-center gap-4">
+                                            <label className="flex items-center justify-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors text-sm font-medium">
+                                                ⬆️ Upload Photo
+                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'photo')} />
+                                            </label>
+                                            {data.photo && <span className="text-xs text-green-600 font-medium">Photo uploaded ✓</span>}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Return Address/Phone (Footer)</label>
+                                        <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.returnPhone} onChange={(e) => setData({ ...data, returnPhone: e.target.value })} />
+                                    </div>
+
+                                    {/* Badge Adjuster */}
+                                    <div className="border-t pt-4 mt-4">
+                                        <h3 className="text-sm font-semibold text-gray-600 mb-3">🎫 Badge Text Adjuster</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="slider-group">
+                                                <label className="slider-label">Font Family</label>
+                                                <select 
+                                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                                                    value={badgeStyle.fontFamily}
+                                                    onChange={(e) => updateBadgeStyle('fontFamily', e.target.value)}
+                                                >
+                                                    <option value="Segoe UI, system-ui, sans-serif">Segoe UI</option>
+                                                    <option value="Arial, sans-serif">Arial</option>
+                                                    <option value="Helvetica, sans-serif">Helvetica</option>
+                                                    <option value="Times New Roman, serif">Times New Roman</option>
+                                                    <option value="Courier New, monospace">Courier New</option>
+                                                    <option value="Georgia, serif">Georgia</option>
+                                                    <option value="Verdana, sans-serif">Verdana</option>
+                                                    <option value="Tahoma, sans-serif">Tahoma</option>
+                                                </select>
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">Badge Font Size: {badgeStyle.fontSize}px</label>
+                                                <input type="range" min="8" max="24" step="0.5" value={badgeStyle.fontSize} onChange={(e) => updateBadgeStyle('fontSize', parseFloat(e.target.value))} className="slider-input" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Candidate Text Adjuster */}
+                                    <div className="border-t pt-4 mt-4">
+                                        <h3 className="text-sm font-semibold text-gray-600 mb-3">📐 Candidate Details Text Adjuster</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="slider-group">
+                                                <label className="slider-label">Font Family</label>
+                                                <select 
+                                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                                                    value={studentStyle.fontFamily}
+                                                    onChange={(e) => updateStudentStyle('fontFamily', e.target.value)}
+                                                >
+                                                    <option value="Segoe UI, system-ui, sans-serif">Segoe UI</option>
+                                                    <option value="Arial, sans-serif">Arial</option>
+                                                    <option value="Helvetica, sans-serif">Helvetica</option>
+                                                    <option value="Times New Roman, serif">Times New Roman</option>
+                                                    <option value="Courier New, monospace">Courier New</option>
+                                                    <option value="Georgia, serif">Georgia</option>
+                                                    <option value="Verdana, sans-serif">Verdana</option>
+                                                    <option value="Tahoma, sans-serif">Tahoma</option>
+                                                </select>
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">Name Font Size: {studentStyle.nameSize}px</label>
+                                                <input type="range" min="8" max="30" step="0.5" value={studentStyle.nameSize} onChange={(e) => updateStudentStyle('nameSize', parseFloat(e.target.value))} className="slider-input" />
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">{detailLabel} Font Size: {studentStyle.courseSize}px</label>
+                                                <input type="range" min="8" max="30" step="0.5" value={studentStyle.courseSize} onChange={(e) => updateStudentStyle('courseSize', parseFloat(e.target.value))} className="slider-input" />
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">Label Font Size: {studentStyle.labelSize}px</label>
+                                                <input type="range" min="5" max="16" step="0.5" value={studentStyle.labelSize} onChange={(e) => updateStudentStyle('labelSize', parseFloat(e.target.value))} className="slider-input" />
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">X Offset: {studentStyle.offsetX}px</label>
+                                                <input type="range" min="-60" max="60" step="1" value={studentStyle.offsetX} onChange={(e) => updateStudentStyle('offsetX', parseInt(e.target.value))} className="slider-input" />
+                                            </div>
+                                            <div className="slider-group">
+                                                <label className="slider-label">Y Offset: {studentStyle.offsetY}px</label>
+                                                <input type="range" min="-40" max="40" step="1" value={studentStyle.offsetY} onChange={(e) => updateStudentStyle('offsetY', parseInt(e.target.value))} className="slider-input" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* RIGHT COLUMN: Preview & Download */}
+                            <div className="w-full lg:w-[350px] flex flex-col items-center sticky top-8">
+                                <h2 className="text-lg font-bold text-gray-700 mb-4 uppercase tracking-wider">Live Preview</h2>
+                                
+                                {/* ID CARD */}
+                                <div 
+                                    ref={cardRef}
+                                    className="id-card"
+                                >
+                                    {/* Header */}
+                                    <div 
+                                        className="id-card-header"
+                                        style={{ backgroundColor: customColors.headerBg, color: headerTextColor }}
+                                    >
+                                        <div className="logo-container">
+                                            {data.logo ? (
+                                                <img 
+                                                    src={data.logo} 
+                                                    alt="Logo" 
+                                                    style={{ 
+                                                        width: '100%', 
+                                                        height: '100%', 
+                                                        objectFit: 'cover',
+                                                        transform: `translate(${logoStyle.x}px, ${logoStyle.y}px) scale(${logoStyle.scale})`
+                                                    }} 
+                                                />
+                                            ) : (
+                                                <span style={{ fontSize: '24px', opacity: 0.6 }}>🏫</span>
+                                            )}
+                                        </div>
+                                        <div 
+                                            className="institution-info"
+                                            style={{ 
+                                                fontFamily: headerStyle.fontFamily,
+                                                transform: `translate(${headerStyle.offsetX}px, ${headerStyle.offsetY}px)`
+                                            }}
+                                        >
+                                            <div className="institution-name" style={{ fontSize: `${headerStyle.nameSize}px` }}>
+                                                {data.institutionName || 'INSTITUTION'}
+                                            </div>
+                                            <div className="institution-sub" style={{ fontSize: `${headerStyle.subSize}px` }}>
+                                                {data.institutionSubName || 'TAGLINE'}
+                                            </div>
+                                            <div className="institution-address" style={{ fontSize: `${headerStyle.addressSize}px` }}>
+                                                {data.institutionAddress || 'Address line'}
+                                            </div>
+                                            <div className="institution-email" style={{ fontSize: `${headerStyle.emailSize}px` }}>
+                                                {data.institutionEmail || 'email@domain.com'}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Body */}
+                                    <div className="id-card-body">
+                                        <div 
+                                            className="badge"
+                                            style={{ 
+                                                backgroundColor: customColors.badgeBg, 
+                                                color: customColors.badgeText,
+                                                fontFamily: badgeStyle.fontFamily,
+                                                fontSize: `${badgeStyle.fontSize}px`,
+                                                padding: '4px 20px',
+                                                lineHeight: 1.2
+                                            }}
+                                        >
+                                            {data.badgeText || 'ROLE'}
+                                        </div>
+
+                                        {/* Photo centered */}
+                                        <div 
+                                            className="photo-container"
+                                            style={{ borderColor: customColors.photoBorder }}
+                                        >
+                                            {data.photo ? (
+                                                <img src={data.photo} alt="Candidate" />
+                                            ) : (
+                                                <span style={{ fontSize: '40px', color: '#d1d5db' }}>👤</span>
+                                            )}
+                                        </div>
+
+                                        {/* Name & Detail block centered */}
+                                        <div 
+                                            style={{ 
+                                                textAlign: 'center', 
+                                                width: '100%',
+                                                fontFamily: studentStyle.fontFamily,
+                                                transform: `translate(${studentStyle.offsetX}px, ${studentStyle.offsetY}px)`
+                                            }}
+                                        >
+                                            <div className="detail-label" style={{ fontSize: `${studentStyle.labelSize}px` }}>{nameLabel}</div>
+                                            <div className="detail-value" style={{ fontSize: `${studentStyle.nameSize}px` }}>{data.candidateName || 'NAME'}</div>
+                                            
+                                            <div className="detail-label" style={{ fontSize: `${studentStyle.labelSize}px` }}>{detailLabel}</div>
+                                            <div className="course-value" style={{ fontSize: `${studentStyle.courseSize}px`, color: customColors.courseText }}>{data.candidateDetail || 'DETAIL'}</div>
+                                        </div>
+
+                                        {/* Seal centered */}
+                                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2px' }}>
+                                            <OfficialSeal 
+                                                name={data.institutionName || 'INSTITUTION'}
+                                                subName={data.institutionSubName || ''}
+                                                address={data.institutionAddress || ''}
+                                                color={SEAL_COLOR}
+                                            />
+                                        </div>
+
+                                        <div 
+                                            className="info-box"
+                                            style={{ backgroundColor: customColors.infoBoxBg, borderColor: customColors.infoBoxBg === '#ffffff' ? '#e5e7eb' : customColors.infoBoxBg }}
+                                        >
+                                            <div>
+                                                <div className="info-label" style={{ color: customColors.infoLabel }}>{regNoLabel}</div>
+                                                <div className="info-value" style={{ color: customColors.infoValue }}>{data.idNumber || '----'}</div>
+                                            </div>
+                                            <div>
+                                                <div className="info-label" style={{ color: customColors.infoLabel }}>Phone</div>
+                                                <div className="info-value" style={{ color: customColors.infoValue }}>{data.contact || '----'}</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="footer-text">Return to: {data.returnPhone}</div>
+                                    </div>
+                                </div>
+
+                                {/* Download Buttons */}
+                                <div className="flex gap-3 mt-4 w-full justify-center">
+                                    <button 
+                                        onClick={downloadPNG}
+                                        className="download-btn bg-indigo-600 hover:bg-indigo-700"
+                                    >
+                                        ⬇ Download as PNG
+                                    </button>
+                                    <button 
+                                        onClick={downloadPDF}
+                                        className="download-btn bg-rose-600 hover:bg-rose-700"
+                                    >
+                                        ⬇ Download as PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Reset Confirmation Modal */}
+                    {showResetModal && (
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">⚠️ Reset Saved Themes</h3>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    ഇത് നിങ്ങൾ സേവ് ചെയ്ത എല്ലാ ഇഷ്‌ടാനുസൃത തീമുകളും ഇല്ലാതാക്കും. 
+                                    ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാവില്ല.
+                                </p>
+                                <p className="text-sm text-gray-700 mb-2">
+                                    ഗണിത പ്രശ്നം പരിഹരിക്കുക: 
+                                    <strong> {mathQuestion.a} + {mathQuestion.b} = ?</strong>
+                                </p>
+                                <input
+                                    type="number"
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    value={userAnswer}
+                                    onChange={(e) => setUserAnswer(e.target.value)}
+                                    placeholder="ഉത്തരം നൽകുക"
+                                />
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={confirmReset}
+                                        className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 transition-colors"
+                                    >
+                                        Confirm Reset
+                                    </button>
+                                    <button
+                                        onClick={() => setShowResetModal(false)}
+                                        className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<IDCardStudio />);
+    </script>
+</body>
+</html>
