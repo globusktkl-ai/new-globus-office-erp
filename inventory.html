@@ -121,12 +121,12 @@
 <body>
 
     <main class="main-content">
-        <!-- FIXED 3D U-TURN BUTTON -->
-        <div class="top-nav">
-            <a href="dashboard.html" class="btn-back-3d">
+       <!-- FIXED 3D U-TURN BUTTON -->
+        <div class="top-nav" style="position: relative; display: flex; align-items: center; justify-content: center;">
+            <a href="dashboard.html" class="btn-back-3d" style="position: absolute; left: 0;">
                 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
             </a>
-            <h1 class="page-title">INVENTORY</h1>
+            <h1 class="page-title" style="text-align: center; flex: none; padding: 0 45px;">INVENTORY</h1>
         </div>
 
         <!-- TAB 1: ITEMS LIST -->
@@ -298,46 +298,34 @@
                 <label class="frm-label">Item Name</label>
                 <input type="text" id="editItemName" class="frm-input" required>
                 
-                <label class="frm-label">Unit Price (₹)</label>
-                <input type="number" id="editItemPrice" class="frm-input" step="0.01" required>
+                <div class="frm-row">
+                    <div style="margin-bottom:0;">
+                        <label class="frm-label">Category</label>
+                        <select id="editItemCat" class="frm-select" style="margin-bottom:0;" required>
+                            <!-- Options populated via JS -->
+                        </select>
+                    </div>
+                    <div style="margin-bottom:0;">
+                        <label class="frm-label">Quantity</label>
+                        <input type="number" id="editItemQty" class="frm-input" style="margin-bottom:0;" required>
+                    </div>
+                </div>
+
+                <div class="frm-row">
+                    <div style="margin-bottom:0;">
+                        <label class="frm-label">Unit Price (₹)</label>
+                        <input type="number" id="editItemPrice" class="frm-input" style="margin-bottom:0;" step="0.01">
+                    </div>
+                    <div style="margin-bottom:0;">
+                        <label class="frm-label">Min Stock Alert</label>
+                        <input type="number" id="editItemAlert" class="frm-input" style="margin-bottom:0;" required>
+                    </div>
+                </div>
                 
                 <div style="display:flex; gap:10px; margin-top:10px;">
-                    <button type="button" class="btn-primary btn-secondary" onclick="closeModal('editItemModal')">Cancel</button>
+                    <button type="button" class="btn-primary btn-secondary" onclick="closeModal('editItemModal')" style="background:#64748b;">Cancel</button>
                     <button type="submit" class="btn-primary" id="editSaveBtn" style="background:linear-gradient(135deg,#0284c7,#0369a1);">Verify & Save</button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- STOCK IN/OUT MODAL -->
-    <div id="stockModal" class="modal-overlay">
-        <div class="modal-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 id="modalTitle" style="margin: 0; color: #1e3a8a; font-size:16px;">Stock Update</h3>
-                <button type="button" onclick="closeModal('stockModal')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight:bold;">X</button>
-            </div>
-            
-            <p id="modalItemName" style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:15px;background:#f1f5f9;padding:10px;border-radius:8px;"></p>
-            
-            <form onsubmit="handleStockUpdate(event)">
-                <input type="hidden" id="modalItemId">
-                <input type="hidden" id="modalType">
-                
-                <label class="frm-label">Quantity</label>
-                <input type="number" id="modalQty" class="frm-input" min="1" required>
-                
-                <label class="frm-label">Remarks / Reason</label>
-                <input type="text" id="modalRemarks" class="frm-input" required>
-                
-                <!-- Expense Log Checkbox for Stock IN -->
-                <div id="stockExpenseWrapper" style="display:none;">
-                    <label class="expense-check">
-                        <input type="checkbox" id="stockExpenseCheck" checked>
-                        Log this purchase as Expense in Day Book
-                    </label>
-                </div>
-
-                <button type="submit" class="btn-primary" id="modalBtn" style="margin-top:10px;">Update Stock</button>
             </form>
         </div>
     </div>
@@ -593,18 +581,28 @@
                         <button class="btn-stock-in" onclick="openModal('${item.id}', 'IN')">➕ IN</button>
                         <button class="btn-stock-out" onclick="openModal('${item.id}', 'OUT')">➖ OUT</button>
                         <button class="btn-edit-item" onclick="openEditModal('${item.id}')" title="Edit Item">✏️</button>
+                        <button class="btn-edit-item" onclick="deleteItem('${item.id}')" title="Delete Item" style="color:#dc2626; background:#fee2e2; border-color:#fca5a5;">🗑️</button>
                     </div>
                 </div>`;
             }).join('');
         };
-
-        // ================= EDIT DIRECT ITEM =================
+      // ================= EDIT DIRECT ITEM =================
         window.openEditModal = function(id) {
             const item = itemsData.find(i => i.id === id);
             if(!item) return;
             document.getElementById('editItemId').value = id;
             document.getElementById('editItemName').value = item.item_name;
+            
+            // Populate category dropdown inside edit modal
+            const editCatSelect = document.getElementById('editItemCat');
+            editCatSelect.innerHTML = invCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+            
+            // Set values
+            document.getElementById('editItemCat').value = item.category || invCategories[0];
+            document.getElementById('editItemQty').value = item.quantity;
             document.getElementById('editItemPrice').value = item.unit_price;
+            document.getElementById('editItemAlert').value = item.min_stock_level || 5;
+            
             document.getElementById('editItemModal').style.display = 'flex';
         }
 
@@ -612,23 +610,69 @@
             e.preventDefault();
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
             
+            let n1 = Math.floor(Math.random() * 10) + 1;
+            let n2 = Math.floor(Math.random() * 10) + 1;
+            let ans = await window.magicPrompt(`🔒 Security Verification \nTo update this item, please solve:\n\n${n1} + ${n2} = ?`);
+            
+            if (ans === null) {
+                return;
+            } else if (parseInt(ans) !== (n1 + n2)) {
+                alert('❌ Incorrect answer! Update aborted.');
+                return;
+            }
+
             const id = document.getElementById('editItemId').value;
             const newName = document.getElementById('editItemName').value.trim();
+            const newCat = document.getElementById('editItemCat').value;
+            const newQty = parseInt(document.getElementById('editItemQty').value) || 0;
             const newPrice = parseFloat(document.getElementById('editItemPrice').value) || 0;
+            const newAlert = parseInt(document.getElementById('editItemAlert').value) || 5;
 
             const btn = document.getElementById('editSaveBtn');
             btn.innerHTML = '⏳...'; btn.disabled = true;
 
             try {
-                const { error } = await supabase.from('inventory_items').update({ item_name: newName, unit_price: newPrice }).eq('id', id);
+                const { error } = await supabase.from('inventory_items').update({ 
+                    item_name: newName, 
+                    category: newCat,
+                    quantity: newQty,
+                    unit_price: newPrice,
+                    min_stock_level: newAlert
+                }).eq('id', id);
+                
                 if(error) throw error;
-                alert("✅ Updated successfully!");
+                alert("✅ Item updated successfully!");
                 closeModal('editItemModal');
                 await fetchData();
             } catch(err) {
-                alert("❌ Error updating.");
+                alert("❌ Error updating item.");
             } finally {
                 btn.innerHTML = 'Verify & Save'; btn.disabled = false;
+            }
+        }
+
+        // ================= DELETE ITEM =================
+        window.deleteItem = async function(id) {
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            
+            const item = itemsData.find(i => i.id === id);
+            if(!item) return;
+
+            let n1 = Math.floor(Math.random() * 10) + 1;
+            let n2 = Math.floor(Math.random() * 10) + 1;
+            let ans = await window.magicPrompt(`⚠️ Security Verification\nTo delete "${item.item_name}", solve:\n\n${n1} + ${n2} = ?`);
+            
+            if (ans !== null && parseInt(ans) === (n1+n2)) {
+                try {
+                    const { error } = await supabase.from('inventory_items').delete().eq('id', id);
+                    if(error) throw error;
+                    alert("✅ Item deleted successfully!");
+                    await fetchData();
+                } catch(err) {
+                    alert("❌ Error deleting item. It might be linked to stock logs.");
+                }
+            } else if (ans !== null) {
+                alert('❌ Verification failed! Deletion aborted.');
             }
         }
 
