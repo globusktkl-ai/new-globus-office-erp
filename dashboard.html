@@ -21,13 +21,13 @@
         .section-heading-icon svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         
         /* STAT BOXES */
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-        .stat-box { background: #ffffff; padding: 10px 8px !important; border-radius: 12px !important; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02) !important; border: 1px solid #e2e8f0 !important; display: flex; flex-direction: row; align-items: center; gap: 8px; text-align: left; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+        .stat-box { background: #ffffff; padding: 10px 5px !important; border-radius: 12px !important; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02) !important; border: 1px solid #e2e8f0 !important; display: flex; flex-direction: row; align-items: center; gap: 6px; text-align: left; overflow: hidden; }
         .stat-mini-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .stat-mini-icon svg { width: 17px; height: 17px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .stat-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-        .stat-label { font-size: 9px !important; margin-bottom: 2px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1; }
-        .stat-value { font-size: 18px !important; font-weight: 900 !important; line-height: 1; letter-spacing: -0.5px; }
+        .stat-info { display: flex; flex-direction: column; min-width: 0; flex: 1; overflow: hidden; }
+        .stat-label { font-size: 9px !important; margin-bottom: 2px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .stat-value { font-size: 18px !important; font-weight: 900 !important; line-height: 1; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         /* FINANCE CARD */
         .unified-finance-card { position: relative; background: #ffffff; border-radius: 14px; padding: 0; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.03); border: 1px solid #e2e8f0; display: grid; grid-template-columns: 1fr 1px 1fr; overflow: hidden; }
@@ -242,7 +242,7 @@
                 Super Admin Controls
             </h2>
             <div class="nav-grid">
-                <a href="#" class="nav-btn" onclick="alert('Activity Logs module is under development. Coming soon!')">
+               <a href="logs.html" class="nav-btn">
                     <span class="nav-icon" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe);">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                     </span>Activity Logs
