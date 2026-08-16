@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ID Card Studio - Universal Candidate Roles</title>
+    <title>ID Card Studio - Stepper Controls</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,245 +24,182 @@
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        .color-input {
-            width: 100%;
-            height: 40px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 2px;
-            cursor: pointer;
+
+        .top-bar {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 10px; background: white;
+            border-bottom: 1px solid #e5e7eb; z-index: 20; height: 44px;
         }
+        
+        /* NEW U-TURN BACK BUTTON STYLES */
+        .btn-back-dashboard {
+            display: flex; align-items: center; justify-content: center;
+            background: #ffffff; border: 1px solid #cbd5e1; padding: 6px 10px;
+            border-radius: 8px; color: #1e293b; text-decoration: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8);
+            transition: all 0.2s ease; cursor: pointer; flex-shrink: 0;
+        }
+        .btn-back-dashboard:active { transform: scale(0.95); }
+        .btn-back-dashboard svg { 
+            width: 18px; height: 18px; stroke-width: 2.5; stroke-linecap: round; 
+            stroke-linejoin: round; fill: none; stroke: #4c1d95; 
+        }
+
+        .title-text {
+            font-size: 16px; font-weight: 700; color: #1f2937;
+            flex: 1; text-align: center; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .cancel-btn, .edit-toggle-btn {
+            padding: 5px 10px; border-radius: 8px; font-weight: 700;
+            font-size: 12px; border: none; cursor: pointer;
+            transition: all 0.2s; flex-shrink: 0;
+        }
+
+        .settings-strip {
+            display: flex; gap: 8px; overflow-x: auto; overflow-y: visible;
+            padding: 8px 10px; -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x proximity; scroll-behavior: smooth;
+            overscroll-behavior-x: contain;
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(8px);
+            border-bottom: 1px solid #e5e7eb; z-index: 10;
+            min-height: 160px; align-items: flex-start;
+        }
+        .settings-strip::-webkit-scrollbar { height: 4px; }
+        .settings-strip::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+
+        .setting-card {
+            scroll-snap-align: start; min-width: 160px; max-width: 190px;
+            background: #ffffff; border-radius: 12px; padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;
+            flex-shrink: 0; display: flex; flex-direction: column; gap: 6px;
+            max-height: 160px; overflow-y: auto;
+        }
+        .setting-card h4 {
+            font-size: 11px; font-weight: 700; color: #334155; margin: 0;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .stepper-row {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 6px; margin-bottom: 2px;
+        }
+        .stepper-label {
+            font-size: 10px; font-weight: 600; color: #64748b; flex: 1;
+        }
+        .stepper-value {
+            font-size: 11px; font-weight: 700; color: #1f2937; min-width: 30px; text-align: center;
+        }
+        .stepper-btn {
+            width: 28px; height: 28px; border-radius: 8px; border: none;
+            background: #e2e8f0; color: #1e3a8a; font-size: 18px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s; user-select: none;
+        }
+        .stepper-btn:active { background: #c7d2fe; transform: scale(0.9); }
+        .stepper-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .mini-select, .mini-color-input {
+            width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 3px; font-size: 11px;
+        }
+        .mini-btn {
+            padding: 4px 8px; border-radius: 6px; border: none; font-size: 10px;
+            font-weight: 700; cursor: pointer; transition: all 0.2s;
+        }
+        .mini-btn.active { background: #1e3a8a; color: white; }
+        .mini-btn:hover { opacity: 0.9; }
+
+        .card-area {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: flex-start; padding: 16px 8px; transition: all 0.3s;
+            position: relative; overflow: visible; touch-action: none;
+        }
+        .card-drag-handle {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 100px; height: 28px; background: rgba(0,0,0,0.08);
+            border-radius: 0 0 14px 14px; cursor: grab;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 15; user-select: none; touch-action: none;
+        }
+        .card-drag-handle:active { cursor: grabbing; }
+
         .id-card {
-            width: 300px;
-            height: 480px;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: white;
-            border: 1px solid #e5e7eb;
+            width: 300px; height: 480px; border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2); overflow: hidden;
+            display: flex; flex-direction: column; font-family: 'Segoe UI', system-ui, sans-serif;
+            background: white; border: 1px solid #e5e7eb; position: relative;
+            transform: translateY(var(--card-y, 0px)); transition: transform 0.15s;
+            touch-action: none; user-select: none;
         }
-        .id-card-header {
-            height: 110px;
-            display: flex;
-            align-items: center;
-            padding: 8px 12px;
-            color: white;
-        }
+
+        .id-card-header { height: 110px; display: flex; align-items: center; padding: 8px 12px; color: white; }
         .id-card-header .logo-container {
-            width: 60px;
-            height: 60px;
-            flex-shrink: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.4);
+            width: 60px; height: 60px; flex-shrink: 0; border-radius: 50%;
+            background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;
+            overflow: hidden; border: 1px solid rgba(255,255,255,0.4);
         }
-        .id-card-header .institution-info {
-            flex: 1;
-            text-align: center;
-            margin-left: 8px;
-        }
+        .id-card-header .institution-info { flex: 1; text-align: center; margin-left: 8px; }
         .id-card-header .institution-name,
         .id-card-header .institution-sub,
         .id-card-header .institution-address,
-        .id-card-header .institution-email {
-            line-height: 1.2;
-            word-break: break-word;
-        }
-        .id-card-header .institution-name {
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .id-card-header .institution-sub {
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.95;
-            margin-bottom: 2px;
-        }
-        .id-card-header .institution-address {
-            opacity: 0.9;
-        }
-        .id-card-header .institution-email {
-            opacity: 0.9;
-            margin-top: 2px;
-        }
-        .id-card-body {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 12px 14px 6px;
-        }
+        .id-card-header .institution-email { line-height: 1.2; word-break: break-word; }
+        .id-card-header .institution-name { font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .id-card-header .institution-sub { font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.95; margin-bottom: 2px; }
+        .id-card-header .institution-address { opacity: 0.9; }
+        .id-card-header .institution-email { opacity: 0.9; margin-top: 2px; }
+        .id-card-body { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 12px 14px 6px; }
         .badge {
-            padding: 4px 20px;
-            border-radius: 6px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.2;
+            padding: 4px 20px; border-radius: 6px; font-weight: 800; letter-spacing: 1px;
+            text-transform: uppercase; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: inline-flex; align-items: center; justify-content: center; line-height: 1.2;
         }
         .photo-container {
-            width: 100px;
-            height: 120px;
-            border-radius: 8px;
-            border: 3px solid;
-            padding: 2px;
-            background: #f9fafb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 100px; height: 120px; border-radius: 8px; border: 3px solid; padding: 2px;
+            background: #f9fafb; display: flex; align-items: center; justify-content: center;
+            margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .photo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        .detail-label {
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #9ca3af;
-            margin-bottom: 1px;
-            line-height: 1.2;
-        }
-        .detail-value {
-            font-weight: 800;
-            text-transform: uppercase;
-            color: #1f2937;
-            line-height: 1.2;
-            word-break: break-word;
-            margin-bottom: 6px;
-        }
-        .course-value {
-            font-weight: 700;
-            text-transform: uppercase;
-            line-height: 1.2;
-            word-break: break-word;
-            margin-bottom: 8px;
-        }
+        .photo-container img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+        .detail-label { font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; margin-bottom: 1px; line-height: 1.2; }
+        .detail-value { font-weight: 800; text-transform: uppercase; color: #1f2937; line-height: 1.2; word-break: break-word; margin-bottom: 6px; }
+        .course-value { font-weight: 700; text-transform: uppercase; line-height: 1.2; word-break: break-word; margin-bottom: 8px; }
         .info-box {
-            width: 100%;
-            margin-top: auto;
-            border: 1px solid;
-            border-radius: 8px;
-            padding: 8px 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
+            width: 100%; margin-top: auto; border: 1px solid; border-radius: 8px; padding: 8px 10px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .info-label {
-            font-size: 8px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            line-height: 1.2;
-        }
-        .info-value {
-            font-size: 11px;
-            font-weight: 700;
-            line-height: 1.2;
-            word-break: break-word;
-        }
-        .footer-text {
-            font-size: 7px;
-            font-weight: 600;
-            color: #9ca3af;
-            text-align: center;
-            width: 100%;
-            line-height: 1.2;
+        .info-label { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.2; }
+        .info-value { font-size: 11px; font-weight: 700; line-height: 1.2; word-break: break-word; }
+        .footer-text { font-size: 7px; font-weight: 600; color: #9ca3af; text-align: center; width: 100%; line-height: 1.2; }
+
+        .download-bar-fixed {
+            position: fixed; bottom: 12px; left: 0; right: 0;
+            display: flex; justify-content: center; gap: 12px; z-index: 50;
         }
         .download-btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin: 0 4px;
+            padding: 10px 20px; border-radius: 10px; color: white; font-weight: 700;
+            font-size: 14px; border: none; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.2s;
         }
-        .slider-group {
-            margin-bottom: 8px;
-        }
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            font-weight: 500;
-            color: #4b5563;
-        }
-        .slider-input {
-            width: 100%;
-            margin-top: 4px;
-        }
-        .slot-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: #fafafa;
-        }
-        .slot-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .slot-name-input {
-            flex: 1;
-            margin-right: 8px;
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        .logo-adjust-btn {
-            padding: 4px 8px;
-            background: #f3f4f6;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            margin: 0 2px;
-        }
-        .logo-adjust-btn:hover {
-            background: #e5e7eb;
-        }
+        .download-btn:hover { transform: translateY(-2px); }
+        .download-btn:active { transform: scale(0.95); }
+
+        /* Template Variations */
+        .template-classic .id-card-header { height: 110px; border-radius: 0; }
+        .template-classic .photo-container { border-radius: 8px; }
+        .template-classic .badge { border-radius: 6px; }
+        .template-modern .id-card-header { height: 100px; clip-path: polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%); padding-bottom: 18px; }
+        .template-modern .photo-container { border-radius: 50%; width: 100px; height: 100px; }
+        .template-modern .badge { border-radius: 20px; }
+        .template-corporate .id-card-header { height: 105px; border-bottom: 4px solid rgba(0,0,0,0.15); }
+        .template-corporate .photo-container { border-radius: 4px; border-width: 4px; }
+        .template-corporate .badge { border-radius: 3px; letter-spacing: 3px; }
+        .template-minimal .id-card-header { height: 85px; padding: 6px 12px; }
+        .template-minimal .photo-container { width: 85px; height: 100px; border-radius: 10px; border-width: 2px; }
+        .template-minimal .badge { border-radius: 14px; padding: 3px 16px; font-size: 9px !important; }
+        .template-minimal .info-box { border-radius: 14px; }
+        .template-creative .id-card-header { height: 115px; clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%); padding-bottom: 20px; }
+        .template-creative .photo-container { border-radius: 50%; width: 105px; height: 105px; border-width: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+        .template-creative .badge { border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .template-creative .info-box { border-radius: 12px; }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -271,122 +208,52 @@
     <script type="text/babel">
         const { useState, useRef, useEffect } = React;
 
-        const SEAL_COLOR = '#4B0082'; 
-
+        const SEAL_COLOR = '#4B0082';
+        const templates = [
+            { id: 'classic', name: 'Classic' },
+            { id: 'modern', name: 'Modern' },
+            { id: 'corporate', name: 'Corporate' },
+            { id: 'minimal', name: 'Minimal' },
+            { id: 'creative', name: 'Creative' }
+        ];
         const themes = {
-            classicBlue: {
-                id: 'classicBlue',
-                name: 'Classic Blue',
-                colors: {
-                    headerBg: '#1a56db',
-                    badgeBg: '#1a56db',
-                    badgeText: '#ffffff',
-                    photoBorder: '#1a56db',
-                    courseText: '#1a56db',
-                    infoBoxBg: '#eff6ff',
-                    infoLabel: '#2563eb',
-                    infoValue: '#1e3a8a'
-                }
-            },
-            maroonAcademic: {
-                id: 'maroonAcademic',
-                name: 'Maroon Academic',
-                colors: {
-                    headerBg: '#731c3a',
-                    badgeBg: '#fbcfe8',
-                    badgeText: '#731c3a',
-                    photoBorder: '#b45309',
-                    courseText: '#b45309',
-                    infoBoxBg: '#fdf2f8',
-                    infoLabel: '#e11d48',
-                    infoValue: '#731c3a'
-                }
-            },
-            minimalistWhite: {
-                id: 'minimalistWhite',
-                name: 'Minimalist White',
-                colors: {
-                    headerBg: '#f3f4f6',
-                    badgeBg: '#e5e7eb',
-                    badgeText: '#1f2937',
-                    photoBorder: '#d1d5db',
-                    courseText: '#374151',
-                    infoBoxBg: '#ffffff',
-                    infoLabel: '#6b7280',
-                    infoValue: '#1f2937'
-                }
-            },
-            emeraldPro: {
-                id: 'emeraldPro',
-                name: 'Emerald Professional',
-                colors: {
-                    headerBg: '#059669',
-                    badgeBg: '#059669',
-                    badgeText: '#ffffff',
-                    photoBorder: '#059669',
-                    courseText: '#059669',
-                    infoBoxBg: '#ecfdf5',
-                    infoLabel: '#059669',
-                    infoValue: '#064e3b'
-                }
-            }
+            classicBlue: { id:'classicBlue', name:'Classic Blue', colors:{ headerBg:'#1a56db', badgeBg:'#1a56db', badgeText:'#ffffff', photoBorder:'#1a56db', courseText:'#1a56db', infoBoxBg:'#eff6ff', infoLabel:'#2563eb', infoValue:'#1e3a8a' } },
+            maroonAcademic: { id:'maroonAcademic', name:'Maroon Academic', colors:{ headerBg:'#731c3a', badgeBg:'#fbcfe8', badgeText:'#731c3a', photoBorder:'#b45309', courseText:'#b45309', infoBoxBg:'#fdf2f8', infoLabel:'#e11d48', infoValue:'#731c3a' } },
+            minimalistWhite: { id:'minimalistWhite', name:'Minimalist White', colors:{ headerBg:'#f3f4f6', badgeBg:'#e5e7eb', badgeText:'#1f2937', photoBorder:'#d1d5db', courseText:'#374151', infoBoxBg:'#ffffff', infoLabel:'#6b7280', infoValue:'#1f2937' } },
+            emeraldPro: { id:'emeraldPro', name:'Emerald Professional', colors:{ headerBg:'#059669', badgeBg:'#059669', badgeText:'#ffffff', photoBorder:'#059669', courseText:'#059669', infoBoxBg:'#ecfdf5', infoLabel:'#059669', infoValue:'#064e3b' } }
         };
-
-        const defaultHeaderStyle = {
-            fontFamily: 'Segoe UI, system-ui, sans-serif',
-            nameSize: 15,
-            subSize: 9,
-            addressSize: 7.5,
-            emailSize: 7.5,
-            offsetX: 0,
-            offsetY: 0
-        };
-        const defaultStudentStyle = {
-            fontFamily: 'Segoe UI, system-ui, sans-serif',
-            nameSize: 14,
-            courseSize: 13,
-            labelSize: 8,
-            offsetX: 0,
-            offsetY: 0
-        };
-        const defaultBadgeStyle = {
-            fontFamily: 'Segoe UI, system-ui, sans-serif',
-            fontSize: 10
-        };
-        const defaultLogoStyle = {
-            scale: 1,
-            x: 0,
-            y: 0
-        };
+        const defaultHeaderStyle = { fontFamily:'Segoe UI, system-ui, sans-serif', nameSize:15, subSize:9, addressSize:7.5, emailSize:7.5, offsetX:0, offsetY:0 };
+        const defaultStudentStyle = { fontFamily:'Segoe UI, system-ui, sans-serif', nameSize:14, courseSize:13, labelSize:8, offsetX:0, offsetY:0 };
+        const defaultBadgeStyle = { fontFamily:'Segoe UI, system-ui, sans-serif', fontSize:10 };
+        const defaultLogoStyle = { scale:1, x:0, y:0 };
+        const defaultSealStyle = { shape:'round', width:70, height:70, fontFamily:'Arial, sans-serif', fontSize:6.5, offsetX:0, offsetY:0, subFontSize:4.5 };
 
         function getContrastText(hexColor) {
-            const r = parseInt(hexColor.slice(1,3), 16);
-            const g = parseInt(hexColor.slice(3,5), 16);
-            const b = parseInt(hexColor.slice(5,7), 16);
-            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-            return luminance > 0.6 ? '#1f2937' : '#ffffff';
+            if (!hexColor || hexColor.length < 7) return '#ffffff';
+            const r = parseInt(hexColor.slice(1,3),16), g = parseInt(hexColor.slice(3,5),16), b = parseInt(hexColor.slice(5,7),16);
+            return (0.299*r + 0.587*g + 0.114*b)/255 > 0.6 ? '#1f2937' : '#ffffff';
         }
 
-        function OfficialSeal({ name, subName, address, color }) {
-            const arcId = "sealArc";
+        function OfficialSeal({ name, subName, address, color, style }) {
+            const s = style || defaultSealStyle;
+            const isOval = s.shape === 'oval';
+            const w = isOval ? s.width * 1.5 : s.width;
+            const h = s.height;
+            const cx = w/2, cy = h/2;
+            const r = Math.min(w,h)/2 - 2;
+            const rx = isOval ? r * 1.5 : r;
+            const ry = r;
+            const arcId = `sealArc_${s.shape}_${Math.random().toString(36).substring(2, 7)}`;
             return (
-                <svg width="70" height="70" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="40" cy="40" r="38" fill="none" stroke={color} strokeWidth="1.5" />
-                    <circle cx="40" cy="40" r="34" fill="none" stroke={color} strokeWidth="0.8" strokeDasharray="2,1" />
-                    <path id={arcId} d="M 22,40 A 18,18 0 0 1 58,40" fill="none" stroke="none" />
-                    <text fontSize="3.8" fill={color} fontWeight="600">
-                        <textPath href={`#${arcId}`} startOffset="50%" textAnchor="middle">
-                            {address || ''}
-                        </textPath>
+                <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} xmlns="http://www.w3.org/2000/svg" style={{ transform:`translate(${s.offsetX}px, ${s.offsetY}px)` }}>
+                    <ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill="none" stroke={color} strokeWidth="1.5" />
+                    <ellipse cx={cx} cy={cy} rx={rx-4} ry={ry-4} fill="none" stroke={color} strokeWidth="0.8" strokeDasharray="2,1" />
+                    <path id={arcId} d={`M ${cx-rx+8},${cy} A ${rx-8},${ry-8} 0 0 1 ${cx+rx-8},${cy}`} fill="none" stroke="none" />
+                    <text fontSize={s.fontSize*0.6} fill={color} fontWeight="600" fontFamily={s.fontFamily}>
+                        <textPath href={`#${arcId}`} startOffset="50%" textAnchor="middle">{address || ''}</textPath>
                     </text>
-                    <text x="40" y="34" textAnchor="middle" fontSize="6.5" fontWeight="800" fill={color}>
-                        {name || 'INSTITUTION'}
-                    </text>
-                    {subName && (
-                        <text x="40" y="44" textAnchor="middle" fontSize="4.5" fontWeight="600" fill={color}>
-                            {subName}
-                        </text>
-                    )}
+                    <text x={cx} y={cy-(ry/3)} textAnchor="middle" fontSize={s.fontSize} fontWeight="800" fill={color} fontFamily={s.fontFamily}>{name || 'INSTITUTION'}</text>
+                    {subName && <text x={cx} y={cy+(ry/3)} textAnchor="middle" fontSize={s.subFontSize} fontWeight="600" fill={color} fontFamily={s.fontFamily}>{subName}</text>}
                 </svg>
             );
         }
@@ -396,58 +263,93 @@
                 try {
                     const saved = localStorage.getItem('savedThemes');
                     return saved ? JSON.parse(saved) : [
-                        { id: 1, name: 'Student Theme', config: null },
-                        { id: 2, name: 'Faculty Theme', config: null }
+                        { id:1, name:'Custom Theme 1', config:null },
+                        { id:2, name:'Custom Theme 2', config:null }
                     ];
-                } catch {
-                    return [
-                        { id: 1, name: 'Student Theme', config: null },
-                        { id: 2, name: 'Faculty Theme', config: null }
-                    ];
-                }
+                } catch { return [{id:1,name:'Custom Theme 1',config:null},{id:2,name:'Custom Theme 2',config:null}]; }
             };
 
             const [data, setData] = useState({
-                institutionName: 'GLOBUS',
-                institutionSubName: 'TECHNICAL ACADEMY',
-                institutionAddress: '123 Innovation Park, Tech Valley, Kerala 673001',
-                institutionEmail: 'contact@globusacademy.edu',
-                candidateName: 'HRFG',
-                candidateDetail: 'AI MASTERY',
-                idNumber: 'GLO-0001',
-                contact: '2222222200',
-                returnPhone: '+91 09895422220',
-                photo: null,
-                logo: null,
-                badgeText: 'STUDENT'
+                institutionName:'', institutionSubName:'', institutionAddress:'', institutionEmail:'',
+                candidateName:'', candidateDetail:'', idNumber:'', contact:'', returnPhone:'',
+                photo:null, logo:null, badgeText:'STUDENT'
             });
-
             const [role, setRole] = useState('student');
+            const [selectedTemplate, setSelectedTemplate] = useState('classic');
             const [customColors, setCustomColors] = useState(themes.maroonAcademic.colors);
             const [selectedPreset, setSelectedPreset] = useState('maroonAcademic');
             const [headerStyle, setHeaderStyle] = useState(defaultHeaderStyle);
             const [studentStyle, setStudentStyle] = useState(defaultStudentStyle);
             const [badgeStyle, setBadgeStyle] = useState(defaultBadgeStyle);
             const [logoStyle, setLogoStyle] = useState(defaultLogoStyle);
+            const [sealStyle, setSealStyle] = useState(defaultSealStyle);
             const [savedThemes, setSavedThemes] = useState(loadSavedThemes);
-
+            const [editMode, setEditMode] = useState(true);
             const [showResetModal, setShowResetModal] = useState(false);
-            const [mathQuestion, setMathQuestion] = useState({ a: 0, b: 0, answer: 0 });
-            const [userAnswer, setUserAnswer] = useState('');
+            const [loadedSlotId, setLoadedSlotId] = useState(null);
+            const [cardY, setCardY] = useState(-50);
 
             const cardRef = useRef(null);
+            const dragStartY = useRef(null);
+            const dragStartCardY = useRef(0);
+            const snapshot = useRef(null);
 
-            useEffect(() => {
-                localStorage.setItem('savedThemes', JSON.stringify(savedThemes));
-            }, [savedThemes]);
+            useEffect(() => { localStorage.setItem('savedThemes', JSON.stringify(savedThemes)); }, [savedThemes]);
+
+            const captureSnapshot = () => {
+                snapshot.current = {
+                    data: JSON.parse(JSON.stringify(data)),
+                    role,
+                    selectedTemplate,
+                    customColors: {...customColors},
+                    selectedPreset,
+                    headerStyle: {...headerStyle},
+                    studentStyle: {...studentStyle},
+                    badgeStyle: {...badgeStyle},
+                    logoStyle: {...logoStyle},
+                    sealStyle: {...sealStyle},
+                    loadedSlotId,
+                    cardY
+                };
+            };
+
+            const restoreSnapshot = () => {
+                if (snapshot.current) {
+                    const s = snapshot.current;
+                    setData(s.data);
+                    setRole(s.role);
+                    setSelectedTemplate(s.selectedTemplate);
+                    setCustomColors(s.customColors);
+                    setSelectedPreset(s.selectedPreset);
+                    setHeaderStyle(s.headerStyle);
+                    setStudentStyle(s.studentStyle);
+                    setBadgeStyle(s.badgeStyle);
+                    setLogoStyle(s.logoStyle);
+                    setSealStyle(s.sealStyle);
+                    setLoadedSlotId(s.loadedSlotId);
+                    setCardY(s.cardY);
+                }
+            };
+
+            const handleEditToggle = (turnOn) => {
+                if (turnOn) {
+                    captureSnapshot();
+                    setEditMode(true);
+                } else {
+                    setEditMode(false);
+                }
+            };
+
+            const handleCancel = () => {
+                restoreSnapshot();
+                setEditMode(false);
+            };
 
             const handleImageUpload = (e, field) => {
                 const file = e.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onloadend = () => {
-                        setData({ ...data, [field]: reader.result });
-                    };
+                    reader.onloadend = () => setData({...data, [field]: reader.result});
                     reader.readAsDataURL(file);
                 }
             };
@@ -459,27 +361,16 @@
                 setStudentStyle(defaultStudentStyle);
                 setBadgeStyle(defaultBadgeStyle);
                 setLogoStyle(defaultLogoStyle);
+                setSealStyle(defaultSealStyle);
+                setLoadedSlotId(null);
             };
 
-            const updateColor = (key, value) => {
-                setCustomColors({ ...customColors, [key]: value });
-            };
-
-            const updateHeaderStyle = (key, value) => {
-                setHeaderStyle({ ...headerStyle, [key]: value });
-            };
-
-            const updateStudentStyle = (key, value) => {
-                setStudentStyle({ ...studentStyle, [key]: value });
-            };
-
-            const updateBadgeStyle = (key, value) => {
-                setBadgeStyle({ ...badgeStyle, [key]: value });
-            };
-
-            const updateLogoStyle = (key, value) => {
-                setLogoStyle({ ...logoStyle, [key]: value });
-            };
+            const updateColor = (key,value) => setCustomColors({...customColors, [key]:value});
+            const updateHeaderStyle = (key,value) => setHeaderStyle({...headerStyle, [key]:value});
+            const updateStudentStyle = (key,value) => setStudentStyle({...studentStyle, [key]:value});
+            const updateBadgeStyle = (key,value) => setBadgeStyle({...badgeStyle, [key]:value});
+            const updateLogoStyle = (key,value) => setLogoStyle({...logoStyle, [key]:value});
+            const updateSealStyle = (key,value) => setSealStyle({...sealStyle, [key]:value});
 
             const resetTheme = () => {
                 if (selectedPreset && themes[selectedPreset]) {
@@ -488,129 +379,61 @@
                     setStudentStyle(defaultStudentStyle);
                     setBadgeStyle(defaultBadgeStyle);
                     setLogoStyle(defaultLogoStyle);
+                    setSealStyle(defaultSealStyle);
+                    setLoadedSlotId(null);
                 }
             };
 
             const saveThemeToSlot = (slotId) => {
-                const fullConfig = {
-                    colors: customColors,
-                    headerStyle: headerStyle,
-                    studentStyle: studentStyle,
-                    badgeStyle: badgeStyle,
-                    logoStyle: logoStyle,
-                    institutionData: {
-                        institutionName: data.institutionName,
-                        institutionSubName: data.institutionSubName,
-                        institutionAddress: data.institutionAddress,
-                        institutionEmail: data.institutionEmail,
-                        returnPhone: data.returnPhone,
-                        logo: data.logo,
-                        badgeText: data.badgeText
-                    }
-                };
-                setSavedThemes(prev => prev.map(slot => 
-                    slot.id === slotId ? { ...slot, config: fullConfig } : slot
-                ));
+                const fullConfig = { colors:customColors, headerStyle, studentStyle, badgeStyle, logoStyle, sealStyle, template:selectedTemplate };
+                setSavedThemes(prev => prev.map(slot => slot.id===slotId ? {...slot, config:fullConfig} : slot));
+                setLoadedSlotId(slotId);
             };
-
             const loadThemeFromSlot = (slotId) => {
-                const slot = savedThemes.find(s => s.id === slotId);
+                const slot = savedThemes.find(s => s.id===slotId);
                 if (slot && slot.config) {
                     setCustomColors(slot.config.colors);
                     setHeaderStyle(slot.config.headerStyle);
                     setStudentStyle(slot.config.studentStyle);
                     if (slot.config.badgeStyle) setBadgeStyle(slot.config.badgeStyle);
                     if (slot.config.logoStyle) setLogoStyle(slot.config.logoStyle);
-                    
-                    if (slot.config.institutionData) {
-                        setData(prevData => ({
-                            ...prevData,
-                            institutionName: slot.config.institutionData.institutionName || prevData.institutionName,
-                            institutionSubName: slot.config.institutionData.institutionSubName || prevData.institutionSubName,
-                            institutionAddress: slot.config.institutionData.institutionAddress || prevData.institutionAddress,
-                            institutionEmail: slot.config.institutionData.institutionEmail || prevData.institutionEmail,
-                            returnPhone: slot.config.institutionData.returnPhone || prevData.returnPhone,
-                            logo: slot.config.institutionData.logo !== undefined ? slot.config.institutionData.logo : prevData.logo,
-                            badgeText: slot.config.institutionData.badgeText || prevData.badgeText
-                        }));
-                    }
+                    if (slot.config.sealStyle) setSealStyle(slot.config.sealStyle);
+                    if (slot.config.template) setSelectedTemplate(slot.config.template);
                     setSelectedPreset(null);
+                    setLoadedSlotId(slotId);
                 }
             };
-
-            const updateSlotName = (slotId, name) => {
-                setSavedThemes(prev => prev.map(slot => 
-                    slot.id === slotId ? { ...slot, name } : slot
-                ));
-            };
+            const updateSlotName = (slotId,name) => setSavedThemes(prev => prev.map(slot => slot.id===slotId ? {...slot, name} : slot));
 
             const openResetModal = () => {
-                const a = Math.floor(Math.random() * 10) + 1;
-                const b = Math.floor(Math.random() * 10) + 1;
-                setMathQuestion({ a, b, answer: a + b });
-                setUserAnswer('');
                 setShowResetModal(true);
             };
-
             const confirmReset = () => {
-                if (parseInt(userAnswer) === mathQuestion.answer) {
-                    setSavedThemes([
-                        { id: 1, name: 'Student Theme', config: null },
-                        { id: 2, name: 'Faculty Theme', config: null }
-                    ]);
-                    setCustomColors(themes.maroonAcademic.colors);
-                    setSelectedPreset('maroonAcademic');
-                    setHeaderStyle(defaultHeaderStyle);
-                    setStudentStyle(defaultStudentStyle);
-                    setBadgeStyle(defaultBadgeStyle);
-                    setLogoStyle(defaultLogoStyle);
-                    setShowResetModal(false);
-                } else {
-                    alert('Wrong answer. Please try again.');
-                }
+                setSavedThemes([{id:1,name:'Custom Theme 1',config:null},{id:2,name:'Custom Theme 2',config:null}]);
+                applyTheme('maroonAcademic'); setShowResetModal(false);
             };
 
             const downloadPNG = async () => {
                 if (!cardRef.current) return;
                 try {
-                    const dataUrl = await htmlToImage.toPng(cardRef.current, {
-                        width: 300,
-                        height: 480,
-                        pixelRatio: 3,
-                        backgroundColor: '#ffffff'
+                    const dataUrl = await htmlToImage.toPng(cardRef.current, { 
+                        width:300, height:480, pixelRatio:4, backgroundColor: '#ffffff' 
                     });
-                    const link = document.createElement('a');
-                    link.download = 'id-card.png';
-                    link.href = dataUrl;
-                    link.click();
-                } catch (error) {
-                    console.error('PNG download failed:', error);
-                    alert('PNG download failed. Please try again.');
-                }
+                    const link = document.createElement('a'); 
+                    link.download='id-card.png'; link.href=dataUrl; link.click();
+                } catch(e) { console.error(e); alert('PNG download failed.'); }
             };
-
             const downloadPDF = async () => {
                 if (!cardRef.current) return;
                 try {
-                    const dataUrl = await htmlToImage.toPng(cardRef.current, {
-                        width: 300,
-                        height: 480,
-                        pixelRatio: 3,
-                        backgroundColor: '#ffffff'
+                    const dataUrl = await htmlToImage.toPng(cardRef.current, { 
+                        width:300, height:480, pixelRatio:4, backgroundColor: '#ffffff' 
                     });
                     const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF({
-                        orientation: 'portrait',
-                        unit: 'px',
-                        format: [300, 480],
-                        hotfixes: ['px_scaling']
-                    });
-                    pdf.addImage(dataUrl, 'PNG', 0, 0, 300, 480);
+                    const pdf = new jsPDF({ orientation:'portrait', unit:'px', format:[300,480], hotfixes:['px_scaling'] });
+                    pdf.addImage(dataUrl,'PNG',0,0,300,480,undefined,'FAST');
                     pdf.save('id-card.pdf');
-                } catch (error) {
-                    console.error('PDF download failed:', error);
-                    alert('PDF download failed. Please try again.');
-                }
+                } catch(e) { console.error(e); alert('PDF download failed.'); }
             };
 
             const isStudent = role === 'student';
@@ -618,608 +441,300 @@
             const nameLabel = isStudent ? 'Student Name' : isFaculty ? 'Faculty Name' : 'Name';
             const detailLabel = isStudent ? 'Course' : 'Designation';
             const regNoLabel = isStudent ? 'Registration No' : 'Employee ID';
-
             const handleRoleChange = (newRole) => {
                 setRole(newRole);
-                const roleBadgeMap = {
-                    student: 'STUDENT',
-                    faculty: 'FACULTY',
-                    officeStaff: 'OFFICE STAFF',
-                    employee: 'EMPLOYEE'
-                };
-                setData({ ...data, badgeText: roleBadgeMap[newRole] });
+                const map = { student:'STUDENT', faculty:'FACULTY', officeStaff:'OFFICE STAFF', employee:'EMPLOYEE' };
+                setData({...data, badgeText: map[newRole]});
             };
 
             const headerTextColor = getContrastText(customColors.headerBg);
 
+            // Drag handling
+            const startDrag = (e) => {
+                e.preventDefault();
+                dragStartY.current = e.clientY || e.touches?.[0]?.clientY;
+                dragStartCardY.current = cardY;
+                const handleMove = (ev) => {
+                    const currentY = ev.clientY || ev.touches?.[0]?.clientY;
+                    const delta = currentY - dragStartY.current;
+                    const newY = Math.max(-200, Math.min(200, dragStartCardY.current + delta));
+                    setCardY(newY);
+                };
+                const stopDrag = () => {
+                    document.removeEventListener('mousemove', handleMove);
+                    document.removeEventListener('mouseup', stopDrag);
+                    document.removeEventListener('touchmove', handleMove);
+                    document.removeEventListener('touchend', stopDrag);
+                };
+                document.addEventListener('mousemove', handleMove);
+                document.addEventListener('mouseup', stopDrag);
+                document.addEventListener('touchmove', handleMove, { passive: false });
+                document.addEventListener('touchend', stopDrag);
+            };
+
+            // Stepper Component
+            const Stepper = ({ label, value, onChange, min, max, step, format }) => {
+                const dec = () => {
+                    const next = parseFloat((value - step).toFixed(2));
+                    if (next >= min) onChange(next);
+                };
+                const inc = () => {
+                    const next = parseFloat((value + step).toFixed(2));
+                    if (next <= max) onChange(next);
+                };
+                return (
+                    <div className="stepper-row">
+                        <span className="stepper-label">{label}</span>
+                        <button className="stepper-btn" onClick={dec} disabled={value <= min}>−</button>
+                        <span className="stepper-value">{format ? format(value) : value}</span>
+                        <button className="stepper-btn" onClick={inc} disabled={value >= max}>+</button>
+                    </div>
+                );
+            };
+
+            const MiniSelect = ({ value, onChange, options }) => (
+                <select className="mini-select" value={value} onChange={onChange}>
+                    {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
+            );
+
             return (
-                <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans text-gray-800">
-                    <div className="max-w-6xl mx-auto">
-                        
-                        <header className="mb-8 text-center md:text-left">
-                            {/* BACK BUTTON */}
-                            <a href="dashboard.html" className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-extrabold text-indigo-700 hover:bg-gray-50 shadow-sm transition-all" style={{ textDecoration: 'none', cursor: 'pointer' }}>
-                                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
-                                </svg>
-                                Back to Dashboard
-                            </a>
-                            {/* END BACK BUTTON */}
+                <div className="min-h-screen bg-gray-50 flex flex-col" style={{ height:'100vh', height:'100dvh' }}>
+                    <div className="top-bar">
+                        <a href="dashboard.html" className="btn-back-dashboard" title="Back to Dashboard">
+                            <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
+                        </a>
+                        <span className="title-text">ID Card Studio</span>
+                        {editMode ? (
+                            <React.Fragment>
+                                <button className="cancel-btn" style={{ background:'#ef4444', color:'white' }} onClick={handleCancel}>
+                                    Cancel
+                                </button>
+                                <button className="edit-toggle-btn" style={{ background:'#1f2937', color:'white' }} onClick={() => handleEditToggle(false)}>
+                                    Done
+                                </button>
+                            </React.Fragment>
+                        ) : (
+                            <button className="edit-toggle-btn" style={{ background:'linear-gradient(135deg,#6366f1,#4f46e5)', color:'white' }} onClick={() => handleEditToggle(true)}>
+                                Edit
+                            </button>
+                        )}
+                    </div>
 
-                            <h1 className="text-3xl font-bold text-gray-900">ID Card Studio</h1>
-                            <p className="text-gray-500 mt-1">Professional ID Card Generator – Universal Candidate Roles</p>
-                        </header>
-
-                        <div className="flex flex-col lg:flex-row gap-8">
-                            {/* LEFT COLUMN: Controls */}
-                            <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
-                                
-                                {/* Theme Selection */}
-                                <div className="mb-8">
-                                    <div className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-700 border-b pb-2">
-                                        <span className="text-indigo-500">🎨</span>
-                                        <h2>Select Theme</h2>
-                                    </div>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                                        {Object.values(themes).map((theme) => (
-                                            <button
-                                                key={theme.id}
-                                                onClick={() => applyTheme(theme.id)}
-                                                className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
-                                                    selectedPreset === theme.id
-                                                        ? 'border-indigo-500 bg-indigo-50 text-indigo-700 shadow-sm'
-                                                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                                }`}
-                                            >
-                                                {theme.name}
-                                            </button>
-                                        ))}
-                                        {savedThemes.map((slot) => (
-                                            slot.config && (
-                                                <button
-                                                    key={slot.id}
-                                                    onClick={() => loadThemeFromSlot(slot.id)}
-                                                    className="px-3 py-2 rounded-lg border text-sm font-medium transition-all border-purple-300 bg-purple-50 text-purple-700 hover:bg-purple-100"
-                                                >
-                                                    {slot.name}
-                                                </button>
-                                            )
-                                        ))}
-                                    </div>
-
-                                    {/* Custom Color Pickers */}
-                                    <div className="border-t pt-4">
-                                        <div className="flex justify-between items-center mb-3">
-                                            <h3 className="text-sm font-semibold text-gray-600">🎯 Customize Colors (overrides theme)</h3>
-                                            <button 
-                                                onClick={resetTheme}
-                                                className="px-3 py-1 bg-gray-200 text-gray-700 text-xs font-medium rounded-md hover:bg-gray-300 transition-colors"
-                                            >
-                                                Reset Colors
-                                            </button>
-                                        </div>
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">Header Background</label>
-                                                <input type="color" className="color-input" value={customColors.headerBg} onChange={(e) => updateColor('headerBg', e.target.value)} />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">Badge Background</label>
-                                                <input type="color" className="color-input" value={customColors.badgeBg} onChange={(e) => updateColor('badgeBg', e.target.value)} />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">Badge Text</label>
-                                                <input type="color" className="color-input" value={customColors.badgeText} onChange={(e) => updateColor('badgeText', e.target.value)} />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">Photo Border</label>
-                                                <input type="color" className="color-input" value={customColors.photoBorder} onChange={(e) => updateColor('photoBorder', e.target.value)} />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">Course Text</label>
-                                                <input type="color" className="color-input" value={customColors.courseText} onChange={(e) => updateColor('courseText', e.target.value)} />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">Info Box Background</label>
-                                                <input type="color" className="color-input" value={customColors.infoBoxBg} onChange={(e) => updateColor('infoBoxBg', e.target.value)} />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">Info Label</label>
-                                                <input type="color" className="color-input" value={customColors.infoLabel} onChange={(e) => updateColor('infoLabel', e.target.value)} />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">Info Value</label>
-                                                <input type="color" className="color-input" value={customColors.infoValue} onChange={(e) => updateColor('infoValue', e.target.value)} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Custom Theme Slots */}
-                                <div className="mb-8">
-                                    <div className="flex items-center justify-between mb-4 text-lg font-semibold text-gray-700 border-b pb-2">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-indigo-500">💾</span>
-                                            <h2>Custom Theme Slots</h2>
-                                        </div>
-                                        <button 
-                                            onClick={openResetModal}
-                                            className="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-md hover:bg-red-200 transition-colors"
-                                        >
-                                            Reset Saved Themes
-                                        </button>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {savedThemes.map((slot) => (
-                                            <div key={slot.id} className="slot-card">
-                                                <div className="slot-header">
-                                                    <span className="text-sm font-semibold text-gray-600">Slot {slot.id}</span>
-                                                    {slot.config && (
-                                                        <span className="text-xs text-green-600 font-medium">Saved ✓</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center gap-2 mb-3">
-                                                    <input
-                                                        type="text"
-                                                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
-                                                        value={slot.name}
-                                                        onChange={(e) => updateSlotName(slot.id, e.target.value)}
-                                                        placeholder="Enter name"
-                                                    />
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => saveThemeToSlot(slot.id)}
-                                                        className="flex-1 px-3 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors"
-                                                    >
-                                                        Save
-                                                    </button>
-                                                    <button
-                                                        onClick={() => loadThemeFromSlot(slot.id)}
-                                                        disabled={!slot.config}
-                                                        className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                                                            slot.config
-                                                                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                                                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                                        }`}
-                                                    >
-                                                        Load
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Institution Details */}
-                                <div className="mb-8">
-                                    <div className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-700 border-b pb-2">
-                                        <span className="text-indigo-500">🏢</span>
-                                        <h2>Institution Details</h2>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Institution Name</label>
-                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.institutionName} onChange={(e) => setData({ ...data, institutionName: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Sub Name / Tagline</label>
-                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.institutionSubName} onChange={(e) => setData({ ...data, institutionSubName: e.target.value })} />
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-1 gap-4 mb-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Full Address</label>
-                                            <textarea className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none resize-none" rows="2" value={data.institutionAddress} onChange={(e) => setData({ ...data, institutionAddress: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Email ID</label>
-                                            <input type="email" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.institutionEmail} onChange={(e) => setData({ ...data, institutionEmail: e.target.value })} />
-                                        </div>
-                                    </div>
-
-                                    {/* Header Text Adjuster */}
-                                    <div className="border-t pt-4 mt-4">
-                                        <h3 className="text-sm font-semibold text-gray-600 mb-3">📐 Header Text Adjuster</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="slider-group">
-                                                <label className="slider-label">Font Family</label>
-                                                <select 
-                                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
-                                                    value={headerStyle.fontFamily}
-                                                    onChange={(e) => updateHeaderStyle('fontFamily', e.target.value)}
-                                                >
-                                                    <option value="Segoe UI, system-ui, sans-serif">Segoe UI</option>
-                                                    <option value="Arial, sans-serif">Arial</option>
-                                                    <option value="Helvetica, sans-serif">Helvetica</option>
-                                                    <option value="Times New Roman, serif">Times New Roman</option>
-                                                    <option value="Courier New, monospace">Courier New</option>
-                                                    <option value="Georgia, serif">Georgia</option>
-                                                    <option value="Verdana, sans-serif">Verdana</option>
-                                                    <option value="Tahoma, sans-serif">Tahoma</option>
-                                                </select>
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">Name Font Size: {headerStyle.nameSize}px</label>
-                                                <input type="range" min="10" max="30" step="0.5" value={headerStyle.nameSize} onChange={(e) => updateHeaderStyle('nameSize', parseFloat(e.target.value))} className="slider-input" />
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">Sub Name Font Size: {headerStyle.subSize}px</label>
-                                                <input type="range" min="6" max="16" step="0.5" value={headerStyle.subSize} onChange={(e) => updateHeaderStyle('subSize', parseFloat(e.target.value))} className="slider-input" />
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">Address Font Size: {headerStyle.addressSize}px</label>
-                                                <input type="range" min="5" max="12" step="0.5" value={headerStyle.addressSize} onChange={(e) => updateHeaderStyle('addressSize', parseFloat(e.target.value))} className="slider-input" />
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">Email Font Size: {headerStyle.emailSize}px</label>
-                                                <input type="range" min="5" max="12" step="0.5" value={headerStyle.emailSize} onChange={(e) => updateHeaderStyle('emailSize', parseFloat(e.target.value))} className="slider-input" />
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">X Offset: {headerStyle.offsetX}px</label>
-                                                <input type="range" min="-60" max="60" step="1" value={headerStyle.offsetX} onChange={(e) => updateHeaderStyle('offsetX', parseInt(e.target.value))} className="slider-input" />
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">Y Offset: {headerStyle.offsetY}px</label>
-                                                <input type="range" min="-40" max="40" step="1" value={headerStyle.offsetY} onChange={(e) => updateHeaderStyle('offsetY', parseInt(e.target.value))} className="slider-input" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Logo Upload & Adjust */}
-                                    <div className="mt-4">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Institution Logo</label>
-                                        <div className="flex items-center gap-4 mb-2">
-                                            <label className="flex items-center justify-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors text-sm font-medium">
-                                                ⬆️ Upload Logo
-                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'logo')} />
-                                            </label>
-                                            {data.logo && <span className="text-xs text-green-600 font-medium">Logo uploaded ✓</span>}
-                                        </div>
-                                        {data.logo && (
-                                            <div className="border rounded-lg p-3 bg-gray-50">
-                                                <p className="text-xs font-semibold text-gray-600 mb-2">Adjust Logo Position & Zoom</p>
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <span className="text-xs text-gray-600">Zoom:</span>
-                                                    <input 
-                                                        type="range" 
-                                                        min="0.5" 
-                                                        max="3" 
-                                                        step="0.1" 
-                                                        value={logoStyle.scale} 
-                                                        onChange={(e) => updateLogoStyle('scale', parseFloat(e.target.value))}
-                                                        className="flex-1"
-                                                    />
-                                                    <span className="text-xs">{logoStyle.scale.toFixed(1)}x</span>
-                                                </div>
-                                                <div className="flex gap-1 justify-center mb-2">
-                                                    <button className="logo-adjust-btn" onClick={() => updateLogoStyle('y', logoStyle.y - 2)}>▲</button>
-                                                </div>
-                                                <div className="flex gap-1 justify-center">
-                                                    <button className="logo-adjust-btn" onClick={() => updateLogoStyle('x', logoStyle.x - 2)}>◀</button>
-                                                    <button className="logo-adjust-btn" onClick={() => updateLogoStyle('x', logoStyle.x + 2)}>▶</button>
-                                                </div>
-                                                <div className="flex gap-1 justify-center mt-2">
-                                                    <button className="logo-adjust-btn" onClick={() => updateLogoStyle('y', logoStyle.y + 2)}>▼</button>
-                                                </div>
-                                                <div className="text-xs text-gray-500 mt-2 text-center">
-                                                    X: {logoStyle.x}px, Y: {logoStyle.y}px
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Candidate Details */}
-                                <div className="mb-4">
-                                    <div className="flex items-center gap-2 mb-4 text-lg font-semibold text-gray-700 border-b pb-2">
-                                        <span className="text-indigo-500">👤</span>
-                                        <h2>Candidate Details</h2>
-                                    </div>
-
-                                    {/* Role Dropdown */}
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                                        <select 
-                                            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
-                                            value={role}
-                                            onChange={(e) => handleRoleChange(e.target.value)}
-                                        >
-                                            <option value="student">Student</option>
-                                            <option value="faculty">Faculty</option>
-                                            <option value="officeStaff">Office Staff</option>
-                                            <option value="employee">Employee</option>
-                                        </select>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">{nameLabel}</label>
-                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.candidateName} onChange={(e) => setData({ ...data, candidateName: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">{detailLabel}</label>
-                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.candidateDetail} onChange={(e) => setData({ ...data, candidateDetail: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">{regNoLabel}</label>
-                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.idNumber} onChange={(e) => setData({ ...data, idNumber: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Phone / Contact</label>
-                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.contact} onChange={(e) => setData({ ...data, contact: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Badge Text / Role</label>
-                                            <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.badgeText} onChange={(e) => setData({ ...data, badgeText: e.target.value })} placeholder="e.g., STUDENT, FACULTY" />
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
-                                        <div className="flex items-center gap-4">
-                                            <label className="flex items-center justify-center px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors text-sm font-medium">
-                                                ⬆️ Upload Photo
-                                                <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, 'photo')} />
-                                            </label>
-                                            {data.photo && <span className="text-xs text-green-600 font-medium">Photo uploaded ✓</span>}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Return Address/Phone (Footer)</label>
-                                        <input type="text" className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none" value={data.returnPhone} onChange={(e) => setData({ ...data, returnPhone: e.target.value })} />
-                                    </div>
-
-                                    {/* Badge Adjuster */}
-                                    <div className="border-t pt-4 mt-4">
-                                        <h3 className="text-sm font-semibold text-gray-600 mb-3">🎫 Badge Text Adjuster</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="slider-group">
-                                                <label className="slider-label">Font Family</label>
-                                                <select 
-                                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
-                                                    value={badgeStyle.fontFamily}
-                                                    onChange={(e) => updateBadgeStyle('fontFamily', e.target.value)}
-                                                >
-                                                    <option value="Segoe UI, system-ui, sans-serif">Segoe UI</option>
-                                                    <option value="Arial, sans-serif">Arial</option>
-                                                    <option value="Helvetica, sans-serif">Helvetica</option>
-                                                    <option value="Times New Roman, serif">Times New Roman</option>
-                                                    <option value="Courier New, monospace">Courier New</option>
-                                                    <option value="Georgia, serif">Georgia</option>
-                                                    <option value="Verdana, sans-serif">Verdana</option>
-                                                    <option value="Tahoma, sans-serif">Tahoma</option>
-                                                </select>
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">Badge Font Size: {badgeStyle.fontSize}px</label>
-                                                <input type="range" min="8" max="24" step="0.5" value={badgeStyle.fontSize} onChange={(e) => updateBadgeStyle('fontSize', parseFloat(e.target.value))} className="slider-input" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Candidate Text Adjuster */}
-                                    <div className="border-t pt-4 mt-4">
-                                        <h3 className="text-sm font-semibold text-gray-600 mb-3">📐 Candidate Details Text Adjuster</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="slider-group">
-                                                <label className="slider-label">Font Family</label>
-                                                <select 
-                                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
-                                                    value={studentStyle.fontFamily}
-                                                    onChange={(e) => updateStudentStyle('fontFamily', e.target.value)}
-                                                >
-                                                    <option value="Segoe UI, system-ui, sans-serif">Segoe UI</option>
-                                                    <option value="Arial, sans-serif">Arial</option>
-                                                    <option value="Helvetica, sans-serif">Helvetica</option>
-                                                    <option value="Times New Roman, serif">Times New Roman</option>
-                                                    <option value="Courier New, monospace">Courier New</option>
-                                                    <option value="Georgia, serif">Georgia</option>
-                                                    <option value="Verdana, sans-serif">Verdana</option>
-                                                    <option value="Tahoma, sans-serif">Tahoma</option>
-                                                </select>
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">Name Font Size: {studentStyle.nameSize}px</label>
-                                                <input type="range" min="8" max="30" step="0.5" value={studentStyle.nameSize} onChange={(e) => updateStudentStyle('nameSize', parseFloat(e.target.value))} className="slider-input" />
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">{detailLabel} Font Size: {studentStyle.courseSize}px</label>
-                                                <input type="range" min="8" max="30" step="0.5" value={studentStyle.courseSize} onChange={(e) => updateStudentStyle('courseSize', parseFloat(e.target.value))} className="slider-input" />
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">Label Font Size: {studentStyle.labelSize}px</label>
-                                                <input type="range" min="5" max="16" step="0.5" value={studentStyle.labelSize} onChange={(e) => updateStudentStyle('labelSize', parseFloat(e.target.value))} className="slider-input" />
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">X Offset: {studentStyle.offsetX}px</label>
-                                                <input type="range" min="-60" max="60" step="1" value={studentStyle.offsetX} onChange={(e) => updateStudentStyle('offsetX', parseInt(e.target.value))} className="slider-input" />
-                                            </div>
-                                            <div className="slider-group">
-                                                <label className="slider-label">Y Offset: {studentStyle.offsetY}px</label>
-                                                <input type="range" min="-40" max="40" step="1" value={studentStyle.offsetY} onChange={(e) => updateStudentStyle('offsetY', parseInt(e.target.value))} className="slider-input" />
-                                            </div>
-                                        </div>
-                                    </div>
+                    {editMode && (
+                        <div className="settings-strip">
+                            <div className="setting-card">
+                                <h4>📋 Template</h4>
+                                <div className="flex flex-wrap gap-1">
+                                    {templates.map(t => (
+                                        <button key={t.id} className={`mini-btn ${selectedTemplate===t.id?'active':''}`} 
+                                            onClick={() => setSelectedTemplate(t.id)}>{t.name}</button>
+                                    ))}
                                 </div>
                             </div>
 
-                            {/* RIGHT COLUMN: Preview & Download */}
-                            <div className="w-full lg:w-[350px] flex flex-col items-center sticky top-8">
-                                <h2 className="text-lg font-bold text-gray-700 mb-4 uppercase tracking-wider">Live Preview</h2>
-                                
-                                {/* ID CARD */}
-                                <div 
-                                    ref={cardRef}
-                                    className="id-card"
-                                >
-                                    {/* Header */}
-                                    <div 
-                                        className="id-card-header"
-                                        style={{ backgroundColor: customColors.headerBg, color: headerTextColor }}
-                                    >
-                                        <div className="logo-container">
-                                            {data.logo ? (
-                                                <img 
-                                                    src={data.logo} 
-                                                    alt="Logo" 
-                                                    style={{ 
-                                                        width: '100%', 
-                                                        height: '100%', 
-                                                        objectFit: 'cover',
-                                                        transform: `translate(${logoStyle.x}px, ${logoStyle.y}px) scale(${logoStyle.scale})`
-                                                    }} 
-                                                />
-                                            ) : (
-                                                <span style={{ fontSize: '24px', opacity: 0.6 }}>🏫</span>
-                                            )}
+                            <div className="setting-card">
+                                <h4>🎨 Colors</h4>
+                                <div className="flex flex-wrap gap-1 mb-1">
+                                    {Object.values(themes).map(th => (
+                                        <button key={th.id} className={`mini-btn ${selectedPreset===th.id?'active':''}`} 
+                                            onClick={() => applyTheme(th.id)}>{th.name.split(' ')[0]}</button>
+                                    ))}
+                                </div>
+                                <div className="grid grid-cols-4 gap-1">
+                                    {Object.entries(customColors).map(([key,val]) => (
+                                        <input key={key} type="color" className="mini-color-input" value={val} onChange={(e)=>updateColor(key,e.target.value)} title={key}/>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="setting-card">
+                                <h4>🏢 Header</h4>
+                                <MiniSelect value={headerStyle.fontFamily} onChange={(e)=>updateHeaderStyle('fontFamily',e.target.value)} 
+                                    options={['Segoe UI','Arial','Helvetica','Times New Roman','Georgia','Verdana','Tahoma']}/>
+                                <Stepper label="Name" value={headerStyle.nameSize} min={10} max={30} step={0.5} onChange={(v)=>updateHeaderStyle('nameSize',v)} format={(v)=>`${v}px`} />
+                                <Stepper label="Sub" value={headerStyle.subSize} min={6} max={16} step={0.5} onChange={(v)=>updateHeaderStyle('subSize',v)} format={(v)=>`${v}px`} />
+                                <Stepper label="Addr" value={headerStyle.addressSize} min={5} max={12} step={0.5} onChange={(v)=>updateHeaderStyle('addressSize',v)} format={(v)=>`${v}px`} />
+                                <Stepper label="Email" value={headerStyle.emailSize} min={5} max={12} step={0.5} onChange={(v)=>updateHeaderStyle('emailSize',v)} format={(v)=>`${v}px`} />
+                                <div className="stepper-row">
+                                    <span className="stepper-label">X</span>
+                                    <button className="stepper-btn" onClick={() => updateHeaderStyle('offsetX', Math.max(-60, headerStyle.offsetX - 1))}>−</button>
+                                    <span className="stepper-value">{headerStyle.offsetX}</span>
+                                    <button className="stepper-btn" onClick={() => updateHeaderStyle('offsetX', Math.min(60, headerStyle.offsetX + 1))}>+</button>
+                                </div>
+                                <div className="stepper-row">
+                                    <span className="stepper-label">Y</span>
+                                    <button className="stepper-btn" onClick={() => updateHeaderStyle('offsetY', Math.max(-40, headerStyle.offsetY - 1))}>−</button>
+                                    <span className="stepper-value">{headerStyle.offsetY}</span>
+                                    <button className="stepper-btn" onClick={() => updateHeaderStyle('offsetY', Math.min(40, headerStyle.offsetY + 1))}>+</button>
+                                </div>
+                            </div>
+
+                            <div className="setting-card">
+                                <h4>🖼️ Logo</h4>
+                                <label className="mini-btn" style={{background:'#e2e8f0', textAlign:'center', cursor:'pointer', padding:'4px'}}>
+                                    Upload
+                                    <input type="file" className="hidden" accept="image/*" onChange={(e)=>handleImageUpload(e,'logo')}/>
+                                </label>
+                                <Stepper label="Zoom" value={logoStyle.scale} min={0.5} max={3} step={0.1} onChange={(v)=>updateLogoStyle('scale',v)} format={(v)=>`${v.toFixed(1)}x`} />
+                                <div className="flex justify-center gap-1">
+                                    <button className="mini-btn" onClick={()=>updateLogoStyle('y',logoStyle.y-2)}>▲</button>
+                                    <button className="mini-btn" onClick={()=>updateLogoStyle('x',logoStyle.x-2)}>◀</button>
+                                    <button className="mini-btn" onClick={()=>{updateLogoStyle('x',0);updateLogoStyle('y',0)}}>⊙</button>
+                                    <button className="mini-btn" onClick={()=>updateLogoStyle('x',logoStyle.x+2)}>▶</button>
+                                    <button className="mini-btn" onClick={()=>updateLogoStyle('y',logoStyle.y+2)}>▼</button>
+                                </div>
+                            </div>
+
+                            <div className="setting-card">
+                                <h4>🏷️ Badge</h4>
+                                <MiniSelect value={badgeStyle.fontFamily} onChange={(e)=>updateBadgeStyle('fontFamily',e.target.value)} 
+                                    options={['Segoe UI','Arial','Helvetica','Times New Roman','Georgia','Verdana']}/>
+                                <Stepper label="Size" value={badgeStyle.fontSize} min={8} max={24} step={0.5} onChange={(v)=>updateBadgeStyle('fontSize',v)} format={(v)=>`${v}px`} />
+                            </div>
+
+                            <div className="setting-card">
+                                <h4>👤 Candidate</h4>
+                                <div className="mini-label">Role</div>
+                                <select className="mini-select" value={role} onChange={(e)=>handleRoleChange(e.target.value)}>
+                                    <option value="student">Student</option>
+                                    <option value="faculty">Faculty</option>
+                                    <option value="officeStaff">Office Staff</option>
+                                    <option value="employee">Employee</option>
+                                </select>
+                                <Stepper label="Name Size" value={studentStyle.nameSize} min={8} max={30} step={0.5} onChange={(v)=>updateStudentStyle('nameSize',v)} format={(v)=>`${v}px`} />
+                                <Stepper label="Detail Size" value={studentStyle.courseSize} min={8} max={30} step={0.5} onChange={(v)=>updateStudentStyle('courseSize',v)} format={(v)=>`${v}px`} />
+                                <Stepper label="Label Size" value={studentStyle.labelSize} min={5} max={16} step={0.5} onChange={(v)=>updateStudentStyle('labelSize',v)} format={(v)=>`${v}px`} />
+                                <div className="stepper-row">
+                                    <span className="stepper-label">X</span>
+                                    <button className="stepper-btn" onClick={() => updateStudentStyle('offsetX', Math.max(-60, studentStyle.offsetX - 1))}>−</button>
+                                    <span className="stepper-value">{studentStyle.offsetX}</span>
+                                    <button className="stepper-btn" onClick={() => updateStudentStyle('offsetX', Math.min(60, studentStyle.offsetX + 1))}>+</button>
+                                </div>
+                                <div className="stepper-row">
+                                    <span className="stepper-label">Y</span>
+                                    <button className="stepper-btn" onClick={() => updateStudentStyle('offsetY', Math.max(-40, studentStyle.offsetY - 1))}>−</button>
+                                    <span className="stepper-value">{studentStyle.offsetY}</span>
+                                    <button className="stepper-btn" onClick={() => updateStudentStyle('offsetY', Math.min(40, studentStyle.offsetY + 1))}>+</button>
+                                </div>
+                            </div>
+
+                            <div className="setting-card">
+                                <h4>🔏 Seal</h4>
+                                <select className="mini-select" value={sealStyle.shape} onChange={(e)=>updateSealStyle('shape',e.target.value)}>
+                                    <option value="round">Round</option>
+                                    <option value="oval">Oval</option>
+                                </select>
+                                <Stepper label="Size" value={sealStyle.width} min={50} max={100} step={1} onChange={(v)=>{updateSealStyle('width',v); updateSealStyle('height',v);}} format={(v)=>`${v}px`} />
+                                <Stepper label="Name Font" value={sealStyle.fontSize} min={4} max={12} step={0.5} onChange={(v)=>updateSealStyle('fontSize',v)} format={(v)=>`${v}px`} />
+                                <Stepper label="Sub Font" value={sealStyle.subFontSize} min={3} max={8} step={0.5} onChange={(v)=>updateSealStyle('subFontSize',v)} format={(v)=>`${v}px`} />
+                                <div className="stepper-row">
+                                    <span className="stepper-label">X</span>
+                                    <button className="stepper-btn" onClick={() => updateSealStyle('offsetX', Math.max(-30, sealStyle.offsetX - 1))}>−</button>
+                                    <span className="stepper-value">{sealStyle.offsetX}</span>
+                                    <button className="stepper-btn" onClick={() => updateSealStyle('offsetX', Math.min(30, sealStyle.offsetX + 1))}>+</button>
+                                </div>
+                                <div className="stepper-row">
+                                    <span className="stepper-label">Y</span>
+                                    <button className="stepper-btn" onClick={() => updateSealStyle('offsetY', Math.max(-30, sealStyle.offsetY - 1))}>−</button>
+                                    <span className="stepper-value">{sealStyle.offsetY}</span>
+                                    <button className="stepper-btn" onClick={() => updateSealStyle('offsetY', Math.min(30, sealStyle.offsetY + 1))}>+</button>
+                                </div>
+                            </div>
+
+                            <div className="setting-card" style={{ minWidth:'260px' }}>
+                                <h4>💾 Theme Slots</h4>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {savedThemes.map(slot => (
+                                        <div key={slot.id} className="bg-gray-50 p-1 rounded">
+                                            <input className="mini-select" value={slot.name} onChange={(e)=>updateSlotName(slot.id,e.target.value)}/>
+                                            <div className="flex gap-1 mt-1">
+                                                <button className="mini-btn active" onClick={()=>saveThemeToSlot(slot.id)}>{loadedSlotId===slot.id?'Update':'Save'}</button>
+                                                <button className="mini-btn" disabled={!slot.config} onClick={()=>loadThemeFromSlot(slot.id)}>Load</button>
+                                            </div>
                                         </div>
-                                        <div 
-                                            className="institution-info"
-                                            style={{ 
-                                                fontFamily: headerStyle.fontFamily,
-                                                transform: `translate(${headerStyle.offsetX}px, ${headerStyle.offsetY}px)`
-                                            }}
-                                        >
-                                            <div className="institution-name" style={{ fontSize: `${headerStyle.nameSize}px` }}>
-                                                {data.institutionName || 'INSTITUTION'}
-                                            </div>
-                                            <div className="institution-sub" style={{ fontSize: `${headerStyle.subSize}px` }}>
-                                                {data.institutionSubName || 'TAGLINE'}
-                                            </div>
-                                            <div className="institution-address" style={{ fontSize: `${headerStyle.addressSize}px` }}>
-                                                {data.institutionAddress || 'Address line'}
-                                            </div>
-                                            <div className="institution-email" style={{ fontSize: `${headerStyle.emailSize}px` }}>
-                                                {data.institutionEmail || 'email@domain.com'}
-                                            </div>
-                                        </div>
+                                    ))}
+                                </div>
+                                <button className="mini-btn" style={{background:'#fee2e2', color:'#991b1b'}} onClick={openResetModal}>Reset Saved</button>
+                            </div>
+
+                            <div className="setting-card" style={{ minWidth:'130px' }}>
+                                <h4>⚡ Actions</h4>
+                                <button className="mini-btn active" onClick={downloadPNG}>⬇ PNG</button>
+                                <button className="mini-btn active" onClick={downloadPDF}>⬇ PDF</button>
+                                <button className="mini-btn" onClick={resetTheme}>🔄 Reset</button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="card-area">
+                        <div className="card-drag-handle" onMouseDown={startDrag} onTouchStart={startDrag}>⋮⋮</div>
+                        <div 
+                            ref={cardRef} 
+                            className={`id-card template-${selectedTemplate}`}
+                            style={{ '--card-y': `${cardY}px` }}
+                            onMouseDown={startDrag}
+                            onTouchStart={startDrag}
+                        >
+                            <div className="id-card-header" style={{ backgroundColor: customColors.headerBg, color: headerTextColor }}>
+                                <div className="logo-container">
+                                    {data.logo ? (
+                                        <img src={data.logo} alt="Logo" style={{ width:'100%', height:'100%', objectFit:'cover', transform:`translate(${logoStyle.x}px, ${logoStyle.y}px) scale(${logoStyle.scale})` }}/>
+                                    ) : <span style={{fontSize:'24px',opacity:0.6}}>🏫</span>}
+                                </div>
+                                <div className="institution-info" style={{ fontFamily:headerStyle.fontFamily, transform:`translate(${headerStyle.offsetX}px, ${headerStyle.offsetY}px)` }}>
+                                    <div className="institution-name" style={{ fontSize:`${headerStyle.nameSize}px` }}>{data.institutionName || 'INSTITUTION'}</div>
+                                    <div className="institution-sub" style={{ fontSize:`${headerStyle.subSize}px` }}>{data.institutionSubName || 'TAGLINE'}</div>
+                                    <div className="institution-address" style={{ fontSize:`${headerStyle.addressSize}px` }}>{data.institutionAddress || 'Address'}</div>
+                                    <div className="institution-email" style={{ fontSize:`${headerStyle.emailSize}px` }}>{data.institutionEmail || 'email'}</div>
+                                </div>
+                            </div>
+                            <div className="id-card-body">
+                                <div className="badge" style={{ backgroundColor:customColors.badgeBg, color:customColors.badgeText, fontFamily:badgeStyle.fontFamily, fontSize:`${badgeStyle.fontSize}px` }}>
+                                    {data.badgeText || 'ROLE'}
+                                </div>
+                                <div className="photo-container" style={{ borderColor:customColors.photoBorder }}>
+                                    {data.photo ? <img src={data.photo} alt="Candidate"/> : <span style={{fontSize:'40px',color:'#d1d5db'}}>👤</span>}
+                                </div>
+                                <div style={{ textAlign:'center', width:'100%', fontFamily:studentStyle.fontFamily, transform:`translate(${studentStyle.offsetX}px, ${studentStyle.offsetY}px)` }}>
+                                    <div className="detail-label" style={{ fontSize:`${studentStyle.labelSize}px` }}>{nameLabel}</div>
+                                    <div className="detail-value" style={{ fontSize:`${studentStyle.nameSize}px` }}>{data.candidateName || 'NAME'}</div>
+                                    <div className="detail-label" style={{ fontSize:`${studentStyle.labelSize}px` }}>{detailLabel}</div>
+                                    <div className="course-value" style={{ fontSize:`${studentStyle.courseSize}px`, color:customColors.courseText }}>{data.candidateDetail || 'DETAIL'}</div>
+                                </div>
+                                <div style={{ display:'flex', justifyContent:'center', marginBottom:'2px' }}>
+                                    <OfficialSeal name={data.institutionName||'INSTITUTION'} subName={data.institutionSubName||''} address={data.institutionAddress||''} color={SEAL_COLOR} style={sealStyle}/>
+                                </div>
+                                <div className="info-box" style={{ backgroundColor:customColors.infoBoxBg, borderColor:customColors.infoBoxBg==='#ffffff'?'#e5e7eb':customColors.infoBoxBg }}>
+                                    <div>
+                                        <div className="info-label" style={{ color:customColors.infoLabel }}>{regNoLabel}</div>
+                                        <div className="info-value" style={{ color:customColors.infoValue }}>{data.idNumber || '----'}</div>
                                     </div>
-
-                                    {/* Body */}
-                                    <div className="id-card-body">
-                                        <div 
-                                            className="badge"
-                                            style={{ 
-                                                backgroundColor: customColors.badgeBg, 
-                                                color: customColors.badgeText,
-                                                fontFamily: badgeStyle.fontFamily,
-                                                fontSize: `${badgeStyle.fontSize}px`,
-                                                padding: '4px 20px',
-                                                lineHeight: 1.2
-                                            }}
-                                        >
-                                            {data.badgeText || 'ROLE'}
-                                        </div>
-
-                                        {/* Photo centered */}
-                                        <div 
-                                            className="photo-container"
-                                            style={{ borderColor: customColors.photoBorder }}
-                                        >
-                                            {data.photo ? (
-                                                <img src={data.photo} alt="Candidate" />
-                                            ) : (
-                                                <span style={{ fontSize: '40px', color: '#d1d5db' }}>👤</span>
-                                            )}
-                                        </div>
-
-                                        {/* Name & Detail block centered */}
-                                        <div 
-                                            style={{ 
-                                                textAlign: 'center', 
-                                                width: '100%',
-                                                fontFamily: studentStyle.fontFamily,
-                                                transform: `translate(${studentStyle.offsetX}px, ${studentStyle.offsetY}px)`
-                                            }}
-                                        >
-                                            <div className="detail-label" style={{ fontSize: `${studentStyle.labelSize}px` }}>{nameLabel}</div>
-                                            <div className="detail-value" style={{ fontSize: `${studentStyle.nameSize}px` }}>{data.candidateName || 'NAME'}</div>
-                                            
-                                            <div className="detail-label" style={{ fontSize: `${studentStyle.labelSize}px` }}>{detailLabel}</div>
-                                            <div className="course-value" style={{ fontSize: `${studentStyle.courseSize}px`, color: customColors.courseText }}>{data.candidateDetail || 'DETAIL'}</div>
-                                        </div>
-
-                                        {/* Seal centered */}
-                                        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2px' }}>
-                                            <OfficialSeal 
-                                                name={data.institutionName || 'INSTITUTION'}
-                                                subName={data.institutionSubName || ''}
-                                                address={data.institutionAddress || ''}
-                                                color={SEAL_COLOR}
-                                            />
-                                        </div>
-
-                                        <div 
-                                            className="info-box"
-                                            style={{ backgroundColor: customColors.infoBoxBg, borderColor: customColors.infoBoxBg === '#ffffff' ? '#e5e7eb' : customColors.infoBoxBg }}
-                                        >
-                                            <div>
-                                                <div className="info-label" style={{ color: customColors.infoLabel }}>{regNoLabel}</div>
-                                                <div className="info-value" style={{ color: customColors.infoValue }}>{data.idNumber || '----'}</div>
-                                            </div>
-                                            <div>
-                                                <div className="info-label" style={{ color: customColors.infoLabel }}>Phone</div>
-                                                <div className="info-value" style={{ color: customColors.infoValue }}>{data.contact || '----'}</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="footer-text">Return to: {data.returnPhone}</div>
+                                    <div>
+                                        <div className="info-label" style={{ color:customColors.infoLabel }}>Phone</div>
+                                        <div className="info-value" style={{ color:customColors.infoValue }}>{data.contact || '----'}</div>
                                     </div>
                                 </div>
-
-                                {/* Download Buttons */}
-                                <div className="flex gap-3 mt-4 w-full justify-center">
-                                    <button 
-                                        onClick={downloadPNG}
-                                        className="download-btn bg-indigo-600 hover:bg-indigo-700"
-                                    >
-                                        ⬇ Download as PNG
-                                    </button>
-                                    <button 
-                                        onClick={downloadPDF}
-                                        className="download-btn bg-rose-600 hover:bg-rose-700"
-                                    >
-                                        ⬇ Download as PDF
-                                    </button>
-                                </div>
+                                <div className="footer-text">{data.returnPhone ? `Return to: ${data.returnPhone}` : ''}</div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Reset Confirmation Modal */}
+                    {!editMode && (
+                        <div className="download-bar-fixed">
+                            <button className="download-btn bg-indigo-600" onClick={downloadPNG}>⬇ Download PNG</button>
+                            <button className="download-btn bg-rose-600" onClick={downloadPDF}>⬇ Download PDF</button>
+                        </div>
+                    )}
+
                     {showResetModal && (
-                        <div className="modal-overlay">
-                            <div className="modal-content">
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">⚠️ Reset Saved Themes</h3>
-                                <p className="text-sm text-gray-600 mb-4">
-                                    ഇത് നിങ്ങൾ സേവ് ചെയ്ത എല്ലാ ഇഷ്‌ടാനുസൃത തീമുകളും ഇല്ലാതാക്കും. 
-                                    ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാവില്ല.
-                                </p>
-                                <p className="text-sm text-gray-700 mb-2">
-                                    ഗണിത പ്രശ്നം പരിഹരിക്കുക: 
-                                    <strong> {mathQuestion.a} + {mathQuestion.b} = ?</strong>
-                                </p>
-                                <input
-                                    type="number"
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:ring-2 focus:ring-indigo-500 outline-none"
-                                    value={userAnswer}
-                                    onChange={(e) => setUserAnswer(e.target.value)}
-                                    placeholder="ഉത്തരം നൽകുക"
-                                />
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={confirmReset}
-                                        className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 transition-colors"
-                                    >
-                                        Confirm Reset
-                                    </button>
-                                    <button
-                                        onClick={() => setShowResetModal(false)}
-                                        className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 transition-colors"
-                                    >
-                                        Cancel
-                                    </button>
+                        <div style={{ position:'fixed', top:0,left:0,right:0,bottom:0, background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000 }}>
+                            <div style={{ background:'white', borderRadius:12, padding:20, width:'90%', maxWidth:400 }}>
+                                <h3 style={{fontSize:18, fontWeight:'bold', marginBottom:8}}>⚠️ Reset Saved Themes</h3>
+                                <p style={{fontSize:14, color:'#4b5563', marginBottom:16}}>ഇത് സേവ് ചെയ്ത എല്ലാ തീമുകളും ഇല്ലാതാക്കും. ഉറപ്പാണോ?</p>
+                                <div style={{display:'flex', gap:10}}>
+                                    <button style={{flex:1, padding:10, background:'#dc2626', color:'white', border:'none', borderRadius:8, fontWeight:'bold', cursor:'pointer'}} onClick={confirmReset}>Confirm Reset</button>
+                                    <button style={{flex:1, padding:10, background:'#e5e7eb', color:'#374151', border:'none', borderRadius:8, fontWeight:'bold', cursor:'pointer'}} onClick={()=>setShowResetModal(false)}>Cancel</button>
                                 </div>
                             </div>
                         </div>
