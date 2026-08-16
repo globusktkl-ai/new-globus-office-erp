@@ -99,7 +99,7 @@
 <body>
 
     <div class="login-card">
-        <img src="assets/images/logo.png" alt="Institution Logo" class="login-logo">
+        <img src="assets/images/logo.png" alt="Institution Logo" class="login-logo" onerror="this.src='https://via.placeholder.com/150x100?text=LOGO'">
         <p class="login-subtitle" style="margin-top: 10px;">Sign in to access your dashboard</p>
 
         <form id="loginForm">
@@ -123,7 +123,31 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // Check if already logged in (Admin/Staff OR Guest)
+        // ==========================================
+        // MAGIC ALERT OVERRIDE FOR LOGIN ERRORS
+        // ==========================================
+        window.alert = function(msg) {
+            const oldBox = document.getElementById('customPromptBox'); 
+            if (oldBox) oldBox.remove();
+            const box = document.createElement('div'); 
+            box.id = 'customPromptBox';
+            
+            let iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
+            
+            box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
+            box.innerHTML = `
+                <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
+                    ${iconHtml}
+                    <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
+                    <button id="cAlertOk" style="width: 100%; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s;">Try Again</button>
+                </div>
+            `;
+            if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
+            document.body.appendChild(box);
+            document.getElementById('cAlertOk').onclick = () => box.remove();
+        };
+
+        // Check if already logged in
         const checkExistingSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             const userRole = localStorage.getItem('userRole');
@@ -133,7 +157,7 @@
         };
         checkExistingSession();
 
-        // 1. NORMAL LOGIN (Admin & Staff)
+        // 1. NORMAL LOGIN (Super Admin, Admin & Staff)
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
@@ -146,28 +170,37 @@
             const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
 
             if (error) {
-                alert('Login Failed: Invalid Email or Password.');
+                alert('⚠️ Login Failed: Invalid Email or Password.');
                 btn.textContent = 'Secure Sign In'; btn.disabled = false;
             } else {
-                // Role Checking
-                let userRole = 'Admin'; // Default assumption for the original owner
                 
-                // Check if this email exists in our new 'staff' table
+                // ROLE CHECKING SYSTEM
+                // Default is 'Super Admin' (Owner of the software)
+                let userRole = 'Super Admin'; 
+                
+                // Check if this email exists in our 'staff' table
                 const { data: staffData } = await supabase.from('staff').select('role, status').eq('email', email).single();
                 
                 if (staffData) {
                     if (staffData.status !== 'Active') {
-                        alert('Account Disabled: Your access has been revoked by the Administrator.');
+                        alert('❌ Account Disabled: Your access has been revoked by the Administrator.');
                         await supabase.auth.signOut();
                         btn.textContent = 'Secure Sign In'; btn.disabled = false;
                         return;
                     }
-                    userRole = staffData.role; // e.g., 'Teacher', 'Office Staff', 'Office Manager'
+                    
+                    // Categorize Roles
+                    if (staffData.role === 'Manager' || staffData.role === 'Admin' || staffData.role === 'Office Manager') {
+                        userRole = 'Admin'; 
+                    } else {
+                        userRole = 'Staff'; // Teachers, Office Staff, etc.
+                    }
                 }
 
-                // Save role in local storage for access control in dashboard
+                // Save role and email in local storage for access control across the software
                 localStorage.setItem('userRole', userRole);
                 localStorage.setItem('userEmail', email);
+                localStorage.setItem('loginTime', Date.now());
                 
                 window.location.href = 'dashboard.html';
             }
@@ -175,10 +208,10 @@
 
         // 2. GUEST LOGIN (Read-Only Demo)
         window.guestLogin = function() {
-            // Bypass Supabase Auth, just set local storage flags
+            // Bypass Supabase Auth, just set local storage flags for Demo Mode
             localStorage.setItem('userRole', 'Guest');
             localStorage.setItem('userEmail', 'guest@demo.com');
-            localStorage.setItem('guestLoginTime', Date.now()); // For the 30-min timer
+            localStorage.setItem('guestLoginTime', Date.now()); // For the 30-min timer limit
             
             window.location.href = 'dashboard.html';
         };
