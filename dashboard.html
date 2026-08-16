@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard</title>
+    <title>Dashboard - Master Control</title>
     <link rel="stylesheet" href="assets/css/style.css">
 
     <style>
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        /* Dynamic Background Color Variable */
+        :root {
+            --app-theme-color: #2563eb;
+        }
         body { background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%); min-height: 100vh; }
         .main-content { padding: 12px; max-width: 1000px; margin: 0 auto; }
         
@@ -77,6 +81,7 @@
         .nav-btn:active .nav-icon { transform: scale(0.9); }
         .nav-icon svg { width: 22px; height: 22px; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
         
+        /* Apply dynamic theme color to generic icons */
         .icon-bg-adm { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
         .icon-bg-dir { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
         .icon-bg-staff { background: linear-gradient(135deg, #ccfbf1, #99f6e4); }
@@ -96,7 +101,7 @@
         /* HEADER */
         .header-auth-section { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.9); padding: 4px 4px 4px 12px; border-radius: 30px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04); }
         .logged-in-text { font-size: 10px; font-weight: 700; color: #64748b; display: flex; flex-direction: column; text-align: right; line-height: 1.2; }
-        .logged-in-email { color: #1e3a8a; font-weight: 900; font-size: 11px; }
+        .logged-in-email { color: var(--app-theme-color); font-weight: 900; font-size: 11px; }
         .btn-logout-round { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); flex-shrink: 0; }
         .btn-settings-round { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3); flex-shrink: 0; transition: 0.2s; margin-right: 12px; }
         .btn-settings-round:active { transform: scale(0.95); }
@@ -106,12 +111,6 @@
         .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
         .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
         label { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block; }
-        
-        /* CUSTOM TOAST NOTIFICATION */
-        .toast { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-left: 4px solid #3b82f6; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; white-space: normal; max-width: 90%; text-align: left; line-height: 1.4; opacity: 0; visibility: hidden; }
-        .toast.show { top: 20px; opacity: 1; visibility: visible; }
-        .toast.success { border-left-color: #10b981; }
-        .toast.error { border-left-color: #ef4444; }
 
     </style>
 </head>
@@ -127,10 +126,10 @@
         <div class="header-right">
             <div class="header-auth-section">
                 <div class="logged-in-text">
-                    <span>Admin</span>
+                    <span id="authRoleTitle">Admin</span>
                     <span class="logged-in-email" id="authEmail">Loading...</span>
                 </div>
-                <button class="btn-settings-round" onclick="window.openSecurityGate()" title="Institute Core Settings">
+                <button class="btn-settings-round" onclick="window.openSecurityGate()" title="Master Settings & Theming" style="display: none;">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="3"></circle>
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -186,7 +185,7 @@
         </div>
 
         <!-- UNIFIED FINANCE CARD -->
-        <div class="unified-finance-card">
+        <div class="unified-finance-card" id="financeOverviewCard">
             <div class="uf-panel uf-left">
                 <div>
                     <div class="uf-header">
@@ -237,6 +236,23 @@
             <div class="alert-ticker-track" id="alertTickerTrack"></div>
         </div>
 
+        <!-- NEW: SUPER ADMIN SECTION (Activity Logs) -->
+        <div class="module-section" id="superAdminSection" style="display: none; border-color: #c4b5fd;">
+            <h2 class="section-heading" style="color: #5b21b6; margin: 0 !important;">
+                <span class="section-heading-icon" style="background: linear-gradient(135deg, #6d28d9, #8b5cf6);">
+                    <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </span>
+                Super Admin Controls
+            </h2>
+            <div class="nav-grid">
+                <a href="#" class="nav-btn" onclick="showToast('Activity Logs module is under development. Coming soon!', 'success')">
+                    <span class="nav-icon" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </span>Activity Logs
+                </a>
+            </div>
+        </div>
+
         <!-- ACADEMIC & ADMIN SECTION -->
         <div class="module-section">
             <h2 class="section-heading" style="color: #1e3a8a; margin: 0 !important;">
@@ -265,7 +281,7 @@
                     </span>Directory
                 </a>
                 
-                <a href="staff.html" class="nav-btn">
+                <a href="staff.html" class="nav-btn" id="navStaffBtn">
                     <span class="nav-icon icon-bg-staff">
                         <svg viewBox="0 0 24 24" fill="none" stroke="url(#grad-staff)">
                             <defs>
@@ -339,7 +355,7 @@
         </div>
 
         <!-- FINANCE & ACCOUNTS SECTION -->
-        <div class="module-section">
+        <div class="module-section" id="financeSection">
             <h2 class="section-heading" style="color: #064e3b; margin: 0 !important;">
                 <span class="section-heading-icon" style="background: linear-gradient(135deg, #047857, #10b981);">
                     <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -357,7 +373,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="#be185d"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="13" y2="11"/></svg>
                     </span>Day Book
                 </a>
-                <a href="report.html" class="nav-btn">
+                <a href="report.html" class="nav-btn" id="navMasterReportBtn">
                     <span class="nav-icon icon-bg-rpt">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                     </span>Master Day Book
@@ -366,36 +382,41 @@
         </div>
     </main>
 
-    <!-- CUSTOM SECURITY GATE MODAL (Replaces Browser Prompts) -->
-    <div id="securityGateModal" class="modal-overlay" style="z-index: 2000;">
-        <div class="modal-container" style="max-width: 320px; text-align: center;">
-            <div style="background:#fee2e2; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;">
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="#dc2626" stroke-width="2" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>
-            </div>
-            <h3 style="color:#0f172a; margin-bottom:8px; font-size:16px;">Admin Authentication</h3>
-            <p style="color:#64748b; font-size:12px; margin-bottom:15px; font-weight:600; line-height:1.4;">Only authorized administrators can access core settings. Enter access code to proceed.</p>
-            <input type="password" id="adminPassInput" class="form-control" placeholder="Type ADMIN here" style="text-align:center; font-weight:900; letter-spacing:2px; text-transform:uppercase;">
-            <div style="display:flex; gap:10px;">
-                <button onclick="document.getElementById('securityGateModal').style.display='none'" style="flex:1; background:#f1f5f9; color:#475569; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">Cancel</button>
-                <button onclick="window.verifySecurityGate()" style="flex:1; background:#2563eb; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">Unlock</button>
-            </div>
-        </div>
-    </div>
-
     <!-- SETTINGS MODAL -->
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-container">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #1e3a8a;">⚙️ Institute Settings</h3>
+                <h3 style="margin: 0; color: #1e3a8a;">⚙️ Master Settings Panel</h3>
                 <button onclick="window.closeSettingsModal()" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">X</button>
             </div>
             
             <div id="settingsNormalView">
+                <!-- Theme & System Settings (SaaS Feature) -->
+                <h4 style="color: #475569; font-size: 13px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase;">🎨 System & Theme Control</h4>
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                    <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-weight: 800; cursor: pointer;">
+                        Enable Guest (Demo) Login
+                        <input type="checkbox" id="set_guest_login" style="width:18px; height:18px; accent-color: #2563eb;">
+                    </label>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <label style="margin:0; font-weight: 800;">App Primary Color</label>
+                        <input type="color" id="set_theme_color" value="#2563eb" style="border:none; width:40px; height:30px; border-radius:4px; cursor:pointer;">
+                    </div>
+                    <label style="font-weight: 800;">Menu Button Style</label>
+                    <select id="set_menu_style" class="form-control" style="margin-bottom:0;">
+                        <option value="modern">Modern Rounded</option>
+                        <option value="flat">Flat Professional</option>
+                    </select>
+                </div>
+
+                <!-- White Label Settings -->
+                <h4 style="color: #475569; font-size: 13px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase;">🏢 Institute Branding</h4>
                 <form id="settingsForm" onsubmit="saveSettings(event)">
                     <label>Institute Main Name</label><input type="text" id="set_name" class="form-control" required>
                     <label>Sub Name / Tagline</label><input type="text" id="set_sub" class="form-control">
                     <label>Full Address</label><input type="text" id="set_address" class="form-control">
                     <div style="display: flex; gap: 10px;"><div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control"></div><div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div></div>
+                    
                     <div style="display: flex; gap: 10px; margin-top: 10px;">
                         <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
                     </div>
@@ -431,26 +452,28 @@
         </div>
     </div>
 
-    <div class="toast" id="toast"></div>
-
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
         // -----------------------------------------------------
-        // MAGIC PROMPT (Mathematical Verification Modal)
+        // MAGIC PROMPT (Verification Modal replacing native prompt)
         // -----------------------------------------------------
-        window.magicPrompt = function(msg) {
+        window.magicPrompt = function(msg, isText = false) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
                 const box = document.createElement('div'); box.id = 'customPromptBox';
                 box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
+                
+                let inputType = isText ? "text" : "number";
+                let btnColor = "#3b82f6";
+
                 box.innerHTML = `
                     <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
                         <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 16px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
-                        <input type="number" id="cPromptInput" style="width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 20px; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; color: #1e293b;" autocomplete="off">
+                        <input type="${inputType}" id="cPromptInput" style="width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 20px; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; color: #1e293b;" autocomplete="off">
                         <div style="display: flex; gap: 12px;">
                             <button id="cPromptCancel" style="flex: 1; padding: 12px; background: #f1f5f9; color: #475569; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer;">Cancel</button>
-                            <button id="cPromptOk" style="flex: 1; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer;">Verify</button>
+                            <button id="cPromptOk" style="flex: 1; padding: 12px; background: ${btnColor}; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer;">Verify</button>
                         </div>
                     </div>
                 `;
@@ -463,11 +486,41 @@
         };
 
         // -----------------------------------------------------
+        // MAGIC ALERT
+        // -----------------------------------------------------
+        window.alert = function(msg) {
+            const oldBox = document.getElementById('customPromptBox'); 
+            if (oldBox) oldBox.remove();
+            const box = document.createElement('div'); 
+            box.id = 'customPromptBox';
+            
+            let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
+            
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('Denied')) {
+                iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
+            } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successfully')) {
+                iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
+            }
+
+            box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
+            box.innerHTML = `
+                <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
+                    ${iconHtml}
+                    <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
+                    <button id="cAlertOk" style="width: 100%; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s;">OK, Got it</button>
+                </div>
+            `;
+            if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
+            document.body.appendChild(box);
+            document.getElementById('cAlertOk').onclick = () => box.remove();
+        };
+
+        // -----------------------------------------------------
         // OPEN ID CARD STUDIO (With Security check)
         // -----------------------------------------------------
         window.openIDStudioSecure = async function() {
             if (localStorage.getItem('userRole') === 'Guest') { 
-                showToast("⚠️ ID Studio is locked in Guest mode.", "error"); 
+                alert("⚠️ ID Studio is locked in Guest mode."); 
                 return; 
             }
             
@@ -476,10 +529,9 @@
             let userInput = await window.magicPrompt(`🔒 Security Verification\nTo open ID Card Studio, please solve:\n\n${num1} + ${num2} = ?`);
             
             if (userInput !== null && parseInt(userInput) === (num1+num2)) {
-                // കണക്ക് ശരിയാണെങ്കിൽ ഐഡി കാർഡ് ഫയലിലേക്ക് പോകും 
                 window.location.href = 'id card generator.html'; 
             } else {
-                if(userInput !== null) showToast('❌ Verification failed! Access denied.', 'error');
+                if(userInput !== null) alert('❌ Verification failed! Access denied.');
             }
         };
 
@@ -489,10 +541,8 @@
         let settingsInteracted = false;
 
         function showToast(msg, type = 'success') {
-            const t = document.getElementById('toast');
-            t.innerHTML = (type === 'success' ? '✅ ' : '⚠️ ') + msg;
-            t.className = 'toast ' + type + ' show';
-            setTimeout(() => t.classList.remove('show'), 3500);
+            // Re-routing old toast calls to the new Magic Alert for Dashboard settings
+            alert(msg);
         }
 
         // ==========================================
@@ -514,7 +564,8 @@
                     return;
                 }
                 
-                document.getElementById('authEmail').innerText = "Demo Guest";
+                document.getElementById('authRoleTitle').innerText = "Guest Demo";
+                document.getElementById('authEmail').innerText = "Read Only";
                 
                 // Auto-kick out when 30 mins are up
                 const timeLeft = (30 * 60 * 1000) - timePassed;
@@ -536,6 +587,7 @@
                 return; 
             }
             
+            document.getElementById('authRoleTitle').innerText = userRole || "Admin";
             document.getElementById('authEmail').innerText = session.user.email.split('@')[0];
             
             applyRoleAccess(userRole || 'Admin');
@@ -555,28 +607,38 @@
         // ==========================================
         window.applyRoleAccess = function(role) {
             const settingsBtn = document.querySelector('.btn-settings-round');
-            const staffBtn = document.querySelector('a[href="staff.html"]');
-            const financeSection = document.querySelectorAll('.module-section')[1]; // The Finance Block
-            const masterDayBookBtn = document.querySelector('a[href="report.html"]');
-            
+            const staffBtn = document.getElementById('navStaffBtn');
+            const financeSection = document.getElementById('financeSection');
+            const masterDayBookBtn = document.getElementById('navMasterReportBtn');
+            const superAdminSection = document.getElementById('superAdminSection');
+
+            // 1. Super Admin Full Access
+            if (role === 'Super Admin') {
+                if(superAdminSection) superAdminSection.style.display = 'block';
+                if(settingsBtn) settingsBtn.style.display = 'flex';
+            } else {
+                if(superAdminSection) superAdminSection.style.display = 'none';
+                if(settingsBtn) settingsBtn.style.display = 'none';
+            }
+
+            // 2. Guest Access
             if (role === 'Guest') {
-                // Guest can see everything but cannot open settings
-                settingsBtn.onclick = () => showToast("Settings are locked in Demo Mode", "error");
+                // Everything visible, but read-only (handled inside individual files)
             } 
+            // 3. Teacher Access
             else if (role === 'Teacher') {
-                settingsBtn.style.display = 'none';
                 if(staffBtn) staffBtn.style.display = 'none';
                 if(financeSection) financeSection.style.display = 'none'; // Teachers don't see money
             } 
+            // 4. Office Staff Access
             else if (role === 'Office Staff') {
-                settingsBtn.style.display = 'none';
                 if(staffBtn) staffBtn.style.display = 'none';
                 if(masterDayBookBtn) masterDayBookBtn.style.display = 'none'; // Staff can collect fee, but no master reports
             } 
-            else if (role === 'Office Manager') {
-                settingsBtn.style.display = 'none'; // Manager sees everything except Core Settings
+            // 5. Office Manager / Admin Access
+            else if (role === 'Admin') {
+                // Manager sees everything except Super Admin Settings & Logs
             }
-            // If 'Admin', do nothing (Full Access)
         };
 
         // ==========================================
@@ -710,24 +772,23 @@
                 clearTimeout(settingsTimer);
                 settingsTimer = setTimeout(() => {
                     window.closeSettingsModal();
-                    showToast("Settings auto-closed due to 1 minute inactivity.", "error");
+                    alert("⚠️ Settings auto-closed due to 1 minute inactivity.");
                 }, 60000); 
             }
         };
 
-        window.openSecurityGate = function() {
-            document.getElementById('adminPassInput').value = '';
-            document.getElementById('securityGateModal').style.display = 'flex';
-            setTimeout(() => document.getElementById('adminPassInput').focus(), 100);
-        };
-
-        window.verifySecurityGate = function() {
-            const input = document.getElementById('adminPassInput').value.trim().toUpperCase();
-            if(input === "ADMIN") {
-                document.getElementById('securityGateModal').style.display = 'none';
+        window.openSecurityGate = async function() {
+            if (localStorage.getItem('userRole') !== 'Super Admin') {
+                alert("❌ Access Denied! Only Super Admin can access Core Settings.");
+                return;
+            }
+            
+            let ans = await window.magicPrompt("🛡️ Super Admin Authentication\n\nEnter the Master Pin (Hint: 1234):", false);
+            
+            if (ans === "1234") { // Or check against DB value later
                 window.openSettings();
-            } else {
-                showToast("Access Denied! Incorrect code.", "error");
+            } else if (ans !== null) {
+                alert("❌ Access Denied! Incorrect PIN.");
             }
         };
 
@@ -736,6 +797,14 @@
                 document.getElementById('settingsNormalView').style.display = 'block';
                 document.getElementById('settingsWipeView').style.display = 'none';
 
+                // Load existing SaaS Settings from local storage (For now)
+                const storedTheme = localStorage.getItem('globus_theme_color');
+                const guestToggle = localStorage.getItem('globus_allow_guest');
+                
+                if (storedTheme) document.getElementById('set_theme_color').value = storedTheme;
+                if (guestToggle !== null) document.getElementById('set_guest_login').checked = (guestToggle === 'true');
+
+                // Load DB Institute Settings
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
                     document.getElementById('set_name').value = data.institute_name || '';
@@ -752,8 +821,8 @@
             clearTimeout(settingsTimer);
             settingsTimer = setTimeout(() => {
                 window.closeSettingsModal();
-                showToast("Settings auto-closed (30s timeout).", "error");
-            }, 30000); 
+                alert("⚠️ Settings auto-closed (60s timeout).");
+            }, 60000); 
         };
 
         window.saveSettings = async function(e) {
@@ -762,6 +831,15 @@
             const oldText = btn.innerHTML;
             btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
             
+            // Save SaaS Features Locally
+            const themeColor = document.getElementById('set_theme_color').value;
+            const allowGuest = document.getElementById('set_guest_login').checked;
+            localStorage.setItem('globus_theme_color', themeColor);
+            localStorage.setItem('globus_allow_guest', allowGuest);
+
+            // Update Root Color
+            document.documentElement.style.setProperty('--app-theme-color', themeColor);
+
             const updates = {
                 institute_name: document.getElementById('set_name').value,
                 sub_name: document.getElementById('set_sub').value,
@@ -772,10 +850,10 @@
             
             const { error } = await supabase.from('institute_settings').update(updates).eq('id', 1);
             if(error) { 
-                showToast("Error saving settings.", "error"); 
+                alert("❌ Error saving settings."); 
                 btn.innerHTML = oldText; btn.disabled = false;
             } else { 
-                showToast("Settings Saved Successfully!"); 
+                alert("✅ Settings Saved Successfully!"); 
                 window.closeSettingsModal(); 
                 loadSettings(); 
             }
@@ -783,6 +861,12 @@
 
         async function loadSettings() {
             try {
+                // Apply SaaS Theme Color
+                const storedTheme = localStorage.getItem('globus_theme_color');
+                if (storedTheme) {
+                    document.documentElement.style.setProperty('--app-theme-color', storedTheme);
+                }
+
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
                     document.getElementById('navInstName').innerText = data.institute_name || '';
@@ -823,11 +907,14 @@
             const userCaptcha = parseInt(document.getElementById('captchaInput').value);
             const userText = document.getElementById('wipeConfirmText').value.trim().toUpperCase();
 
-            if (userCaptcha !== expectedCaptchaAns) { showToast("Math Captcha is incorrect!", "error"); return; }
-            if (userText !== "WIPE") { showToast("You must type exactly 'WIPE' to confirm.", "error"); return; }
+            if (userCaptcha !== expectedCaptchaAns) { alert("❌ Math Captcha is incorrect!"); return; }
+            if (userText !== "WIPE") { alert("❌ You must type exactly 'WIPE' to confirm."); return; }
 
-            const finalWarning = confirm("🚨 FINAL WARNING: ALL student data, staff details, attendance, fees, inventory, enquiries, and expenses will be permanently deleted. Only Courses will remain. Are you absolutely sure?");
-            if(!finalWarning) return;
+            const finalWarning = await window.magicPrompt("🚨 FINAL WARNING: ALL student data, staff details, attendance, fees, inventory, enquiries, and expenses will be permanently deleted. Only Courses will remain. \n\nType 'CONFIRM' to proceed:", true);
+            if (finalWarning !== 'CONFIRM') {
+                alert("❌ Action cancelled.");
+                return;
+            }
 
             const btn = document.getElementById('executeWipeBtn');
             btn.innerHTML = "⏳ WIPING DATA..."; btn.disabled = true;
@@ -848,11 +935,11 @@
                     supabase.from('staff').delete().not('id', 'is', null)
                 ]);
 
-                showToast("All User Data wiped successfully!");
+                alert("✅ All User Data wiped successfully!");
                 setTimeout(() => { window.location.reload(); }, 2000);
 
             } catch (err) {
-                showToast("Error wiping data. Check console.", "error");
+                alert("❌ Error wiping data. Check console.");
                 btn.innerHTML = "🔥 CONFIRM WIPE"; btn.disabled = false;
             }
         };
