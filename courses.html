@@ -120,7 +120,7 @@
     </main>
 
     <!-- Course Details / Edit Modal Popup -->
-    <div id="courseModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; justify-content:center; align-items:flex-start; padding:30px 15px; overflow-y:auto;">
+    <div id="courseModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; justify-content:center; align-items:flex-start; padding:30px 15px; overflow-y:auto; backdrop-filter: blur(4px);">
         <div style="background:#fff; width:100%; max-width:500px; border-radius:12px; padding:20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin: auto;">
             <h3 id="modalTitle" style="margin-bottom:15px; font-size:18px; color:var(--primary-dark);">Course Details</h3>
             <div id="modalContent"></div>
@@ -132,6 +132,76 @@
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
+
+        // ==========================================
+        // NEW MAGIC ALERT OVERRIDE FOR ALL WARNINGS AND ERRORS
+        // ==========================================
+        window.alert = function(msg) {
+            const oldBox = document.getElementById('customPromptBox'); 
+            if (oldBox) oldBox.remove();
+            const box = document.createElement('div'); 
+            box.id = 'customPromptBox';
+            
+            let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
+            
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('cancelled') || msg.includes('does not match')) {
+                iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
+            } else if (msg.includes('✅') || msg.includes('success') || msg.includes('successfully') || msg.includes('added')) {
+                iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
+            }
+
+            box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
+            box.innerHTML = `
+                <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
+                    ${iconHtml}
+                    <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
+                    <button id="cAlertOk" style="width: 100%; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s;">OK, Got it</button>
+                </div>
+            `;
+            if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
+            document.body.appendChild(box);
+            document.getElementById('cAlertOk').onclick = () => box.remove();
+        };
+
+        // ==========================================
+        // NEW MAGIC PROMPT FOR VERIFICATIONS (Math / Text)
+        // ==========================================
+        window.magicPrompt = function(msg, isText = false) {
+            return new Promise((resolve) => {
+                const oldBox = document.getElementById('customPromptBox');
+                if (oldBox) oldBox.remove();
+                
+                const box = document.createElement('div');
+                box.id = 'customPromptBox';
+                box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
+                
+                let inputType = isText ? "text" : "number";
+                let btnColor = isText ? "#dc2626" : "#3b82f6";
+                let btnText = isText ? "Delete" : "Verify";
+                let iconHtml = isText ? `<div style="background:#fee2e2; color:#dc2626; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div>` : ``;
+
+                box.innerHTML = `
+                    <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
+                        ${iconHtml}
+                        <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 16px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
+                        <input type="${inputType}" id="cPromptInput" style="width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: ${isText ? '16px' : '20px'}; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; color: #1e293b;" autocomplete="off">
+                        <div style="display: flex; gap: 12px;">
+                            <button id="cPromptCancel" style="flex: 1; padding: 12px; background: #f1f5f9; color: #475569; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer;">Cancel</button>
+                            <button id="cPromptOk" style="flex: 1; padding: 12px; background: ${btnColor}; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer;">${btnText}</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(box);
+                
+                const input = document.getElementById('cPromptInput');
+                input.focus();
+                
+                document.getElementById('cPromptCancel').onclick = () => { box.remove(); resolve(null); };
+                document.getElementById('cPromptOk').onclick = () => { box.remove(); resolve(input.value); };
+                input.addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('cPromptOk').click(); });
+            });
+        };
+
         let allCourses = [];
 
         // PREVENT SCROLL WHEEL ON NUMBER INPUTS (Global Listener)
@@ -177,7 +247,7 @@
             container.innerHTML = '';
 
             if (courses.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:15px; color:#ef4444;">No courses found.</div>';
+                container.innerHTML = '<div style="text-align:center; padding:15px; color:#ef4444; font-weight:bold;">No courses found.</div>';
                 return;
             }
 
@@ -218,6 +288,8 @@
 
         document.getElementById('courseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode. You cannot add new courses."); return; }
+
             const name = document.getElementById('courseName').value.trim();
             const duration = document.getElementById('courseDuration').value.trim();
             const fee = Number(document.getElementById('courseFee').value);
@@ -240,9 +312,9 @@
             }]);
 
             if (error) {
-                alert('Error: ' + error.message);
+                alert('❌ Error: ' + error.message);
             } else {
-                alert('Course added successfully!');
+                alert('✅ Course added successfully!');
                 document.getElementById('courseForm').reset();
                 updateSelectColor(document.getElementById('courseStatus')); // Reset color
                 
@@ -303,7 +375,6 @@
                 `;
             });
 
-            // Set background color for the select based on status
             const statusBg = c.status === 'Active' ? '#dcfce7' : '#fee2e2';
             const statusCol = c.status === 'Active' ? '#166534' : '#991b1b';
 
@@ -349,14 +420,14 @@
 
         window.saveCourseEdit = async function(e, id) {
             e.preventDefault();
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
             
             // MATH CAPTCHA SECURITY
             let n1 = Math.floor(Math.random() * 10) + 1;
             let n2 = Math.floor(Math.random() * 10) + 1;
-            let ans = prompt(`Security Verification 🔒\nTo update course details, please solve:\n${n1} + ${n2} = ?`);
+            let ans = await window.magicPrompt(`🔒 Security Verification \nTo update course details, please solve:\n\n${n1} + ${n2} = ?`);
             
             if (ans === null) {
-                alert('Update cancelled.');
                 return;
             } else if (parseInt(ans) !== (n1 + n2)) {
                 alert('❌ Incorrect answer! Update aborted.');
@@ -382,7 +453,7 @@
             }).eq('id', id);
 
             if (error) {
-                alert('Error updating: ' + error.message);
+                alert('❌ Error updating: ' + error.message);
             } else {
                 alert('✅ Course updated successfully!');
                 closeModal();
@@ -391,17 +462,20 @@
         };
 
         window.deleteCourse = async function(id, courseName) {
-            const confirmName = prompt(`⚠️ Are you sure you want to delete this course?\nType the course name "${courseName}" to confirm:`);
-            if (confirmName === courseName) {
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            
+            let confirmName = await window.magicPrompt(`⚠️ Are you sure you want to delete this course?\n\nType the course name exactly as shown below to confirm:\n\n"${courseName}"`, true);
+            
+            if (confirmName !== null && confirmName.trim() === courseName) {
                 const { error } = await supabase.from('courses').delete().eq('id', id);
                 if (error) {
-                    alert('Error deleting course (It might be linked to students): ' + error.message);
+                    alert('❌ Error deleting course (It might be linked to students): ' + error.message);
                 } else {
-                    alert('Course deleted successfully!');
+                    alert('✅ Course deleted successfully!');
                     fetchCourses();
                 }
             } else if (confirmName !== null) {
-                alert('Course name does not match. Deletion cancelled.');
+                alert('❌ Course name does not match. Deletion cancelled.');
             }
         };
 
