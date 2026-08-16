@@ -163,8 +163,6 @@
 
     <main class="main-content no-print">
         
-        
-        <!-- NEW ADVANCED FILTER UI REPLACED HERE -->
         <div class="search-container">
             <input type="text" id="searchInput" class="main-search-box" placeholder="Search Name, Reg No, Phone..." oninput="window.applyFilters()">
             
@@ -410,9 +408,73 @@
         </div>
     </div>
 
-    <!-- JS LOGIC UNTOUCHED EXCEPT FOR FILTER ADDITIONS -->
+    <!-- JS LOGIC -->
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
+        
+        // ==========================================
+        // NEW MAGIC ALERT OVERRIDE FOR ALL WARNINGS AND ERRORS
+        // ==========================================
+        window.alert = function(msg) {
+            const oldBox = document.getElementById('customPromptBox'); 
+            if (oldBox) oldBox.remove();
+            const box = document.createElement('div'); 
+            box.id = 'customPromptBox';
+            
+            let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
+            
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Warning') || msg.includes('Cannot')) {
+                iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
+            } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successfully') || msg.includes('Saved') || msg.includes('Completed')) {
+                iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
+            }
+
+            box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
+            box.innerHTML = `
+                <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
+                    ${iconHtml}
+                    <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
+                    <button id="cAlertOk" style="width: 100%; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s;">OK, Got it</button>
+                </div>
+            `;
+            if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
+            document.body.appendChild(box);
+            document.getElementById('cAlertOk').onclick = () => box.remove();
+        };
+
+        // ==========================================
+        // NEW MAGIC PROMPT FOR VERIFICATIONS
+        // ==========================================
+        window.magicPrompt = function(msg) {
+            return new Promise((resolve) => {
+                const oldBox = document.getElementById('customPromptBox');
+                if (oldBox) oldBox.remove();
+                
+                const box = document.createElement('div');
+                box.id = 'customPromptBox';
+                box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
+                
+                box.innerHTML = `
+                    <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
+                        <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 16px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
+                        <input type="number" id="cPromptInput" style="width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 20px; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; color: #1e293b;" autocomplete="off">
+                        <div style="display: flex; gap: 12px;">
+                            <button id="cPromptCancel" style="flex: 1; padding: 12px; background: #f1f5f9; color: #475569; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer;">Cancel</button>
+                            <button id="cPromptOk" style="flex: 1; padding: 12px; background: #dc2626; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer;">Verify</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(box);
+                
+                const input = document.getElementById('cPromptInput');
+                input.focus();
+                
+                document.getElementById('cPromptCancel').onclick = () => { box.remove(); resolve(null); };
+                document.getElementById('cPromptOk').onclick = () => { box.remove(); resolve(input.value); };
+                input.addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('cPromptOk').click(); });
+            });
+        };
+
         let allStudents = [], allCourses = [], allPayments = [], activeStudentData = null, currentZoom = 0.55;
 
         function generateSerialNumber(student) {
@@ -427,8 +489,9 @@
 
         async function checkAuth() {
             try {
+                const userRole = localStorage.getItem('userRole') || 'Admin';
                 const { data: { session } } = await supabase.auth.getSession();
-                if (!session) { window.location.href = 'login.html'; return; }
+                if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
                 loadSettings(); 
                 fetchData();
             } catch(e) {
@@ -575,7 +638,13 @@
             }
         };
 
-        window.checkModuleLock = function(selectEl, studentId) {
+        window.checkModuleLock = async function(selectEl, studentId) {
+            if (localStorage.getItem('userRole') === 'Guest') { 
+                alert("⚠️ This action is disabled in Guest/Demo mode."); 
+                selectEl.value = selectEl.getAttribute('data-prev') || selectEl.options[0].value;
+                return; 
+            }
+
             let selectedOption = selectEl.options[selectEl.selectedIndex];
             let isLocked = selectedOption.getAttribute('data-locked') === 'true';
             let prevVal = selectEl.getAttribute('data-prev');
@@ -583,7 +652,7 @@
             if(isLocked) {
                 let n1 = Math.floor(Math.random() * 10) + 1;
                 let n2 = Math.floor(Math.random() * 10) + 1;
-                let ans = prompt(`Security Verification\nTo edit past marks, prove you are authorized:\nSolve: ${n1} + ${n2} = ?`);
+                let ans = await window.magicPrompt(`🔒 Security Verification\nTo edit past marks, prove you are authorized:\nSolve: ${n1} + ${n2} = ?`);
                 
                 if (ans !== null && parseInt(ans) === (n1+n2)) {
                     selectedOption.setAttribute('data-locked', 'false');
@@ -610,9 +679,9 @@
                     document.getElementById(`perc_${studentId}`).value = '';
                     document.getElementById(`grade_${studentId}`).value = '';
 
-                    alert('Verification Successful! You can now edit this module.');
+                    alert('✅ Verification Successful! You can now edit this module.');
                 } else {
-                    if (ans !== null) alert('Incorrect Answer! Update aborted.');
+                    if (ans !== null) alert('❌ Incorrect Answer! Update aborted.');
                     selectEl.value = prevVal; 
                 }
             } else {
@@ -736,6 +805,8 @@
         };
 
         window.updateMarks = async function(studentId, courseId) {
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            
             const mod = document.getElementById(`mod_${studentId}`).value;
             const marks = document.getElementById(`marks_${studentId}`).value;
             const att = document.getElementById(`att_${studentId}`).value;
@@ -746,9 +817,9 @@
             
             const student = allStudents.find(s => s.id === studentId);
             if (student && student.status === 'completed') {
-                alert('Marks Updated Successfully!');
+                alert('✅ Marks Updated Successfully!');
             } else {
-                alert('Marks Saved! Promotion/Finish is now enabled.');
+                alert('✅ Marks Saved! Promotion/Finish is now enabled.');
                 const promBtn = document.getElementById(`prom_${studentId}`);
                 const course = allCourses.find(c => c.id == courseId);
                 
@@ -762,7 +833,16 @@
         };
 
         window.execPromote = async function(studentId, courseId) {
-            if(!confirm("Are you sure you want to proceed?")) return;
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+
+            let n1 = Math.floor(Math.random() * 10) + 1;
+            let n2 = Math.floor(Math.random() * 10) + 1;
+            let ans = await window.magicPrompt(`⚠️ Security Verification\nTo promote or finish course, solve:\n\n${n1} + ${n2} = ?`);
+            
+            if (ans === null || parseInt(ans) !== (n1+n2)) {
+                if (ans !== null) alert('❌ Verification failed! Action aborted.');
+                return;
+            }
 
             const course = allCourses.find(c => c.id == courseId);
             const currentMod = document.getElementById(`mod_${studentId}`).value;
@@ -775,10 +855,10 @@
 
             if(nextMod) {
                 await supabase.from('students').update({ module: nextMod }).eq('id', studentId);
-                alert('Success! Student promoted to: ' + nextMod);
+                alert('✅ Success! Student promoted to: ' + nextMod);
             } else {
                 await supabase.from('students').update({ status: 'completed', module: 'Course Completed' }).eq('id', studentId);
-                alert('Success! Course is now completed. You can now generate the certificate.');
+                alert('✅ Success! Course is now completed. You can now generate the certificate.');
             }
             
             const promBtn = document.getElementById(`prom_${studentId}`);
