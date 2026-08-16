@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
         .btn-submit-custom {
-            background-color: #3B82F6; color: white; border: none; padding: 14px 20px;
+            background-color: var(--app-theme-color, #3B82F6); color: white; border: none; padding: 14px 20px;
             border-radius: 8px; font-size: 16px; font-weight: bold; width: 100%;
             cursor: pointer; transition: background-color 0.2s, transform 0.1s;
-            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(var(--app-theme-rgb, 59, 130, 246), 0.3); margin-top: 10px;
         }
-        .btn-submit-custom:hover { background-color: #2563eb; }
+        .btn-submit-custom:hover { filter: brightness(0.9); }
         .btn-submit-custom:active { transform: scale(0.98); }
         .btn-submit-custom:disabled { background-color: #94a3b8; cursor: not-allowed; box-shadow: none; }
 
@@ -20,7 +20,7 @@
         .btn-back-dashboard { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
         .btn-back-dashboard:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
         .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); }
+        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; filter: drop-shadow(0px 2px 2px rgba(37,99,235,0.3)); stroke: var(--app-theme-color, #2563eb); }
 
         @media (max-width: 600px) {
             .btn-back-dashboard span { display: none; } 
@@ -40,13 +40,13 @@
         .toggle-label { font-size: 13px; font-weight: 700; color: #475569; }
         .switch { position: relative; display: inline-block; width: 120px; height: 34px; background-color: #cbd5e1; border-radius: 34px; cursor: pointer; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #3b82f6; border-radius: 34px; transition: .4s; }
-        .slider:before { position: absolute; content: "Auto"; height: 26px; width: 54px; left: 4px; bottom: 4px; background-color: white; border-radius: 34px; transition: .4s; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #1e3a8a; }
+        .slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--app-theme-color, #3b82f6); border-radius: 34px; transition: .4s; }
+        .slider:before { position: absolute; content: "Auto"; height: 26px; width: 54px; left: 4px; bottom: 4px; background-color: white; border-radius: 34px; transition: .4s; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: var(--app-theme-color, #1e3a8a); }
         input:checked + .slider { background-color: #64748b; }
         input:checked + .slider:before { transform: translateX(58px); content: "Manual"; color: #334155; }
         
         /* Auto Gen Highlight */
-        .auto-highlight { background-color: #eff6ff !important; border-color: #3b82f6 !important; color: #1e3a8a !important; font-weight: bold; }
+        .auto-highlight { background-color: #eff6ff !important; border-color: var(--app-theme-color, #3b82f6) !important; color: var(--app-theme-color, #1e3a8a) !important; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -59,23 +59,16 @@
         </div>
         
         <a href="dashboard.html" class="btn-back-dashboard" style="position: absolute; left: 15px; padding: 8px 12px;">
-            <svg viewBox="0 0 24 24" style="stroke:url(#grad-return);">
-                <defs>
-                    <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#2563eb" />
-                        <stop offset="100%" stop-color="#9333ea" />
-                    </linearGradient>
-                </defs>
+            <svg viewBox="0 0 24 24">
                 <path d="M9 14L4 9l5-5" />
                 <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
             </svg>
         </a>
-        <h1 style="font-size: 16px; font-weight: 900; color: #1e3a8a; text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">New Admission</h1>
+        <h1 style="font-size: 16px; font-weight: 900; color: var(--app-theme-color, #1e3a8a); text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">New Admission</h1>
     </nav>
     
     <main class="main-content">
         <div class="form-card">
-           
             
             <form id="admissionForm">
                 <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="fullName" class="form-control" required></div>
@@ -89,7 +82,7 @@
                         <span class="toggle-label" style="margin-left: 10px;">Register Number Generation</span>
                     </div>
                     <label class="form-label" style="margin-top: 10px;">Register Number</label>
-                    <input type="text" id="regNo" class="form-control" required placeholder="Generating..." readonly class="auto-highlight">
+                    <input type="text" id="regNo" class="form-control auto-highlight" required placeholder="Generating..." readonly>
                 </div>
 
                 <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" id="phone" class="form-control" required maxlength="10"></div>
@@ -109,7 +102,7 @@
                 </div>
                 
                 <div class="form-group" id="otherQualGroup" style="display: none;">
-                    <label class="form-label" style="color: #3b82f6;">Specify Qualification</label>
+                    <label class="form-label" style="color: var(--app-theme-color, #3b82f6);">Specify Qualification</label>
                     <input type="text" id="otherQualification" class="form-control" placeholder="Enter qualification...">
                 </div>
 
@@ -159,15 +152,19 @@
         </div>
     </main>
 
+    <!-- NEW: Global Theme & Audit Engine -->
+    <script type="module" src="assets/js/theme-manager.js"></script>
+
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-       // --- MAGIC ALERT OVERRIDE ---
+
+        // --- MAGIC ALERT OVERRIDE ---
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let borderColor = '#3b82f6'; 
             if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error')) borderColor = '#ef4444'; 
-            else if (msg.includes('✅') || msg.includes('success')) borderColor = '#10b981'; 
+            else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successful')) borderColor = '#10b981'; 
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
             box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
             if(!document.querySelector('style#alertAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="alertAnim">@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}</style>'); }
@@ -196,7 +193,6 @@
             // 2. ഗസ്റ്റ് (Guest) ആണെങ്കിൽ സബ്മിറ്റ് ബട്ടൺ ഡിസേബിൾ ചെയ്യുക (Read-Only Mode)
             if (userRole === 'Guest') {
                 setTimeout(() => {
-                    // ബട്ടൺ ക്ലിക്ക് ചെയ്യുന്നത് തടയാൻ
                     const actionButtons = document.querySelectorAll('button[type="submit"], button');
                     actionButtons.forEach(btn => {
                         const btnText = btn.innerText.toLowerCase();
@@ -210,17 +206,15 @@
                         }
                     });
                     
-                    // ഫോമിൽ Enter അമർത്തി സബ്മിറ്റ് ചെയ്യുന്നത് തടയാൻ
                     const form = document.getElementById('admissionForm');
                     if(form) {
                         form.addEventListener('submit', function(e) {
                             e.preventDefault();
                             e.stopPropagation();
                             alert("⚠️ This action is disabled in Guest/Demo mode.");
-                            // Stop further event listeners (like the database insert)
                             e.stopImmediatePropagation();
                             return false;
-                        }, true); // Use capture phase to intercept early
+                        }, true);
                     }
                 }, 1000);
             }
@@ -277,7 +271,6 @@
             }
         }
 
-        // --- UPDATED STRICT REGISTRATION NUMBER GENERATION WITH HYPHEN ---
         async function generateAutoRegNumber() {
             if (document.getElementById('regToggle').checked) return; 
 
@@ -285,10 +278,7 @@
             regInput.value = "Generating...";
 
             try {
-                const { data, error } = await supabase
-                    .from('students')
-                    .select('register_number');
-                
+                const { data, error } = await supabase.from('students').select('register_number');
                 if (error) throw error;
 
                 let maxNum = 0;
@@ -301,10 +291,7 @@
                             const regStr = student.register_number.trim().toUpperCase();
                             existingRegNos.add(regStr); 
                             
-                            // Check if it matches PREFIX or PREFIX-
-                            // Example: GLO0001 or GLO-0001
                             if (regStr.startsWith(prefixUpper)) {
-                                // Extract only the numeric part, ignoring the hyphen if present
                                 const numericPartStr = regStr.replace(prefixUpper, '').replace('-', '');
                                 const numMatch = numericPartStr.match(/^\d+/);
                                 
@@ -319,11 +306,9 @@
                     });
                 }
 
-                // Increment Max by 1 and format with HYPHEN (e.g. GLO-0001)
                 let nextNum = maxNum + 1;
                 let proposedRegNo = `${institutePrefix}-${nextNum.toString().padStart(4, '0')}`;
 
-                // Strict Validation Loop: Ensure proposed number does not exist AT ALL
                 while (existingRegNos.has(proposedRegNo.toUpperCase()) || existingRegNos.has(proposedRegNo.replace('-','').toUpperCase())) {
                     nextNum++;
                     proposedRegNo = `${institutePrefix}-${nextNum.toString().padStart(4, '0')}`;
@@ -337,7 +322,6 @@
                 regInput.placeholder = "Error! Switch to Manual.";
             }
         }
-        // --------------------------------------------------------
 
         async function fetchCourses() {
             const { data } = await supabase.from('courses').select('id, course_name, modules, total_fee').eq('status', 'Active');
@@ -373,8 +357,9 @@
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault(); 
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            
             const phoneVal = document.getElementById('phone').value.trim();
-            if (phoneVal.length !== 10) { alert('Phone number must be exactly 10 digits.'); return; }
+            if (phoneVal.length !== 10) { alert('❌ Phone number must be exactly 10 digits.'); return; }
 
             const totalFee = Number(document.getElementById('totalFee').value);
             const admissionFee = Number(document.getElementById('admissionFee').value);
@@ -384,7 +369,7 @@
             let finalQualification = document.getElementById('qualification').value;
             if (finalQualification === 'Other') {
                 const otherVal = document.getElementById('otherQualification').value.trim();
-                if (!otherVal) { alert('Please specify the qualification.'); return; }
+                if (!otherVal) { alert('❌ Please specify the qualification.'); return; }
                 finalQualification = otherVal;
             }
 
@@ -402,9 +387,12 @@
                     photoUrl = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl;
                 }
 
+                const studentName = document.getElementById('fullName').value;
+                const regNumber = document.getElementById('regNo').value;
+
                 const { error } = await supabase.from('students').insert([{
-                    full_name: document.getElementById('fullName').value,
-                    register_number: document.getElementById('regNo').value,
+                    full_name: studentName,
+                    register_number: regNumber,
                     phone_number: phoneVal,
                     admission_date: document.getElementById('admissionDate').value,
                     date_of_birth: document.getElementById('dateOfBirth').value || null,
@@ -420,10 +408,20 @@
                 }]);
 
                 if (error) throw error;
-                alert('Admission Successful!'); 
-                window.location.href = 'dashboard.html'; 
+
+                // --- NEW: AUDIT TRAIL LOGGING ---
+                if(window.ThemeManager) {
+                    await window.ThemeManager.logAction(
+                        'Admission', 
+                        'CREATE', 
+                        `New student admitted: ${studentName} (Reg: ${regNumber})`
+                    );
+                }
+
+                alert('✅ Admission Successful!'); 
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
             } catch (err) {
-                alert('Error: ' + err.message);
+                alert('❌ Error: ' + err.message);
                 btn.textContent = 'Submit Admission'; btn.disabled = false;
             }
         });
