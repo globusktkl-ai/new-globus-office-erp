@@ -34,8 +34,8 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Submit Button Professional Styling */
-        #preSubmitBtn { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #ffffff; border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; width: 100%; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
-        #preSubmitBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3); }
+        #preSubmitBtn { background-color: var(--app-theme-color, #3B82F6); color: #ffffff; border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.2s; width: 100%; box-shadow: 0 4px 10px rgba(var(--app-theme-rgb, 59, 130, 246), 0.2); }
+        #preSubmitBtn:hover { filter: brightness(0.9); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(var(--app-theme-rgb, 59, 130, 246), 0.3); }
         #preSubmitBtn:active { transform: scale(0.98); }
         #preSubmitBtn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
 
@@ -619,6 +619,9 @@
 
     </main>
 
+    <!-- NEW: Global Theme & Audit Engine -->
+    <script type="module" src="assets/js/theme-manager.js"></script>
+
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
@@ -872,6 +875,16 @@
                 return;
             } 
             
+            // --- NEW: AUDIT TRAIL LOGGING ---
+            if(window.ThemeManager) {
+                const sInfo = studentsData.find(x => x.id === selectedStudentId);
+                const stuName = sInfo ? sInfo.full_name : 'Unknown Student';
+                await window.ThemeManager.logAction(
+                    'Finance', 
+                    'CREATE', 
+                    `Collected Fee: ₹${amountPaid} from ${stuName} (Receipt: ${pTxnId})`
+                );
+            }
             alert('✅ Payment recorded successfully!'); 
             window.closeConfirmation();
             
