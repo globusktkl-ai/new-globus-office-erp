@@ -3,156 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Master Activity Logs - Super Admin</title>
+    <title>Login - Dashboard</title>
     <link rel="stylesheet" href="assets/css/style.css">
-    
     <style>
-        /* Dynamic Background Color Variable for SaaS Theme */
-        :root {
-            --app-theme-color: #2563eb;
-        }
-        body { background-color: #f8fafc; padding-bottom: 40px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .main-content { padding: 15px; max-width: 1100px; margin: 0 auto; }
+        /* Fixed scrolling issue */
+        html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+        body { display: flex; justify-content: center; align-items: center; background-color: var(--primary-dark, #1e293b); }
+        .login-card { background: var(--card-bg, #ffffff); width: 90%; max-width: 400px; padding: 40px 24px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; box-sizing: border-box; max-height: 95vh; overflow-y: auto; }
+        .login-logo { height: 100px; margin-bottom: 16px; border-radius: 8px; object-fit: contain; }
+        .login-subtitle { font-size: 14px; color: var(--text-muted, #64748b); margin-bottom: 30px; font-weight: 600; }
         
-        /* Premium Header */
-        .top-nav { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 25px; padding: 12px 15px; min-height: 60px; border-bottom: 2px solid #e2e8f0; }
-        .btn-back-dashboard { position: absolute; left: 15px; display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; flex-shrink: 0; }
-        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .btn-back-dashboard svg { width: 22px; height: 22px; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: var(--app-theme-color, #6d28d9); }
-        .page-title { font-size: 18px; font-weight: 900; color: var(--app-theme-color, #4c1d95); margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; padding: 0 50px; display: flex; align-items: center; gap: 8px; justify-content: center;}
+        .btn-custom { background-color: #3B82F6; color: white; border: none; padding: 14px 20px; border-radius: 8px; font-size: 15px; font-weight: 800; width: 100%; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); }
+        .btn-custom:hover { background-color: #2563eb; transform: translateY(-2px); }
+        .btn-custom:active { transform: scale(0.98); }
+        .btn-custom:disabled { background-color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* Smart Filters */
-        .filter-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;}
-        .filter-group { flex: 1; min-width: 150px; }
-        .filter-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
-        .form-control { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 600; color: #1e293b; background: #f8fafc; outline: none; transition: 0.2s; }
-        .form-control:focus { border-color: var(--app-theme-color, #6d28d9); background: #fff; }
-        .btn-refresh { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 10px 15px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; height: 42px;}
-        .btn-refresh:hover { background: #e2e8f0; color: #0f172a; }
-        .btn-refresh:active { transform: scale(0.95); }
-
-        /* Logs Table Card */
-        .table-card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; overflow: hidden; }
-        .table-responsive { overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; max-height: 65vh; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        .btn-guest { background-color: transparent; color: #475569; border: 2px solid #cbd5e1; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 800; width: 100%; cursor: pointer; transition: all 0.2s; margin-top: 15px; }
+        .btn-guest:hover { background-color: #f8fafc; border-color: #94a3b8; color: #1e293b; }
+        .btn-guest:active { transform: scale(0.98); }
         
-        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 12px; font-weight: 900; color: #475569; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; position: sticky; top: 0; z-index: 10; letter-spacing: 0.5px;}
-        td { padding: 14px 15px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #1e293b; font-weight: 600; vertical-align: middle; }
-        tbody tr:hover { background: #f8fafc; }
-
-        /* Color Badges for Actions */
-        .badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block;}
-        .action-create { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-        .action-update { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
-        .action-delete { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        .action-login  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-
-        /* Module Tags */
-        .mod-tag { font-size: 11px; font-weight: 800; color: #64748b; background: #f1f5f9; padding: 3px 8px; border-radius: 4px; border: 1px solid #e2e8f0; }
-
-        .log-date { font-size: 11px; color: #64748b; font-weight: 700; display: block; margin-top: 3px; }
-        .user-email { color: var(--app-theme-color, #6d28d9); font-weight: 800; }
-        .log-details { font-weight: 700; color: #334155; line-height: 1.4; }
-
-        .empty-state { text-align: center; padding: 40px; color: #94a3b8; font-weight: 700; font-size: 14px; }
-        
-        /* Magic Alert Overrides */
-        #customPromptBox { z-index: 100000; }
+        .divider { display: flex; align-items: center; text-align: center; margin: 20px 0 5px 0; color: #94a3b8; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
     </style>
 </head>
 <body>
 
-    <main class="main-content">
-        <!-- Header -->
-        <div class="top-nav">
-            <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
-                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-            <h1 class="page-title">
-                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                Master Audit Trail
-            </h1>
-        </div>
+    <div class="login-card">
+        <img src="assets/images/logo.png" alt="Institution Logo" class="login-logo" onerror="this.src='https://via.placeholder.com/150x100?text=LOGO'">
+        <p class="login-subtitle" style="margin-top: 10px;">Sign in to access your dashboard</p>
 
-        <!-- Smart Filters -->
-        <div class="filter-card">
-            <div class="filter-group">
-                <label class="filter-label">Search Action/Details</label>
-                <input type="text" id="searchLog" class="form-control" placeholder="Search logs..." oninput="renderLogs()">
+        <form id="loginForm">
+            <div class="form-group" style="text-align: left; margin-bottom: 15px;">
+                <label class="form-label" style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block;">Email Address</label>
+                <input type="email" id="email" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box;" required placeholder="admin@example.com">
             </div>
-            <div class="filter-group">
-                <label class="filter-label">Filter by Module</label>
-                <select id="moduleFilter" class="form-control" onchange="renderLogs()">
-                    <option value="All">All Modules</option>
-                    <option value="Admission">Admission & Students</option>
-                    <option value="Finance">Finance & Fees</option>
-                    <option value="Inventory">Inventory</option>
-                    <option value="Enquiry">Enquiries</option>
-                    <option value="Courses">Courses</option>
-                    <option value="Staff">Staff</option>
-                    <option value="Directory">Directory</option>
-                    <option value="System">System Settings</option>
-                </select>
+            <div class="form-group" style="text-align: left; margin-bottom: 24px;">
+                <label class="form-label" style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block;">Password</label>
+                <input type="password" id="password" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box;" required placeholder="••••••••">
             </div>
-            <div class="filter-group">
-                <label class="filter-label">Filter by Action</label>
-                <select id="actionFilter" class="form-control" onchange="renderLogs()">
-                    <option value="All">All Actions</option>
-                    <option value="CREATE">Created (New)</option>
-                    <option value="UPDATE">Updated (Edit)</option>
-                    <option value="DELETE">Deleted / Archived</option>
-                    <option value="LOGIN">Logins</option>
-                </select>
-            </div>
-            <button class="btn-refresh" onclick="fetchLogs()" title="Refresh Logs">
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-            </button>
-        </div>
+            
+            <button type="submit" class="btn-custom" id="loginBtn">Secure Sign In</button>
+        </form>
 
-        <!-- Logs Table -->
-        <div class="table-card">
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date & Time</th>
-                            <th>User (Staff/Admin)</th>
-                            <th>Module</th>
-                            <th>Action Type</th>
-                            <th>Detailed Log</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logsTableBody">
-                        <tr><td colspan="5" style="text-align: center; padding: 30px; font-weight: bold; color: #64748b;">Loading audit logs...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+        <div class="divider">OR</div>
+        
+        <button type="button" class="btn-guest" onclick="window.guestLogin()">👀 Explore as Guest (Demo)</button>
+    </div>
 
-    <!-- Global Theme Engine -->
+    <!-- Global Theme & Guest Toggle Logic -->
     <script type="module" src="assets/js/theme-manager.js"></script>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // ==========================================
-        // SECURITY CHECK (SUPER ADMIN ONLY)
-        // ==========================================
-        async function checkSuperAdmin() {
-            const userRole = localStorage.getItem('userRole');
-            if (userRole !== 'Super Admin') {
-                document.body.innerHTML = ''; // Blank the screen immediately
-                alert("⛔ SECURITY ALERT: Unauthorized Access! Only Super Admin can view Audit Trails.");
-                setTimeout(() => { window.location.replace('dashboard.html'); }, 2000);
-                return false;
-            }
-            return true;
-        }
-
-        // ==========================================
-        // MAGIC ALERT OVERRIDE
-        // ==========================================
+        // MAGIC ALERT OVERRIDE FOR LOGIN ERRORS
         window.alert = function(msg) {
             const oldBox = document.getElementById('customPromptBox'); 
             if (oldBox) oldBox.remove();
@@ -166,7 +72,7 @@
                 <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
                     ${iconHtml}
                     <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
-                    <button id="cAlertOk" style="width: 100%; padding: 12px; background: var(--app-theme-color, #3b82f6); color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer;">OK, Got it</button>
+                    <button id="cAlertOk" style="width: 100%; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s;">Try Again</button>
                 </div>
             `;
             if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
@@ -174,85 +80,89 @@
             document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
-        let auditLogs = [];
-
-        // ==========================================
-        // FETCH LOGS FROM SUPABASE
-        // ==========================================
-        window.fetchLogs = async function() {
-            const tbody = document.getElementById('logsTableBody');
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; font-weight: bold; color: #64748b;">Refreshing logs...</td></tr>';
-            
-            try {
-                // Fetch from Supabase 'activity_logs' table
-                const { data, error } = await supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(500);
-                
-                if (error) throw error;
-                
-                auditLogs = data || [];
-                renderLogs();
-            } catch (err) {
-                console.error(err);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; font-weight: bold; color: #ef4444;">Error connecting to Audit Database. Ensure "activity_logs" table is created.</td></tr>';
+        // Check if already logged in
+        const checkExistingSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            const userRole = localStorage.getItem('userRole');
+            // Prevent redirect loops by ensuring role exists
+            if ((session && userRole) || userRole === 'Guest') {
+                window.location.replace('dashboard.html');
+            } else if (session && !userRole) {
+                // Failsafe: if session exists but role is cleared, force logout
+                await supabase.auth.signOut();
+                localStorage.clear();
             }
         };
+        checkExistingSession();
 
-        // ==========================================
-        // RENDER LOGS WITH FILTERS
-        // ==========================================
-        window.renderLogs = function() {
-            const searchTxt = document.getElementById('searchLog').value.toLowerCase();
-            const moduleFilter = document.getElementById('moduleFilter').value;
-            const actionFilter = document.getElementById('actionFilter').value;
-            const tbody = document.getElementById('logsTableBody');
+        // 1. NORMAL LOGIN (Super Admin, Admin & Staff)
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            btn.textContent = 'Validating...'; btn.disabled = true;
 
-            let filtered = auditLogs.filter(log => {
-                const matchSearch = (log.details && log.details.toLowerCase().includes(searchTxt)) || (log.user_email && log.user_email.toLowerCase().includes(searchTxt));
-                const matchModule = moduleFilter === 'All' || log.module === moduleFilter;
-                const matchAction = actionFilter === 'All' || log.action_type === actionFilter;
-                return matchSearch && matchModule && matchAction;
-            });
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state">No audit logs found matching your criteria.</div></td></tr>';
-                return;
+            // Supabase Authentication
+            const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                alert('⚠️ Login Failed: Invalid Email or Password.');
+                btn.textContent = 'Secure Sign In'; btn.disabled = false;
+            } else {
+                
+                // ========================================================
+                // IMPORTANT: താങ്കളുടെ ഇമെയിൽ ഐഡി ഇവിടെ കൃത്യമായി നൽകുക
+                // ========================================================
+                const superAdminEmail = 'admin@globus.com'; // <---- ഇത് മാറ്റി താങ്കളുടെ യഥാർത്ഥ ലോഗിൻ ഇമെയിൽ നൽകുക
+                
+                let userRole = 'Admin'; 
+                
+                if (email.toLowerCase() === superAdminEmail.toLowerCase()) {
+                    userRole = 'Super Admin'; 
+                } else {
+                    // Check if this email exists in our 'staff' table
+                    const { data: staffData } = await supabase.from('staff').select('role, status').eq('email', email).single();
+                    
+                    if (staffData) {
+                        if (staffData.status !== 'Active') {
+                            alert('❌ Account Disabled: Your access has been revoked by the Administrator.');
+                            await supabase.auth.signOut();
+                            btn.textContent = 'Secure Sign In'; btn.disabled = false;
+                            return;
+                        }
+                        // Categorize Roles
+                        if (staffData.role === 'Manager' || staffData.role === 'Admin' || staffData.role === 'Office Manager') {
+                            userRole = 'Admin'; 
+                        } else {
+                            userRole = 'Staff';
+                        }
+                    }
+                }
+
+                // Save role and email in local storage for access control
+                localStorage.setItem('userRole', userRole);
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('loginTime', Date.now());
+
+                // Log the login action
+                if(window.ThemeManager) {
+                    await window.ThemeManager.logAction('System', 'LOGIN', `User Logged In successfully`);
+                }
+                
+                window.location.replace('dashboard.html');
             }
-
-            tbody.innerHTML = filtered.map(log => {
-                // Format Date & Time nicely
-                const dateObj = new Date(log.created_at);
-                const dateStr = dateObj.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
-                const timeStr = dateObj.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
-
-                // Determine Badge Class
-                let badgeClass = 'action-update';
-                if(log.action_type === 'CREATE') badgeClass = 'action-create';
-                if(log.action_type === 'DELETE') badgeClass = 'action-delete';
-                if(log.action_type === 'LOGIN') badgeClass = 'action-login';
-
-                return `
-                    <tr>
-                        <td>
-                            <div style="font-weight: 800; color: #0f172a;">${dateStr}</div>
-                            <span class="log-date">${timeStr}</span>
-                        </td>
-                        <td>
-                            <div class="user-email">${log.user_email || 'System'}</div>
-                            <span style="font-size:10px; color:#94a3b8; font-weight:700; text-transform:uppercase;">${log.user_role || 'Admin'}</span>
-                        </td>
-                        <td><span class="mod-tag">${log.module}</span></td>
-                        <td><span class="badge ${badgeClass}">${log.action_type}</span></td>
-                        <td class="log-details">${log.details}</td>
-                    </tr>
-                `;
-            }).join('');
-        };
-
-        // Initialize Page
-        checkSuperAdmin().then(isAuth => {
-            if(isAuth) fetchLogs();
         });
 
+        // 2. GUEST LOGIN (Read-Only Demo)
+        window.guestLogin = function() {
+            localStorage.setItem('userRole', 'Guest');
+            localStorage.setItem('userEmail', 'guest@demo.com');
+            localStorage.setItem('guestLoginTime', Date.now()); // For the 30-min timer limit
+            
+            window.location.replace('dashboard.html');
+        };
     </script>
 </body>
 </html>
