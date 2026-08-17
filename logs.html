@@ -62,12 +62,12 @@
         td { padding: 12px 15px; border: 1px solid #e2e8f0; font-size: 13px; color: #1e293b; font-weight: 600; vertical-align: middle; }
         tbody tr:hover { background: #f8fafc; }
 
-        /* THE BADGE STYLES EXPLAINED */
+        /* FIXED BADGE STYLES (Renamed to avoid style.css conflict) */
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; text-transform: uppercase; display: inline-block;}
-        .action-create { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-        .action-update { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
-        .action-delete { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        .action-login  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; } /* This is just for the table tag! */
+        .badge-create { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .badge-update { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
+        .badge-delete { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .badge-login  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
         .mod-tag { font-size: 10px; font-weight: 800; color: #64748b; background: #f1f5f9; padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; }
         .log-date { font-size: 11px; color: #64748b; font-weight: 700; display: block; margin-top: 3px; }
@@ -76,23 +76,10 @@
         
         #customPromptBox { z-index: 100000; }
 
-        /* KILL EXTERNALLY INJECTED BUTTONS - AGGRESSIVE CSS */
-        a:contains("LOGIN"), 
-        button:contains("LOGIN"), 
-        div.login-btn,
-        #login-btn { 
-            display: none !important; 
-            opacity: 0 !important; 
-            visibility: hidden !important; 
-            pointer-events: none !important; 
-            z-index: -9999 !important; 
-        }
-
         /* ========================================================
-           PRINT MODE CSS - ULTIMATE FIX
+           PRINT MODE CSS 
            ======================================================== */
         .print-header { display: none; }
-        
         @media print {
             body { background: white !important; padding: 0 !important; margin: 0 !important; color: black !important; }
             body > *:not(.main-content) { display: none !important; }
@@ -222,36 +209,6 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // ========================================================
-        // ULTIMATE SECURITY SCRIPT: DESTROY INJECTED LOGIN BUTTONS
-        // ========================================================
-        function aggressivelyDestroyLogin() {
-            // Select literally all elements that might be the button
-            const elements = document.querySelectorAll('a, button, div, span, p');
-            elements.forEach(el => {
-                // Check if the text is exactly 'LOGIN'
-                if (el.textContent && el.textContent.trim().toUpperCase() === 'LOGIN') {
-                    // IMPORTANT: Do NOT hide the dropdown option and do NOT hide our table badge!
-                    if (el.tagName !== 'OPTION' && !el.classList.contains('action-login')) {
-                        el.style.setProperty('display', 'none', 'important');
-                        el.style.opacity = '0';
-                        el.innerHTML = '';
-                    }
-                }
-            });
-            
-            // Just in case it has an ID or Class of login-btn
-            const rogueBtns = document.querySelectorAll('.login-btn, #login-btn');
-            rogueBtns.forEach(btn => btn.style.setProperty('display', 'none', 'important'));
-        }
-        
-        // Run immediately
-        aggressivelyDestroyLogin();
-        
-        // Run continuously every half second to catch late-injected buttons
-        setInterval(aggressivelyDestroyLogin, 500);
-        // ========================================================
-
         async function checkSuperAdmin() {
             const userRole = localStorage.getItem('userRole');
             if (userRole !== 'Super Admin') {
@@ -345,10 +302,10 @@
                 const dateStr = dateObj.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
                 const timeStr = dateObj.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
 
-                let badgeClass = 'action-update';
-                if(log.action_type === 'CREATE') badgeClass = 'action-create';
-                if(log.action_type === 'DELETE') badgeClass = 'action-delete';
-                if(log.action_type === 'LOGIN') badgeClass = 'action-login';
+                let badgeClass = 'badge-update';
+                if(log.action_type === 'CREATE') badgeClass = 'badge-create';
+                if(log.action_type === 'DELETE') badgeClass = 'badge-delete';
+                if(log.action_type === 'LOGIN') badgeClass = 'badge-login';
 
                 return `
                     <tr>
