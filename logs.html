@@ -62,11 +62,12 @@
         td { padding: 12px 15px; border: 1px solid #e2e8f0; font-size: 13px; color: #1e293b; font-weight: 600; vertical-align: middle; }
         tbody tr:hover { background: #f8fafc; }
 
+        /* THE BADGE STYLES EXPLAINED */
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; text-transform: uppercase; display: inline-block;}
         .action-create { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
         .action-update { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
         .action-delete { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        .action-login  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .action-login  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; } /* This is just for the table tag! */
 
         .mod-tag { font-size: 10px; font-weight: 800; color: #64748b; background: #f1f5f9; padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; }
         .log-date { font-size: 11px; color: #64748b; font-weight: 700; display: block; margin-top: 3px; }
@@ -75,48 +76,37 @@
         
         #customPromptBox { z-index: 100000; }
 
+        /* KILL EXTERNALLY INJECTED BUTTONS - AGGRESSIVE CSS */
+        a:contains("LOGIN"), 
+        button:contains("LOGIN"), 
+        div.login-btn,
+        #login-btn { 
+            display: none !important; 
+            opacity: 0 !important; 
+            visibility: hidden !important; 
+            pointer-events: none !important; 
+            z-index: -9999 !important; 
+        }
+
         /* ========================================================
-           PRINT MODE CSS - STRICTLY REWRITTEN FOR PROFESSIONAL LOOK 
+           PRINT MODE CSS - ULTIMATE FIX
            ======================================================== */
         .print-header { display: none; }
+        
         @media print {
-            /* Basic Page Setup */
             body { background: white !important; padding: 0 !important; margin: 0 !important; color: black !important; }
+            body > *:not(.main-content) { display: none !important; }
             .no-print { display: none !important; }
-            
-            /* FORCE HIDE ALL BUTTONS IN PRINT MODE */
-            button, a.btn, input[type="button"], .btn-toggle-filters, footer { display: none !important; }
-            
-            .main-content { padding: 0 !important; max-width: 100% !important; }
-            
-            /* Print Header Styling */
+            button, a.btn, input[type="button"], footer { display: none !important; }
+            .main-content { padding: 0 !important; max-width: 100% !important; margin: 0 !important; display: block !important; }
             .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; padding-top: 10px; }
             .print-header h2 { margin: 0 0 5px 0; font-size: 22px; color: #000; text-transform: uppercase; font-weight: 900; }
             .print-header p { margin: 0; font-size: 12px; color: #555; }
-            
-            /* Table Print Styling - Connecting Borders properly */
-            .table-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; margin: 0 !important; }
+            .table-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; margin: 0 !important; padding: 0 !important; }
             .table-responsive { max-height: none !important; overflow: visible !important; }
-            
-            table { 
-                min-width: 100% !important; 
-                width: 100% !important;
-                border-collapse: collapse !important; 
-                border: 2px solid #000 !important; /* Thick outer border */
-            }
-            th, td { 
-                border: 1px solid #000 !important; /* Solid black inner borders */
-                padding: 10px 12px !important; 
-                font-size: 11px !important; 
-                color: #000 !important; 
-            }
-            th { 
-                background-color: #f1f5f9 !important; 
-                -webkit-print-color-adjust: exact !important; 
-                color-adjust: exact !important; 
-                font-weight: bold !important; 
-                border-bottom: 2px solid #000 !important; /* Emphasize header bottom */
-            }
+            table { min-width: 100% !important; width: 100% !important; border-collapse: collapse !important; border: 2px solid #000 !important; }
+            th, td { border: 1px solid #000 !important; padding: 10px 12px !important; font-size: 11px !important; color: #000 !important; }
+            th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact !important; color-adjust: exact !important; font-weight: bold !important; border-bottom: 2px solid #000 !important; }
         }
     </style>
 </head>
@@ -233,32 +223,33 @@
         import { supabase } from './assets/js/supabase-config.js';
 
         // ========================================================
-        // SECURITY SCRIPT: AUTOMATICALLY DESTROY INJECTED LOGIN BUTTONS
+        // ULTIMATE SECURITY SCRIPT: DESTROY INJECTED LOGIN BUTTONS
         // ========================================================
-        function destroyLoginButtons() {
-            // Find all buttons, links, or specific divs that might contain "LOGIN"
-            const elements = document.querySelectorAll('button, a, .login-btn, #login-btn');
+        function aggressivelyDestroyLogin() {
+            // Select literally all elements that might be the button
+            const elements = document.querySelectorAll('a, button, div, span, p');
             elements.forEach(el => {
-                if (el.innerText && el.innerText.trim().toUpperCase() === 'LOGIN') {
-                    el.remove();
+                // Check if the text is exactly 'LOGIN'
+                if (el.textContent && el.textContent.trim().toUpperCase() === 'LOGIN') {
+                    // IMPORTANT: Do NOT hide the dropdown option and do NOT hide our table badge!
+                    if (el.tagName !== 'OPTION' && !el.classList.contains('action-login')) {
+                        el.style.setProperty('display', 'none', 'important');
+                        el.style.opacity = '0';
+                        el.innerHTML = '';
+                    }
                 }
             });
+            
+            // Just in case it has an ID or Class of login-btn
+            const rogueBtns = document.querySelectorAll('.login-btn, #login-btn');
+            rogueBtns.forEach(btn => btn.style.setProperty('display', 'none', 'important'));
         }
         
         // Run immediately
-        destroyLoginButtons();
+        aggressivelyDestroyLogin();
         
-        // Set up an observer to watch for elements injected AFTER the page loads (by theme-manager)
-        const observer = new MutationObserver((mutations) => {
-            let shouldClean = false;
-            mutations.forEach((mutation) => {
-                if (mutation.addedNodes.length > 0) shouldClean = true;
-            });
-            if (shouldClean) {
-                destroyLoginButtons();
-            }
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
+        // Run continuously every half second to catch late-injected buttons
+        setInterval(aggressivelyDestroyLogin, 500);
         // ========================================================
 
         async function checkSuperAdmin() {
