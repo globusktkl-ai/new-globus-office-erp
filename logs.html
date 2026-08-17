@@ -62,12 +62,12 @@
         td { padding: 12px 15px; border: 1px solid #e2e8f0; font-size: 13px; color: #1e293b; font-weight: 600; vertical-align: middle; }
         tbody tr:hover { background: #f8fafc; }
 
-        /* FIXED BADGE STYLES (Renamed to avoid style.css conflict) */
+        /* THE BADGE STYLES (Notice: The word 'login' is removed completely to stop global CSS hijacking) */
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; text-transform: uppercase; display: inline-block;}
         .badge-create { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
         .badge-update { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
         .badge-delete { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        .badge-login  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-access { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; } /* Replaced badge-login */
 
         .mod-tag { font-size: 10px; font-weight: 800; color: #64748b; background: #f1f5f9; padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; }
         .log-date { font-size: 11px; color: #64748b; font-weight: 700; display: block; margin-top: 3px; }
@@ -82,7 +82,6 @@
         .print-header { display: none; }
         @media print {
             body { background: white !important; padding: 0 !important; margin: 0 !important; color: black !important; }
-            body > *:not(.main-content) { display: none !important; }
             .no-print { display: none !important; }
             button, a.btn, input[type="button"], footer { display: none !important; }
             .main-content { padding: 0 !important; max-width: 100% !important; margin: 0 !important; display: block !important; }
@@ -305,7 +304,8 @@
                 let badgeClass = 'badge-update';
                 if(log.action_type === 'CREATE') badgeClass = 'badge-create';
                 if(log.action_type === 'DELETE') badgeClass = 'badge-delete';
-                if(log.action_type === 'LOGIN') badgeClass = 'badge-login';
+                // MASTER FIX: Renamed class to completely avoid style.css hijacking
+                if(log.action_type === 'LOGIN') badgeClass = 'badge-access';
 
                 return `
                     <tr>
@@ -318,7 +318,7 @@
                             <span style="font-size:10px; color:#94a3b8; font-weight:700; text-transform:uppercase;">${log.user_role || 'Admin'}</span>
                         </td>
                         <td><span class="mod-tag">${log.module}</span></td>
-                        <td><span class="badge ${badgeClass}">${log.action_type}</span></td>
+                        <td><span class="badge ${badgeClass}" style="position: static !important; display: inline-block !important; transform: none !important;">${log.action_type}</span></td>
                         <td class="log-details">${log.details}</td>
                     </tr>
                 `;
