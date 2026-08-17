@@ -7,10 +7,6 @@
     <link rel="stylesheet" href="assets/css/style.css">
     
     <style>
-        /* Dynamic Background Color Variable for SaaS Theme */
-        :root {
-            --app-theme-color: #2563eb;
-        }
         body { background-color: #f8fafc; padding-bottom: 40px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .main-content { padding: 15px; max-width: 1100px; margin: 0 auto; }
         
@@ -26,7 +22,7 @@
         .filter-group { flex: 1; min-width: 150px; }
         .filter-label { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px;}
         .form-control { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 600; color: #1e293b; background: #f8fafc; outline: none; transition: 0.2s; }
-        .form-control:focus { border-color: var(--app-theme-color, #6d28d9); background: #fff; }
+        .form-control:focus { border-color: var(--app-theme-color, #6d28d9); background: #fff; box-shadow: 0 0 0 3px rgba(0,0,0, 0.05); }
         .btn-refresh { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 10px 15px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; height: 42px;}
         .btn-refresh:hover { background: #e2e8f0; color: #0f172a; }
         .btn-refresh:active { transform: scale(0.95); }
@@ -56,14 +52,12 @@
 
         .empty-state { text-align: center; padding: 40px; color: #94a3b8; font-weight: 700; font-size: 14px; }
         
-        /* Magic Alert Overrides */
         #customPromptBox { z-index: 100000; }
     </style>
 </head>
 <body>
 
     <main class="main-content">
-        <!-- Header -->
         <div class="top-nav">
             <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
                 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -74,7 +68,6 @@
             </h1>
         </div>
 
-        <!-- Smart Filters -->
         <div class="filter-card">
             <div class="filter-group">
                 <label class="filter-label">Search Action/Details</label>
@@ -109,7 +102,6 @@
             </button>
         </div>
 
-        <!-- Logs Table -->
         <div class="table-card">
             <div class="table-responsive">
                 <table>
@@ -136,13 +128,10 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // ==========================================
-        // SECURITY CHECK (SUPER ADMIN ONLY)
-        // ==========================================
         async function checkSuperAdmin() {
             const userRole = localStorage.getItem('userRole');
             if (userRole !== 'Super Admin') {
-                document.body.innerHTML = ''; // Blank the screen immediately
+                document.body.innerHTML = '';
                 alert("⛔ SECURITY ALERT: Unauthorized Access! Only Super Admin can view Audit Trails.");
                 setTimeout(() => { window.location.replace('dashboard.html'); }, 2000);
                 return false;
@@ -150,9 +139,6 @@
             return true;
         }
 
-        // ==========================================
-        // MAGIC ALERT OVERRIDE
-        // ==========================================
         window.alert = function(msg) {
             const oldBox = document.getElementById('customPromptBox'); 
             if (oldBox) oldBox.remove();
@@ -176,19 +162,13 @@
 
         let auditLogs = [];
 
-        // ==========================================
-        // FETCH LOGS FROM SUPABASE
-        // ==========================================
         window.fetchLogs = async function() {
             const tbody = document.getElementById('logsTableBody');
             tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; font-weight: bold; color: #64748b;">Refreshing logs...</td></tr>';
             
             try {
-                // Fetch from Supabase 'activity_logs' table
                 const { data, error } = await supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(500);
-                
                 if (error) throw error;
-                
                 auditLogs = data || [];
                 renderLogs();
             } catch (err) {
@@ -197,9 +177,6 @@
             }
         };
 
-        // ==========================================
-        // RENDER LOGS WITH FILTERS
-        // ==========================================
         window.renderLogs = function() {
             const searchTxt = document.getElementById('searchLog').value.toLowerCase();
             const moduleFilter = document.getElementById('moduleFilter').value;
@@ -219,12 +196,10 @@
             }
 
             tbody.innerHTML = filtered.map(log => {
-                // Format Date & Time nicely
                 const dateObj = new Date(log.created_at);
                 const dateStr = dateObj.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
                 const timeStr = dateObj.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
 
-                // Determine Badge Class
                 let badgeClass = 'action-update';
                 if(log.action_type === 'CREATE') badgeClass = 'action-create';
                 if(log.action_type === 'DELETE') badgeClass = 'action-delete';
@@ -248,7 +223,6 @@
             }).join('');
         };
 
-        // Initialize Page
         checkSuperAdmin().then(isAuth => {
             if(isAuth) fetchLogs();
         });
