@@ -134,10 +134,12 @@
                         }
                         // Categorize Roles
                         if (staffData.role === 'Manager' || staffData.role === 'Admin' || staffData.role === 'Office Manager') {
-                            userRole = 'Admin'; 
-                        } else {
-                            userRole = 'Staff';
-                        }
+    userRole = 'Admin'; 
+} else if (staffData.role === 'Teacher' || staffData.role === 'Faculty') {
+    userRole = 'Teacher';
+} else {
+    userRole = 'Office Staff'; 
+}
                     }
                 }
 
