@@ -1,73 +1,51 @@
 import { supabase } from './supabase-config.js';
 
-// ========================================================
-// GLOBUS ERP: MASTER AUTHENTICATION & SECURITY SHIELD
-// ========================================================
-
+// 1. Basic Session Check (എല്ലാ പേജിലും ലോഗിൻ ഉറപ്പുവരുത്താൻ)
 async function enforceSecurity() {
-    // നിലവിലെ പേജിന്റെ പേര് എടുക്കുന്നു
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    
-    // ലോഗിൻ പേജിൽ ഈ ചെക്കിങ് ആവശ്യമില്ല (ഇല്ലെങ്കിൽ ലൂപ്പ് ആകും)
     if (currentPage === 'login.html' || currentPage === 'index.html') return;
 
     const userRole = localStorage.getItem('userRole');
-    
-    // --- 1. GUEST MODE VALIDATION ---
-    if (userRole === 'Guest') {
-        const loginTime = localStorage.getItem('guestLoginTime');
-        const timePassed = Date.now() - parseInt(loginTime || '0');
-        
-        // 30 മിനിറ്റ് കഴിഞ്ഞാൽ ഗസ്റ്റിനെ പുറത്താക്കും
-        if (timePassed > 30 * 60 * 1000) { 
-            forceLogout("⏳ Guest session expired (30 minutes). Please login again.");
-        }
-        return; // ഗസ്റ്റ് സമയം കഴിഞ്ഞിട്ടില്ലെങ്കിൽ പേജിൽ തുടരാം
-    }
-
-    // --- 2. SUPABASE SESSION VALIDATION (Normal Users) ---
     const { data: { session }, error } = await supabase.auth.getSession();
     
-    // സെഷൻ ഇല്ലെങ്കിലോ, എറർ ഉണ്ടെങ്കിലോ, റോൾ ഇല്ലെങ്കിലോ പുറത്താക്കും
     if (error || !session || !userRole) {
-        forceLogout("⛔ Session expired or invalid. Please sign in again.");
+        alert("⛔ Session expired or invalid. Please sign in again.");
+        localStorage.clear();
+        window.location.replace('login.html');
         return;
     }
 }
 
-// യൂസറെ പുറത്താക്കാനുള്ള ഫംഗ്ഷൻ
-function forceLogout(msg) {
-    if(window.alert) { window.alert(msg); } else { alert(msg); }
-    
-    localStorage.clear();
-    supabase.auth.signOut().then(() => {
-        window.location.replace('login.html');
-    });
-}
+// 2. DYNAMIC ACCESS CHECKER (ഡാറ്റാബേസ് നോക്കി പെർമിഷൻ തീരുമാനിക്കാൻ)
+window.checkDynamicAccess = async function(moduleName) {
+    const userRole = localStorage.getItem('userRole');
+    if (!userRole) return false;
 
-// --- 3. PAGE LEVEL ACCESS CONTROL (RBAC) ---
-// ഏതൊക്കെ റോളുകൾക്ക് ഈ പേജ് കാണാം എന്ന് തീരുമാനിക്കാനുള്ള ഗ്ലോബൽ ഫംഗ്ഷൻ
-window.restrictAccess = function(allowedRoles) {
-    const currentRole = localStorage.getItem('userRole');
+    // സൂപ്പർ അഡ്മിന് എല്ലാ പേജുകളിലേക്കും നേരിട്ട് പ്രവേശനം
+    if (userRole === 'Super Admin') return true; 
+
+    // മറ്റുള്ളവരുടെ പെർമിഷൻ ഡാറ്റാബേസിൽ നിന്നും എടുക്കുന്നു
+    const { data, error } = await supabase.from('role_management').select('permissions').eq('role_name', userRole).single();
     
-    // അനുവദിക്കപ്പെട്ട റോളുകളിൽ നിലവിലെ യൂസറുടെ റോൾ ഇല്ലെങ്കിൽ
-    if (!allowedRoles.includes(currentRole)) {
-        
-        if (window.alert) {
-            window.alert("⛔ SECURITY ALERT: You do not have permission to access this module.");
-        } else {
-            alert("⛔ SECURITY ALERT: You do not have permission to access this module.");
-        }
-        
-        // ഡാഷ്‌ബോർഡിലേക്ക് തിരികെ വിടുന്നു
-        setTimeout(() => {
-            window.location.replace('dashboard.html');
-        }, 2000);
-        
-        return false; // Access Denied
+    if (error || !data) {
+        alert("⛔ Security Error: Could not verify your permissions.");
+        window.location.replace('dashboard.html');
+        return false;
     }
-    return true; // Access Granted
+
+    const perms = data.permissions || {};
+    const modulePerms = perms[moduleName] || { view: false };
+
+    // അവർക്ക് ഈ പേജ് കാണാനുള്ള (View) ടിക്ക് നൽകിയിട്ടില്ലെങ്കിൽ പുറത്താക്കും
+    if (modulePerms.view !== true) {
+        alert(`⛔ ACCESS DENIED: You do not have permission to view this page.`);
+        window.location.replace('dashboard.html');
+        return false;
+    }
+
+    // പേജിനകത്ത് എഡിറ്റ്/ഡിലീറ്റ് ബട്ടണുകൾ മറയ്ക്കാൻ ഈ ഡാറ്റ ഉപയോഗിക്കാം
+    window.currentModulePermissions = modulePerms;
+    return true;
 };
 
-// ഫയൽ ലോഡ് ആകുമ്പോൾ തന്നെ സെക്യൂരിറ്റി ചെക്ക് പ്രവർത്തിക്കും
 enforceSecurity();
