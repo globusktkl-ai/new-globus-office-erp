@@ -1,5 +1,5 @@
 import { supabase } from './supabase-config.js';
-
+import './theme-manager.js';
 // മനോഹരമായ (Custom UI) അലേർട്ട് സിസ്റ്റം
 function showCustomAlert(message, redirectUrl) {
     const oldBox = document.getElementById('customAlertBox'); 
