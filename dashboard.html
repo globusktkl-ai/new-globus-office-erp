@@ -1025,13 +1025,32 @@
             }
             document.getElementById('roleManagerModal').style.display = 'flex';
             
-            const { data, error } = await supabase.from('role_management').select('*');
-            if (!error && data) {
+            try {
+                // റോളുകൾ Supabase-ൽ നിന്നും എടുക്കുന്നു
+                const { data, error } = await supabase.from('role_management').select('*');
+                
+                // എറർ ഉണ്ടെങ്കിൽ അത് സ്ക്രീനിൽ കാണിക്കും
+                if (error) {
+                    alert("❌ Database Error: " + error.message);
+                    console.error("Supabase RLS Error:", error);
+                    return;
+                }
+                
+                // ടേബിൾ കാലിയാണെങ്കിൽ അതും പറയും
+                if (!data || data.length === 0) {
+                    alert("⚠️ No roles found in the database. Table is empty!");
+                    return;
+                }
+
+                // ഡാറ്റ ഉണ്ടെങ്കിൽ സെലക്ട് ബോക്സിലേക്ക് ചേർക്കുന്നു
                 const selector = document.getElementById('roleSelector');
                 selector.innerHTML = '<option value="">-- Choose Role --</option>';
                 data.forEach(role => {
                     selector.innerHTML += `<option value="${role.role_name}">${role.role_name}</option>`;
                 });
+            } catch (err) {
+                alert("❌ Network/Connection Error!");
+                console.error(err);
             }
         };
 
