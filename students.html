@@ -495,12 +495,18 @@
             } else { if(ans !== null) alert('❌ Verification failed! Archiving aborted.'); }
         };
 
-        window.closeModal = function() { 
+       window.closeModal = function() { 
             document.getElementById('studentModal').style.display = 'none';
             document.getElementById('viewEditContainer').style.display = 'none';
         };
 
         checkAuth();
+    </script>
+
+    <!-- THE NEW DYNAMIC SECURITY SYSTEM -->
+    <script type="module">
+        import './assets/js/auth-check.js';
+        window.checkDynamicAccess('Directory');
     </script>
 </body>
 </html>
