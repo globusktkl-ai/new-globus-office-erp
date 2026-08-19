@@ -128,7 +128,6 @@
                     <span id="authRoleTitle">Admin</span>
                     <span class="logged-in-email" id="authEmail">Loading...</span>
                 </div>
-                <!-- Removed Settings button from here to clean up the header -->
                 <button class="btn-logout-round" id="logoutBtn" title="Secure Logout">
                     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line>
@@ -234,7 +233,6 @@
         <div class="module-section" id="superAdminSection" style="display: none; border-color: #c4b5fd;">
             <h2 class="section-heading" style="color: #5b21b6; margin: 0 !important;">
                 <span class="section-heading-icon" style="background: linear-gradient(135deg, #6d28d9, #8b5cf6);">
-                    <!-- Shield Icon instead of Dollar sign -->
                     <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
@@ -248,7 +246,7 @@
                     </span>Activity Logs
                 </a>
 
-                <!-- Master Settings Button moved here from the header -->
+                <!-- Master Settings Button -->
                 <a href="#" class="nav-btn" onclick="window.openSecurityGate()">
                     <span class="nav-icon" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -256,6 +254,16 @@
                             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                         </svg>
                     </span>System Settings
+                </a>
+
+                <!-- New: Role Manager Button -->
+                <a href="#" class="nav-btn" onclick="window.openRoleManager()">
+                    <span class="nav-icon" style="background: linear-gradient(135deg, #dbeafe, #93c5fd);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M12 8v4"/><path d="M12 16h.01"/>
+                        </svg>
+                    </span>Role & Security
                 </a>
             </div>
         </div>
@@ -455,6 +463,51 @@
                     <!-- Replaced native confirm with direct action (typing WIPE is enough confirmation) -->
                     <button type="button" id="executeWipeBtn" onclick="window.executeDataWipe()" style="flex:1; background:#dc2626; color:white; padding:10px; border:none; border-radius:8px; font-weight:900; cursor:pointer; font-size:12px;">🔥 CONFIRM WIPE</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROLE & SECURITY MANAGER MODAL (NEW) -->
+    <div id="roleManagerModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 800px; width: 95%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+                <h3 style="margin: 0; color: #4c1d95; display: flex; align-items: center; gap: 8px;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Role & Security Manager
+                </h3>
+                <button onclick="document.getElementById('roleManagerModal').style.display='none'" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 800;">Close</button>
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                <label style="font-weight: 800; color: #1e293b; margin: 0;">Select Role to Edit:</label>
+                <select id="roleSelector" class="form-control" style="max-width: 250px; margin: 0; cursor: pointer;" onchange="window.loadRolePermissions(this.value)">
+                    <option value="">-- Choose Role --</option>
+                    <!-- Roles will be loaded here -->
+                </select>
+                <span id="roleSaveStatus" style="font-size: 12px; font-weight: 800; color: #10b981; display: none;">✅ Saved Successfully!</span>
+            </div>
+
+            <div class="table-responsive" style="max-height: 50vh; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead style="background: #1e293b; color: white;">
+                        <tr>
+                            <th style="padding: 12px; text-align: left; font-size: 12px;">App Module / Feature</th>
+                            <th style="padding: 12px; text-align: center; font-size: 12px;">View (കാണാൻ)</th>
+                            <th style="padding: 12px; text-align: center; font-size: 12px;">Add (ചേർക്കാൻ)</th>
+                            <th style="padding: 12px; text-align: center; font-size: 12px;">Edit (തിരുത്താൻ)</th>
+                            <th style="padding: 12px; text-align: center; font-size: 12px;">Delete (മായ്ക്കാൻ)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="permissionsTableBody">
+                        <tr><td colspan="5" style="text-align: center; padding: 20px; font-weight: bold; color: #64748b;">Select a role above to manage permissions</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 15px; text-align: right;">
+                <button onclick="window.saveRolePermissions()" style="background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 14px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);">
+                    💾 Save Permissions
+                </button>
             </div>
         </div>
     </div>
@@ -788,7 +841,7 @@
             
             let ans = await window.magicPrompt("🛡️ Super Admin Authentication\n\nEnter the Master Pin (Hint: 1234):", false);
             
-            if (ans === "1234") { // Or check against DB value later
+            if (ans === "1234") { 
                 window.openSettings();
             } else if (ans !== null) {
                 alert("❌ Access Denied! Incorrect PIN.");
@@ -800,14 +853,12 @@
                 document.getElementById('settingsNormalView').style.display = 'block';
                 document.getElementById('settingsWipeView').style.display = 'none';
 
-                // Load existing SaaS Settings from local storage (For now)
                 const storedTheme = localStorage.getItem('globus_theme_color');
                 const guestToggle = localStorage.getItem('globus_allow_guest');
                 
                 if (storedTheme) document.getElementById('set_theme_color').value = storedTheme;
                 if (guestToggle !== null) document.getElementById('set_guest_login').checked = (guestToggle === 'true');
 
-                // Load DB Institute Settings
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
                     document.getElementById('set_name').value = data.institute_name || '';
@@ -834,13 +885,11 @@
             const oldText = btn.innerHTML;
             btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
             
-            // Save SaaS Features Locally
             const themeColor = document.getElementById('set_theme_color').value;
             const allowGuest = document.getElementById('set_guest_login').checked;
             localStorage.setItem('globus_theme_color', themeColor);
             localStorage.setItem('globus_allow_guest', allowGuest);
 
-            // Update Root Color
             document.documentElement.style.setProperty('--app-theme-color', themeColor);
 
             const updates = {
@@ -864,7 +913,6 @@
 
         async function loadSettings() {
             try {
-                // Apply SaaS Theme Color
                 const storedTheme = localStorage.getItem('globus_theme_color');
                 if (storedTheme) {
                     document.documentElement.style.setProperty('--app-theme-color', storedTheme);
@@ -894,7 +942,7 @@
             
             const num1 = Math.floor(Math.random() * 20) + 1;
             const num2 = Math.floor(Math.random() * 10) + 1;
-            expectedCaptchaAns = num1 + num2;
+            window.expectedCaptchaAns = num1 + num2;
             document.getElementById('captchaEq').innerText = `${num1} + ${num2} = `;
             
             document.getElementById('captchaInput').value = '';
@@ -910,7 +958,7 @@
             const userCaptcha = parseInt(document.getElementById('captchaInput').value);
             const userText = document.getElementById('wipeConfirmText').value.trim().toUpperCase();
 
-            if (userCaptcha !== expectedCaptchaAns) { alert("❌ Math Captcha is incorrect!"); return; }
+            if (userCaptcha !== window.expectedCaptchaAns) { alert("❌ Math Captcha is incorrect!"); return; }
             if (userText !== "WIPE") { alert("❌ You must type exactly 'WIPE' to confirm."); return; }
 
             const finalWarning = await window.magicPrompt("🚨 FINAL WARNING: ALL student data, staff details, attendance, fees, inventory, enquiries, and expenses will be permanently deleted. Only Courses will remain. \n\nType 'CONFIRM' to proceed:", true);
@@ -944,6 +992,92 @@
             } catch (err) {
                 alert("❌ Error wiping data. Check console.");
                 btn.innerHTML = "🔥 CONFIRM WIPE"; btn.disabled = false;
+            }
+        };
+
+        // ==========================================
+        // DYNAMIC ROLE & SECURITY MANAGER
+        // ==========================================
+        window.allModules = [
+            { id: 'ActivityLogs', name: 'Activity Logs' }, { id: 'SystemSettings', name: 'System Settings' },
+            { id: 'Enquiry', name: 'Enquiry' }, { id: 'Admission', name: 'Admission' },
+            { id: 'Directory', name: 'Directory (Students)' }, { id: 'StaffHR', name: 'Staff & HR' },
+            { id: 'Attendance', name: 'Attendance' }, { id: 'Courses', name: 'Courses' },
+            { id: 'Exams', name: 'Exams' }, { id: 'Inventory', name: 'Inventory' },
+            { id: 'AdmReport', name: 'Admission Report' }, { id: 'SmartAlerts', name: 'Smart Alerts' },
+            { id: 'IDCardStudio', name: 'ID Card Studio' }, { id: 'FeeCollect', name: 'Fee Collect' },
+            { id: 'DayBook', name: 'Day Book' }, { id: 'MasterDayBook', name: 'Master Day Book' }
+        ];
+
+        window.currentEditingRole = null;
+
+        window.openRoleManager = async function() {
+            if (localStorage.getItem('userRole') !== 'Super Admin') {
+                alert("❌ Only Super Admin can modify system roles.");
+                return;
+            }
+            document.getElementById('roleManagerModal').style.display = 'flex';
+            
+            const { data, error } = await supabase.from('role_management').select('*');
+            if (!error && data) {
+                const selector = document.getElementById('roleSelector');
+                selector.innerHTML = '<option value="">-- Choose Role --</option>';
+                data.forEach(role => {
+                    selector.innerHTML += `<option value="${role.role_name}">${role.role_name}</option>`;
+                });
+            }
+        };
+
+        window.loadRolePermissions = async function(roleName) {
+            window.currentEditingRole = roleName;
+            const tbody = document.getElementById('permissionsTableBody');
+            if (!roleName) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Select a role above</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading...</td></tr>';
+            
+            const { data } = await supabase.from('role_management').select('permissions, is_system_role').eq('role_name', roleName).single();
+            const perms = data ? (data.permissions || {}) : {};
+            const isSuperAdmin = roleName === 'Super Admin'; 
+
+            tbody.innerHTML = window.allModules.map(mod => {
+                const p = perms[mod.id] || { view: false, add: false, edit: false, delete: false };
+                const disable = isSuperAdmin ? 'disabled checked' : '';
+                return `
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 10px; font-weight: 700; color: #334155;">${mod.name}</td>
+                        <td style="text-align: center;"><input type="checkbox" id="perm_${mod.id}_view" ${p.view ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #2563eb;"></td>
+                        <td style="text-align: center;"><input type="checkbox" id="perm_${mod.id}_add" ${p.add ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #10b981;"></td>
+                        <td style="text-align: center;"><input type="checkbox" id="perm_${mod.id}_edit" ${p.edit ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #f59e0b;"></td>
+                        <td style="text-align: center;"><input type="checkbox" id="perm_${mod.id}_delete" ${p.delete ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #ef4444;"></td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        window.saveRolePermissions = async function() {
+            if (!window.currentEditingRole || window.currentEditingRole === 'Super Admin') return;
+            
+            let newPermissions = {};
+            window.allModules.forEach(mod => {
+                newPermissions[mod.id] = {
+                    view: document.getElementById(`perm_${mod.id}_view`).checked,
+                    add: document.getElementById(`perm_${mod.id}_add`).checked,
+                    edit: document.getElementById(`perm_${mod.id}_edit`).checked,
+                    delete: document.getElementById(`perm_${mod.id}_delete`).checked
+                };
+            });
+
+            const { error } = await supabase.from('role_management').update({ permissions: newPermissions }).eq('role_name', window.currentEditingRole);
+            
+            if (!error) {
+                const status = document.getElementById('roleSaveStatus');
+                status.style.display = 'inline';
+                setTimeout(() => status.style.display = 'none', 3000);
+            } else {
+                alert("❌ Error saving permissions.");
             }
         };
 
