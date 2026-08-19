@@ -860,12 +860,7 @@
                 document.getElementById('settingsNormalView').style.display = 'block';
                 document.getElementById('settingsWipeView').style.display = 'none';
 
-                const storedTheme = localStorage.getItem('globus_theme_color');
-                const guestToggle = localStorage.getItem('globus_allow_guest');
-                
-                if (storedTheme) document.getElementById('set_theme_color').value = storedTheme;
-                if (guestToggle !== null) document.getElementById('set_guest_login').checked = (guestToggle === 'true');
-
+                // ഡാറ്റാബേസിൽ നിന്നും ഇൻസ്റ്റിറ്റ്യൂട്ട് വിവരങ്ങളും പുതിയ സെറ്റിംഗ്സും എടുക്കുന്നു
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
                     document.getElementById('set_name').value = data.institute_name || '';
@@ -873,11 +868,15 @@
                     document.getElementById('set_address').value = data.address || '';
                     document.getElementById('set_phone').value = data.phone || '';
                     document.getElementById('set_email').value = data.email || '';
+                    
+                    // പുതിയ ഡാറ്റാബേസ് സെറ്റിംഗ്സ്
+                    document.getElementById('set_theme_color').value = data.theme_color || '#2563eb';
+                    document.getElementById('set_guest_login').checked = data.guest_login_enabled !== false; // Default true
+                    if(data.menu_style) document.getElementById('set_menu_style').value = data.menu_style;
                 }
             } catch (e) {}
             
             document.getElementById('settingsModal').style.display = 'flex';
-            
             settingsInteracted = false;
             clearTimeout(settingsTimer);
             settingsTimer = setTimeout(() => {
@@ -890,21 +889,25 @@
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
             const oldText = btn.innerHTML;
-            btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
+            btn.innerHTML = '⏳ Saving to Database...'; btn.disabled = true;
             
             const themeColor = document.getElementById('set_theme_color').value;
             const allowGuest = document.getElementById('set_guest_login').checked;
-            localStorage.setItem('globus_theme_color', themeColor);
-            localStorage.setItem('globus_allow_guest', allowGuest);
+            const menuStyle = document.getElementById('set_menu_style').value;
 
+            // സിസ്റ്റത്തിലേക്ക് നിറം അപ്പൊൾ തന്നെ നൽകുന്നു
             document.documentElement.style.setProperty('--app-theme-color', themeColor);
 
+            // Supabase ഡാറ്റാബേസിലേക്ക് എല്ലാം ഒരുമിച്ച് സേവ് ചെയ്യുന്നു!
             const updates = {
                 institute_name: document.getElementById('set_name').value,
                 sub_name: document.getElementById('set_sub').value,
                 address: document.getElementById('set_address').value,
                 phone: document.getElementById('set_phone').value,
-                email: document.getElementById('set_email').value
+                email: document.getElementById('set_email').value,
+                theme_color: themeColor,
+                guest_login_enabled: allowGuest,
+                menu_style: menuStyle
             };
             
             const { error } = await supabase.from('institute_settings').update(updates).eq('id', 1);
@@ -920,13 +923,12 @@
 
         async function loadSettings() {
             try {
-                const storedTheme = localStorage.getItem('globus_theme_color');
-                if (storedTheme) {
-                    document.documentElement.style.setProperty('--app-theme-color', storedTheme);
-                }
-
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
+                    // ഡാറ്റാബേസിലെ നിറം നൽകുന്നു
+                    if (data.theme_color) {
+                        document.documentElement.style.setProperty('--app-theme-color', data.theme_color);
+                    }
                     document.getElementById('navInstName').innerText = data.institute_name || '';
                     document.getElementById('navSubName').innerText = data.sub_name || '';
                     if(data.logo_url) {
@@ -939,7 +941,6 @@
                 }
             } catch (e) {}
         }
-
         // ==========================================
         // 5. DANGER ZONE WIPE DATA LOGIC
         // ==========================================
