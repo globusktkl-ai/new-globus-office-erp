@@ -1272,12 +1272,18 @@
             } catch (error) { alert("Error generating image."); btn.innerHTML = originalText; btn.disabled = false; }
         };
 
-        window.closeModal = function() { 
+       window.closeModal = function() { 
             document.getElementById('certModal').style.display = 'none'; 
             document.getElementById('marklistStudioModal').style.display = 'none'; 
         };
 
         checkAuth();
+    </script>
+
+    <!-- THE NEW DYNAMIC SECURITY SYSTEM -->
+    <script type="module">
+        import './assets/js/auth-check.js';
+        window.checkDynamicAccess('Exams');
     </script>
 </body>
 </html>
