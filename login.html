@@ -168,6 +168,31 @@
             
             window.location.replace('dashboard.html');
         };
+        // ഡാറ്റാബേസിൽ നിന്ന് സെറ്റിംഗ്സ് വായിച്ച് ഗസ്റ്റ് ബട്ടൺ നിയന്ത്രിക്കുന്നു
+        async function applySystemSettings() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('theme_color, guest_login_enabled').eq('id', 1).single();
+                if (data) {
+                    // ലോഗിൻ പേജിന്റെ ബാക്ക്ഗ്രൗണ്ട് കളർ മാറ്റാൻ
+                    if (data.theme_color) {
+                        document.documentElement.style.setProperty('--primary-dark', data.theme_color);
+                    }
+                    // ഗസ്റ്റ് ലോഗിൻ ഓഫ് ആണെങ്കിൽ ബട്ടൺ മറയ്ക്കുന്നു
+                    const guestBtn = document.querySelector('.btn-guest');
+                    const divider = document.querySelector('.divider');
+                    if (guestBtn && divider) {
+                        if (data.guest_login_enabled === false) {
+                            guestBtn.style.display = 'none';
+                            divider.style.display = 'none';
+                        } else {
+                            guestBtn.style.display = 'block';
+                            divider.style.display = 'flex';
+                        }
+                    }
+                }
+            } catch (err) { console.error("Could not load settings", err); }
+        }
+        applySystemSettings();
     </script>
 </body>
 </html>
