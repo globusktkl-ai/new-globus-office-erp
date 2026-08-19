@@ -204,7 +204,21 @@
                 <div><label class="frm-label">Phone *</label><input type="tel" class="frm-input" id="addPhone" maxlength="10"></div>
                 <div><label class="frm-label">Gender</label><select class="frm-select" id="addGender"><option value="Male">Male</option><option value="Female">Female</option></select></div>
             </div>
-            <div class="frm-group"><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="addRole" placeholder="e.g. Teacher"></div>
+            
+            <!-- NEW: Role Dropdown, Email and Password -->
+            <div class="frm-group">
+                <label class="frm-label">Role / Designation *</label>
+                <select class="frm-select" id="addRole">
+                    <option value="Teacher">Teacher</option>
+                    <option value="Office Staff">Office Staff</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <div class="frm-row">
+                <div><label class="frm-label">Email ID (For Login) *</label><input type="email" class="frm-input" id="addEmail" required placeholder="staff@globus.com"></div>
+                <div><label class="frm-label">Password *</label><input type="text" class="frm-input" id="addPassword" required placeholder="Minimum 6 chars"></div>
+            </div>
+
             <div class="frm-row">
                 <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="addSalary" min="0"></div>
                 <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="addJoinDate"></div>
@@ -226,7 +240,18 @@
                 <div><label class="frm-label">Phone *</label><input type="tel" class="frm-input" id="editPhone" maxlength="10"></div>
                 <div><label class="frm-label">Gender</label><select class="frm-select" id="editGender"><option value="Male">Male</option><option value="Female">Female</option></select></div>
             </div>
-            <div class="frm-group"><label class="frm-label">Role / Designation</label><input type="text" class="frm-input" id="editRole"></div>
+            
+            <div class="frm-row">
+                <div><label class="frm-label">Email ID</label><input type="email" class="frm-input" id="editEmail" disabled title="Cannot edit email directly here"></div>
+                <div><label class="frm-label">Role</label>
+                    <select class="frm-select" id="editRole">
+                        <option value="Teacher">Teacher</option>
+                        <option value="Office Staff">Office Staff</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="frm-row">
                 <div><label class="frm-label">Basic Salary (₹)</label><input type="number" class="frm-input" id="editSalary" min="0"></div>
                 <div><label class="frm-label">Joining Date</label><input type="date" class="frm-input" id="editJoinDate"></div>
@@ -522,7 +547,8 @@
             document.getElementById('editName').value = s.full_name || '';
             document.getElementById('editPhone').value = s.phone || '';
             document.getElementById('editGender').value = s.gender || 'Male';
-            document.getElementById('editRole').value = s.role || '';
+            document.getElementById('editEmail').value = s.email || '';
+            document.getElementById('editRole').value = s.role || 'Teacher';
             document.getElementById('editSalary').value = s.basic_salary || '';
             document.getElementById('editJoinDate').value = s.joining_date || '';
             document.getElementById('editStatus').value = s.status || 'active';
@@ -533,10 +559,14 @@
         window.updateStaff = async function() {
             const id = document.getElementById('editId').value;
             const updates = {
-                full_name: document.getElementById('editName').value.trim(), phone: document.getElementById('editPhone').value.trim(),
-                gender: document.getElementById('editGender').value, role: document.getElementById('editRole').value.trim(),
-                basic_salary: Number(document.getElementById('editSalary').value) || 0, joining_date: document.getElementById('editJoinDate').value || null,
-                status: document.getElementById('editStatus').value, address: document.getElementById('editAddress').value.trim()
+                full_name: document.getElementById('editName').value.trim(), 
+                phone: document.getElementById('editPhone').value.trim(),
+                gender: document.getElementById('editGender').value, 
+                role: document.getElementById('editRole').value,
+                basic_salary: Number(document.getElementById('editSalary').value) || 0, 
+                joining_date: document.getElementById('editJoinDate').value || null,
+                status: document.getElementById('editStatus').value, 
+                address: document.getElementById('editAddress').value.trim()
             };
             if (!updates.full_name) { alert('Name is required!'); return; }
             const { error } = await supabase.from('staff').update(updates).eq('id', id);
@@ -560,20 +590,55 @@
             const btn = document.getElementById('addStaffBtn');
             const name = document.getElementById('addName').value.trim();
             const phone = document.getElementById('addPhone').value.trim();
+            const email = document.getElementById('addEmail').value.trim();
+            const password = document.getElementById('addPassword').value.trim();
+
             if (!name) { alert('Name is required!'); return; }
+            if (!email || !password) { alert('Email and Password are required to create login ID!'); return; }
+            if (password.length < 6) { alert('Password must be at least 6 characters!'); return; }
             if (phone && phone.length !== 10) { alert('Phone must be 10 digits!'); return; }
+            
             btn.disabled = true; btn.textContent = '⏳ Saving...';
-            const { error } = await supabase.from('staff').insert([{
-                full_name: name, phone: phone, gender: document.getElementById('addGender').value,
-                role: document.getElementById('addRole').value.trim() || 'Staff', basic_salary: Number(document.getElementById('addSalary').value) || 0,
-                joining_date: document.getElementById('addJoinDate').value || null, qualification: document.getElementById('addQual').value.trim(),
-                address: document.getElementById('addAddress').value.trim(), status: 'active'
-            }]);
-            btn.disabled = false; btn.textContent = '✅ Save Staff Member';
-            if (error) { alert('Error: ' + error.message); return; }
-            alert('✅ Staff added!'); closeModal('addStaffModal');
-            ['addName','addPhone','addRole','addSalary','addJoinDate','addQual','addAddress'].forEach(id => document.getElementById(id).value = '');
-            await fetchAllData();
+
+            try {
+                // 1. Create Login in Supabase Auth
+                const { data: authData, error: authErr } = await supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+                
+                if (authErr) {
+                    alert('Auth Error: ' + authErr.message);
+                    btn.disabled = false; btn.textContent = '✅ Save Staff Member';
+                    return;
+                }
+
+                // 2. Insert Staff Profile Details
+                const { error } = await supabase.from('staff').insert([{
+                    full_name: name, 
+                    phone: phone, 
+                    gender: document.getElementById('addGender').value,
+                    role: document.getElementById('addRole').value, 
+                    email: email,
+                    basic_salary: Number(document.getElementById('addSalary').value) || 0,
+                    joining_date: document.getElementById('addJoinDate').value || null, 
+                    qualification: document.getElementById('addQual').value.trim(),
+                    address: document.getElementById('addAddress').value.trim(), 
+                    status: 'active'
+                }]);
+
+                if (error) { alert('Error saving profile: ' + error.message); } 
+                else { 
+                    alert('✅ Staff added! NOTE: Supabase Auth might log you out automatically after creating a new user. If so, simply log back in as Super Admin.'); 
+                    closeModal('addStaffModal');
+                    ['addName','addPhone','addEmail','addPassword','addSalary','addJoinDate','addQual','addAddress'].forEach(id => document.getElementById(id).value = '');
+                    await fetchAllData();
+                }
+            } catch(e) {
+                alert('Unexpected Error: ' + e.message);
+            } finally {
+                btn.disabled = false; btn.textContent = '✅ Save Staff Member';
+            }
         };
 
         // ===================== TAB 2: ADVANCES =====================
@@ -795,9 +860,11 @@
 
         init();
     </script>
+    
+    <!-- THE NEW DYNAMIC SECURITY SYSTEM -->
     <script type="module">
-    import './assets/js/auth-check.js';
-    window.restrictAccess(['Super Admin', 'Admin']);
-</script>
+        import './assets/js/auth-check.js';
+        window.checkDynamicAccess('StaffHR');
+    </script>
 </body>
 </html>
