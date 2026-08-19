@@ -468,47 +468,54 @@
     </div>
 
     <!-- ROLE & SECURITY MANAGER MODAL (NEW) -->
+   <!-- ROLE & SECURITY MANAGER MODAL (MOBILE FRIENDLY UPDATE) -->
     <div id="roleManagerModal" class="modal-overlay">
-        <div class="modal-container" style="max-width: 800px; width: 95%;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
-                <h3 style="margin: 0; color: #4c1d95; display: flex; align-items: center; gap: 8px;">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div class="modal-container" style="max-width: 800px; width: 95%; padding: 15px; border-radius: 12px; display: flex; flex-direction: column; max-height: 90vh;">
+            
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; flex-shrink: 0;">
+                <h3 style="margin: 0; color: #4c1d95; font-size: 16px; font-weight: 900; display: flex; align-items: center; gap: 8px;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     Role & Security Manager
                 </h3>
-                <button onclick="document.getElementById('roleManagerModal').style.display='none'" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 800;">Close</button>
+                <button onclick="document.getElementById('roleManagerModal').style.display='none'" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 12px;">Close</button>
             </div>
             
-            <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: center; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
-                <label style="font-weight: 800; color: #1e293b; margin: 0;">Select Role to Edit:</label>
-                <select id="roleSelector" class="form-control" style="max-width: 250px; margin: 0; cursor: pointer;" onchange="window.loadRolePermissions(this.value)">
+            <!-- Role Selector -->
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; flex-shrink: 0;">
+                <label style="font-weight: 800; color: #1e293b; margin: 0; font-size: 13px;">Select Role to Edit:</label>
+                <select id="roleSelector" class="form-control" style="flex: 1; min-width: 150px; margin: 0; cursor: pointer; padding: 8px;" onchange="window.loadRolePermissions(this.value)">
                     <option value="">-- Choose Role --</option>
                     <!-- Roles will be loaded here -->
                 </select>
-                <span id="roleSaveStatus" style="font-size: 12px; font-weight: 800; color: #10b981; display: none;">✅ Saved Successfully!</span>
+                <div id="roleSaveStatus" style="font-size: 12px; font-weight: 800; color: #10b981; display: none; width: 100%; text-align: center;">✅ Saved Successfully!</div>
             </div>
 
-            <div class="table-responsive" style="max-height: 50vh; border: 1px solid #e2e8f0; border-radius: 8px;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead style="background: #1e293b; color: white;">
+            <!-- Scrollable Table Area (Fixed for Mobile) -->
+            <div style="flex: 1; overflow-x: auto; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; background: white; -webkit-overflow-scrolling: touch; min-height: 250px;">
+                <table style="width: 100%; border-collapse: collapse; min-width: 400px !important;">
+                    <thead style="background: #1e293b; color: white; position: sticky; top: 0; z-index: 10;">
                         <tr>
-                            <th style="padding: 12px; text-align: left; font-size: 12px;">App Module / Feature</th>
-                            <th style="padding: 12px; text-align: center; font-size: 12px;">View (കാണാൻ)</th>
-                            <th style="padding: 12px; text-align: center; font-size: 12px;">Add (ചേർക്കാൻ)</th>
-                            <th style="padding: 12px; text-align: center; font-size: 12px;">Edit (തിരുത്താൻ)</th>
-                            <th style="padding: 12px; text-align: center; font-size: 12px;">Delete (മായ്ക്കാൻ)</th>
+                            <th style="padding: 10px; text-align: left; font-size: 11px; white-space: nowrap; border: none;">App Feature</th>
+                            <th style="padding: 10px; text-align: center; font-size: 11px; border: none;">View</th>
+                            <th style="padding: 10px; text-align: center; font-size: 11px; border: none;">Add</th>
+                            <th style="padding: 10px; text-align: center; font-size: 11px; border: none;">Edit</th>
+                            <th style="padding: 10px; text-align: center; font-size: 11px; border: none;">Delete</th>
                         </tr>
                     </thead>
                     <tbody id="permissionsTableBody">
-                        <tr><td colspan="5" style="text-align: center; padding: 20px; font-weight: bold; color: #64748b;">Select a role above to manage permissions</td></tr>
+                        <tr><td colspan="5" style="text-align: center; padding: 30px 10px; font-weight: bold; color: #64748b; font-size: 12px;">Select a role above to manage permissions</td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <div style="margin-top: 15px; text-align: right;">
-                <button onclick="window.saveRolePermissions()" style="background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 14px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);">
+            <!-- Save Button (Centered) -->
+            <div style="margin-top: 15px; text-align: center; flex-shrink: 0;">
+                <button onclick="window.saveRolePermissions()" style="background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 14px; width: 100%; max-width: 300px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);">
                     💾 Save Permissions
                 </button>
             </div>
+            
         </div>
     </div>
 
