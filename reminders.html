@@ -619,13 +619,19 @@
                 window.toggleMasterEvent();
             }
             window.renderEvents();
-        };
+      };
 
         document.addEventListener('DOMContentLoaded', () => {
             window.initCustomPicker();
             window.loadSettingsSafe();
             supabase.auth.getSession().then(({ data: { session } }) => { if (session) window.fetchStudentAlerts(); });
         });
+    </script>
+
+    <!-- THE NEW DYNAMIC SECURITY SYSTEM -->
+    <script type="module">
+        import './assets/js/auth-check.js';
+        window.checkDynamicAccess('SmartAlerts');
     </script>
 </body>
 </html>
