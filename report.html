@@ -466,10 +466,12 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkAuthAndLoad();
         });
-    </script>
+   </script>
+
+    <!-- THE NEW DYNAMIC SECURITY SYSTEM -->
     <script type="module">
-    import './assets/js/auth-check.js';
-    window.restrictAccess(['Super Admin', 'Admin']);
-</script>
+        import './assets/js/auth-check.js';
+        window.checkDynamicAccess('MasterDayBook');
+    </script>
 </body>
 </html>
