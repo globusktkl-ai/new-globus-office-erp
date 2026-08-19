@@ -84,11 +84,9 @@
         const checkExistingSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             const userRole = localStorage.getItem('userRole');
-            // Prevent redirect loops by ensuring role exists
             if ((session && userRole) || userRole === 'Guest') {
                 window.location.replace('dashboard.html');
             } else if (session && !userRole) {
-                // Failsafe: if session exists but role is cleared, force logout
                 await supabase.auth.signOut();
                 localStorage.clear();
             }
@@ -111,44 +109,49 @@
                 alert('⚠️ Login Failed: Invalid Email or Password.');
                 btn.textContent = 'Secure Sign In'; btn.disabled = false;
             } else {
-                
                 // ========================================================
-                // IMPORTANT: താങ്കളുടെ ഇമെയിൽ ഐഡി ഇവിടെ കൃത്യമായി നൽകുക
+                // IMPORTANT: താങ്കളുടെ സൂപ്പർ അഡ്മിൻ ഇമെയിൽ ഇവിടെ നൽകുക
                 // ========================================================
-                const superAdminEmail = 'vpk@vpk.com'; // <---- ഇത് മാറ്റി താങ്കളുടെ യഥാർത്ഥ ലോഗിൻ ഇമെയിൽ നൽകുക
+                const superAdminEmail = 'vpk@vpk.com'; 
                 
-                let userRole = 'Admin'; 
+                let userRole = 'Office Staff'; // Default fallback
                 
+                // A. സൂപ്പർ അഡ്മിൻ ചെക്ക് (താങ്കളെ എപ്പോഴും കയറ്റിവിടാൻ)
                 if (email.toLowerCase() === superAdminEmail.toLowerCase()) {
                     userRole = 'Super Admin'; 
                 } else {
-                    // Check if this email exists in our 'staff' table
+                    // B. ഡാറ്റാബേസിൽ പോയി യഥാർത്ഥ റോൾ എടുക്കുന്നു
                     const { data: staffData } = await supabase.from('staff').select('role, status').eq('email', email).single();
                     
                     if (staffData) {
-                        if (staffData.status !== 'Active') {
+                        // അക്കൗണ്ട് ആക്റ്റീവ് ആണോ എന്ന് നോക്കുന്നു (ചെറിയ അക്ഷരവും വലിയ അക്ഷരവും സപ്പോർട്ട് ചെയ്യും)
+                        const currentStatus = (staffData.status || '').toLowerCase();
+                        if (currentStatus !== 'active') {
                             alert('❌ Account Disabled: Your access has been revoked by the Administrator.');
                             await supabase.auth.signOut();
                             btn.textContent = 'Secure Sign In'; btn.disabled = false;
                             return;
                         }
-                        // Categorize Roles
-                        if (staffData.role === 'Manager' || staffData.role === 'Admin' || staffData.role === 'Office Manager') {
-    userRole = 'Admin'; 
-} else if (staffData.role === 'Teacher' || staffData.role === 'Faculty') {
-    userRole = 'Teacher';
-} else {
-    userRole = 'Office Staff'; 
-}
+                        
+                        // യാതൊരു മാറ്റവുമില്ലാതെ ഡാറ്റാബേസിലെ അതേ റോൾ നൽകുന്നു!
+                        if (staffData.role) {
+                            userRole = staffData.role;
+                        }
+                    } else {
+                        // സ്റ്റാഫ് ലിസ്റ്റിൽ പേരില്ലെങ്കിൽ പുറത്താക്കും
+                        alert('❌ Account Error: Profile not found in the staff directory.');
+                        await supabase.auth.signOut();
+                        btn.textContent = 'Secure Sign In'; btn.disabled = false;
+                        return;
                     }
                 }
 
-                // Save role and email in local storage for access control
+                // C. വിവരങ്ങൾ ബ്രൗസറിൽ സേവ് ചെയ്യുന്നു
                 localStorage.setItem('userRole', userRole);
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('loginTime', Date.now());
 
-                // Log the login action
+                // ലോഗ് സേവ് ചെയ്യുന്നു
                 if(window.ThemeManager) {
                     await window.ThemeManager.logAction('System', 'LOGIN', `User Logged In successfully`);
                 }
@@ -161,7 +164,7 @@
         window.guestLogin = function() {
             localStorage.setItem('userRole', 'Guest');
             localStorage.setItem('userEmail', 'guest@demo.com');
-            localStorage.setItem('guestLoginTime', Date.now()); // For the 30-min timer limit
+            localStorage.setItem('guestLoginTime', Date.now()); 
             
             window.location.replace('dashboard.html');
         };
