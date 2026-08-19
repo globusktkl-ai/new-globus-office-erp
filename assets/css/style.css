@@ -399,3 +399,105 @@ body {
 .btn-delete:hover {
     background-color: #FECACA;
 }
+/* ==========================================
+   DARK MODE VARIABLES & STYLES
+   ========================================== */
+body.dark-mode {
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    color: #f1f5f9;
+}
+body.dark-mode .main-content, 
+body.dark-mode .app-header {
+    background: transparent;
+}
+body.dark-mode .stat-box, 
+body.dark-mode .unified-finance-card, 
+body.dark-mode .module-section, 
+body.dark-mode .nav-btn,
+body.dark-mode .search-filter-card,
+body.dark-mode .staff-card,
+body.dark-mode .tab-panel,
+body.dark-mode .payroll-card,
+body.dark-mode .modal-sheet,
+body.dark-mode .modal-container,
+body.dark-mode .header-auth-section,
+body.dark-mode .adv-card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode .section-heading,
+body.dark-mode .stat-label,
+body.dark-mode .stat-value,
+body.dark-mode .uf-title,
+body.dark-mode .uf-amount,
+body.dark-mode .sc-name, 
+body.dark-mode .sc-value,
+body.dark-mode .modal-title,
+body.dark-mode .adv-name,
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4,
+body.dark-mode label, body.dark-mode td, body.dark-mode th {
+    color: #f8fafc !important;
+}
+
+body.dark-mode .uf-panel { background: #1e293b !important; }
+body.dark-mode .uf-left { background: linear-gradient(135deg, #064e3b 0%, #1e293b 100%) !important; }
+body.dark-mode .uf-right { background: linear-gradient(135deg, #1e293b 0%, #7f1d1d 100%) !important; }
+
+body.dark-mode .frm-input, 
+body.dark-mode .frm-select, 
+body.dark-mode .sf-search, 
+body.dark-mode .sf-select,
+body.dark-mode .form-control {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+body.dark-mode .nav-btn {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+}
+body.dark-mode .nav-btn:hover {
+    background: linear-gradient(135deg, #334155 0%, #1e293b 100%) !important;
+}
+
+body.dark-mode .staff-tab-btn {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #94a3b8 !important;
+}
+body.dark-mode .staff-tab-btn.active {
+    background: #3b82f6 !important;
+    color: #fff !important;
+    border-color: #3b82f6 !important;
+}
+
+body.dark-mode .btn-back-dashboard {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+}
+
+body.dark-mode .login-card {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+}
+
+body.dark-mode .pay-box {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+}
+
+/* Theme Toggle Button Style */
+.btn-theme-toggle {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; flex-shrink: 0;
+}
+body.dark-mode .btn-theme-toggle {
+    background: #334155; color: #fbbf24; border-color: #475569;
+}
+.btn-theme-toggle:active { transform: scale(0.9); }
