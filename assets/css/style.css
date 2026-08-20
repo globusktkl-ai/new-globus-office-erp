@@ -83,7 +83,7 @@ body {
 }
 
 /* =========================================
-   1. APP HEADER STYLES (NEW DESIGN - OVERLAP FIXED)
+   1. APP HEADER STYLES
    ========================================= */
 .app-header {
     display: flex;
@@ -388,27 +388,37 @@ body {
 }
 
 /* ==========================================
-   ULTIMATE UNIFORM DARK MODE & UI FIX
+   ULTIMATE UNIFORM DARK MODE & UI FIX (V2)
    ========================================== */
 
 /* 1. PRIMARY COLOR FIX (For all buttons) */
-.btn-custom, .frm-submit, .fab-add, .sc-btn-view, .pay-process-btn { background: var(--app-theme-color) !important; }
-.staff-tab-btn.active, .nav-btn:hover { background-color: var(--app-theme-color) !important; border-color: var(--app-theme-color) !important; }
+.btn-custom, .frm-submit, .fab-add, .sc-btn-view, .pay-process-btn {
+    background: var(--app-theme-color) !important;
+}
+.staff-tab-btn.active, .nav-btn:hover {
+    background-color: var(--app-theme-color) !important;
+    border-color: var(--app-theme-color) !important;
+}
 
-/* 2. UNIFORM BACK BUTTON & TOP NAV FIX (ഹെഡിങ്ങിൽ മുട്ടിനിൽക്കുന്നത് ഒഴിവാക്കാൻ) */
+/* 2. UNIFORM BACK BUTTON & TOP NAV FIX (STRETCH FIX APPLIED) */
 .top-nav {
     display: flex !important; align-items: center !important; justify-content: space-between !important;
     width: 100% !important; padding: 10px 15px !important; margin-bottom: 20px !important;
-    box-sizing: border-box !important; border-bottom: 2px solid #e2e8f0 !important;
+    box-sizing: border-box !important; border-bottom: 2px solid #e2e8f0 !important; gap: 10px !important;
 }
-.nav-left, .top-nav > a.btn-back-dashboard { 
-    display: flex !important; justify-content: flex-start !important; flex: 1 !important; margin-right: auto !important; position: static !important; transform: none !important;
+.nav-left { 
+    display: flex !important; justify-content: flex-start !important; flex: 1 !important; min-width: 0 !important;
 }
 .nav-center, .page-title { 
-    display: flex !important; justify-content: center !important; text-align: center !important; flex: 2 !important; width: auto !important; padding: 0 !important; margin: 0 !important;
+    display: flex !important; justify-content: center !important; text-align: center !important; 
+    flex: 2 !important; width: auto !important; padding: 0 !important; margin: 0 !important;
+    white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
 }
-.nav-right { display: flex !important; justify-content: flex-end !important; flex: 1 !important; }
+.nav-right { 
+    display: flex !important; justify-content: flex-end !important; flex: 1 !important; min-width: 0 !important;
+}
 
+/* 🟢 THE FIX FOR STRETCHED BACK BUTTON IS HERE 🟢 */
 .btn-back-dashboard { 
     display: inline-flex !important; align-items: center !important; gap: 6px !important; 
     background: #ffffff !important; border: 1px solid #cbd5e1 !important; 
@@ -416,8 +426,16 @@ body {
     color: #1e293b !important; font-weight: 800 !important; font-size: 13px !important; 
     text-decoration: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; 
     transition: 0.2s !important; z-index: 10; height: max-content !important;
+    flex: 0 0 auto !important; /* Forces button to not stretch */
+    width: max-content !important; 
 }
-.btn-back-dashboard svg { width: 18px !important; height: 18px !important; stroke: var(--app-theme-color, #2563eb) !important; stroke-width: 2.5 !important; fill: none !important; filter: none !important; }
+.btn-back-dashboard span { display: inline-block !important; }
+.btn-back-dashboard svg { width: 16px !important; height: 16px !important; stroke: var(--app-theme-color, #2563eb) !important; stroke-width: 3 !important; fill: none !important; filter: none !important; }
+
+@media (max-width: 600px) {
+    .btn-back-dashboard span { display: none !important; }
+    .btn-back-dashboard { padding: 6px 8px !important; }
+}
 
 /* MINI THEME TOGGLE BUTTON */
 .btn-theme-toggle {
@@ -429,10 +447,10 @@ body {
 }
 body.dark-mode .btn-theme-toggle { background: #334155 !important; color: #fbbf24 !important; border-color: #475569 !important; }
 
-/* 4. GLOBAL DARK MODE */
+/* 3. GLOBAL DARK MODE */
 body.dark-mode { background: #0f172a !important; color: #f8fafc !important; }
 
-/* 5. ALL WHITE BOXES & FOOTERS TO DARK */
+/* 4. ALL WHITE BOXES & FOOTERS TO DARK */
 body.dark-mode .main-content, body.dark-mode .login-card, body.dark-mode .stat-box, 
 body.dark-mode .search-filter-card, body.dark-mode .staff-card, body.dark-mode .payroll-card,
 body.dark-mode .modal-sheet, body.dark-mode .adv-card, body.dark-mode .uf-panel,
@@ -444,7 +462,7 @@ body.dark-mode .dropdown-content {
     background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
 }
 
-/* 6. TEXT & HEADINGS VISIBILITY FIX */
+/* 5. TEXT & HEADINGS VISIBILITY FIX */
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5,
 body.dark-mode .page-title, body.dark-mode .section-heading, body.dark-mode .stat-value, 
 body.dark-mode .uf-amount, body.dark-mode td, body.dark-mode label, body.dark-mode .smc-name,
@@ -453,7 +471,7 @@ body.dark-mode .log-details, body.dark-mode .user-email, body.dark-mode .frm-lab
 }
 body.dark-mode .stat-label, body.dark-mode .log-date { color: #94a3b8 !important; }
 
-/* 7. INPUTS, SELECTS & TABLES */
+/* 6. INPUTS, SELECTS & TABLES */
 body.dark-mode input, body.dark-mode select, body.dark-mode textarea, body.dark-mode .form-control {
     background: #0f172a !important; border-color: #334155 !important; color: #f8fafc !important;
 }
@@ -462,5 +480,5 @@ body.dark-mode th { background: #0f172a !important; color: #94a3b8 !important; b
 body.dark-mode tr:hover td { background-color: #1e293b !important; }
 body.dark-mode tr:nth-child(even) td { background-color: #0f172a !important; }
 
-/* 8. SPECIAL U-TURN BUTTON IN DARK MODE */
+/* 7. SPECIAL U-TURN BUTTON IN DARK MODE */
 body.dark-mode .btn-back-dashboard { background: #0f172a !important; border-color: #334155 !important; color: #f8fafc !important; }
