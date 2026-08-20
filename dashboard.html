@@ -114,31 +114,31 @@
     </style>
 </head>
 <body>
-    <nav class="app-header" style="padding: 10px 15px; position: relative; display: flex; justify-content: space-between; align-items: center;">
-       <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 8px;">
-            <img src="assets/images/logo.png" class="logo-small" alt="Logo" style="width: 35px; height: 35px; object-fit: contain;">
-            <div style="display: flex; flex-direction: column;">
-                <span id="navInstName" style="font-size: 14px; font-weight: 900; text-transform: uppercase;"></span>
-                <span id="navSubName" style="font-size: 9px; color: #64748b; font-weight: 800;"></span>
+    <nav class="app-header" style="padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; min-height: 60px; background: #fff; border-bottom: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+        <!-- LEFT: Logo and Name -->
+        <div class="header-left" style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+            <img src="assets/images/logo.png" class="logo-small" alt="Logo" style="width: 32px; height: 32px; object-fit: contain; flex-shrink: 0;">
+            <div style="display: flex; flex-direction: column; overflow: hidden;">
+                <span id="navInstName" style="font-size: 13px; font-weight: 900; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #1e293b;"></span>
+                <span id="navSubName" style="font-size: 9px; color: #64748b; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
             </div>
         </div>
         
-        <div class="header-right" style="display: flex; align-items: center; gap: 12px; justify-content: flex-end;">
+        <!-- RIGHT: Stacked Buttons (Auth on top, Theme on bottom) -->
+        <div class="header-right" style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; min-width: max-content;">
             
-            <!-- THE NEW HARDCODED DARK MODE BUTTON -->
-            <button id="themeToggleBtn" class="btn-theme-toggle" title="Toggle Dark/Light Mode">
-                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-            </button>
-
-            <!-- AUTH SECTION (Shrunk to save space) -->
-            <div class="header-auth-section" style="padding: 4px 6px !important; gap: 6px !important; display: flex; align-items: center;">
-                <div class="logged-in-text">
-                    <span id="authRoleTitle" style="font-size: 11px;">Admin</span>
-                </div>
-                <button class="btn-logout-round" id="logoutBtn" title="Secure Logout" style="width: 28px !important; height: 28px !important;">
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+            <!-- Auth Section (Top) -->
+            <div class="header-auth-section" style="padding: 2px 6px !important; margin: 0 !important; display: flex; align-items: center; gap: 6px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <span id="authRoleTitle" style="font-size: 9px; font-weight: 800; color: #475569;">Admin</span>
+                <button class="btn-logout-round" id="logoutBtn" title="Secure Logout" style="width: 20px !important; height: 20px !important; background: #ef4444; border-radius: 50%; color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;">
+                    <svg viewBox="0 0 24 24" width="10" height="10" stroke="currentColor" stroke-width="3" fill="none"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
                 </button>
             </div>
+
+            <!-- Theme Button (Bottom) -->
+            <button id="themeToggleBtn" class="btn-theme-toggle" title="Toggle Dark/Light Mode" style="width: 22px !important; height: 22px !important; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #475569; padding: 0;">
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
             
         </div>
     </nav>
