@@ -711,6 +711,9 @@
         // ==========================================
         // 3. DASHBOARD WIDGETS & TICKERS
         // ==========================================
+       // ==========================================
+        // 3. DASHBOARD WIDGETS & CLOUD TICKER
+        // ==========================================
         window.buildSmartTicker = async function() {
             const eventSet = localStorage.getItem('globus_events_settings');
             let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
@@ -722,6 +725,8 @@
 
             let tickerItems = [];
             const now = new Date();
+            
+            // 1. LOCAL BELL WARNINGS (പഴയ ബെൽ സിസ്റ്റം അതുപോലെ നിലനിർത്തിയിട്ടുണ്ട്)
             const savedBell = localStorage.getItem('globus_bell_settings_final'); 
             if(savedBell) {
                 const bSettings = JSON.parse(savedBell);
@@ -743,29 +748,61 @@
                 }
             }
 
-            const savedEvents = localStorage.getItem('globus_events');
-            if(savedEvents) {
-                const events = JSON.parse(savedEvents);
-                events.forEach(e => {
-                    let evDate = new Date(e.date + 'T' + e.time);
-                    let diffMs = evDate - now;
-                    if(diffMs > 0 && diffMs <= (24 * 60 * 60 * 1000)) {
-                        let displayTime = evDate.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
-                        tickerItems.push(`<a href="reminders.html" class="alert-item ticker-event">📅 Event: ${e.name} (${displayTime})</a>`);
-                    }
-                });
+            // 2. FETCH CLOUD ALERTS FROM SUPABASE (പുതിയ ക്ലൗഡ് നോട്ടിഫിക്കേഷൻ)
+            try {
+                const userEmail = localStorage.getItem('userEmail');
+                const userRole = localStorage.getItem('userRole') || 'Guest';
+                
+                // ഇന്നത്തെ തീയതി എടുക്കുന്നു (പഴയ അലേർട്ടുകൾ ടിക്കറിൽ കാണിക്കാതിരിക്കാൻ)
+                // തിരുവനന്തപുരം സമയം അനുസരിച്ച് തീയതി എടുക്കാൻ
+                let localDate = new Date();
+                localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
+                const todayStr = localDate.toISOString().split('T')[0];
+
+                const { data, error } = await supabase.from('smart_alerts')
+                    .select('*')
+                    .gte('alert_date', todayStr) // ഇന്നും ഇനിയുള്ളതുമായ അലേർട്ടുകൾ മാത്രം
+                    .order('alert_date', { ascending: true })
+                    .order('alert_time', { ascending: true });
+
+                if (data && data.length > 0) {
+                    data.forEach(alert => {
+                        // Role Based Security Check 
+                        let canView = false;
+                        if (userRole === 'Super Admin' || userRole === 'Admin') canView = true;
+                        else if (alert.target_audience === 'General') canView = true;
+                        else if (alert.target_audience === userRole) canView = true;
+                        else if (alert.target_audience === 'Personal' && alert.created_by === userEmail) canView = true;
+
+                        if (canView) {
+                            let timeParts = alert.alert_time.split(':');
+                            let displayTime = `${timeParts[0] % 12 || 12}:${timeParts[1]} ${timeParts[0] >= 12 ? 'PM' : 'AM'}`;
+                            let displayDate = new Date(alert.alert_date).toLocaleDateString('en-IN', { day:'2-digit', month:'short'});
+                            
+                            // ഐക്കണുകൾ സെറ്റ് ചെയ്യുന്നു
+                            let icon = alert.alert_type === 'Reminder' ? '🔔' : (alert.alert_type === 'Event' ? '📅' : '📢');
+                            let targetBadge = alert.target_audience === 'General' ? '' : `[${alert.target_audience}] `;
+                            
+                            // ക്ലൗഡ് അലേർട്ടുകൾ ടിക്കറിലേക്ക് ചേർക്കുന്നു
+                            tickerItems.push(`<a href="reminders.html" class="alert-item" style="color:#0f172a; border: 1px solid #cbd5e1;">${icon} <span style="font-weight:900; color:#2563eb;">${targetBadge}</span> ${alert.title} - ${displayDate} | ${displayTime}</a>`);
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error("Cloud Ticker Error:", err);
             }
 
-            if(tickerItems.length > 0) {
-                let htmlStr = tickerItems.join('');
-                if(tickerItems.length < 3) htmlStr += htmlStr; 
-                track.innerHTML = htmlStr;
-                wrap.style.display = 'block';
+            // 3. RENDER TICKER TO SCREEN
+            if (tickerItems.length > 0) {
+                wrap.style.display = 'flex';
+                // സ്ക്രോളിങ് സ്മൂത്ത് ആക്കാൻ വേണ്ടി ഐറ്റങ്ങൾ കുറവാണെങ്കിൽ ഡ്യൂപ്ലിക്കേറ്റ് ചെയ്യുന്നു
+                if(tickerItems.length < 3) tickerItems = [...tickerItems, ...tickerItems, ...tickerItems];
+                track.innerHTML = tickerItems.join('');
             } else {
-                wrap.style.display = 'none'; track.innerHTML = '';
+                wrap.style.display = 'none';
+                track.innerHTML = '';
             }
         };
-
         async function loadDashboardData() {
             try {
                 const [stuRes, crsRes, payRes] = await Promise.all([
