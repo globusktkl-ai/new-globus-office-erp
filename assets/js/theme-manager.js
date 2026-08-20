@@ -8,10 +8,14 @@ class ThemeManager {
         this.applyLocalTheme(); 
         this.syncWithDatabase(); 
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.injectThemeButton());
-        } else {
-            this.injectThemeButton();
+        // ID Card Studio-യിൽ ഡാർക്ക് മോഡ് ബട്ടൺ വരാതിരിക്കാനുള്ള കോഡ്
+        const currentFile = window.location.pathname.toLowerCase();
+        if (!currentFile.includes('id card') && !currentFile.includes('id%20card')) {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => this.injectThemeButton());
+            } else {
+                this.injectThemeButton();
+            }
         }
     }
 
@@ -24,6 +28,13 @@ class ThemeManager {
             return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '37, 99, 235';
         };
         document.documentElement.style.setProperty('--app-theme-rgb', hexToRgb(themeColor));
+
+        // ID Card Studio ആണെങ്കിൽ എപ്പോഴും ഡേ തീം നിലനിർത്തും
+        const currentFile = window.location.pathname.toLowerCase();
+        if (currentFile.includes('id card') || currentFile.includes('id%20card')) {
+            document.body.classList.remove('dark-mode');
+            return;
+        }
 
         const isDarkMode = localStorage.getItem('globus_dark_mode') === 'true';
         if (isDarkMode) {
@@ -63,7 +74,7 @@ class ThemeManager {
         }
     }
 
-    // ബട്ടൺ സ്ഥാനം കൃത്യമാക്കിയ പുതിയ കോഡ്!
+    // ബട്ടൺ വളരെ ചെറുതാക്കി കൃത്യമായ സ്ഥാനത്ത് നിർത്തുന്നു
     injectThemeButton() {
         if (document.getElementById('themeToggleBtn')) return;
 
@@ -81,17 +92,16 @@ class ThemeManager {
             this.updateThemeIcon(themeBtn);
         });
 
-        const authSection = document.querySelector('.header-auth-section');
-        if (authSection) {
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) authSection.insertBefore(themeBtn, logoutBtn);
-            else authSection.appendChild(themeBtn);
+        // ഡാഷ്‌ബോർഡിൽ ലോഗൗട്ട് ബട്ടണിന്റെ ഇടതുവശത്ത് വെക്കുന്നു
+        const dashboardHeaderRight = document.querySelector('.header-right');
+        if (dashboardHeaderRight) {
+            dashboardHeaderRight.insertBefore(themeBtn, dashboardHeaderRight.firstChild);
             return;
         }
 
+        // മറ്റ് പേജുകളിൽ ഹെഡറിന്റെ വലതുവശത്ത് കൃത്യമായി ഫിക്സ് ചെയ്യുന്നു
         const topNav = document.querySelector('.top-nav');
         if (topNav) {
-            // ഹെഡറിൽ എവിടെയും പോകാതെ കൃത്യമായി വലതുവശത്ത് നിർത്താനുള്ള സൂത്രം
             topNav.style.position = 'relative'; 
             themeBtn.style.position = 'absolute';
             themeBtn.style.right = '15px';
@@ -105,9 +115,11 @@ class ThemeManager {
     updateThemeIcon(btn) {
         const isDark = document.body.classList.contains('dark-mode');
         if (isDark) {
-            btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+            // സൂര്യന്റെ ഐക്കൺ (Size: 14px)
+            btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
         } else {
-            btn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+            // ചന്ദ്രന്റെ ഐക്കൺ (Size: 14px)
+            btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
         }
     }
 
