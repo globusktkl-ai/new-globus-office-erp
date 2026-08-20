@@ -671,6 +671,9 @@
        // ==========================================
         // 2. DYNAMIC ROLE BASED ACCESS CONTROL (RBAC)
         // ==========================================
+        // ==========================================
+        // 2. DYNAMIC ROLE BASED ACCESS CONTROL (RBAC)
+        // ==========================================
         window.applyRoleAccess = async function(role) {
             const superAdminSection = document.getElementById('superAdminSection');
             
@@ -679,24 +682,23 @@
                 superAdminSection.style.display = (role === 'Super Admin') ? 'block' : 'none';
             }
 
-            // 2. Super Admin, Admin എന്നിവർക്ക് എല്ലാ ഐക്കണുകളും (Modules) ഉപയോഗിക്കാം
+            // 2. Super Admin, Admin, Guest എന്നിവർക്ക് എല്ലാ ഐക്കണുകളും കാണിക്കാം
             if (role === 'Super Admin' || role === 'Admin' || role === 'Guest') {
                 document.querySelectorAll('.nav-btn').forEach(btn => btn.style.display = 'flex');
-                
-                // Guest ആണെങ്കിലും Super Admin പാനൽ കാണിക്കരുത്
                 if (role === 'Guest' && superAdminSection) superAdminSection.style.display = 'none';
                 return;
             }
 
-            // 3. മറ്റ് കസ്റ്റം റോളുകൾക്ക് (Teacher, Staff), ഡാറ്റാബേസ് നോക്കി ഐക്കണുകൾ മറയ്ക്കുന്നു
+            // 3. മറ്റ് റോളുകൾക്ക് (Teacher, Staff) - ആദ്യം എല്ലാ ഐക്കണുകളും മറയ്ക്കുന്നു (Security First)
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.style.display = 'none');
+
             try {
-                // Supabase-ൽ നിന്നും ഈ റോളിന്റെ പെർമിഷനുകൾ എടുക്കുന്നു
-                const { data, error } = await supabase.from('role_management').select('permissions').eq('role_name', role).single();
+                // Supabase-ൽ നിന്നും ഈ റോളിന്റെ പെർമിഷനുകൾ എടുക്കുന്നു (ilike ഉപയോഗിച്ചത് വലിയക്ഷര/ചെറിയക്ഷര പ്രശ്നം ഒഴിവാക്കാൻ)
+                const { data, error } = await supabase.from('role_management').select('permissions').ilike('role_name', role).single();
                 
                 if (data && data.permissions) {
                     const p = data.permissions;
                     
-                    // ഡാറ്റാബേസിലെ ഐഡികളും, ഡാഷ്‌ബോർഡിലെ ബട്ടണുകളും തമ്മിൽ ബന്ധിപ്പിക്കുന്നു
                     const moduleMap = {
                         'Enquiry': 'a[href="enquiry.html"]',
                         'Admission': 'a[href="admission.html"]',
@@ -714,23 +716,20 @@
                         'MasterDayBook': 'a[href="report.html"]'
                     };
 
-                    // ഓരോ ഐക്കണും പരിശോധിച്ച്, View പെർമിഷൻ ഇല്ലെങ്കിൽ അപ്രത്യക്ഷമാക്കുന്നു
+                    // ഡാറ്റാബേസിൽ View പെർമിഷൻ (true) ഉള്ളവ മാത്രം സ്ക്രീനിൽ തിരികെ കൊണ്ടുവരുന്നു
                     for (const [modId, selector] of Object.entries(moduleMap)) {
                         const el = document.querySelector(selector);
-                        if (el) {
-                            if (p[modId] && p[modId].view === true) {
-                                el.style.display = 'flex'; // പെർമിഷൻ ഉണ്ടെങ്കിൽ കാണിക്കും
-                            } else {
-                                el.style.display = 'none'; // പെർമിഷൻ ഇല്ലെങ്കിൽ മറയ്ക്കും
-                            }
+                        if (el && p[modId] && p[modId].view === true) {
+                            el.style.display = 'flex'; 
                         }
                     }
+                } else {
+                    console.log("No permissions assigned or role not found for:", role);
                 }
             } catch (err) {
                 console.error("Role Verification Error:", err);
             }
         };
-
         // ==========================================
         // 3. DASHBOARD WIDGETS & TICKERS
         // ==========================================
