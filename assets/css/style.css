@@ -395,3 +395,27 @@ body {
     background-color: var(--app-theme-color) !important;
     border-color: var(--app-theme-color) !important;
 }
+/* ==========================================
+   DASHBOARD ICON SCATTER FIX (AUTO-CENTERING)
+   ========================================== */
+.module-section .nav-grid { 
+    display: flex !important; 
+    flex-wrap: wrap !important; 
+    justify-content: center !important; /* എപ്പോഴും നടുവിലായി നിർത്താൻ */
+    gap: 10px !important; 
+    margin-top: 15px !important; 
+}
+
+.module-section .nav-grid > .nav-btn {
+    flex: 0 0 calc(33.333% - 7px) !important; /* 3 എണ്ണം ഒരു വരിയിൽ */
+    width: calc(33.333% - 7px) !important;
+    margin: 0 !important;
+}
+
+/* മൊബൈൽ സ്ക്രീൻ വളരെ ചെറുതാണെങ്കിൽ മാത്രം 2 എണ്ണമായി മാറും */
+@media (max-width: 380px) {
+    .module-section .nav-grid > .nav-btn {
+        flex: 0 0 calc(50% - 5px) !important;
+        width: calc(50% - 5px) !important;
+    }
+}
