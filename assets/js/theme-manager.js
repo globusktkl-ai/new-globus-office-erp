@@ -8,14 +8,10 @@ class ThemeManager {
         this.applyLocalTheme(); 
         this.syncWithDatabase(); 
 
-        // ID Card Studio-യിൽ ഡാർക്ക് മോഡ് ബട്ടൺ വരാതിരിക്കാനുള്ള കോഡ്
-        const currentFile = window.location.pathname.toLowerCase();
-        if (!currentFile.includes('id card') && !currentFile.includes('id%20card')) {
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', () => this.injectThemeButton());
-            } else {
-                this.injectThemeButton();
-            }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.injectThemeButton());
+        } else {
+            this.injectThemeButton();
         }
     }
 
@@ -29,7 +25,7 @@ class ThemeManager {
         };
         document.documentElement.style.setProperty('--app-theme-rgb', hexToRgb(themeColor));
 
-        // ID Card Studio ആണെങ്കിൽ എപ്പോഴും ഡേ തീം നിലനിർത്തും
+        // ID Card Studio ആണെങ്കിൽ എപ്പോഴും ഡേ തീം
         const currentFile = window.location.pathname.toLowerCase();
         if (currentFile.includes('id card') || currentFile.includes('id%20card')) {
             document.body.classList.remove('dark-mode');
@@ -74,9 +70,15 @@ class ThemeManager {
         }
     }
 
-    // ബട്ടൺ വളരെ ചെറുതാക്കി കൃത്യമായ സ്ഥാനത്ത് നിർത്തുന്നു
+    // ബട്ടൺ ഡാഷ്‌ബോർഡിൽ മാത്രം വെക്കാനുള്ള മാറ്റം!
     injectThemeButton() {
         if (document.getElementById('themeToggleBtn')) return;
+
+        // ഡാഷ്‌ബോർഡിലെ ലോഗൗട്ട് ബട്ടണിന്റെ ഏരിയ ഉണ്ടോ എന്ന് നോക്കുന്നു
+        const authSection = document.querySelector('.header-auth-section');
+        
+        // അത് ഇല്ലെങ്കിൽ (അതായത് മറ്റ് പേജുകൾ ആണെങ്കിൽ) ബട്ടൺ ഉണ്ടാക്കില്ല!
+        if (!authSection) return;
 
         const themeBtn = document.createElement('button');
         themeBtn.id = 'themeToggleBtn';
@@ -92,33 +94,20 @@ class ThemeManager {
             this.updateThemeIcon(themeBtn);
         });
 
-        // ഡാഷ്‌ബോർഡിൽ ലോഗൗട്ട് ബട്ടണിന്റെ ഇടതുവശത്ത് വെക്കുന്നു
-        const dashboardHeaderRight = document.querySelector('.header-right');
-        if (dashboardHeaderRight) {
-            dashboardHeaderRight.insertBefore(themeBtn, dashboardHeaderRight.firstChild);
-            return;
-        }
-
-        // മറ്റ് പേജുകളിൽ ഹെഡറിന്റെ വലതുവശത്ത് കൃത്യമായി ഫിക്സ് ചെയ്യുന്നു
-        const topNav = document.querySelector('.top-nav');
-        if (topNav) {
-            topNav.style.position = 'relative'; 
-            themeBtn.style.position = 'absolute';
-            themeBtn.style.right = '15px';
-            themeBtn.style.top = '50%';
-            themeBtn.style.transform = 'translateY(-50%)';
-            themeBtn.style.zIndex = '100';
-            topNav.appendChild(themeBtn);
+        // ലോഗൗട്ട് ബട്ടണിന്റെ തൊട്ടുമുൻപായി ഈ ബട്ടൺ ചേർക്കുന്നു
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            authSection.insertBefore(themeBtn, logoutBtn);
+        } else {
+            authSection.appendChild(themeBtn);
         }
     }
 
     updateThemeIcon(btn) {
         const isDark = document.body.classList.contains('dark-mode');
         if (isDark) {
-            // സൂര്യന്റെ ഐക്കൺ (Size: 14px)
             btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
         } else {
-            // ചന്ദ്രന്റെ ഐക്കൺ (Size: 14px)
             btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
         }
     }
