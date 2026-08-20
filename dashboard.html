@@ -114,7 +114,7 @@
     </style>
 </head>
 <body>
-    <nav class="app-header" style="padding: 10px 15px; position: relative;">
+    <nav class="app-header" style="padding: 10px 15px; position: relative; display: flex; justify-content: space-between; align-items: center;">
        <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 8px;">
             <img src="assets/images/logo.png" class="logo-small" alt="Logo" style="width: 35px; height: 35px; object-fit: contain;">
             <div style="display: flex; flex-direction: column;">
@@ -122,23 +122,26 @@
                 <span id="navSubName" style="font-size: 9px; color: #64748b; font-weight: 800;"></span>
             </div>
         </div>
-        <div class="header-right" style="display: flex; align-items: center; gap: 8px;">
-            <!-- Theme Toggle Button will be injected here automatically by JS -->
-            <div class="header-auth-section" style="padding: 4px 8px !important; gap: 6px !important;">
+        
+        <div class="header-right" style="display: flex; align-items: center; gap: 12px; justify-content: flex-end;">
+            
+            <!-- THE NEW HARDCODED DARK MODE BUTTON -->
+            <button id="themeToggleBtn" class="btn-theme-toggle" title="Toggle Dark/Light Mode">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+
+            <!-- AUTH SECTION (Shrunk to save space) -->
+            <div class="header-auth-section" style="padding: 4px 6px !important; gap: 6px !important; display: flex; align-items: center;">
                 <div class="logged-in-text">
                     <span id="authRoleTitle" style="font-size: 11px;">Admin</span>
-                    <!-- Email hidden to save header space -->
-                    <span class="logged-in-email" id="authEmail" style="display: none !important;"></span>
                 </div>
                 <button class="btn-logout-round" id="logoutBtn" title="Secure Logout" style="width: 28px !important; height: 28px !important;">
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line>
-                    </svg>
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
                 </button>
             </div>
+            
         </div>
     </nav>
-
     <main class="main-content">
         
         <!-- INSTITUTE OVERVIEW -->
