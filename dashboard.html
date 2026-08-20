@@ -668,36 +668,66 @@
         // ==========================================
         // 2. ROLE BASED ACCESS CONTROL (RBAC)
         // ==========================================
-        window.applyRoleAccess = function(role) {
-            const staffBtn = document.getElementById('navStaffBtn');
-            const financeSection = document.getElementById('financeSection');
-            const masterDayBookBtn = document.getElementById('navMasterReportBtn');
+       // ==========================================
+        // 2. DYNAMIC ROLE BASED ACCESS CONTROL (RBAC)
+        // ==========================================
+        window.applyRoleAccess = async function(role) {
             const superAdminSection = document.getElementById('superAdminSection');
-
-            // 1. Super Admin Full Access
-            if (role === 'Super Admin') {
-                if(superAdminSection) superAdminSection.style.display = 'block';
-            } else {
-                if(superAdminSection) superAdminSection.style.display = 'none';
+            
+            // 1. Super Admin Controls ബോക്സ് സൂപ്പർ അഡ്മിന് മാത്രം കാണിക്കുക
+            if (superAdminSection) {
+                superAdminSection.style.display = (role === 'Super Admin') ? 'block' : 'none';
             }
 
-            // 2. Guest Access
-            if (role === 'Guest') {
-                // Everything visible, but read-only (handled inside individual files)
-            } 
-            // 3. Teacher Access
-            else if (role === 'Teacher') {
-                if(staffBtn) staffBtn.style.display = 'none';
-                if(financeSection) financeSection.style.display = 'none'; // Teachers don't see money
-            } 
-            // 4. Office Staff Access
-            else if (role === 'Office Staff') {
-                if(staffBtn) staffBtn.style.display = 'none';
-                if(masterDayBookBtn) masterDayBookBtn.style.display = 'none'; // Staff can collect fee, but no master reports
-            } 
-            // 5. Office Manager / Admin Access
-            else if (role === 'Admin') {
-                // Manager sees everything except Super Admin Settings & Logs
+            // 2. Super Admin, Admin എന്നിവർക്ക് എല്ലാ ഐക്കണുകളും (Modules) ഉപയോഗിക്കാം
+            if (role === 'Super Admin' || role === 'Admin' || role === 'Guest') {
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.style.display = 'flex');
+                
+                // Guest ആണെങ്കിലും Super Admin പാനൽ കാണിക്കരുത്
+                if (role === 'Guest' && superAdminSection) superAdminSection.style.display = 'none';
+                return;
+            }
+
+            // 3. മറ്റ് കസ്റ്റം റോളുകൾക്ക് (Teacher, Staff), ഡാറ്റാബേസ് നോക്കി ഐക്കണുകൾ മറയ്ക്കുന്നു
+            try {
+                // Supabase-ൽ നിന്നും ഈ റോളിന്റെ പെർമിഷനുകൾ എടുക്കുന്നു
+                const { data, error } = await supabase.from('role_management').select('permissions').eq('role_name', role).single();
+                
+                if (data && data.permissions) {
+                    const p = data.permissions;
+                    
+                    // ഡാറ്റാബേസിലെ ഐഡികളും, ഡാഷ്‌ബോർഡിലെ ബട്ടണുകളും തമ്മിൽ ബന്ധിപ്പിക്കുന്നു
+                    const moduleMap = {
+                        'Enquiry': 'a[href="enquiry.html"]',
+                        'Admission': 'a[href="admission.html"]',
+                        'Directory': 'a[href="students.html"]',
+                        'StaffHR': 'a[href="staff.html"]',
+                        'Attendance': 'a[href="attendance.html"]',
+                        'Courses': 'a[href="courses.html"]',
+                        'Exams': 'a[href="exams.html"]',
+                        'Inventory': 'a[href="inventory.html"]',
+                        'AdmReport': 'a[href="admission-report.html"]',
+                        'SmartAlerts': 'a[href="reminders.html"]',
+                        'IDCardStudio': 'button[onclick="window.openIDStudioSecure()"]',
+                        'FeeCollect': 'a[href="fees.html"]',
+                        'DayBook': 'a[href="expense.html"]',
+                        'MasterDayBook': 'a[href="report.html"]'
+                    };
+
+                    // ഓരോ ഐക്കണും പരിശോധിച്ച്, View പെർമിഷൻ ഇല്ലെങ്കിൽ അപ്രത്യക്ഷമാക്കുന്നു
+                    for (const [modId, selector] of Object.entries(moduleMap)) {
+                        const el = document.querySelector(selector);
+                        if (el) {
+                            if (p[modId] && p[modId].view === true) {
+                                el.style.display = 'flex'; // പെർമിഷൻ ഉണ്ടെങ്കിൽ കാണിക്കും
+                            } else {
+                                el.style.display = 'none'; // പെർമിഷൻ ഇല്ലെങ്കിൽ മറയ്ക്കും
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Role Verification Error:", err);
             }
         };
 
