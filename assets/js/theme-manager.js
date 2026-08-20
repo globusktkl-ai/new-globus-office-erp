@@ -9,9 +9,9 @@ class ThemeManager {
         this.syncWithDatabase(); 
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.injectThemeButton());
+            document.addEventListener('DOMContentLoaded', () => this.initThemeButton());
         } else {
-            this.injectThemeButton();
+            this.initThemeButton();
         }
     }
 
@@ -25,15 +25,13 @@ class ThemeManager {
         };
         document.documentElement.style.setProperty('--app-theme-rgb', hexToRgb(themeColor));
 
-        // ID Card Studio ആണെങ്കിൽ എപ്പോഴും ഡേ തീം
         const currentFile = window.location.pathname.toLowerCase();
         if (currentFile.includes('id card') || currentFile.includes('id%20card')) {
             document.body.classList.remove('dark-mode');
             return;
         }
 
-        const isDarkMode = localStorage.getItem('globus_dark_mode') === 'true';
-        if (isDarkMode) {
+        if (localStorage.getItem('globus_dark_mode') === 'true') {
             document.body.classList.add('dark-mode');
         } else {
             document.body.classList.remove('dark-mode');
@@ -70,21 +68,10 @@ class ThemeManager {
         }
     }
 
-    // ബട്ടൺ ഡാഷ്‌ബോർഡിൽ മാത്രം വെക്കാനുള്ള മാറ്റം!
-    injectThemeButton() {
-        if (document.getElementById('themeToggleBtn')) return;
+    initThemeButton() {
+        const themeBtn = document.getElementById('themeToggleBtn');
+        if (!themeBtn) return; // ഡാഷ്‌ബോർഡിൽ മാത്രമേ ഇനി ബട്ടൺ ഉണ്ടാകൂ!
 
-        // ഡാഷ്‌ബോർഡിലെ ലോഗൗട്ട് ബട്ടണിന്റെ ഏരിയ ഉണ്ടോ എന്ന് നോക്കുന്നു
-        const authSection = document.querySelector('.header-auth-section');
-        
-        // അത് ഇല്ലെങ്കിൽ (അതായത് മറ്റ് പേജുകൾ ആണെങ്കിൽ) ബട്ടൺ ഉണ്ടാക്കില്ല!
-        if (!authSection) return;
-
-        const themeBtn = document.createElement('button');
-        themeBtn.id = 'themeToggleBtn';
-        themeBtn.className = 'btn-theme-toggle';
-        themeBtn.title = "Toggle Dark/Light Mode";
-        
         this.updateThemeIcon(themeBtn);
 
         themeBtn.addEventListener('click', (e) => {
@@ -93,22 +80,14 @@ class ThemeManager {
             localStorage.setItem('globus_dark_mode', isDark);
             this.updateThemeIcon(themeBtn);
         });
-
-        // ലോഗൗട്ട് ബട്ടണിന്റെ തൊട്ടുമുൻപായി ഈ ബട്ടൺ ചേർക്കുന്നു
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            authSection.insertBefore(themeBtn, logoutBtn);
-        } else {
-            authSection.appendChild(themeBtn);
-        }
     }
 
     updateThemeIcon(btn) {
         const isDark = document.body.classList.contains('dark-mode');
         if (isDark) {
-            btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+            btn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
         } else {
-            btn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+            btn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
         }
     }
 
@@ -116,9 +95,7 @@ class ThemeManager {
         try {
             const userEmail = localStorage.getItem('userEmail') || 'Unknown';
             const userRole = localStorage.getItem('userRole') || 'System';
-            const { error } = await supabase.from('activity_logs').insert([{
-                user_email: userEmail, user_role: userRole, module: moduleName, action_type: actionType, details: details
-            }]);
+            await supabase.from('activity_logs').insert([{ user_email: userEmail, user_role: userRole, module: moduleName, action_type: actionType, details: details }]);
         } catch (err) {}
     }
 }
