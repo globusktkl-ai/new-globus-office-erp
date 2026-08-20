@@ -461,6 +461,16 @@
                     let displayDate = new Date(alert.alert_date).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric'});
                     let badgeClass = `badge-target badge-${alert.target_audience.split(' ')[0]}`;
 
+                    // NEW: Edit Button Logic (JSON Stringify to pass data safely)
+                    let safeAlertData = JSON.stringify({
+                        id: alert.id,
+                        title: alert.title,
+                        date: alert.alert_date,
+                        time24: alert.alert_time,
+                        type: alert.alert_type,
+                        target: alert.target_audience
+                    }).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+
                     return `
                     <div class="alert-card alert-${alert.target_audience.split(' ')[0]}">
                         <div class="alert-header">
@@ -474,7 +484,10 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid #f1f5f9; padding-top: 8px;">
                             <span style="font-size: 9px; color: #94a3b8; font-weight: 800; text-transform:uppercase;">By: ${alert.created_role}</span>
-                            ${canDelete ? `<button class="btn-delete-alert" onclick="window.deleteCloudAlert('${alert.id}')">Delete</button>` : ''}
+                            <div style="display: flex; gap: 8px;">
+                                ${canDelete ? `<button style="background: #e0f2fe; color: #0284c7; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 900; cursor: pointer;" onclick="window.editCloudAlert('${safeAlertData}')">Edit</button>` : ''}
+                                ${canDelete ? `<button class="btn-delete-alert" onclick="window.deleteCloudAlert('${alert.id}')">Delete</button>` : ''}
+                            </div>
                         </div>
                     </div>`;
                 }).join('');
@@ -482,7 +495,44 @@
                 container.innerHTML = `<div class="empty-state" style="color:red;">Error loading cloud alerts.</div>`;
             }
         };
+// NEW: Smart Edit Function (Auto-fill form and delete old)
+        window.editCloudAlert = async function(alertDataString) {
+            const data = JSON.parse(alertDataString);
+            const confirmed = await window.magicConfirm(`Do you want to edit "${data.title}"? \nThis will move the alert to the form above.`);
+            if(!confirmed) return;
 
+            // 1. Fill the form
+            document.getElementById('cloudAlertTitle').value = data.title;
+            document.getElementById('cloudAlertDate').value = data.date;
+            
+            // Format time for custom picker
+            let parts = data.time24.split(':');
+            let hr = parseInt(parts[0]);
+            let ampm = hr >= 12 ? 'PM' : 'AM';
+            let hr12 = hr % 12 || 12;
+            let displayTime = `${String(hr12).padStart(2, '0')}:${parts[1]} ${ampm}`;
+            
+            const timeInput = document.getElementById('cloudAlertTime');
+            timeInput.value = displayTime;
+            timeInput.setAttribute('data-time24', data.time24);
+            
+            document.getElementById('cloudAlertType').value = data.type;
+            
+            // Only update target if user is admin
+            if (userRole === 'Super Admin' || userRole === 'Admin') {
+                document.getElementById('cloudTargetAudience').value = data.target;
+            }
+
+            // 2. Delete the old alert from DB silently
+            try {
+                await supabase.from('smart_alerts').delete().eq('id', data.id);
+                window.fetchCloudAlerts(); // Refresh list
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.getElementById('cloudAlertTitle').focus();
+            } catch (err) { console.error("Edit Delete Error", err); }
+        };
         // NEW: Beautiful Delete Confirm for Cloud Alerts
         window.deleteCloudAlert = async function(id) {
             const confirmed = await window.magicConfirm("Are you sure you want to delete this cloud alert?");
