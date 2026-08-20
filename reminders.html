@@ -172,7 +172,8 @@
                     
                     <div class="event-form-row" style="margin-bottom: 10px;">
                         <input type="date" id="cloudAlertDate" class="event-input" style="flex: 1;" required>
-                        <input type="time" id="cloudAlertTime" class="event-input" style="flex: 1;" required>
+                        <!-- FIXED: USING CUSTOM TIME PICKER HERE -->
+                        <input type="text" id="cloudAlertTime" class="event-input time-pick" style="flex: 1;" readonly onclick="window.openTimePicker('cloudAlertTime')" placeholder="Set Time" required>
                     </div>
 
                     <div class="event-form-row" style="margin-bottom: 15px;">
@@ -364,21 +365,27 @@
             e.preventDefault();
             if (userRole === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
 
+            const title = document.getElementById('cloudAlertTitle').value;
+            const date = document.getElementById('cloudAlertDate').value;
+            const timeInput = document.getElementById('cloudAlertTime');
+            const time24 = timeInput.getAttribute('data-time24'); // GET CUSTOM 24H TIME
+            const type = document.getElementById('cloudAlertType').value;
+            let target = document.getElementById('cloudTargetAudience').value;
+
+            if(!time24) {
+                alert("❌ Please set a valid time!");
+                return;
+            }
+
             const btn = document.getElementById('btnSaveCloudAlert');
             const originalText = btn.innerText;
             btn.innerText = "⏳ Saving to Cloud..."; btn.disabled = true;
-
-            const title = document.getElementById('cloudAlertTitle').value;
-            const date = document.getElementById('cloudAlertDate').value;
-            const time = document.getElementById('cloudAlertTime').value;
-            const type = document.getElementById('cloudAlertType').value;
-            let target = document.getElementById('cloudTargetAudience').value;
 
             if (userRole !== 'Super Admin' && userRole !== 'Admin') target = 'Personal';
 
             try {
                 const { error } = await supabase.from('smart_alerts').insert([{
-                    title: title, alert_date: date, alert_time: time, alert_type: type,
+                    title: title, alert_date: date, alert_time: time24, alert_type: type,
                     target_audience: target, created_by: userEmail, created_role: userRole
                 }]);
 
@@ -386,6 +393,8 @@
 
                 alert("✅ Alert successfully published to Cloud!");
                 document.getElementById('cloudAlertForm').reset();
+                timeInput.value = '';
+                timeInput.removeAttribute('data-time24');
                 window.fetchCloudAlerts();
             } catch (err) {
                 console.error(err);
