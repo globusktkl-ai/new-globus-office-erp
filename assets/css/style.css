@@ -13,7 +13,6 @@
     --success: #10B981;
     --danger: #EF4444;
 }
-/* File: style.css (Append to existing file) */
 
 /* Course Management Specific Styles */
 .form-card {
@@ -68,6 +67,7 @@
 
 .badge.active { background: #dcfce7; color: #166534; }
 .badge.draft { background: #ffedd5; color: #9a3412; }
+
 /* Global Reset */
 * {
     margin: 0;
@@ -83,9 +83,6 @@ body {
 }
 
 /* =========================================
-   1. APP HEADER STYLES (NEW DESIGN)
-   ========================================= */
-/* =========================================
    1. APP HEADER STYLES (NEW DESIGN - OVERLAP FIXED)
    ========================================= */
 .app-header {
@@ -99,7 +96,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 50;
-    gap: 8px; /* ബട്ടണുകളും പേരും തമ്മിൽ കൃത്യം അകലം നൽകുന്നു */
+    gap: 8px;
 }
 
 .header-left {
@@ -109,26 +106,25 @@ body {
     flex-shrink: 0;
 }
 
-/* പേര് കൃത്യമായി നടുവിൽ നിൽക്കാനും മറയാതിരിക്കാനും */
 .header-center {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex: 1;
-    min-width: 0; /* സ്ഥലം ഇല്ലെങ്കിൽ ചുരുങ്ങാൻ അനുവദിക്കുന്നു */
+    min-width: 0;
     text-align: center;
 }
 
 .brand-top {
-    font-size: 16px; /* മൊബൈലിൽ മറയാതിരിക്കാൻ വലിപ്പം കുറച്ചു */
+    font-size: 16px;
     font-weight: 900;
     color: var(--primary-dark);
     line-height: 1.1;
     text-transform: uppercase;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* സ്ഥലം ഇല്ലെങ്കിൽ ... എന്ന് കാണിക്കും */
+    text-overflow: ellipsis;
     width: 100%;
 }
 
@@ -151,7 +147,6 @@ body {
     flex-shrink: 0;
 }
 
-/* Floating Glass Back Button */
 .btn-back-glass {
     display: flex; align-items: center; justify-content: center;
     width: 38px; height: 38px; text-decoration: none;
@@ -170,13 +165,13 @@ body {
     background: #EF4444; border: none; border-radius: 8px; cursor: pointer;
     box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); transition: 0.3s;
 }
-/* ബാക്കി CSS കോഡുകൾ അതുപോലെ നിലനിർത്തുക... */
+
 /* =========================================
    2. MAIN CONTENT LAYOUT
    ========================================= */
 .main-content {
     padding: 16px;
-    max-width: 600px; /* പിസിയിൽ തുറന്നാലും മൊബൈൽ ലുക്കിൽ കാണിക്കാൻ */
+    max-width: 600px;
     margin: 0 auto;
     padding-bottom: 40px;
 }
@@ -250,14 +245,6 @@ body {
 /* =========================================
    4. FORMS (ADMISSION & FEES)
    ========================================= */
-.form-card {
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    border: 1px solid var(--border-color);
-}
-
 .form-group {
     margin-bottom: 16px;
 }
@@ -399,11 +386,12 @@ body {
 .btn-delete:hover {
     background-color: #FECACA;
 }
+
 /* ==========================================
-   ULTIMATE DARK MODE & DYNAMIC THEME FIX
+   ULTIMATE UNIFORM DARK MODE & UI FIX
    ========================================== */
 
-/* 1. ആപ്പിന്റെ കളർ എല്ലാ ബട്ടണുകളിലേക്കും നൽകുന്നു (Primary Color Fix) */
+/* 1. PRIMARY COLOR FIX (For all buttons) */
 .btn-custom, .frm-submit, .fab-add, .sc-btn-view, .pay-process-btn {
     background: var(--app-theme-color) !important;
 }
@@ -411,118 +399,63 @@ body {
     background-color: var(--app-theme-color) !important;
     border-color: var(--app-theme-color) !important;
 }
-.top-nav { position: relative; } /* ബട്ടൺ കൃത്യമായി ഇരിക്കാൻ */
 
-/* 2. Global Dark Mode Backgrounds */
-body.dark-mode {
-    background: #0f172a !important;
-    color: #f1f5f9 !important;
+/* 2. UNIFORM BACK BUTTON (For all 16 pages) */
+.btn-back-dashboard { 
+    display: inline-flex !important; align-items: center !important; gap: 6px !important; 
+    background: #ffffff !important; border: 1px solid #cbd5e1 !important; 
+    padding: 6px 12px !important; border-radius: 8px !important; 
+    color: #1e293b !important; font-weight: 800 !important; font-size: 13px !important; 
+    text-decoration: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; 
+    transition: 0.2s !important; z-index: 10;
+}
+.btn-back-dashboard svg { 
+    width: 18px !important; height: 18px !important; stroke: var(--app-theme-color, #2563eb) !important; 
+    stroke-width: 2.5 !important; fill: none !important; filter: none !important;
 }
 
-/* 3. എല്ലാ പേജുകളിലെയും വെള്ള ബോക്സുകൾ കറുപ്പാക്കുന്നു (Aggressive Targeting) */
-body.dark-mode .main-content,
-body.dark-mode .login-card,
-body.dark-mode .stat-box, 
-body.dark-mode .search-filter-card,
-body.dark-mode .staff-card,
-body.dark-mode .payroll-card,
-body.dark-mode .modal-sheet,
-body.dark-mode .adv-card,
-body.dark-mode .uf-panel,
-body.dark-mode .table-container,
-body.dark-mode .report-card,
-body.dark-mode .id-card-preview,
-body.dark-mode .settings-card,
-body.dark-mode .list-card,
-body.dark-mode .item-card,
-body.dark-mode .filter-box,
-body.dark-mode .white-box,
-body.dark-mode .module-section {
-    background-color: #1e293b !important;
-    border-color: #334155 !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+/* 3. MINI THEME TOGGLE BUTTON */
+.btn-theme-toggle {
+    width: 28px !important; height: 28px !important; border-radius: 50% !important;
+    background: #f1f5f9 !important; color: #475569 !important; border: 1px solid #cbd5e1 !important;
+    display: flex !important; align-items: center !important; justify-content: center !important;
+    cursor: pointer !important; transition: 0.2s !important; flex-shrink: 0 !important; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; padding: 0 !important; margin: 0 !important;
+}
+body.dark-mode .btn-theme-toggle { background: #334155 !important; color: #fbbf24 !important; border-color: #475569 !important; }
+
+/* 4. GLOBAL DARK MODE */
+body.dark-mode { background: #0f172a !important; color: #f8fafc !important; }
+
+/* 5. ALL WHITE BOXES & FOOTERS TO DARK */
+body.dark-mode .main-content, body.dark-mode .login-card, body.dark-mode .stat-box, 
+body.dark-mode .search-filter-card, body.dark-mode .staff-card, body.dark-mode .payroll-card,
+body.dark-mode .modal-sheet, body.dark-mode .adv-card, body.dark-mode .uf-panel,
+body.dark-mode .table-container, body.dark-mode .report-card, body.dark-mode .settings-card,
+body.dark-mode .list-card, body.dark-mode .item-card, body.dark-mode .filter-box,
+body.dark-mode .white-box, body.dark-mode .module-section, body.dark-mode .filter-card,
+body.dark-mode footer, body.dark-mode .top-nav, body.dark-mode .modal-container,
+body.dark-mode .dropdown-content {
+    background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
 }
 
-body.dark-mode .uf-left { background: linear-gradient(135deg, #064e3b 0%, #1e293b 100%) !important; }
-body.dark-mode .uf-right { background: linear-gradient(135deg, #1e293b 0%, #7f1d1d 100%) !important; }
-
-/* 4. ഇൻപുട്ട് ബോക്സുകളും സെലക്ട് മെനുവും (Form Inputs & Selects) */
-body.dark-mode input, 
-body.dark-mode select, 
-body.dark-mode textarea,
-body.dark-mode .frm-input, 
-body.dark-mode .frm-select, 
-body.dark-mode .sf-search {
-    background-color: #0f172a !important;
-    border-color: #334155 !important;
+/* 6. TEXT & HEADINGS VISIBILITY FIX */
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5,
+body.dark-mode .page-title, body.dark-mode .section-heading, body.dark-mode .stat-value, 
+body.dark-mode .uf-amount, body.dark-mode td, body.dark-mode label, body.dark-mode .smc-name,
+body.dark-mode .log-details, body.dark-mode .user-email, body.dark-mode .frm-label {
     color: #f8fafc !important;
 }
-body.dark-mode input::placeholder,
-body.dark-mode textarea::placeholder {
-    color: #64748b !important;
-}
+body.dark-mode .stat-label, body.dark-mode .log-date { color: #94a3b8 !important; }
 
-/* 5. ടേബിളുകൾ (Tables & Lists) */
-body.dark-mode table { border-color: #334155 !important; }
-body.dark-mode th {
-    background-color: #0f172a !important;
-    color: #e2e8f0 !important;
-    border-color: #334155 !important;
+/* 7. INPUTS, SELECTS & TABLES */
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea, body.dark-mode .form-control {
+    background: #0f172a !important; border-color: #334155 !important; color: #f8fafc !important;
 }
-body.dark-mode td {
-    border-color: #334155 !important;
-    color: #cbd5e1 !important;
-}
+body.dark-mode table, body.dark-mode th, body.dark-mode td { border-color: #334155 !important; }
+body.dark-mode th { background: #0f172a !important; color: #94a3b8 !important; border-bottom: 2px solid #334155 !important; }
 body.dark-mode tr:hover td { background-color: #1e293b !important; }
 body.dark-mode tr:nth-child(even) td { background-color: #0f172a !important; }
 
-/* 6. വായിക്കാൻ കഴിയാത്ത അക്ഷരങ്ങൾ ശരിയാക്കുന്നു (Text Colors) */
-body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6,
-body.dark-mode .page-title, 
-body.dark-mode .sc-name, 
-body.dark-mode .modal-title,
-body.dark-mode .stat-value,
-body.dark-mode .adv-name,
-body.dark-mode .uf-title,
-body.dark-mode .uf-amount,
-body.dark-mode .section-heading {
-    color: #f8fafc !important;
-}
-
-body.dark-mode label,
-body.dark-mode .frm-label,
-body.dark-mode .sc-label,
-body.dark-mode .stat-label {
-    color: #94a3b8 !important;
-}
-
-body.dark-mode .text-dark { color: #f8fafc !important; }
-body.dark-mode .text-muted { color: #94a3b8 !important; }
-
-/* 7. മറ്റ് പ്രത്യേക ഡിസൈനുകൾ (Special Overrides) */
-body.dark-mode .btn-back-dashboard {
-    background: #0f172a !important;
-    color: #f8fafc !important;
-    border-color: #334155 !important;
-}
-body.dark-mode .top-nav {
-    border-color: #334155 !important;
-}
-body.dark-mode .staff-tab-btn {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-    color: #94a3b8 !important;
-}
-
-/* 8. Theme Toggle Button Fixed CSS */
-.btn-theme-toggle {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: 0.2s; flex-shrink: 0; padding: 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-body.dark-mode .btn-theme-toggle {
-    background: #334155; color: #fbbf24; border-color: #475569;
-}
-.btn-theme-toggle:active { transform: scale(0.9); }
+/* 8. SPECIAL U-TURN BUTTON IN DARK MODE */
+body.dark-mode .btn-back-dashboard { background: #0f172a !important; border-color: #334155 !important; color: #f8fafc !important; }
