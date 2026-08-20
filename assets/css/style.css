@@ -396,26 +396,21 @@ body {
     border-color: var(--app-theme-color) !important;
 }
 /* ==========================================
-   DASHBOARD ICON SCATTER FIX (AUTO-CENTERING)
+   DASHBOARD ICON SCATTER FIX (PERFECT CENTERING)
    ========================================== */
 .module-section .nav-grid { 
     display: flex !important; 
     flex-wrap: wrap !important; 
-    justify-content: center !important; /* എപ്പോഴും നടുവിലായി നിർത്താൻ */
+    justify-content: center !important; 
     gap: 10px !important; 
     margin-top: 15px !important; 
 }
 
 .module-section .nav-grid > .nav-btn {
-    flex: 0 0 calc(33.333% - 7px) !important; /* 3 എണ്ണം ഒരു വരിയിൽ */
-    width: calc(33.333% - 7px) !important;
+    flex: 1 1 95px !important; /* തനിയെ വീതി അഡ്ജസ്റ്റ് ചെയ്യാൻ */
+    min-width: 95px !important; /* ഒരിക്കലും അക്ഷരങ്ങൾ മുറിഞ്ഞു പോകാതിരിക്കാൻ */
+    max-width: 115px !important; /* വല്ലാതെ വലുതാകാതിരിക്കാൻ */
     margin: 0 !important;
-}
-
-/* മൊബൈൽ സ്ക്രീൻ വളരെ ചെറുതാണെങ്കിൽ മാത്രം 2 എണ്ണമായി മാറും */
-@media (max-width: 380px) {
-    .module-section .nav-grid > .nav-btn {
-        flex: 0 0 calc(50% - 5px) !important;
-        width: calc(50% - 5px) !important;
-    }
+    padding: 12px 5px !important; /* വശങ്ങളിലെ സ്ഥലം അഡ്ജസ്റ്റ് ചെയ്തു */
+    box-sizing: border-box !important;
 }
