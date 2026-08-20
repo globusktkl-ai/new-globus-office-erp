@@ -91,16 +91,28 @@
         .tp-select:focus { border-color: #3b82f6; background: #fff; }
         .tp-colon { font-size: 24px; font-weight: 900; color: #1e293b; padding: 0 5px; }
 
+        /* --- NEW CLOUD ALERTS CSS --- */
+        .alert-card { background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
+        .alert-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: 4px 0 0 4px; }
+        .alert-General::before { background: #3b82f6; }
+        .alert-Personal::before { background: #10b981; }
+        .alert-Teacher::before { background: #f59e0b; }
+        .alert-Office::before { background: #8b5cf6; }
+        .alert-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .badge-target { font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; }
+        .badge-General { background: #dbeafe; color: #1d4ed8; }
+        .badge-Personal { background: #d1fae5; color: #047857; }
+        .badge-Teacher { background: #fef3c7; color: #b45309; }
+        .badge-Office { background: #ede9fe; color: #7c3aed; }
+        .btn-delete-alert { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 900; cursor: pointer; transition: 0.2s; }
+
         @media(max-width: 600px) {
             .panel { padding: 15px; }
             .time-group { display: grid; grid-template-columns: 1fr 50px; grid-template-rows: auto auto; gap: 10px; padding: 12px;}
             .time-input-name { grid-column: 1 / -1; margin: 0; font-size: 15px; padding: 12px;}
             .time-input { grid-column: 1 / 2; width: 100%; font-size: 15px; padding: 12px; text-align: left; }
             .btn-remove-bell { grid-column: 2 / 3; width: 100%; height: 100%; font-size: 18px; }
-
-            .event-input-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-            #eventName { grid-column: 1 / -1; }
-            .event-row-split { display: contents; }
+            .event-form-row { flex-direction: column; }
         }
     </style>
 </head>
@@ -145,6 +157,52 @@
             <h1 class="page-title">Smart Assistant</h1>
         </div>
 
+        <!-- ======================================================== -->
+        <!-- NEW: CLOUD SMART ALERTS PANEL (Role-Based Notification) -->
+        <!-- ======================================================== -->
+        <div class="panel" style="margin-bottom: 20px; border-top: 4px solid #3b82f6;">
+            <div class="panel-header">
+                <span style="font-size: 22px;">☁️</span>
+                <h2 class="panel-title">Cloud Notification Engine</h2>
+            </div>
+            
+            <div class="event-form-container">
+                <form id="cloudAlertForm" style="width: 100%;">
+                    <input type="text" id="cloudAlertTitle" class="event-input" placeholder="Alert Subject / Message (e.g. Staff Meeting at 4PM)" required style="margin-bottom: 10px;">
+                    
+                    <div class="event-form-row" style="margin-bottom: 10px;">
+                        <input type="date" id="cloudAlertDate" class="event-input" style="flex: 1;" required>
+                        <input type="time" id="cloudAlertTime" class="event-input" style="flex: 1;" required>
+                    </div>
+
+                    <div class="event-form-row" style="margin-bottom: 15px;">
+                        <select id="cloudAlertType" class="event-input" style="flex: 1; cursor:pointer;" required>
+                            <option value="Reminder">🔔 Reminder</option>
+                            <option value="Event">📅 Event</option>
+                            <option value="Announcement">📢 Announcement</option>
+                        </select>
+                        
+                        <select id="cloudTargetAudience" class="event-input" style="flex: 1; cursor:pointer;" required>
+                            <option value="General">📢 General (Everyone)</option>
+                            <option value="Personal">🔒 Personal (Only Me)</option>
+                            <option value="Teacher">👩‍🏫 Teachers Only</option>
+                            <option value="Office Staff">💼 Office Staff Only</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-save-bell" id="btnSaveCloudAlert" style="background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);">Publish Cloud Alert 🚀</button>
+                </form>
+            </div>
+
+            <div class="bell-list-title" style="margin-top: 25px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px;">Live Cloud Alerts (Based on your Role)</div>
+            <div id="cloudAlertsListContainer" style="margin-top: 15px;">
+                <div class="empty-state">Loading cloud alerts...</div>
+            </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- ORIGINAL GRID: LOCAL BELLS AND EVENTS -->
+        <!-- ======================================================== -->
         <div class="grid-container">
             <!-- PANEL 1: BELL SYSTEM -->
             <div class="panel">
@@ -206,7 +264,7 @@
             <div class="panel">
                 <div class="panel-header">
                     <span style="font-size: 22px;">📅</span>
-                    <h2 class="panel-title">Event & Meeting Scheduler</h2>
+                    <h2 class="panel-title">Local Event Scheduler</h2>
                 </div>
                 
                 <div class="master-switch-container">
@@ -225,7 +283,7 @@
                     </div>
                 </div>
                 
-                <button class="btn-save-bell" onclick="window.saveNewEvent()" style="margin-bottom: 25px; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);">+ Add Event</button>
+                <button class="btn-save-bell" onclick="window.saveNewEvent()" style="margin-bottom: 25px; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);">+ Add Local Event</button>
 
                 <div class="bell-list-title">Upcoming Scheduled Events</div>
                 <div id="eventListContainer">
@@ -234,7 +292,7 @@
             </div>
         </div>
 
-        <!-- FULL WIDTH PANEL 3: FEE ALERTS (Birthdays Removed completely) -->
+        <!-- FULL WIDTH PANEL 3: FEE ALERTS -->
         <div class="panel" style="margin-bottom: 30px;">
             <div class="panel-header">
                 <span style="font-size: 22px;">💰</span>
@@ -263,7 +321,7 @@
             
             if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Please')) {
                 iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
-            } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Saved') || msg.includes('Event')) {
+            } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Saved') || msg.includes('Event') || msg.includes('published')) {
                 iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
             }
 
@@ -284,6 +342,124 @@
         let playedToday = {}; 
         let bellSettings = { isOn: false, excludedDays: [], bells: [], audioUrl: '', warningDuration: 15 };
         let eventSettings = { isOn: false };
+
+        // ----------------------------------------------------
+        // CLOUD SMART ALERTS ENGINE (NEW ADDITION)
+        // ----------------------------------------------------
+        const userEmail = localStorage.getItem('userEmail');
+        const userRole = localStorage.getItem('userRole') || 'Guest';
+
+        window.initCloudAlerts = function() {
+            // Security: If not Admin, lock audience dropdown to Personal
+            if (userRole !== 'Super Admin' && userRole !== 'Admin') {
+                const targetDropdown = document.getElementById('cloudTargetAudience');
+                targetDropdown.value = 'Personal';
+                targetDropdown.style.display = 'none'; // Hide it from staff
+                document.getElementById('btnSaveCloudAlert').innerText = "Save Personal Alert 🔒";
+            }
+            window.fetchCloudAlerts();
+        };
+
+        document.getElementById('cloudAlertForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (userRole === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+
+            const btn = document.getElementById('btnSaveCloudAlert');
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ Saving to Cloud..."; btn.disabled = true;
+
+            const title = document.getElementById('cloudAlertTitle').value;
+            const date = document.getElementById('cloudAlertDate').value;
+            const time = document.getElementById('cloudAlertTime').value;
+            const type = document.getElementById('cloudAlertType').value;
+            let target = document.getElementById('cloudTargetAudience').value;
+
+            if (userRole !== 'Super Admin' && userRole !== 'Admin') target = 'Personal';
+
+            try {
+                const { error } = await supabase.from('smart_alerts').insert([{
+                    title: title, alert_date: date, alert_time: time, alert_type: type,
+                    target_audience: target, created_by: userEmail, created_role: userRole
+                }]);
+
+                if (error) throw error;
+
+                alert("✅ Alert successfully published to Cloud!");
+                document.getElementById('cloudAlertForm').reset();
+                window.fetchCloudAlerts();
+            } catch (err) {
+                console.error(err);
+                alert("❌ Failed to save alert. Check connection.");
+            } finally {
+                btn.innerText = originalText; btn.disabled = false;
+            }
+        });
+
+        window.fetchCloudAlerts = async function() {
+            const container = document.getElementById('cloudAlertsListContainer');
+            try {
+                const { data, error } = await supabase.from('smart_alerts')
+                    .select('*').order('alert_date', { ascending: true }).order('alert_time', { ascending: true });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<div class="empty-state">No cloud alerts found.</div>`; return;
+                }
+
+                // SECURITY & FILTERING LOGIC
+                const filteredData = data.filter(alert => {
+                    if (userRole === 'Super Admin' || userRole === 'Admin') return true; 
+                    if (alert.target_audience === 'General') return true;
+                    if (alert.target_audience === userRole) return true;
+                    if (alert.target_audience === 'Personal' && alert.created_by === userEmail) return true;
+                    return false; 
+                });
+
+                if (filteredData.length === 0) {
+                    container.innerHTML = `<div class="empty-state">No alerts available for your view.</div>`; return;
+                }
+
+                container.innerHTML = filteredData.map(alert => {
+                    let canDelete = (userRole === 'Super Admin' || userRole === 'Admin' || alert.created_by === userEmail);
+                    let timeParts = alert.alert_time.split(':');
+                    let displayTime = `${timeParts[0] % 12 || 12}:${timeParts[1]} ${timeParts[0] >= 12 ? 'PM' : 'AM'}`;
+                    let displayDate = new Date(alert.alert_date).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric'});
+                    let badgeClass = `badge-target badge-${alert.target_audience.split(' ')[0]}`;
+
+                    return `
+                    <div class="alert-card alert-${alert.target_audience.split(' ')[0]}">
+                        <div class="alert-header">
+                            <div style="flex:1;">
+                                <h4 style="margin:0 0 5px 0; font-size:14px; font-weight:900; color:#1e293b;">${alert.title}</h4>
+                                <div style="font-size:11px; font-weight:700; color:#64748b; display:flex; gap:10px;">
+                                    <span>${alert.alert_type}</span> • <span>${displayDate} | ${displayTime}</span>
+                                </div>
+                            </div>
+                            <span class="${badgeClass}">${alert.target_audience}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid #f1f5f9; padding-top: 8px;">
+                            <span style="font-size: 9px; color: #94a3b8; font-weight: 800; text-transform:uppercase;">By: ${alert.created_role}</span>
+                            ${canDelete ? `<button class="btn-delete-alert" onclick="window.deleteCloudAlert('${alert.id}')">Delete</button>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                container.innerHTML = `<div class="empty-state" style="color:red;">Error loading cloud alerts.</div>`;
+            }
+        };
+
+        window.deleteCloudAlert = async function(id) {
+            if(!confirm("Are you sure you want to delete this alert?")) return;
+            try {
+                await supabase.from('smart_alerts').delete().eq('id', id);
+                window.fetchCloudAlerts();
+            } catch (err) { alert("❌ Failed to delete alert."); }
+        };
+
+        // ----------------------------------------------------
+        // EXISTING LOCAL LOGIC (UNTOUCHED)
+        // ----------------------------------------------------
 
         // SILENT AUDIO UNLOCK FUNCTION
         window.silentAudioUnlock = function() {
@@ -502,7 +678,7 @@
             timeInput.removeAttribute('data-time24');
             
             window.renderEvents();
-            alert("✅ Event Saved Successfully!");
+            alert("✅ Local Event Saved Successfully!");
         };
 
         window.renderEvents = function() {
@@ -547,7 +723,7 @@
             window.renderEvents();
         };
 
-        // EXCLUSIVE FEE ALERT FETCHER (Birthdays stripped out for performance)
+        // EXCLUSIVE FEE ALERT FETCHER
         window.fetchStudentAlerts = async function() {
             try {
                 const [stuRes, payRes] = await Promise.all([
@@ -624,6 +800,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             window.initCustomPicker();
             window.loadSettingsSafe();
+            window.initCloudAlerts(); // START CLOUD ALERTS
             supabase.auth.getSession().then(({ data: { session } }) => { if (session) window.fetchStudentAlerts(); });
         });
     </script>
