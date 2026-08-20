@@ -396,21 +396,22 @@ body {
     border-color: var(--app-theme-color) !important;
 }
 /* ==========================================
-   DASHBOARD ICON SCATTER FIX (PERFECT CENTERING)
+  /* ==========================================
+   DASHBOARD ICON SCATTER FIX (OVERFLOW FIX)
    ========================================== */
 .module-section .nav-grid { 
     display: flex !important; 
     flex-wrap: wrap !important; 
     justify-content: center !important; 
-    gap: 10px !important; 
+    gap: 8px !important; 
     margin-top: 15px !important; 
 }
 
 .module-section .nav-grid > .nav-btn {
-    flex: 1 1 95px !important; /* തനിയെ വീതി അഡ്ജസ്റ്റ് ചെയ്യാൻ */
-    min-width: 95px !important; /* ഒരിക്കലും അക്ഷരങ്ങൾ മുറിഞ്ഞു പോകാതിരിക്കാൻ */
-    max-width: 115px !important; /* വല്ലാതെ വലുതാകാതിരിക്കാൻ */
+    flex: 1 1 85px !important; /* സ്ക്രീനിനനുസരിച്ച് വീതി അഡ്ജസ്റ്റ് ചെയ്യാൻ */
+    max-width: 105px !important; /* ബോക്സിനു പുറത്തേക്ക് ചാടാതിരിക്കാൻ ലിമിറ്റ് */
     margin: 0 !important;
-    padding: 12px 5px !important; /* വശങ്ങളിലെ സ്ഥലം അഡ്ജസ്റ്റ് ചെയ്തു */
+    padding: 12px 4px !important; 
     box-sizing: border-box !important;
+    min-height: 85px !important;
 }
