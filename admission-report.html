@@ -360,11 +360,11 @@
             const sortedMonths = Object.keys(monthCounts).sort((a, b) => new Date('01 ' + a) - new Date('01 ' + b));
             const barData = sortedMonths.map(m => monthCounts[m]);
 
-            renderPieChart(pieLabels, pieData);
+            rendERPieChart(pieLabels, pieData);
             renderBarChart(sortedMonths, barData);
         };
 
-        function renderPieChart(labels, data) {
+        function rendERPieChart(labels, data) {
             const ctx = document.getElementById('coursePieChart').getContext('2d');
             if (pieChartInstance) pieChartInstance.destroy();
             
