@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard - Master Control</title>
+    <title>Dashboard - Globus ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
 
     <style>
@@ -104,13 +104,6 @@
         .logged-in-email { color: var(--app-theme-color); font-weight: 900; font-size: 11px; }
         .btn-logout-round { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); flex-shrink: 0; transition: 0.2s; }
         .btn-logout-round:active { transform: scale(0.95); }
-        
-        /* MODALS & FORMS */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
-        .modal-container { background: #fff; width: 100%; max-width: 500px; border-radius: 12px; padding: 20px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .form-control { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
-        .label { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block; }
-
     </style>
 </head>
 <body>
@@ -229,43 +222,6 @@
             <div class="alert-ticker-track" id="alertTickerTrack"></div>
         </div>
 
-        <!-- SUPER ADMIN SECTION -->
-        <div class="module-section" id="superAdminSection" style="display: none; border-color: #c4b5fd;">
-            <h2 class="section-heading" style="color: #5b21b6; margin: 0 !important;">
-                <span class="section-heading-icon" style="background: linear-gradient(135deg, #6d28d9, #8b5cf6);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                </span>
-                Super Admin Controls
-            </h2>
-            <div class="nav-grid">
-               <a href="logs.html" class="nav-btn">
-                    <span class="nav-icon" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe);">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                    </span>Activity Logs
-                </a>
-
-                <a href="#" class="nav-btn" onclick="window.openSecurityGate()">
-                    <span class="nav-icon" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                        </svg>
-                    </span>Master Console
-                </a>
-
-                <a href="#" class="nav-btn" onclick="window.openRoleManager()">
-                    <span class="nav-icon" style="background: linear-gradient(135deg, #dbeafe, #93c5fd);">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            <path d="M12 8v4"/><path d="M12 16h.01"/>
-                        </svg>
-                    </span>Role & Security
-                </a>
-            </div>
-        </div>
-
         <!-- ACADEMIC & ADMIN SECTION -->
         <div class="module-section">
             <h2 class="section-heading" style="color: #1e3a8a; margin: 0 0 15px 0 !important;">
@@ -275,7 +231,6 @@
                 Academic & Admin
             </h2>
             
-            <!-- THE NEW UNIFIED FLEX CONTAINER -->
             <div class="nav-grid">
                 
                 <a href="enquiry.html" class="nav-btn">
@@ -314,13 +269,11 @@
                     <span class="nav-icon icon-bg-rpt-adm"><svg viewBox="0 0 24 24" fill="none" stroke="#0369a1"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></span>Adm Report
                 </a>
                 
-                <!-- Smart Alerts (Now uniform size) -->
                 <a href="reminders.html" class="nav-btn">
                     <span class="nav-badge"></span>
                     <span class="nav-icon icon-bg-alert"><svg viewBox="0 0 24 24" fill="none" stroke="#d97706"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>Smart Alerts
                 </a>
 
-                <!-- ID Card Studio (Now uniform size) -->
                 <button type="button" onclick="window.openIDStudioSecure()" class="nav-btn" style="border: 1px solid #e2e8f0; cursor: pointer; background: transparent;">
                     <span class="nav-icon" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe);"><svg viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><circle cx="9" cy="15" r="2"></circle><line x1="13" y1="14" x2="17" y2="14"></line><line x1="13" y1="16" x2="17" y2="16"></line></svg></span>ID Card Studio
                 </button>
@@ -337,6 +290,7 @@
 
             </div>
         </div>
+
         <!-- FINANCE & ACCOUNTS SECTION -->
         <div class="module-section" id="financeSection">
             <h2 class="section-heading" style="color: #064e3b; margin: 0 !important;">
@@ -364,127 +318,6 @@
             </div>
         </div>
     </main>
-
-    <!-- SETTINGS MODAL -->
-    <div id="settingsModal" class="modal-overlay">
-        <div class="modal-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #1e3a8a;">⚙️ Master Settings Panel</h3>
-                <button onclick="window.closeSettingsModal()" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">X</button>
-            </div>
-            
-            <div id="settingsNormalView">
-                <!-- Theme & System Settings (SaaS Feature) -->
-                <h4 style="color: #475569; font-size: 13px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase;">🎨 System & Theme Control</h4>
-                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                    <label style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-weight: 800; cursor: pointer;">
-                        Enable Guest (Demo) Login
-                        <input type="checkbox" id="set_guest_login" style="width:18px; height:18px; accent-color: #2563eb;">
-                    </label>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <label style="margin:0; font-weight: 800;">App Primary Color</label>
-                        <input type="color" id="set_theme_color" value="#2563eb" style="border:none; width:40px; height:30px; border-radius:4px; cursor:pointer;">
-                    </div>
-                    <label style="font-weight: 800;">Menu Button Style</label>
-                    <select id="set_menu_style" class="form-control" style="margin-bottom:0;">
-                        <option value="modern">Modern Rounded</option>
-                        <option value="flat">Flat Professional</option>
-                    </select>
-                </div>
-
-                <!-- White Label Settings -->
-                <h4 style="color: #475569; font-size: 13px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase;">🏢 Institute Branding</h4>
-                <form id="settingsForm" onsubmit="saveSettings(event)">
-                    <label>Institute Main Name</label><input type="text" id="set_name" class="form-control" required>
-                    <label>Sub Name / Tagline</label><input type="text" id="set_sub" class="form-control">
-                    <label>Full Address</label><input type="text" id="set_address" class="form-control">
-                    <div style="display: flex; gap: 10px;"><div style="flex:1;"><label>Phone</label><input type="number" id="set_phone" class="form-control"></div><div style="flex:1;"><label>Email</label><input type="email" id="set_email" class="form-control"></div></div>
-                    
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button type="submit" style="flex:1; background: #2563eb; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">💾 Save Settings</button>
-                    </div>
-                </form>
-
-                <!-- DANGER ZONE -->
-                <div style="margin-top: 20px; padding: 12px; border: 2px dashed #fca5a5; border-radius: 10px; background: #fef2f2; text-align: center;">
-                    <h4 style="color: #dc2626; font-size: 13px; font-weight: 900; margin: 0 0 6px 0; text-transform: uppercase;">⚠️ Danger Zone</h4>
-                    <p style="color: #991b1b; font-size: 10px; font-weight: 700; margin-bottom: 10px; line-height: 1.3;">Permanently delete all students, staff, fee payments, attendance, & expense records.</p>
-                    <button type="button" onclick="window.showWipeConfirmation()" style="background: #dc2626; color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 12px; box-shadow: 0 2px 5px rgba(220,38,38,0.2);">🗑️ WIPE USER DATA</button>
-                </div>
-            </div>
-
-            <!-- CAPTCHA & WIPE VIEW -->
-            <div id="settingsWipeView" style="display:none; background:#fff; border:1px solid #fecaca; border-radius:10px; padding:15px; text-align:left;">
-                <h4 style="color:#dc2626; margin:0 0 8px 0; font-size:14px; font-weight:900;">🔥 CRITICAL VERIFICATION</h4>
-                <p style="font-size:11px; color:#475569; margin-bottom:12px; font-weight:700; line-height:1.4;">This will permanently clear all student test data, <b>staff data</b>, fee records, attendance logs, and expenses. Only Courses will remain.</p>
-                
-                <div style="display:flex; align-items:center; gap:10px; background:#f8fafc; padding:8px 10px; border-radius:6px; border:1px solid #e2e8f0; margin-bottom:10px;">
-                    <span id="captchaEq" style="font-size:16px; font-weight:900; color:#0f172a; letter-spacing:1px;">0 + 0 =</span>
-                    <input type="number" id="captchaInput" class="form-control" style="margin:0; width:70px; text-align:center; font-weight:900;" placeholder="?">
-                </div>
-                
-                <label style="color:#b91c1c; font-size:11px; margin-bottom:4px; font-weight:800;">Type <b>"WIPE"</b> to confirm:</label>
-                <input type="text" id="wipeConfirmText" class="form-control" placeholder="Type WIPE here" autocomplete="off" style="margin-bottom:12px;">
-                
-                <div style="display: flex; gap: 8px;">
-                    <button type="button" onclick="window.cancelWipe()" style="flex:1; background:#94a3b8; color:white; padding:10px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:12px;">Cancel</button>
-                    <!-- Replaced native confirm with direct action (typing WIPE is enough confirmation) -->
-                    <button type="button" id="executeWipeBtn" onclick="window.executeDataWipe()" style="flex:1; background:#dc2626; color:white; padding:10px; border:none; border-radius:8px; font-weight:900; cursor:pointer; font-size:12px;">🔥 CONFIRM WIPE</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ROLE & SECURITY MANAGER MODAL -->
-    <div id="roleManagerModal" class="modal-overlay">
-        <div class="modal-container" style="max-width: 800px; width: 95%; padding: 15px; border-radius: 12px; display: flex; flex-direction: column; max-height: 90vh;">
-            
-            <!-- Header -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; flex-shrink: 0;">
-                <h3 style="margin: 0; color: #4c1d95; font-size: 16px; font-weight: 900; display: flex; align-items: center; gap: 8px;">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    Role & Security Manager
-                </h3>
-                <button onclick="document.getElementById('roleManagerModal').style.display='none'" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 12px;">Close</button>
-            </div>
-            
-            <!-- Role Selector -->
-            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; flex-shrink: 0;">
-                <label style="font-weight: 800; color: #1e293b; margin: 0; font-size: 13px;">Select Role to Edit:</label>
-                <select id="roleSelector" class="form-control" style="flex: 1; min-width: 150px; margin: 0; cursor: pointer; padding: 8px;" onchange="window.loadRolePermissions(this.value)">
-                    <option value="">-- Choose Role --</option>
-                    <!-- Roles will be loaded here -->
-                </select>
-                <div id="roleSaveStatus" style="font-size: 12px; font-weight: 800; color: #10b981; display: none; width: 100%; text-align: center;">✅ Saved Successfully!</div>
-            </div>
-
-            <!-- Scrollable Table Area (Fixed for Mobile) -->
-            <div style="flex: 1; overflow-x: auto; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; background: white; -webkit-overflow-scrolling: touch; min-height: 250px;">
-                <table style="width: 100%; border-collapse: collapse; min-width: 400px !important;">
-                    <thead style="background: #1e293b; color: white; position: sticky; top: 0; z-index: 10;">
-                        <tr>
-                            <th style="padding: 10px; text-align: left; font-size: 11px; white-space: nowrap; border: none;">App Feature</th>
-                            <th style="padding: 10px; text-align: center; font-size: 11px; border: none;">View</th>
-                            <th style="padding: 10px; text-align: center; font-size: 11px; border: none;">Add</th>
-                            <th style="padding: 10px; text-align: center; font-size: 11px; border: none;">Edit</th>
-                            <th style="padding: 10px; text-align: center; font-size: 11px; border: none;">Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody id="permissionsTableBody">
-                        <tr><td colspan="5" style="text-align: center; padding: 30px 10px; font-weight: bold; color: #64748b; font-size: 12px;">Select a role above to manage permissions</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Save Button (Centered) -->
-            <div style="margin-top: 15px; text-align: center; flex-shrink: 0;">
-                <button onclick="window.saveRolePermissions()" style="background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 14px; width: 100%; max-width: 300px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);">
-                    💾 Save Permissions
-                </button>
-            </div>
-            
-        </div>
-    </div>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
@@ -569,15 +402,6 @@
             }
         };
 
-
-        let expectedCaptchaAns = 0;
-        let settingsTimer;
-        let settingsInteracted = false;
-
-        function showToast(msg, type = 'success') {
-            alert(msg);
-        }
-
         // ==========================================
         // 1. AUTHENTICATION & GUEST TIMER LOGIC
         // ==========================================
@@ -628,32 +452,19 @@
             loadDashboardData();
             buildSmartTicker();
             setInterval(buildSmartTicker, 30000); 
-
-            const sModal = document.getElementById('settingsModal');
-            ['input', 'click', 'touchstart', 'keydown'].forEach(evt => {
-                sModal.addEventListener(evt, window.resetSettingsActivity);
-            });
         }
 
         // ==========================================
         // 2. DYNAMIC ROLE BASED ACCESS CONTROL (RBAC)
         // ==========================================
         window.applyRoleAccess = async function(role) {
-            const superAdminSection = document.getElementById('superAdminSection');
-            
-            // 1. Super Admin Controls ബോക്സ് സൂപ്പർ അഡ്മിന് മാത്രം കാണിക്കുക
-            if (superAdminSection) {
-                superAdminSection.style.display = (role === 'Super Admin') ? 'block' : 'none';
-            }
-
-            // 2. Super Admin, Admin, Guest എന്നിവർക്ക് എല്ലാ ഐക്കണുകളും കാണിക്കാം
+            // Super Admin, Admin, Guest എന്നിവർക്ക് എല്ലാ ഐക്കണുകളും കാണിക്കാം
             if (role === 'Super Admin' || role === 'Admin' || role === 'Guest') {
                 document.querySelectorAll('.nav-btn').forEach(btn => btn.style.setProperty('display', 'flex', 'important'));
-                if (role === 'Guest' && superAdminSection) superAdminSection.style.setProperty('display', 'none', 'important');
                 return;
             }
 
-            // 3. മറ്റ് റോളുകൾക്ക് (Teacher, Staff) - CSS-ലെ !important കാരണം സാധാരണ ഹൈഡ് വർക്ക് ആവില്ല. അതിനാൽ JS-ലും !important നൽകുന്നു.
+            // മറ്റ് റോളുകൾക്ക് (Teacher, Staff) 
             document.querySelectorAll('.nav-btn').forEach(btn => btn.style.setProperty('display', 'none', 'important'));
 
             try {
@@ -677,7 +488,8 @@
                         'IDCardStudio': 'button[onclick="window.openIDStudioSecure()"]',
                         'FeeCollect': 'a[href="fees.html"]',
                         'DayBook': 'a[href="expense.html"]',
-                        'MasterDayBook': 'a[href="report.html"]'
+                        'MasterDayBook': 'a[href="report.html"]',
+                        'SystemSettings': 'a[href="settings.html"]'
                     };
 
                     // ഡാറ്റാബേസിൽ View പെർമിഷൻ (true) ഉള്ളവ മാത്രം സ്ക്രീനിൽ തിരികെ കൊണ്ടുവരുന്നു
@@ -688,10 +500,8 @@
                         }
                     }
 
-                    // 4. കാലിയായ സെക്ഷനുകൾ (Academic, Finance മുതലായവ) സ്ക്രീനിൽ നിന്ന് പൂർണ്ണമായി മറയ്ക്കാൻ
+                    // കാലിയായ സെക്ഷനുകൾ സ്ക്രീനിൽ നിന്ന് പൂർണ്ണമായി മറയ്ക്കാൻ
                     document.querySelectorAll('.module-section').forEach(section => {
-                        if (section.id === 'superAdminSection') return;
-                        
                         // ഈ സെക്ഷനകത്ത് കാണാൻ അനുമതിയുള്ള ഏതെങ്കിലും ബട്ടൺ ഉണ്ടോ എന്ന് നോക്കുന്നു
                         const visibleBtns = Array.from(section.querySelectorAll('.nav-btn')).filter(btn => btn.style.display === 'flex');
                         
@@ -752,21 +562,18 @@
                 const userEmail = localStorage.getItem('userEmail');
                 const userRole = localStorage.getItem('userRole') || 'Guest';
                 
-                // ഇന്നത്തെ തീയതി എടുക്കുന്നു (പഴയ അലേർട്ടുകൾ ടിക്കറിൽ കാണിക്കാതിരിക്കാൻ)
-                // തിരുവനന്തപുരം സമയം അനുസരിച്ച് തീയതി എടുക്കാൻ
                 let localDate = new Date();
                 localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
                 const todayStr = localDate.toISOString().split('T')[0];
 
                 const { data, error } = await supabase.from('smart_alerts')
                     .select('*')
-                    .gte('alert_date', todayStr) // ഇന്നും ഇനിയുള്ളതുമായ അലേർട്ടുകൾ മാത്രം
+                    .gte('alert_date', todayStr) 
                     .order('alert_date', { ascending: true })
                     .order('alert_time', { ascending: true });
 
                 if (data && data.length > 0) {
                     data.forEach(alert => {
-                        // Role Based Security Check 
                         let canView = false;
                         if (userRole === 'Super Admin' || userRole === 'Admin') canView = true;
                         else if (alert.target_audience === 'General') canView = true;
@@ -778,11 +585,9 @@
                             let displayTime = `${timeParts[0] % 12 || 12}:${timeParts[1]} ${timeParts[0] >= 12 ? 'PM' : 'AM'}`;
                             let displayDate = new Date(alert.alert_date).toLocaleDateString('en-IN', { day:'2-digit', month:'short'});
                             
-                            // ഐക്കണുകൾ സെറ്റ് ചെയ്യുന്നു
                             let icon = alert.alert_type === 'Reminder' ? '🔔' : (alert.alert_type === 'Event' ? '📅' : '📢');
                             let targetBadge = alert.target_audience === 'General' ? '' : `[${alert.target_audience}] `;
                             
-                            // ക്ലൗഡ് അലേർട്ടുകൾ ടിക്കറിലേക്ക് ചേർക്കുന്നു
                             tickerItems.push(`<a href="reminders.html" class="alert-item" style="color:#0f172a; border: 1px solid #cbd5e1;">${icon} <span style="font-weight:900; color:#2563eb;">${targetBadge}</span> ${alert.title} - ${displayDate} | ${displayTime}</a>`);
                         }
                     });
@@ -794,7 +599,6 @@
             // 3. RENDER TICKER TO SCREEN
             if (tickerItems.length > 0) {
                 wrap.style.display = 'flex';
-                // സ്ക്രോളിങ് സ്മൂത്ത് ആക്കാൻ വേണ്ടി ഐറ്റങ്ങൾ കുറവാണെങ്കിൽ ഡ്യൂപ്ലിക്കേറ്റ് ചെയ്യുന്നു
                 if(tickerItems.length < 3) tickerItems = [...tickerItems, ...tickerItems, ...tickerItems];
                 track.innerHTML = tickerItems.join('');
             } else {
@@ -802,6 +606,7 @@
                 track.innerHTML = '';
             }
         };
+
         async function loadDashboardData() {
             try {
                 const [stuRes, crsRes, payRes] = await Promise.all([
@@ -859,113 +664,10 @@
             } catch (err) {}
         }
 
-        // ==========================================
-        // 4. SECURITY & SETTINGS LOGIC
-        // ==========================================
-        
-        window.closeSettingsModal = function() {
-            document.getElementById('settingsModal').style.display = 'none';
-            clearTimeout(settingsTimer); 
-        };
-
-        window.resetSettingsActivity = function() {
-            const modal = document.getElementById('settingsModal');
-            if (modal.style.display === 'flex') {
-                settingsInteracted = true;
-                clearTimeout(settingsTimer);
-                settingsTimer = setTimeout(() => {
-                    window.closeSettingsModal();
-                    alert("⚠️ Settings auto-closed due to 1 minute inactivity.");
-                }, 60000); 
-            }
-        };
-
-        window.openSecurityGate = async function() {
-            if (localStorage.getItem('userRole') !== 'Super Admin') {
-                alert("❌ Access Denied! Only Super Admin can access Core Settings.");
-                return;
-            }
-            
-            let ans = await window.magicPrompt("🛡️ Super Admin Authentication\n\nEnter the Master Pin (Hint: 1234):", false);
-            
-            if (ans === "1234") { 
-                window.openSettings();
-            } else if (ans !== null) {
-                alert("❌ Access Denied! Incorrect PIN.");
-            }
-        };
-
-        window.openSettings = async function() {
-            try {
-                document.getElementById('settingsNormalView').style.display = 'block';
-                document.getElementById('settingsWipeView').style.display = 'none';
-
-                // ഡാറ്റാബേസിൽ നിന്നും ഇൻസ്റ്റിറ്റ്യൂട്ട് വിവരങ്ങളും പുതിയ സെറ്റിംഗ്സും എടുക്കുന്നു
-                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
-                if (data) {
-                    document.getElementById('set_name').value = data.institute_name || '';
-                    document.getElementById('set_sub').value = data.sub_name || '';
-                    document.getElementById('set_address').value = data.address || '';
-                    document.getElementById('set_phone').value = data.phone || '';
-                    document.getElementById('set_email').value = data.email || '';
-                    
-                    // പുതിയ ഡാറ്റാബേസ് സെറ്റിംഗ്സ്
-                    document.getElementById('set_theme_color').value = data.theme_color || '#2563eb';
-                    document.getElementById('set_guest_login').checked = data.guest_login_enabled !== false; // Default true
-                    if(data.menu_style) document.getElementById('set_menu_style').value = data.menu_style;
-                }
-            } catch (e) {}
-            
-            document.getElementById('settingsModal').style.display = 'flex';
-            settingsInteracted = false;
-            clearTimeout(settingsTimer);
-            settingsTimer = setTimeout(() => {
-                window.closeSettingsModal();
-                alert("⚠️ Settings auto-closed (60s timeout).");
-            }, 60000); 
-        };
-
-        window.saveSettings = async function(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            const oldText = btn.innerHTML;
-            btn.innerHTML = '⏳ Saving to Database...'; btn.disabled = true;
-            
-            const themeColor = document.getElementById('set_theme_color').value;
-            const allowGuest = document.getElementById('set_guest_login').checked;
-            const menuStyle = document.getElementById('set_menu_style').value;
-
-            // സിസ്റ്റത്തിലേക്ക് നിറം അപ്പൊൾ തന്നെ നൽകുന്നു
-            document.documentElement.style.setProperty('--app-theme-color', themeColor);
-
-            // Supabase ഡാറ്റാബേസിലേക്ക് എല്ലാം ഒരുമിച്ച് സേവ് ചെയ്യുന്നു!
-            const updates = {
-                institute_name: document.getElementById('set_name').value,
-                sub_name: document.getElementById('set_sub').value,
-                address: document.getElementById('set_address').value,
-                phone: document.getElementById('set_phone').value,
-                email: document.getElementById('set_email').value,
-                theme_color: themeColor,
-                guest_login_enabled: allowGuest,
-                menu_style: menuStyle
-            };
-            
-            const { error } = await supabase.from('institute_settings').update(updates).eq('id', 1);
-            if(error) { 
-                alert("❌ Error saving settings."); 
-                btn.innerHTML = oldText; btn.disabled = false;
-            } else { 
-                alert("✅ Settings Saved Successfully!"); 
-                window.closeSettingsModal(); 
-                loadSettings(); 
-            }
-        };
-
         async function loadSettings() {
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
-                    // ഡാറ്റാബേസിലെ നിറം നൽകുന്നു
                     if (data.theme_color) {
                         document.documentElement.style.setProperty('--app-theme-color', data.theme_color);
                     }
@@ -981,172 +683,6 @@
                 }
             } catch (e) {}
         }
-        // ==========================================
-        // 5. DANGER ZONE WIPE DATA LOGIC
-        // ==========================================
-        window.showWipeConfirmation = function() {
-            document.getElementById('settingsNormalView').style.display = 'none';
-            document.getElementById('settingsWipeView').style.display = 'block';
-            
-            const num1 = Math.floor(Math.random() * 20) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            window.expectedCaptchaAns = num1 + num2;
-            document.getElementById('captchaEq').innerText = `${num1} + ${num2} = `;
-            
-            document.getElementById('captchaInput').value = '';
-            document.getElementById('wipeConfirmText').value = '';
-        };
-
-        window.cancelWipe = function() {
-            document.getElementById('settingsWipeView').style.display = 'none';
-            document.getElementById('settingsNormalView').style.display = 'block';
-        };
-
-        window.executeDataWipe = async function() {
-            const userCaptcha = parseInt(document.getElementById('captchaInput').value);
-            const userText = document.getElementById('wipeConfirmText').value.trim().toUpperCase();
-
-            if (userCaptcha !== window.expectedCaptchaAns) { alert("❌ Math Captcha is incorrect!"); return; }
-            if (userText !== "WIPE") { alert("❌ You must type exactly 'WIPE' to confirm."); return; }
-
-            const finalWarning = await window.magicPrompt("🚨 FINAL WARNING: ALL student data, staff details, attendance, fees, inventory, enquiries, and expenses will be permanently deleted. Only Courses will remain. \n\nType 'CONFIRM' to proceed:", true);
-            if (finalWarning !== 'CONFIRM') {
-                alert("❌ Action cancelled.");
-                return;
-            }
-
-            const btn = document.getElementById('executeWipeBtn');
-            btn.innerHTML = "⏳ WIPING DATA..."; btn.disabled = true;
-
-            try {
-                await Promise.allSettled([
-                    supabase.from('attendance_records').delete().not('id', 'is', null),
-                    supabase.from('fee_payments').delete().not('id', 'is', null),
-                    supabase.from('expenses').delete().not('id', 'is', null),
-                    supabase.from('module_assignments').delete().not('id', 'is', null),
-                    supabase.from('inventory_logs').delete().not('id', 'is', null),
-                    supabase.from('inventory_items').delete().not('id', 'is', null),
-                    supabase.from('enquiries').delete().not('id', 'is', null) 
-                ]);
-
-                await Promise.allSettled([
-                    supabase.from('students').delete().not('id', 'is', null),
-                    supabase.from('staff').delete().not('id', 'is', null)
-                ]);
-
-                alert("✅ All User Data wiped successfully!");
-                setTimeout(() => { window.location.reload(); }, 2000);
-
-            } catch (err) {
-                alert("❌ Error wiping data. Check console.");
-                btn.innerHTML = "🔥 CONFIRM WIPE"; btn.disabled = false;
-            }
-        };
-
-        // ==========================================
-        // DYNAMIC ROLE & SECURITY MANAGER
-        // ==========================================
-        window.allModules = [
-            { id: 'ActivityLogs', name: 'Activity Logs' }, { id: 'SystemSettings', name: 'System Settings' },
-            { id: 'Enquiry', name: 'Enquiry' }, { id: 'Admission', name: 'Admission' },
-            { id: 'Directory', name: 'Directory (Students)' }, { id: 'StaffHR', name: 'Staff & HR' },
-            { id: 'Attendance', name: 'Attendance' }, { id: 'Courses', name: 'Courses' },
-            { id: 'Exams', name: 'Exams' }, { id: 'Inventory', name: 'Inventory' },
-            { id: 'AdmReport', name: 'Admission Report' }, { id: 'SmartAlerts', name: 'Smart Alerts' },
-            { id: 'IDCardStudio', name: 'ID Card Studio' }, { id: 'FeeCollect', name: 'Fee Collect' },
-            { id: 'DayBook', name: 'Day Book' }, { id: 'MasterDayBook', name: 'Master Day Book' }
-        ];
-
-        window.currentEditingRole = null;
-
-        window.openRoleManager = async function() {
-            if (localStorage.getItem('userRole') !== 'Super Admin') {
-                alert("❌ Only Super Admin can modify system roles.");
-                return;
-            }
-            document.getElementById('roleManagerModal').style.display = 'flex';
-            
-            try {
-                // റോളുകൾ Supabase-ൽ നിന്നും എടുക്കുന്നു
-                const { data, error } = await supabase.from('role_management').select('*');
-                
-                // എറർ ഉണ്ടെങ്കിൽ അത് സ്ക്രീനിൽ കാണിക്കും
-                if (error) {
-                    alert("❌ Database Error: " + error.message);
-                    console.error("Supabase RLS Error:", error);
-                    return;
-                }
-                
-                // ടേബിൾ കാലിയാണെങ്കിൽ അതും പറയും
-                if (!data || data.length === 0) {
-                    alert("⚠️ No roles found in the database. Table is empty!");
-                    return;
-                }
-
-                // ഡാറ്റ ഉണ്ടെങ്കിൽ സെലക്ട് ബോക്സിലേക്ക് ചേർക്കുന്നു
-                const selector = document.getElementById('roleSelector');
-                selector.innerHTML = '<option value="">-- Choose Role --</option>';
-                data.forEach(role => {
-                    selector.innerHTML += `<option value="${role.role_name}">${role.role_name}</option>`;
-                });
-            } catch (err) {
-                alert("❌ Network/Connection Error!");
-                console.error(err);
-            }
-        };
-
-        window.loadRolePermissions = async function(roleName) {
-            window.currentEditingRole = roleName;
-            const tbody = document.getElementById('permissionsTableBody');
-            if (!roleName) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Select a role above</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading...</td></tr>';
-            
-            const { data } = await supabase.from('role_management').select('permissions, is_system_role').eq('role_name', roleName).single();
-            const perms = data ? (data.permissions || {}) : {};
-            const isSuperAdmin = roleName === 'Super Admin'; 
-
-            tbody.innerHTML = window.allModules.map(mod => {
-                const p = perms[mod.id] || { view: false, add: false, edit: false, delete: false };
-                const disable = isSuperAdmin ? 'disabled checked' : '';
-                return `
-                    <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 10px; font-weight: 700; color: #334155;">${mod.name}</td>
-                        <td style="text-align: center;"><input type="checkbox" id="perm_${mod.id}_view" ${p.view ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #2563eb;"></td>
-                        <td style="text-align: center;"><input type="checkbox" id="perm_${mod.id}_add" ${p.add ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #10b981;"></td>
-                        <td style="text-align: center;"><input type="checkbox" id="perm_${mod.id}_edit" ${p.edit ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #f59e0b;"></td>
-                        <td style="text-align: center;"><input type="checkbox" id="perm_${mod.id}_delete" ${p.delete ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #ef4444;"></td>
-                    </tr>
-                `;
-            }).join('');
-        };
-
-        window.saveRolePermissions = async function() {
-            if (!window.currentEditingRole || window.currentEditingRole === 'Super Admin') return;
-            
-            let newPermissions = {};
-            window.allModules.forEach(mod => {
-                newPermissions[mod.id] = {
-                    view: document.getElementById(`perm_${mod.id}_view`).checked,
-                    add: document.getElementById(`perm_${mod.id}_add`).checked,
-                    edit: document.getElementById(`perm_${mod.id}_edit`).checked,
-                    delete: document.getElementById(`perm_${mod.id}_delete`).checked
-                };
-            });
-
-            const { error } = await supabase.from('role_management').update({ permissions: newPermissions }).eq('role_name', window.currentEditingRole);
-            
-            if (!error) {
-                const status = document.getElementById('roleSaveStatus');
-                status.style.display = 'inline';
-                setTimeout(() => status.style.display = 'none', 3000);
-            } else {
-                alert("❌ Error saving permissions.");
-            }
-        };
 
         // ==========================================
         // 6. LOGOUT
