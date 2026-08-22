@@ -183,14 +183,12 @@
         async function checkAuth() {
             const userRole = localStorage.getItem('userRole') || 'Admin';
             const { data: { session } } = await supabase.auth.getSession();
-            
-            // 1. ഗസ്റ്റ് അല്ലെങ്കിലും, ലോഗിൻ ചെയ്തിട്ടില്ലെങ്കിലും ലോഗിൻ പേജിലേക്ക് മാറ്റുക
+
             if (!session && userRole !== 'Guest') { 
                 window.location.href = 'login.html'; 
                 return; 
             }
 
-            // 2. ഗസ്റ്റ് (Guest) ആണെങ്കിൽ സബ്മിറ്റ് ബട്ടൺ ഡിസേബിൾ ചെയ്യുക (Read-Only Mode)
             if (userRole === 'Guest') {
                 setTimeout(() => {
                     const actionButtons = document.querySelectorAll('button[type="submit"], button');
@@ -205,7 +203,7 @@
                             };
                         }
                     });
-                    
+
                     const form = document.getElementById('admissionForm');
                     if(form) {
                         form.addEventListener('submit', function(e) {
@@ -233,7 +231,7 @@
                     document.getElementById('navInstName').innerText = instName;
                     document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
                     if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
-                    
+
                     institutePrefix = instName.substring(0, 3).toUpperCase();
                 }
             } catch (e) {}
@@ -243,7 +241,7 @@
             const select = document.getElementById('qualification');
             const otherGroup = document.getElementById('otherQualGroup');
             const otherInput = document.getElementById('otherQualification');
-            
+
             if (select.value === 'Other') {
                 otherGroup.style.display = 'block';
                 otherInput.required = true;
@@ -257,7 +255,7 @@
         window.toggleRegMode = function() {
             const isManual = document.getElementById('regToggle').checked; 
             const regInput = document.getElementById('regNo');
-            
+
             if (isManual) {
                 regInput.readOnly = false;
                 regInput.value = '';
@@ -290,11 +288,11 @@
                         if (student.register_number) {
                             const regStr = student.register_number.trim().toUpperCase();
                             existingRegNos.add(regStr); 
-                            
+
                             if (regStr.startsWith(prefixUpper)) {
                                 const numericPartStr = regStr.replace(prefixUpper, '').replace('-', '');
                                 const numMatch = numericPartStr.match(/^\d+/);
-                                
+
                                 if (numMatch) {
                                     const numPart = parseInt(numMatch[0], 10);
                                     if (!isNaN(numPart) && numPart > maxNum) {
@@ -336,9 +334,9 @@
             const moduleSelect = document.getElementById('moduleSelect');
             const totalFeeInput = document.getElementById('totalFee');
             moduleSelect.innerHTML = '<option value="">-- Select Module --</option>';
-            
+
             const courseInfo = globalCourses.find(c => c.id == this.value);
-            
+
             if (courseInfo) {
                 if (courseInfo.modules) {
                     courseInfo.modules.forEach(mod => moduleSelect.add(new Option(mod, mod)));
@@ -354,10 +352,46 @@
             if (/^\d+$/.test(val) && val.length > 10) this.value = val.slice(0, 10);
         });
 
+        // ==========================================
+        // NEW: IMAGE COMPRESSION FUNCTION (Client-Side)
+        // ==========================================
+        function compressImage(file, maxWidth, maxHeight, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxWidth) { height = Math.round((height *= maxWidth / width)); width = maxWidth; }
+                        } else {
+                            if (height > maxHeight) { width = Math.round((width *= maxHeight / height)); height = maxHeight; }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvas.toBlob((blob) => {
+                            const compressedFile = new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() });
+                            resolve(compressedFile);
+                        }, 'image/jpeg', quality);
+                    };
+                    img.onerror = (err) => reject(err);
+                };
+                reader.onerror = (err) => reject(err);
+            });
+        }
+
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault(); 
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
-            
+
             const phoneVal = document.getElementById('phone').value.trim();
             if (phoneVal.length !== 10) { alert('❌ Phone number must be exactly 10 digits.'); return; }
 
@@ -374,19 +408,28 @@
             }
 
             const btn = document.getElementById('submitBtn');
-            btn.textContent = 'Processing...'; btn.disabled = true;
+            btn.textContent = 'Processing Data...'; btn.disabled = true;
 
             let photoUrl = '';
             const fileInput = document.getElementById('photoFile');
-            
+
             try {
                 if (fileInput.files.length > 0) {
-                    const file = fileInput.files[0];
-                    const fileName = `${Date.now()}_${file.name}`;
-                    await supabase.storage.from('student-photos').upload(fileName, file);
+                    btn.textContent = 'Compressing Image...';
+                    let originalFile = fileInput.files[0];
+                    
+                    // COMPRESS THE IMAGE (Max 600px width/height, 60% Quality)
+                    const compressedFile = await compressImage(originalFile, 600, 600, 0.6);
+                    console.log(`Original: ${(originalFile.size/1024).toFixed(2)}KB -> Compressed: ${(compressedFile.size/1024).toFixed(2)}KB`);
+
+                    btn.textContent = 'Uploading Image...';
+                    const fileName = `${Date.now()}_${compressedFile.name.replace(/\.[^/.]+$/, "")}.jpg`; // Always save as JPG
+                    
+                    await supabase.storage.from('student-photos').upload(fileName, compressedFile);
                     photoUrl = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl;
                 }
 
+                btn.textContent = 'Saving Admission...';
                 const studentName = document.getElementById('fullName').value;
                 const regNumber = document.getElementById('regNo').value;
 
