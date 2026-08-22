@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard - Globus ERP</title>
+    <title>Dashboard - ERP ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
 
     <style>
@@ -524,7 +524,7 @@
         // 3. DASHBOARD WIDGETS & CLOUD TICKER
         // ==========================================
         window.buildSmartTicker = async function() {
-            const eventSet = localStorage.getItem('globus_events_settings');
+            const eventSet = localStorage.getItem('ERP_events_settings');
             let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
             
             const wrap = document.getElementById('alertTickerWrap');
@@ -536,7 +536,7 @@
             const now = new Date();
             
             // 1. LOCAL BELL WARNINGS (പഴയ ബെൽ സിസ്റ്റം അതുപോലെ നിലനിർത്തിയിട്ടുണ്ട്)
-            const savedBell = localStorage.getItem('globus_bell_settings_final'); 
+            const savedBell = localStorage.getItem('ERP_bell_settings_final'); 
             if(savedBell) {
                 const bSettings = JSON.parse(savedBell);
                 if(bSettings.isOn && bSettings.warningDuration > 0 && !(bSettings.excludedDays && bSettings.excludedDays.includes(now.getDay()))) {
