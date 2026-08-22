@@ -351,7 +351,7 @@
             });
 
             // Read states from LocalStorage for Badges
-            const readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
+            const readState = JSON.parse(localStorage.getItem('ERP_audit_read_state') || '{}');
 
             // RENDER ACCORDION UI
             let html = '';
@@ -430,7 +430,7 @@
             if (!isOpen) {
                 item.classList.add('open');
                 
-                let readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
+                let readState = JSON.parse(localStorage.getItem('ERP_audit_read_state') || '{}');
                 const groupLogs = window.filteredLogsData.filter(l => `${l.user_email}|${l.user_role}` === key);
                 
                 let newlyRead = false;
@@ -439,7 +439,7 @@
                 });
                 
                 if(newlyRead) {
-                    localStorage.setItem('globus_audit_read_state', JSON.stringify(readState));
+                    localStorage.setItem('ERP_audit_read_state', JSON.stringify(readState));
                     const badge = item.querySelector('.acc-badge');
                     if(badge) badge.remove();
                 }
@@ -448,14 +448,14 @@
 
         // MARK AS UNREAD LOGIC
         window.markAsUnread = function(key) {
-            let readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
+            let readState = JSON.parse(localStorage.getItem('ERP_audit_read_state') || '{}');
             const groupLogs = window.filteredLogsData.filter(l => `${l.user_email}|${l.user_role}` === key);
             
             groupLogs.forEach(l => {
                 delete readState[l.id]; 
             });
             
-            localStorage.setItem('globus_audit_read_state', JSON.stringify(readState));
+            localStorage.setItem('ERP_audit_read_state', JSON.stringify(readState));
             
             alert("✅ Logs marked as unviewed!");
             renderLogs(); 
