@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Inventory - Globus</title>
+    <title>Inventory - ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
     
     <!-- Advanced Script to Convert HTML to Image for Sharing -->
@@ -233,7 +233,7 @@
                     <div style="display:flex; align-items:center; gap:10px;">
                         <img id="rptLogo" src="assets/images/logo.png" style="height: 40px; width: auto;" onerror="this.style.display='none'">
                         <div style="text-align:left;">
-                            <h2 id="rptInstName" style="font-size:16px; font-weight:900; color:#0f172a; margin:0; text-transform:uppercase;">GLOBUS</h2>
+                            <h2 id="rptInstName" style="font-size:16px; font-weight:900; color:#0f172a; margin:0; text-transform:uppercase;">ERP</h2>
                             <div id="rptSubName" style="font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-top:2px;">Technical Academy</div>
                         </div>
                     </div>
@@ -449,7 +449,7 @@
 
         // ================= CATEGORIES =================
         function loadCategories() {
-            let saved = localStorage.getItem('globus_inv_categories');
+            let saved = localStorage.getItem('ERP_inv_categories');
             if (saved) { invCategories = JSON.parse(saved); } 
             else { invCategories = ['General', 'Tools', 'Spares']; saveCategories(); }
             populateCategoryDropdowns();
@@ -457,7 +457,7 @@
         }
 
         function saveCategories() {
-            localStorage.setItem('globus_inv_categories', JSON.stringify(invCategories));
+            localStorage.setItem('ERP_inv_categories', JSON.stringify(invCategories));
             populateCategoryDropdowns();
         }
 
@@ -523,7 +523,7 @@
                 instSettings = instRes.data || null;
 
                 if(instSettings) {
-                    document.getElementById('rptInstName').innerText = instSettings.institute_name || 'GLOBUS';
+                    document.getElementById('rptInstName').innerText = instSettings.institute_name || 'ERP';
                     document.getElementById('rptSubName').innerText = instSettings.sub_name || 'Technical Academy';
                     if(instSettings.logo_url) document.getElementById('rptLogo').src = instSettings.logo_url;
                 }
