@@ -425,16 +425,15 @@
                     btn.textContent = 'Uploading Image...';
 const fileName = `${Date.now()}_${compressedFile.name.replace(/\.[^/.]+$/, "")}.jpg`;
 
-// മാറ്റം ഇവിടെയാണ്: എറർ ഉണ്ടെങ്കിൽ അത് പിടികൂടുന്നു
-const { data: uploadData, error: uploadError } = await supabase.storage.from('student-photos').upload(fileName, compressedFile);
+// തിരുത്തിയ കോഡ് (Hyphen മാറ്റി Underscore ആക്കി)
+                    const { data: uploadData, error: uploadError } = await supabase.storage.from('student_photos').upload(fileName, compressedFile);
 
-if (uploadError) {
-    console.error("Storage Error:", uploadError);
-    throw new Error("Photo Upload Failed: " + uploadError.message + " (Check if 'student-photos' bucket is created and Public in Supabase)");
-}
+                    if (uploadError) {
+                        console.error("Storage Error:", uploadError);
+                        throw new Error("Photo Upload Failed: " + uploadError.message + " (Check if 'student_photos' bucket is created and Public in Supabase)");
+                    }
 
-photoUrl = supabase.storage.from('student-photos').getPublicUrl(fileName).data.publicUrl;
-                }
+                    photoUrl = supabase.storage.from('student_photos').getPublicUrl(fileName).data.publicUrl;
 
                 btn.textContent = 'Saving Admission...';
                 const studentName = document.getElementById('fullName').value;
