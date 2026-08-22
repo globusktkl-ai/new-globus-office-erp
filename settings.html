@@ -9,7 +9,6 @@
         body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 40px; margin: 0; }
         .main-content { padding: 15px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
         
-        /* FIXED TOP NAV FOR MOBILE */
         .top-nav { position: relative; display: flex; align-items: center; justify-content: center; padding: 12px 15px; min-height: 60px; background: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); margin-bottom: 20px; }
         .btn-back-dashboard { position: absolute; left: 15px; display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-weight: 800; font-size: 13px; text-decoration: none; color: #1e293b; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: 0.2s; }
         .btn-back-dashboard:active { transform: scale(0.95); }
@@ -17,14 +16,14 @@
         .page-title { font-size: 16px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
 
         @media (max-width: 600px) {
-            .btn-back-dashboard span { display: none; } /* Hides 'Dashboard' text on small screens */
+            .btn-back-dashboard span { display: none; }
             .btn-back-dashboard { padding: 8px; }
             .page-title { font-size: 15px; }
         }
 
         .settings-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 25px; }
-        .settings-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .settings-header h2 { margin: 0; font-size: 18px; color: #0f172a; font-weight: 900; }
+        .settings-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .settings-header h2 { margin: 0; font-size: 18px; color: #0f172a; font-weight: 900; display: flex; align-items: center; gap: 10px; }
         .settings-header svg { width: 24px; height: 24px; stroke: #3b82f6; stroke-width: 2; fill: none; }
 
         .form-group { margin-bottom: 18px; }
@@ -37,15 +36,26 @@
 
         .btn-save { background: #3b82f6; color: white; border: none; padding: 14px 20px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.2s; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
         .btn-save:active { transform: scale(0.98); }
-        .btn-save:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
 
         /* Role Management Section */
         .role-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 15px; }
-        .role-item { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+        .role-item { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
+        .role-item:hover { background: #dbeafe; border-color: #93c5fd; }
         .btn-del-role { background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .btn-edit-role { background: #e0e7ff; color: #4338ca; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; font-weight: bold; cursor: pointer; margin-right: 5px; }
         
         .add-role-flex { display: flex; gap: 10px; }
         .btn-add-role { background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+
+        /* Permission Table */
+        .perm-table-wrap { overflow-x: auto; margin-top: 20px; border: 1px solid #e2e8f0; border-radius: 8px; display: none; background: #fff; }
+        .perm-table { width: 100%; border-collapse: collapse; min-width: 400px; }
+        .perm-table th { background: #1e293b; color: white; padding: 12px; text-align: center; font-size: 11px; text-transform: uppercase; }
+        .perm-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center; }
+        .perm-table td:first-child { text-align: left; font-weight: 700; color: #334155; }
+        
+        .perm-header-bar { display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 10px 15px; border-bottom: 1px solid #e2e8f0; }
+        .perm-role-title { font-size: 15px; font-weight: 900; color: #1e3a8a; display: flex; align-items: center; gap: 8px; }
 
         #customAlertBox { z-index: 100000; }
     </style>
@@ -53,7 +63,6 @@
 <body>
 
     <main class="main-content">
-        <!-- FIXED HEADER -->
         <div class="top-nav">
             <a href="dashboard.html" class="btn-back-dashboard">
                 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
@@ -65,8 +74,10 @@
         <!-- SECTION 1: INSTITUTE PROFILE -->
         <div class="settings-card">
             <div class="settings-header">
-                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                <h2>Institute Profile</h2>
+                <h2>
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Institute Profile
+                </h2>
             </div>
             
             <form id="instituteForm">
@@ -102,28 +113,57 @@
             </form>
         </div>
 
-        <!-- SECTION 2: CUSTOM ROLE MANAGEMENT -->
+        <!-- SECTION 2: CUSTOM ROLE MANAGEMENT & PERMISSIONS -->
         <div class="settings-card">
             <div class="settings-header">
-                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <h2>Custom Staff Designations</h2>
+                <h2>
+                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    Staff Roles & Permissions
+                </h2>
             </div>
             
             <div class="form-group">
                 <label class="form-label">Create New Role</label>
                 <div class="add-role-flex">
                     <input type="text" id="newRoleName" class="form-control" placeholder="e.g. Senior Accountant">
-                    <button type="button" class="btn-add-role" onclick="window.addNewRole()">+ Add</button>
+                    <button type="button" class="btn-add-role" onclick="window.addNewRole()">+ Add Role</button>
                 </div>
             </div>
 
-            <label class="form-label" style="margin-top: 25px;">Available Roles</label>
+            <label class="form-label" style="margin-top: 25px;">Available Roles (Click Edit to change permissions)</label>
             <div class="role-list" id="rolesContainer">
                 <div style="color: #64748b; font-size: 12px; font-weight: bold;">Loading roles...</div>
             </div>
-            <div style="margin-top: 15px; font-size: 11px; color: #94a3b8; line-height: 1.5;">
-                * Note: Super Admin and Admin roles cannot be deleted. New roles will have 'View Only' permission by default. Edit permissions from the Database or upcoming Permission Matrix.
+            
+            <!-- PERMISSION MATRIX SECTION (Hidden by default) -->
+            <div id="permissionSection" class="perm-table-wrap">
+                <div class="perm-header-bar">
+                    <div class="perm-role-title">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        Editing Permissions: <span id="editingRoleNameText" style="color: #ef4444; font-weight: 900; margin-left: 5px;">-</span>
+                    </div>
+                    <button onclick="document.getElementById('permissionSection').style.display='none'" style="background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; color: #475569;">Close</button>
+                </div>
+
+                <table class="perm-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">App Feature</th>
+                            <th>View</th>
+                            <th>Add</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="permissionsTableBody">
+                        <tr><td colspan="5">Loading...</td></tr>
+                    </tbody>
+                </table>
+                <div style="padding: 15px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
+                    <button onclick="window.saveRolePermissions()" class="btn-save" style="background: #10b981; max-width: 300px; display: block; margin: 0 auto;">✅ Save Permissions</button>
+                </div>
             </div>
+
         </div>
 
     </main>
@@ -160,7 +200,7 @@
         // 1. FETCH INSTITUTE SETTINGS
         async function loadProfile() {
             try {
-                const { data, error } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
                     document.getElementById('instName').value = data.institute_name || '';
                     document.getElementById('instSubName').value = data.sub_name || '';
@@ -173,9 +213,7 @@
                         preview.style.display = 'block';
                     }
                 }
-            } catch (err) {
-                console.error("No profile found or error:", err);
-            }
+            } catch (err) {}
         }
 
         // 2. SAVE INSTITUTE PROFILE
@@ -193,8 +231,7 @@
                     const fileName = `logo_${Date.now()}.${file.name.split('.').pop()}`;
                     
                     const { error: uploadError } = await supabase.storage.from('student_photos').upload(fileName, file);
-                    if (uploadError) throw new Error("Logo Upload Failed: " + uploadError.message);
-                    
+                    if (uploadError) throw new Error("Logo Upload Failed.");
                     logoUrl = supabase.storage.from('student_photos').getPublicUrl(fileName).data.publicUrl;
                 }
 
@@ -208,12 +245,6 @@
 
                 const { error } = await supabase.from('institute_settings').upsert({ id: 1, ...updates });
                 if (error) throw error;
-
-                // --- AUDIT TRAIL LOGGING ---
-                if(window.ThemeManager) {
-                    await window.ThemeManager.logAction('System', 'UPDATE', `Institute profile/settings updated.`);
-                }
-
                 alert("✅ Institute Profile Updated Successfully!");
             } catch (err) {
                 alert("❌ Error: " + err.message);
@@ -222,8 +253,23 @@
             }
         });
 
+        // ==========================================
+        // PERMISSION & ROLE MANAGEMENT LOGIC
+        // ==========================================
+        window.allModules = [
+            { id: 'Enquiry', name: 'Enquiry' }, { id: 'Admission', name: 'Admission' },
+            { id: 'Directory', name: 'Directory (Students)' }, { id: 'StaffHR', name: 'Staff & HR' },
+            { id: 'Attendance', name: 'Attendance' }, { id: 'Courses', name: 'Courses' },
+            { id: 'Exams', name: 'Exams' }, { id: 'Inventory', name: 'Inventory' },
+            { id: 'AdmReport', name: 'Admission Report' }, { id: 'SmartAlerts', name: 'Smart Alerts' },
+            { id: 'IDCardStudio', name: 'ID Card Studio' }, { id: 'FeeCollect', name: 'Fee Collect' },
+            { id: 'DayBook', name: 'Day Book' }, { id: 'MasterDayBook', name: 'Master Day Book' }
+        ];
+
+        window.currentEditingRole = null;
+
         // 3. FETCH ROLES
-        async function loadRoles() {
+        window.loadRoles = async function() {
             try {
                 const { data, error } = await supabase.from('role_management').select('id, role_name');
                 const container = document.getElementById('rolesContainer');
@@ -239,11 +285,13 @@
                     return `
                         <div class="role-item">
                             <span>${role.role_name}</span>
-                            ${!isSystemRole ? `<button class="btn-del-role" onclick="window.deleteRole(${role.id}, '${role.role_name}')">X</button>` : ''}
+                            <div>
+                                <button class="btn-edit-role" onclick="window.editPermissions('${role.role_name}')">Edit Perms</button>
+                                ${!isSystemRole ? `<button class="btn-del-role" onclick="window.deleteRole(${role.id}, '${role.role_name}')">X</button>` : ''}
+                            </div>
                         </div>
                     `;
                 }).join('');
-
             } catch (err) {
                 document.getElementById('rolesContainer').innerHTML = '<div style="color:red;">Error loading roles.</div>';
             }
@@ -256,27 +304,13 @@
             if (!roleName) { alert("⚠️ Please enter a role name."); return; }
 
             try {
-                const defaultPerms = {
-                    "Dashboard": { view: true },
-                    "Admission": { view: true, add: false, edit: false, delete: false },
-                    "Students": { view: true, add: false, edit: false, delete: false }
-                };
-
-                const { error } = await supabase.from('role_management').insert([{
-                    role_name: roleName,
-                    permissions: defaultPerms
-                }]);
-
+                const defaultPerms = { "Directory": { view: true } }; // Basic default
+                const { error } = await supabase.from('role_management').insert([{ role_name: roleName, permissions: defaultPerms }]);
                 if (error) {
                     if(error.code === '23505') throw new Error("Role already exists!");
                     throw error;
                 }
-
-                if(window.ThemeManager) {
-                    await window.ThemeManager.logAction('System', 'CREATE', `New staff role added: ${roleName}`);
-                }
-
-                alert(`✅ Role '${roleName}' created successfully!`);
+                alert(`✅ Role '${roleName}' created! Now click 'Edit Perms' to assign access.`);
                 roleInput.value = '';
                 loadRoles();
             } catch (err) {
@@ -287,19 +321,70 @@
         // 5. DELETE ROLE
         window.deleteRole = async function(id, name) {
             if(!confirm(`Are you sure you want to delete the role: ${name}?`)) return;
-
             try {
                 const { error } = await supabase.from('role_management').delete().eq('id', id);
                 if (error) throw error;
-                
-                if(window.ThemeManager) {
-                    await window.ThemeManager.logAction('System', 'DELETE', `Staff role deleted: ${name}`);
-                }
-
                 alert(`✅ Role '${name}' deleted!`);
+                document.getElementById('permissionSection').style.display = 'none';
                 loadRoles();
             } catch (err) {
                 alert("❌ Error: " + err.message);
+            }
+        };
+
+        // 6. LOAD PERMISSIONS FOR A ROLE
+        window.editPermissions = async function(roleName) {
+            window.currentEditingRole = roleName;
+            document.getElementById('editingRoleNameText').innerText = roleName;
+            document.getElementById('permissionSection').style.display = 'block';
+            
+            const tbody = document.getElementById('permissionsTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading...</td></tr>';
+            
+            const { data } = await supabase.from('role_management').select('permissions').eq('role_name', roleName).single();
+            const perms = data ? (data.permissions || {}) : {};
+            const isSuperAdmin = roleName === 'Super Admin'; 
+
+            tbody.innerHTML = window.allModules.map(mod => {
+                const p = perms[mod.id] || { view: false, add: false, edit: false, delete: false };
+                const disable = isSuperAdmin ? 'disabled checked' : '';
+                return `
+                    <tr>
+                        <td>${mod.name}</td>
+                        <td><input type="checkbox" id="perm_${mod.id}_view" ${p.view ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #2563eb;"></td>
+                        <td><input type="checkbox" id="perm_${mod.id}_add" ${p.add ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #10b981;"></td>
+                        <td><input type="checkbox" id="perm_${mod.id}_edit" ${p.edit ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #f59e0b;"></td>
+                        <td><input type="checkbox" id="perm_${mod.id}_delete" ${p.delete ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #ef4444;"></td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Scroll to the permission table
+            document.getElementById('permissionSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        };
+
+        // 7. SAVE PERMISSIONS
+        window.saveRolePermissions = async function() {
+            if (!window.currentEditingRole || window.currentEditingRole === 'Super Admin') {
+                alert("⚠️ Super Admin permissions cannot be modified."); return;
+            }
+            
+            let newPermissions = {};
+            window.allModules.forEach(mod => {
+                newPermissions[mod.id] = {
+                    view: document.getElementById(`perm_${mod.id}_view`).checked,
+                    add: document.getElementById(`perm_${mod.id}_add`).checked,
+                    edit: document.getElementById(`perm_${mod.id}_edit`).checked,
+                    delete: document.getElementById(`perm_${mod.id}_delete`).checked
+                };
+            });
+
+            const { error } = await supabase.from('role_management').update({ permissions: newPermissions }).eq('role_name', window.currentEditingRole);
+            
+            if (!error) {
+                alert("✅ Permissions Saved Successfully!");
+            } else {
+                alert("❌ Error saving permissions.");
             }
         };
 
@@ -308,9 +393,6 @@
         loadRoles();
 
     </script>
-
-    <!-- NEW: Global Theme & Audit Engine -->
-    <script type="module" src="assets/js/theme-manager.js"></script>
 
     <!-- SECURITY GUARD -->
     <script type="module">
