@@ -46,18 +46,29 @@
         .btn-toggle-filters:active { transform: scale(0.96); }
 
         /* Smart Filters */
-        .filter-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 20px; display: none; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; align-items: flex-end; }
-        .filter-card.active { display: grid; }
-        .filter-group { display: flex; flex-direction: column; }
-        .filter-label { font-size: 10px; font-weight: 800; color: #64748b; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .filter-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 20px; display: none; flex-direction: column; gap: 18px; }
+        .filter-card.active { display: flex; }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
+        .filter-group { display: flex; flex-direction: column; flex: 1; min-width: 150px; }
+        .filter-label { font-size: 11px; font-weight: 900; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
         .form-control { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; color: #1e293b; background: #f8fafc; outline: none; transition: 0.2s; box-sizing: border-box;}
         .form-control:focus { border-color: var(--app-theme-color, #2563eb); background: #fff; box-shadow: 0 0 0 3px rgba(0,0,0, 0.05); }
-        .btn-refresh { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; height: 40px;}
-        .btn-refresh:active { transform: scale(0.95); }
+        .btn-refresh { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 10px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; height: 42px; gap: 6px; font-size: 13px;}
+        .btn-refresh:active { transform: scale(0.95); background: #e2e8f0; }
 
         /* ========================================================
-           NEW: WHATSAPP STYLE ACCORDION LOGS (MOBILE FIRST)
+           NEW: PILL-STYLE MULTIPLE CHECKBOXES FOR FILTERS
            ======================================================== */
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chk-pill { display: inline-flex; align-items: center; justify-content: center; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #475569; cursor: pointer; transition: 0.2s; user-select: none; }
+        .chk-pill input { display: none; }
+        /* Style when checked */
+        .chk-pill:has(input:checked) { background: #dbeafe; border-color: #3b82f6; color: #1d4ed8; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1); }
+        /* A small checkmark icon when selected */
+        .chk-pill::before { content: '+'; font-size: 10px; margin-right: 4px; font-weight: 900; opacity: 0.6; }
+        .chk-pill:has(input:checked)::before { content: '✓'; opacity: 1; }
+
+        /* Accordion Logs */
         .accordion-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .accordion-header { padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: #ffffff; transition: 0.2s; }
         .accordion-header:active { background: #f8fafc; }
@@ -68,7 +79,6 @@
         .acc-name { font-size: 15px; font-weight: 900; color: #0f172a; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;}
         .acc-role { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 2px;}
         
-        /* The Notification Badge */
         .acc-badge { background: #ef4444; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 900; min-width: 22px; text-align: center; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4); animation: popIn 0.3s ease;}
         @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
@@ -78,7 +88,6 @@
         .accordion-body { padding: 0 15px 15px 15px; display: none; background: #fff; border-top: 1px dashed #cbd5e1; }
         .accordion-item.open .accordion-body { display: block; }
         
-        /* Inner Log Cards */
         .log-card { border-bottom: 1px solid #f1f5f9; padding: 15px 0; display: flex; flex-direction: column; gap: 8px; }
         .log-card:last-child { border-bottom: none; padding-bottom: 0; }
         
@@ -98,9 +107,6 @@
 
         #customPromptBox { z-index: 100000; }
 
-        /* ========================================================
-           PRINT MODE CSS (Keeps standard table for PDF/Print)
-           ======================================================== */
         .print-header { display: none; }
         @media print {
             body { background: white !important; padding: 0 !important; margin: 0 !important; color: black !important; }
@@ -136,77 +142,80 @@
             <p>Generated on: <span id="printDate"></span></p>
         </div>
 
-        <!-- 1. TOGGLE BUTTON FIX -->
         <div class="no-print">
             <button class="btn-toggle-filters" onclick="toggleFilters()" id="toggleBtn">
                 <span style="font-size: 16px;">⚙️</span> <span id="toggleText">Toggle Filter Options</span>
             </button>
         </div>
 
-        <!-- Smart Filters -->
+        <!-- ========================================================
+             NEW: SMART MULTI-SELECT FILTERS
+             ======================================================== -->
         <div class="filter-card no-print" id="filterContainer">
-            <div class="filter-group">
-                <label class="filter-label">Search Details</label>
-                <input type="text" id="searchLog" class="form-control" placeholder="Search logs..." oninput="renderLogs()">
-            </div>
             
-            <!-- 2. ROLE BASED SEARCH DROPDOWN -->
-            <div class="filter-group">
-                <label class="filter-label">User Role</label>
-                <select id="roleFilter" class="form-control" onchange="renderLogs()">
-                    <option value="All">All Roles</option>
-                    <option value="Super Admin">Super Admin</option>
-                    <option value="Admin">Admin (Client)</option>
-                    <option value="Teacher">Teacher</option>
-                    <option value="Office Staff">Office Staff</option>
-                </select>
+            <!-- Row 1: Search & Dates -->
+            <div class="filter-row">
+                <div class="filter-group" style="flex: 2;">
+                    <label class="filter-label">Search Activity Details</label>
+                    <input type="text" id="searchLog" class="form-control" placeholder="Search by email, text, or details..." oninput="renderLogs()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">From Date</label>
+                    <input type="date" id="fromDate" class="form-control" onchange="renderLogs()">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">To Date</label>
+                    <input type="date" id="toDate" class="form-control" onchange="renderLogs()">
+                </div>
+                <div class="filter-group" style="flex: 0;">
+                    <button class="btn-refresh" onclick="fetchLogs()" title="Refresh Logs">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> 
+                        Refresh
+                    </button>
+                </div>
             </div>
 
+            <!-- Row 2: Roles (Pill Checkboxes) -->
             <div class="filter-group">
-                <label class="filter-label">From Date</label>
-                <input type="date" id="fromDate" class="form-control" onchange="renderLogs()">
+                <label class="filter-label">Filter by Roles <span style="font-weight:600; text-transform:none; color:#94a3b8;">(Select multiple)</span></label>
+                <div class="checkbox-group role-filters">
+                    <label class="chk-pill"><input type="checkbox" value="Super Admin" onchange="renderLogs()">Super Admin</label>
+                    <label class="chk-pill"><input type="checkbox" value="Admin" onchange="renderLogs()">Admin</label>
+                    <label class="chk-pill"><input type="checkbox" value="Teacher" onchange="renderLogs()">Teacher</label>
+                    <label class="chk-pill"><input type="checkbox" value="Office Staff" onchange="renderLogs()">Office Staff</label>
+                </div>
             </div>
-            <div class="filter-group">
-                <label class="filter-label">To Date</label>
-                <input type="date" id="toDate" class="form-control" onchange="renderLogs()">
-            </div>
-            <div class="filter-group">
-                <label class="filter-label">Module</label>
-                <select id="moduleFilter" class="form-control" onchange="renderLogs()">
-                    <option value="All">All Modules</option>
-                    <option value="System">System Settings</option>
-                    <option value="Directory">Directory</option>
-                    <option value="Admission">Admission & Students</option>
-                    <option value="Finance">Finance & Fees</option>
-                    <option value="Inventory">Inventory</option>
-                    <option value="Enquiry">Enquiries</option>
-                    <option value="Courses">Courses</option>
-                    <option value="Staff">Staff</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label class="filter-label">Action</label>
-                <select id="actionFilter" class="form-control" onchange="renderLogs()">
-                    <option value="All">All Actions</option>
-                    <option value="CREATE">Created (New)</option>
-                    <option value="UPDATE">Updated (Edit)</option>
-                    <option value="DELETE">Deleted / Archived</option>
-                    <option value="LOGIN">Logins</option>
-                </select>
-            </div>
-            <div class="filter-group" style="justify-content: flex-end;">
-                <button class="btn-refresh" onclick="fetchLogs()" title="Refresh Logs">
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                </button>
+
+            <!-- Row 3: Modules & Actions -->
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div class="filter-group" style="flex: 2;">
+                    <label class="filter-label">Filter by Modules</label>
+                    <div class="checkbox-group module-filters">
+                        <label class="chk-pill"><input type="checkbox" value="System" onchange="renderLogs()">System</label>
+                        <label class="chk-pill"><input type="checkbox" value="Directory" onchange="renderLogs()">Directory</label>
+                        <label class="chk-pill"><input type="checkbox" value="Admission" onchange="renderLogs()">Admission</label>
+                        <label class="chk-pill"><input type="checkbox" value="Finance" onchange="renderLogs()">Finance</label>
+                        <label class="chk-pill"><input type="checkbox" value="Inventory" onchange="renderLogs()">Inventory</label>
+                        <label class="chk-pill"><input type="checkbox" value="Staff" onchange="renderLogs()">Staff</label>
+                    </div>
+                </div>
+
+                <div class="filter-group" style="flex: 1;">
+                    <label class="filter-label">Filter by Action</label>
+                    <div class="checkbox-group action-filters">
+                        <label class="chk-pill"><input type="checkbox" value="CREATE" onchange="renderLogs()">CREATE</label>
+                        <label class="chk-pill"><input type="checkbox" value="UPDATE" onchange="renderLogs()">UPDATE</label>
+                        <label class="chk-pill"><input type="checkbox" value="DELETE" onchange="renderLogs()">DELETE</label>
+                        <label class="chk-pill"><input type="checkbox" value="LOGIN" onchange="renderLogs()">LOGIN</label>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 3. ACCORDION UI CONTAINER (Replacing Table) -->
         <div id="logsAccordionContainer">
             <div class="empty-state">Loading audit logs...</div>
         </div>
 
-        <!-- Print & PDF Buttons -->
         <footer class="no-print">
             <button onclick="window.exportPDF()" class="btn-export btn-pdf" title="Download PDF">
                 📄 <span>Download Report (PDF)</span>
@@ -215,7 +224,6 @@
 
     </main>
 
-    <!-- Global Theme Engine -->
     <script type="module" src="assets/js/theme-manager.js"></script>
 
     <script type="module">
@@ -256,7 +264,6 @@
             document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
-        // 1. TOGGLE BUTTON LOGIC FIX
         window.toggleFilters = function() {
             const filterBox = document.getElementById('filterContainer');
             const btn = document.getElementById('toggleBtn');
@@ -264,10 +271,10 @@
             
             const isActive = filterBox.classList.toggle('active');
             if (isActive) {
-                btn.style.background = '#dc2626'; // Red Color for ON
+                btn.style.background = '#dc2626'; 
                 txt.innerText = 'Close Filters (ON)';
             } else {
-                btn.style.background = '#28a745'; // Green Color for OFF
+                btn.style.background = '#28a745'; 
                 txt.innerText = 'Toggle Filter Options';
             }
         };
@@ -282,7 +289,6 @@
             document.getElementById('printDate').innerText = new Date().toLocaleString('en-IN');
 
             try {
-                // Assuming your table is 'activity_logs' based on the standard setup
                 const { data, error } = await supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(1000);
                 if (error) throw error;
                 auditLogs = data || [];
@@ -293,22 +299,28 @@
             }
         };
 
+        // Helper to get checked values
+        const getCheckedValues = (selector) => Array.from(document.querySelectorAll(selector + ':checked')).map(cb => cb.value);
+
         window.renderLogs = function() {
             const searchTxt = document.getElementById('searchLog').value.toLowerCase();
-            const moduleFilter = document.getElementById('moduleFilter').value;
-            const actionFilter = document.getElementById('actionFilter').value;
-            const roleFilter = document.getElementById('roleFilter').value; // NEW ROLE FILTER
             const fromDate = document.getElementById('fromDate').value;
             const toDate = document.getElementById('toDate').value;
             
+            // GET ARRAY OF CHECKED VALUES
+            const selectedRoles = getCheckedValues('.role-filters input');
+            const selectedModules = getCheckedValues('.module-filters input');
+            const selectedActions = getCheckedValues('.action-filters input');
+
             const container = document.getElementById('logsAccordionContainer');
 
-            // 1. Apply Filters
+            // Apply Filters (Logic: If none selected, show all. Else, show matching)
             let filtered = auditLogs.filter(log => {
                 const matchSearch = (log.details && log.details.toLowerCase().includes(searchTxt)) || (log.user_email && log.user_email.toLowerCase().includes(searchTxt));
-                const matchModule = moduleFilter === 'All' || log.module === moduleFilter;
-                const matchAction = actionFilter === 'All' || log.action_type === actionFilter;
-                const matchRole = roleFilter === 'All' || log.user_role === roleFilter; // MATCH ROLE
+                
+                const matchRole = selectedRoles.length === 0 || selectedRoles.includes(log.user_role || 'Admin');
+                const matchModule = selectedModules.length === 0 || selectedModules.includes(log.module);
+                const matchAction = selectedActions.length === 0 || selectedActions.includes(log.action_type);
                 
                 let matchDate = true;
                 if (fromDate || toDate) {
@@ -317,7 +329,7 @@
                     if (toDate && logDate > toDate) matchDate = false;
                 }
 
-                return matchSearch && matchModule && matchAction && matchRole && matchDate;
+                return matchSearch && matchRole && matchModule && matchAction && matchDate;
             });
 
             window.filteredLogsData = filtered; 
@@ -327,7 +339,6 @@
                 return;
             }
 
-            // 2. GROUP BY USER (WhatsApp Style)
             const groupedLogs = {};
             filtered.forEach(log => {
                 const key = `${log.user_email}|${log.user_role}`;
@@ -335,21 +346,17 @@
                 groupedLogs[key].push(log);
             });
 
-            // Read states from LocalStorage for Badges
             const readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
 
-            // 3. RENDER ACCORDION UI
             let html = '';
             for (const [key, logs] of Object.entries(groupedLogs)) {
                 const [email, role] = key.split('|');
                 const safeEmail = email || 'System';
                 const initial = safeEmail.charAt(0).toUpperCase();
                 
-                // Calculate Unread Count
                 const unreadCount = logs.filter(l => !readState[l.id]).length;
                 let badgeHtml = unreadCount > 0 ? `<span class="acc-badge">${unreadCount}</span>` : '';
 
-                // Generate inner log cards
                 let innerLogsHtml = logs.map(log => {
                     const dateObj = new Date(log.created_at);
                     const dateStr = dateObj.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
@@ -376,7 +383,6 @@
                     </div>`;
                 }).join('');
 
-                // Accordion Wrapper
                 html += `
                 <div class="accordion-item" id="acc_${key.replace(/[^a-zA-Z0-9]/g, '_')}">
                     <div class="accordion-header" onclick="window.toggleAccordion('${key}')">
@@ -404,19 +410,16 @@
             container.innerHTML = html;
         };
 
-        // ACCORDION TOGGLE & AUTO-READ LOGIC
         window.toggleAccordion = function(key) {
             const safeId = key.replace(/[^a-zA-Z0-9]/g, '_');
             const item = document.getElementById(`acc_${safeId}`);
             const isOpen = item.classList.contains('open');
 
-            // Close all others first (optional, keeps UI clean)
             document.querySelectorAll('.accordion-item').forEach(el => el.classList.remove('open'));
 
             if (!isOpen) {
                 item.classList.add('open');
                 
-                // MARK AS READ LOGIC
                 let readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
                 const groupLogs = window.filteredLogsData.filter(l => `${l.user_email}|${l.user_role}` === key);
                 
@@ -427,32 +430,26 @@
                 
                 if(newlyRead) {
                     localStorage.setItem('globus_audit_read_state', JSON.stringify(readState));
-                    // Remove badge immediately from UI
                     const badge = item.querySelector('.acc-badge');
                     if(badge) badge.remove();
                 }
             }
         };
 
-        // MARK AS UNREAD LOGIC
         window.markAsUnread = function(key) {
             let readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
             const groupLogs = window.filteredLogsData.filter(l => `${l.user_email}|${l.user_role}` === key);
             
-            groupLogs.forEach(l => {
-                delete readState[l.id]; // Remove from read list
-            });
-            
+            groupLogs.forEach(l => { delete readState[l.id]; });
             localStorage.setItem('globus_audit_read_state', JSON.stringify(readState));
             
             alert("✅ Logs marked as unviewed!");
-            renderLogs(); // Re-render to show badges and close accordion
+            renderLogs(); 
         };
 
         window.exportPDF = function() {
             if(window.filteredLogsData.length === 0) {
-                alert("⚠️ No data available to export.");
-                return;
+                alert("⚠️ No data available to export."); return;
             }
 
             const btn = document.querySelector('.btn-pdf');
@@ -463,12 +460,10 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('landscape');
                 
-                doc.setFontSize(16);
-                doc.setTextColor(15, 23, 42);
+                doc.setFontSize(16); doc.setTextColor(15, 23, 42);
                 doc.text("MASTER AUDIT TRAIL", 14, 15);
                 
-                doc.setFontSize(10);
-                doc.setTextColor(100, 116, 139);
+                doc.setFontSize(10); doc.setTextColor(100, 116, 139);
                 doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 14, 21);
                 
                 const tableColumn = ["Date & Time", "User Email", "Role", "Module", "Action", "Detailed Log"];
@@ -477,42 +472,26 @@
                 window.filteredLogsData.forEach(log => {
                     const dateObj = new Date(log.created_at);
                     const dtStr = `${dateObj.toLocaleDateString('en-IN')} ${dateObj.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'})}`;
-                    tableRows.push([
-                        dtStr,
-                        log.user_email || 'System',
-                        log.user_role || 'Admin',
-                        log.module,
-                        log.action_type,
-                        log.details
-                    ]);
+                    tableRows.push([ dtStr, log.user_email || 'System', log.user_role || 'Admin', log.module, log.action_type, log.details ]);
                 });
                 
                 doc.autoTable({
-                    head: [tableColumn],
-                    body: tableRows,
-                    startY: 28,
-                    theme: 'grid',
+                    head: [tableColumn], body: tableRows, startY: 28, theme: 'grid',
                     styles: { fontSize: 8, cellPadding: 3 },
                     headStyles: { fillColor: [30, 58, 138], textColor: 255 },
                     alternateRowStyles: { fillColor: [248, 250, 252] },
                     columnStyles: { 0: { cellWidth: 35 }, 1: { cellWidth: 45 }, 4: { fontStyle: 'bold' } }
                 });
-                
                 doc.save(`Audit_Logs_${new Date().getTime()}.pdf`);
-            } catch(err) {
-                alert("Error generating PDF.");
-            }
+            } catch(err) { alert("Error generating PDF."); }
             
             btn.innerHTML = oldText; btn.disabled = false;
         };
 
-        checkSuperAdmin().then(isAuth => {
-            if(isAuth) fetchLogs();
-        });
+        checkSuperAdmin().then(isAuth => { if(isAuth) fetchLogs(); });
 
     </script>
 
-    <!-- THE NEW DYNAMIC SECURITY SYSTEM -->
     <script type="module">
         import './assets/js/auth-check.js';
         window.checkDynamicAccess('ActivityLogs');
