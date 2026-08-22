@@ -24,7 +24,7 @@
 
         @media (max-width: 600px) {
             .btn-back-dashboard span { display: none; } 
-            
+
             /* FIXED TOGGLE CONTAINER FOR MOBILE */
             .toggle-container { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
             .toggle-label { margin-left: 0 !important; }
@@ -44,7 +44,7 @@
         .slider:before { position: absolute; content: "Auto"; height: 26px; width: 54px; left: 4px; bottom: 4px; background-color: white; border-radius: 34px; transition: .4s; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: var(--app-theme-color, #1e3a8a); }
         input:checked + .slider { background-color: #64748b; }
         input:checked + .slider:before { transform: translateX(58px); content: "Manual"; color: #334155; }
-        
+
         /* Auto Gen Highlight */
         .auto-highlight { background-color: #eff6ff !important; border-color: var(--app-theme-color, #3b82f6) !important; color: var(--app-theme-color, #1e3a8a) !important; font-weight: bold; }
     </style>
@@ -57,7 +57,7 @@
             <span id="navInstName"></span>
             <span id="navSubName"></span>
         </div>
-        
+
         <a href="dashboard.html" class="btn-back-dashboard" style="position: absolute; left: 15px; padding: 8px 12px;">
             <svg viewBox="0 0 24 24">
                 <path d="M9 14L4 9l5-5" />
@@ -66,13 +66,13 @@
         </a>
         <h1 style="font-size: 16px; font-weight: 900; color: var(--app-theme-color, #1e3a8a); text-transform: uppercase; margin: 0; letter-spacing: 0.5px;">New Admission</h1>
     </nav>
-    
+
     <main class="main-content">
         <div class="form-card">
-            
+
             <form id="admissionForm">
                 <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="fullName" class="form-control" required></div>
-                
+
                 <div class="form-group" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
                     <div class="toggle-container">
                         <label class="switch">
@@ -89,7 +89,7 @@
                 <div class="form-group"><label class="form-label">Admission Date</label><input type="date" id="admissionDate" class="form-control" required></div>
                 <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="dateOfBirth" class="form-control"></div>
                 <div class="form-group"><label class="form-label">Address</label><textarea id="address" class="form-control" rows="3" required style="resize: none;"></textarea></div>
-                
+
                 <div class="form-group">
                     <label class="form-label">Qualification</label>
                     <select id="qualification" class="form-control" required onchange="checkQualification()">
@@ -100,7 +100,7 @@
                         <option value="Other">Other</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group" id="otherQualGroup" style="display: none;">
                     <label class="form-label" style="color: var(--app-theme-color, #3b82f6);">Specify Qualification</label>
                     <input type="text" id="otherQualification" class="form-control" placeholder="Enter qualification...">
@@ -114,12 +114,12 @@
                 </div>
 
                 <div class="form-group"><label class="form-label">Student Photo</label><input type="file" id="photoFile" class="form-control" accept="image/*"></div>
-                
+
                 <div class="form-group"><label class="form-label">Select Course</label><select id="courseSelect" class="form-control" required><option value="">-- Select Course --</option></select></div>
                 <div class="form-group"><label class="form-label">Select Module (Optional)</label><select id="moduleSelect" class="form-control"><option value="">-- Select Module --</option></select></div>
-                
+
                 <div class="form-group"><label class="form-label">Total Course Fee (₹)</label><input type="number" id="totalFee" class="form-control" required readonly style="background:#e2e8f0; color:#64748b; cursor:not-allowed;"></div>
-                
+
                 <div style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 15px; border-radius: 8px; margin-bottom: 24px;">
                     <h3 style="font-size: 14px; margin-bottom: 10px; color: #166534;">Admission Fee Details</h3>
                     <div class="form-group"><label class="form-label">Admission Fee Paid (₹)</label><input type="number" id="admissionFee" class="form-control" required></div>
@@ -129,10 +129,10 @@
                     </div>
                     <div class="form-group" style="margin-bottom: 0;"><label class="form-label">Receipt / Transaction ID</label><input type="text" id="receiptNo" class="form-control"></div>
                 </div>
-                
+
                 <button type="submit" class="btn-submit-custom" id="submitBtn">Submit Admission</button>
             </form>
-            
+
             <div style="display: flex; justify-content: center; margin-top: 25px;">
                 <!-- 3D RETURN TO DASHBOARD BUTTON (FOOTER) -->
                 <a href="dashboard.html" class="btn-back-dashboard">
@@ -163,7 +163,7 @@
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let borderColor = '#3b82f6'; 
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error')) borderColor = '#ef4444'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('Failed')) borderColor = '#ef4444'; 
             else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successful')) borderColor = '#10b981'; 
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
             box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
@@ -423,17 +423,18 @@
                     console.log(`Original: ${(originalFile.size/1024).toFixed(2)}KB -> Compressed: ${(compressedFile.size/1024).toFixed(2)}KB`);
 
                     btn.textContent = 'Uploading Image...';
-const fileName = `${Date.now()}_${compressedFile.name.replace(/\.[^/.]+$/, "")}.jpg`;
-
-// തിരുത്തിയ കോഡ് (Hyphen മാറ്റി Underscore ആക്കി)
+                    const fileName = `${Date.now()}_${compressedFile.name.replace(/\.[^/.]+$/, "")}.jpg`; 
+                    
+                    // FIXED: Using student_photos (with underscore)
                     const { data: uploadData, error: uploadError } = await supabase.storage.from('student_photos').upload(fileName, compressedFile);
 
                     if (uploadError) {
                         console.error("Storage Error:", uploadError);
-                        throw new Error("Photo Upload Failed: " + uploadError.message + " (Check if 'student_photos' bucket is created and Public in Supabase)");
+                        throw new Error("Photo Upload Failed: " + uploadError.message + " (Make sure bucket 'student_photos' exists and is Public)");
                     }
 
                     photoUrl = supabase.storage.from('student_photos').getPublicUrl(fileName).data.publicUrl;
+                }
 
                 btn.textContent = 'Saving Admission...';
                 const studentName = document.getElementById('fullName').value;
@@ -458,7 +459,7 @@ const fileName = `${Date.now()}_${compressedFile.name.replace(/\.[^/.]+$/, "")}.
 
                 if (error) throw error;
 
-                // --- NEW: AUDIT TRAIL LOGGING ---
+                // --- AUDIT TRAIL LOGGING ---
                 if(window.ThemeManager) {
                     await window.ThemeManager.logAction(
                         'Admission', 
