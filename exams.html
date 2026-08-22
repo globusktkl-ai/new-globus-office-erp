@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exams & Certification - Globus</title>
+    <title>Exams & Certification - ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -257,7 +257,7 @@
                             <div style="display: flex; align-items: center; border-bottom: 3px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 25px;">
                                 <img id="mlInstLogo" src="assets/images/logo.png" style="width:80px; height:80px; object-fit:contain; margin-right: 20px;" alt="Logo" onerror="this.style.display='none'">
                                 <div style="flex: 1;">
-                                    <h1 id="mlInstName" style="margin:0; font-size:28px; color:#1e3a8a; text-transform:uppercase; font-weight:900;">GLOBUS</h1>
+                                    <h1 id="mlInstName" style="margin:0; font-size:28px; color:#1e3a8a; text-transform:uppercase; font-weight:900;">ERP</h1>
                                     <h2 id="mlSubName" style="margin:5px 0 0; font-size:14px; color:#475569; font-weight:700; text-transform:uppercase;">TECHNICAL ACADEMY</h2>
                                     <p style="margin:5px 0 0; font-size:12px; color:#64748b; font-weight:600;"><span id="mlPhone">Ph: </span> | <span id="mlEmail">Email: </span></p>
                                 </div>
@@ -300,7 +300,7 @@
                                 </div>
                                 
                                 <div class="cert-seal" style="width: 130px; height: 130px; font-size: 10px;">
-                                    <span id="mlSealName">GLOBUS</span>
+                                    <span id="mlSealName">ERP</span>
                                     <span id="mlSealSub" style="margin-bottom:3px;">TECHNICAL</span>
                                     <span>ACADEMY</span>
                                     <span>★</span>
@@ -374,7 +374,7 @@
                                 
                                 <div class="cert-logo-section">
                                     <img id="certInstLogo" src="assets/images/logo.png" alt="Logo" onerror="this.style.display='none'">
-                                    <h1 id="certInstName" class="cert-brand">Globus Technical Academy</h1>
+                                    <h1 id="certInstName" class="cert-brand">ERP Technical Academy</h1>
                                     <p class="cert-sub-brand">COUNCIL FOR TECHNICAL DEVELOPMENT CONTINUING<br>ACADEMIC EDUCATIONAL AND SCIENTIFIC STUDIES</p>
                                 </div>
                                 
@@ -404,7 +404,7 @@
                                 
                                 <div class="cert-footer-section">
                                     <div class="cert-sign-box"><div class="cert-sign-line"></div><div class="cert-sign-label">Course Director</div></div>
-                                    <div class="cert-seal">GLOBUS<br>TECHNICAL<br>ACADEMY<br>★</div>
+                                    <div class="cert-seal">ERP<br>TECHNICAL<br>ACADEMY<br>★</div>
                                     <div class="cert-sign-box"><div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px;">Date: <span id="c-issue-date">DD-MM-YYYY</span></div><div class="cert-sign-line"></div><div class="cert-sign-label">Board of Examinations</div></div>
                                 </div>
                             </div>
@@ -579,15 +579,15 @@
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
-                    if(document.getElementById('certInstName')) document.getElementById('certInstName').innerText = (data.institute_name + ' ' + (data.sub_name || '')).trim() || 'Globus Technical Academy';
+                    if(document.getElementById('certInstName')) document.getElementById('certInstName').innerText = (data.institute_name + ' ' + (data.sub_name || '')).trim() || 'ERP Technical Academy';
                     if(data.logo_url && document.getElementById('certInstLogo')) document.getElementById('certInstLogo').src = data.logo_url;
                     
-                    if(document.getElementById('mlInstName')) document.getElementById('mlInstName').innerText = data.institute_name || 'GLOBUS';
+                    if(document.getElementById('mlInstName')) document.getElementById('mlInstName').innerText = data.institute_name || 'ERP';
                     if(document.getElementById('mlSubName')) document.getElementById('mlSubName').innerText = data.sub_name || 'TECHNICAL ACADEMY';
                     if(data.logo_url && document.getElementById('mlInstLogo')) document.getElementById('mlInstLogo').src = data.logo_url;
                     if(document.getElementById('mlPhone')) document.getElementById('mlPhone').innerText = "Ph: " + (data.phone || 'N/A');
                     if(document.getElementById('mlEmail')) document.getElementById('mlEmail').innerText = "Email: " + (data.email || 'N/A');
-                    if(document.getElementById('mlSealName')) document.getElementById('mlSealName').innerText = data.institute_name || 'GLOBUS';
+                    if(document.getElementById('mlSealName')) document.getElementById('mlSealName').innerText = data.institute_name || 'ERP';
                     if(document.getElementById('mlSealSub')) document.getElementById('mlSealSub').innerText = data.sub_name || 'TECHNICAL ACADEMY';
                 }
             } catch (e) { console.log("No settings found yet."); }
