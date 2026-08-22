@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>New Admission - Globus Technical Academy</title>
+    <title>New Admission - ERP Technical Academy</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
         .btn-submit-custom {
@@ -227,7 +227,7 @@
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
-                    const instName = data.institute_name || 'GLOBUS';
+                    const instName = data.institute_name || 'ERP';
                     document.getElementById('navInstName').innerText = instName;
                     document.getElementById('navSubName').innerText = data.sub_name || 'Technical Academy';
                     if(data.logo_url) document.getElementById('navLogo').src = data.logo_url;
