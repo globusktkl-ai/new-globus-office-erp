@@ -42,42 +42,64 @@
         }
 
         /* Smart Filters Toggle Button */
-        .btn-toggle-filters { background: #28a745; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background 0.3s; }
-        .btn-toggle-filters:hover { background: #218838; }
+        .btn-toggle-filters { background: #28a745; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+        .btn-toggle-filters:active { transform: scale(0.96); }
 
         /* Smart Filters */
-        .filter-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 20px; display: none; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; align-items: flex-end; }
+        .filter-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 20px; display: none; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; align-items: flex-end; }
         .filter-card.active { display: grid; }
         .filter-group { display: flex; flex-direction: column; }
         .filter-label { font-size: 10px; font-weight: 800; color: #64748b; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .form-control { width: 100%; padding: 10px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; color: #1e293b; background: #f8fafc; outline: none; transition: 0.2s; box-sizing: border-box;}
+        .form-control { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; color: #1e293b; background: #f8fafc; outline: none; transition: 0.2s; box-sizing: border-box;}
         .form-control:focus { border-color: var(--app-theme-color, #2563eb); background: #fff; box-shadow: 0 0 0 3px rgba(0,0,0, 0.05); }
         .btn-refresh { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; height: 40px;}
-        
-        /* Table Global Styles */
-        .table-card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; margin-bottom: 20px; }
-        .table-responsive { overflow-x: auto; width: 100%; max-height: 65vh; }
-        table { width: 100%; border-collapse: collapse; min-width: 850px; border: 1px solid #cbd5e1; }
-        th { background: #f1f5f9; padding: 12px 15px; text-align: left; font-size: 11px; font-weight: 900; color: #334155; text-transform: uppercase; border: 1px solid #cbd5e1; position: sticky; top: 0; z-index: 10; letter-spacing: 0.5px; }
-        td { padding: 12px 15px; border: 1px solid #e2e8f0; font-size: 13px; color: #1e293b; font-weight: 600; vertical-align: middle; }
-        tbody tr:hover { background: #f8fafc; }
+        .btn-refresh:active { transform: scale(0.95); }
 
-        /* THE BADGE STYLES (Notice: The word 'login' is removed completely to stop global CSS hijacking) */
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; text-transform: uppercase; display: inline-block;}
+        /* ========================================================
+           NEW: WHATSAPP STYLE ACCORDION LOGS (MOBILE FIRST)
+           ======================================================== */
+        .accordion-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .accordion-header { padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: #ffffff; transition: 0.2s; }
+        .accordion-header:active { background: #f8fafc; }
+        .acc-user-info { display: flex; align-items: center; gap: 12px; flex: 1; }
+        
+        .acc-avatar { width: 40px; height: 40px; background: #e0f2fe; color: #0284c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; border: 2px solid #bae6fd; flex-shrink: 0;}
+        .acc-name-role { display: flex; flex-direction: column; }
+        .acc-name { font-size: 15px; font-weight: 900; color: #0f172a; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;}
+        .acc-role { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-top: 2px;}
+        
+        /* The Notification Badge */
+        .acc-badge { background: #ef4444; color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 900; min-width: 22px; text-align: center; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4); animation: popIn 0.3s ease;}
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+        .acc-chevron { color: #94a3b8; font-size: 18px; font-weight: 900; transition: transform 0.3s ease; }
+        .accordion-item.open .acc-chevron { transform: rotate(180deg); }
+
+        .accordion-body { padding: 0 15px 15px 15px; display: none; background: #fff; border-top: 1px dashed #cbd5e1; }
+        .accordion-item.open .accordion-body { display: block; }
+        
+        /* Inner Log Cards */
+        .log-card { border-bottom: 1px solid #f1f5f9; padding: 15px 0; display: flex; flex-direction: column; gap: 8px; }
+        .log-card:last-child { border-bottom: none; padding-bottom: 0; }
+        
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 900; text-transform: uppercase; display: inline-block;}
         .badge-create { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
         .badge-update { background: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
         .badge-delete { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        .badge-access { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; } /* Replaced badge-login */
+        .badge-access { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
 
-        .mod-tag { font-size: 10px; font-weight: 800; color: #64748b; background: #f1f5f9; padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; }
-        .log-date { font-size: 11px; color: #64748b; font-weight: 700; display: block; margin-top: 3px; }
-        .user-email { color: var(--app-theme-color, #2563eb); font-weight: 800; }
-        .log-details { font-weight: 700; color: #334155; line-height: 1.4; }
+        .mod-tag { font-size: 10px; font-weight: 800; color: #475569; background: #f1f5f9; padding: 4px 8px; border-radius: 6px; border: 1px solid #cbd5e1; }
+        .log-details { font-weight: 700; color: #334155; font-size: 13px; line-height: 1.5; background: #f8fafc; padding: 10px; border-radius: 8px; border-left: 3px solid #cbd5e1;}
         
+        .btn-unread { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 6px; margin-top: 15px;}
+        .btn-unread:active { transform: scale(0.95); background: #e2e8f0; }
+
+        .empty-state { text-align: center; padding: 30px; font-weight: 800; color: #64748b; font-size: 14px; background: white; border-radius: 12px; border: 1px dashed #cbd5e1;}
+
         #customPromptBox { z-index: 100000; }
 
         /* ========================================================
-           PRINT MODE CSS 
+           PRINT MODE CSS (Keeps standard table for PDF/Print)
            ======================================================== */
         .print-header { display: none; }
         @media print {
@@ -88,11 +110,7 @@
             .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; padding-top: 10px; }
             .print-header h2 { margin: 0 0 5px 0; font-size: 22px; color: #000; text-transform: uppercase; font-weight: 900; }
             .print-header p { margin: 0; font-size: 12px; color: #555; }
-            .table-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; margin: 0 !important; padding: 0 !important; }
-            .table-responsive { max-height: none !important; overflow: visible !important; }
-            table { min-width: 100% !important; width: 100% !important; border-collapse: collapse !important; border: 2px solid #000 !important; }
-            th, td { border: 1px solid #000 !important; padding: 10px 12px !important; font-size: 11px !important; color: #000 !important; }
-            th { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact !important; color-adjust: exact !important; font-weight: bold !important; border-bottom: 2px solid #000 !important; }
+            .accordion-item, #logsAccordionContainer { display: none !important; }
         }
     </style>
 </head>
@@ -113,16 +131,15 @@
             <div class="nav-right"></div>
         </div>
 
-        <!-- Print Title Area -->
         <div class="print-header">
             <h2>Activity Logs & Audit Trail</h2>
             <p>Generated on: <span id="printDate"></span></p>
         </div>
 
-        <!-- Toggle Button for Filters -->
+        <!-- 1. TOGGLE BUTTON FIX -->
         <div class="no-print">
-            <button class="btn-toggle-filters" onclick="toggleFilters()">
-                &#9881; Toggle Filter Options
+            <button class="btn-toggle-filters" onclick="toggleFilters()" id="toggleBtn">
+                <span style="font-size: 16px;">⚙️</span> <span id="toggleText">Toggle Filter Options</span>
             </button>
         </div>
 
@@ -130,8 +147,21 @@
         <div class="filter-card no-print" id="filterContainer">
             <div class="filter-group">
                 <label class="filter-label">Search Details</label>
-                <input type="text" id="searchLog" class="form-control" placeholder="Search..." oninput="renderLogs()">
+                <input type="text" id="searchLog" class="form-control" placeholder="Search logs..." oninput="renderLogs()">
             </div>
+            
+            <!-- 2. ROLE BASED SEARCH DROPDOWN -->
+            <div class="filter-group">
+                <label class="filter-label">User Role</label>
+                <select id="roleFilter" class="form-control" onchange="renderLogs()">
+                    <option value="All">All Roles</option>
+                    <option value="Super Admin">Super Admin</option>
+                    <option value="Admin">Admin (Client)</option>
+                    <option value="Teacher">Teacher</option>
+                    <option value="Office Staff">Office Staff</option>
+                </select>
+            </div>
+
             <div class="filter-group">
                 <label class="filter-label">From Date</label>
                 <input type="date" id="fromDate" class="form-control" onchange="renderLogs()">
@@ -171,32 +201,15 @@
             </div>
         </div>
 
-        <div class="table-card">
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date & Time</th>
-                            <th>User (Staff/Admin)</th>
-                            <th>Module</th>
-                            <th>Action Type</th>
-                            <th>Detailed Log</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logsTableBody">
-                        <tr><td colspan="5" style="text-align: center; padding: 30px; font-weight: bold; color: #64748b;">Loading audit logs...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <!-- 3. ACCORDION UI CONTAINER (Replacing Table) -->
+        <div id="logsAccordionContainer">
+            <div class="empty-state">Loading audit logs...</div>
         </div>
 
         <!-- Print & PDF Buttons -->
         <footer class="no-print">
-            <button onclick="window.print()" class="btn-export btn-print" title="Print Logs">
-                🖨️ <span>Print</span>
-            </button>
             <button onclick="window.exportPDF()" class="btn-export btn-pdf" title="Download PDF">
-                📄 <span>PDF</span>
+                📄 <span>Download Report (PDF)</span>
             </button>
         </footer>
 
@@ -226,6 +239,9 @@
             box.id = 'customPromptBox';
             
             let iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
+            if (msg.includes('✅') || msg.includes('unviewed') || msg.includes('unread')) {
+                iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
+            }
             
             box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
             box.innerHTML = `
@@ -240,28 +256,40 @@
             document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
+        // 1. TOGGLE BUTTON LOGIC FIX
         window.toggleFilters = function() {
             const filterBox = document.getElementById('filterContainer');
-            filterBox.classList.toggle('active');
+            const btn = document.getElementById('toggleBtn');
+            const txt = document.getElementById('toggleText');
+            
+            const isActive = filterBox.classList.toggle('active');
+            if (isActive) {
+                btn.style.background = '#dc2626'; // Red Color for ON
+                txt.innerText = 'Close Filters (ON)';
+            } else {
+                btn.style.background = '#28a745'; // Green Color for OFF
+                txt.innerText = 'Toggle Filter Options';
+            }
         };
 
         let auditLogs = [];
         window.filteredLogsData = []; 
 
         window.fetchLogs = async function() {
-            const tbody = document.getElementById('logsTableBody');
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; font-weight: bold; color: #64748b;">Refreshing logs...</td></tr>';
+            const container = document.getElementById('logsAccordionContainer');
+            container.innerHTML = '<div class="empty-state">Refreshing logs...</div>';
             
             document.getElementById('printDate').innerText = new Date().toLocaleString('en-IN');
 
             try {
+                // Assuming your table is 'activity_logs' based on the standard setup
                 const { data, error } = await supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(1000);
                 if (error) throw error;
                 auditLogs = data || [];
                 renderLogs();
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 30px; font-weight: bold; color: #ef4444;">Error connecting to Audit Database.</td></tr>';
+                container.innerHTML = '<div class="empty-state" style="color: #ef4444;">Error connecting to Audit Database.</div>';
             }
         };
 
@@ -269,15 +297,18 @@
             const searchTxt = document.getElementById('searchLog').value.toLowerCase();
             const moduleFilter = document.getElementById('moduleFilter').value;
             const actionFilter = document.getElementById('actionFilter').value;
+            const roleFilter = document.getElementById('roleFilter').value; // NEW ROLE FILTER
             const fromDate = document.getElementById('fromDate').value;
             const toDate = document.getElementById('toDate').value;
             
-            const tbody = document.getElementById('logsTableBody');
+            const container = document.getElementById('logsAccordionContainer');
 
+            // 1. Apply Filters
             let filtered = auditLogs.filter(log => {
                 const matchSearch = (log.details && log.details.toLowerCase().includes(searchTxt)) || (log.user_email && log.user_email.toLowerCase().includes(searchTxt));
                 const matchModule = moduleFilter === 'All' || log.module === moduleFilter;
                 const matchAction = actionFilter === 'All' || log.action_type === actionFilter;
+                const matchRole = roleFilter === 'All' || log.user_role === roleFilter; // MATCH ROLE
                 
                 let matchDate = true;
                 if (fromDate || toDate) {
@@ -286,43 +317,136 @@
                     if (toDate && logDate > toDate) matchDate = false;
                 }
 
-                return matchSearch && matchModule && matchAction && matchDate;
+                return matchSearch && matchModule && matchAction && matchRole && matchDate;
             });
 
             window.filteredLogsData = filtered; 
 
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state">No audit logs found matching your criteria.</div></td></tr>';
+                container.innerHTML = '<div class="empty-state">No audit logs found matching your criteria.</div>';
                 return;
             }
 
-            tbody.innerHTML = filtered.map(log => {
-                const dateObj = new Date(log.created_at);
-                const dateStr = dateObj.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
-                const timeStr = dateObj.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
+            // 2. GROUP BY USER (WhatsApp Style)
+            const groupedLogs = {};
+            filtered.forEach(log => {
+                const key = `${log.user_email}|${log.user_role}`;
+                if(!groupedLogs[key]) groupedLogs[key] = [];
+                groupedLogs[key].push(log);
+            });
 
-                let badgeClass = 'badge-update';
-                if(log.action_type === 'CREATE') badgeClass = 'badge-create';
-                if(log.action_type === 'DELETE') badgeClass = 'badge-delete';
-                // MASTER FIX: Renamed class to completely avoid style.css hijacking
-                if(log.action_type === 'LOGIN') badgeClass = 'badge-access';
+            // Read states from LocalStorage for Badges
+            const readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
 
-                return `
-                    <tr>
-                        <td>
-                            <div style="font-weight: 800; color: #0f172a;">${dateStr}</div>
-                            <span class="log-date">${timeStr}</span>
-                        </td>
-                        <td>
-                            <div class="user-email">${log.user_email || 'System'}</div>
-                            <span style="font-size:10px; color:#94a3b8; font-weight:700; text-transform:uppercase;">${log.user_role || 'Admin'}</span>
-                        </td>
-                        <td><span class="mod-tag">${log.module}</span></td>
-                        <td><span class="badge ${badgeClass}" style="position: static !important; display: inline-block !important; transform: none !important;">${log.action_type}</span></td>
-                        <td class="log-details">${log.details}</td>
-                    </tr>
-                `;
-            }).join('');
+            // 3. RENDER ACCORDION UI
+            let html = '';
+            for (const [key, logs] of Object.entries(groupedLogs)) {
+                const [email, role] = key.split('|');
+                const safeEmail = email || 'System';
+                const initial = safeEmail.charAt(0).toUpperCase();
+                
+                // Calculate Unread Count
+                const unreadCount = logs.filter(l => !readState[l.id]).length;
+                let badgeHtml = unreadCount > 0 ? `<span class="acc-badge">${unreadCount}</span>` : '';
+
+                // Generate inner log cards
+                let innerLogsHtml = logs.map(log => {
+                    const dateObj = new Date(log.created_at);
+                    const dateStr = dateObj.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+                    const timeStr = dateObj.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
+
+                    let badgeClass = 'badge-update';
+                    if(log.action_type === 'CREATE') badgeClass = 'badge-create';
+                    if(log.action_type === 'DELETE') badgeClass = 'badge-delete';
+                    if(log.action_type === 'LOGIN') badgeClass = 'badge-access';
+
+                    return `
+                    <div class="log-card">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 8px;">
+                            <div>
+                                <span class="badge ${badgeClass}">${log.action_type}</span>
+                                <span class="mod-tag" style="margin-left:6px;">${log.module}</span>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-weight:900; font-size:12px; color:#1e293b;">${dateStr}</div>
+                                <div style="font-size:10px; font-weight:800; color:#64748b;">${timeStr}</div>
+                            </div>
+                        </div>
+                        <div class="log-details">${log.details}</div>
+                    </div>`;
+                }).join('');
+
+                // Accordion Wrapper
+                html += `
+                <div class="accordion-item" id="acc_${key.replace(/[^a-zA-Z0-9]/g, '_')}">
+                    <div class="accordion-header" onclick="window.toggleAccordion('${key}')">
+                        <div class="acc-user-info">
+                            <div class="acc-avatar">${initial}</div>
+                            <div class="acc-name-role">
+                                <div class="acc-name">${safeEmail} ${badgeHtml}</div>
+                                <div class="acc-role">${role || 'Admin'}</div>
+                            </div>
+                        </div>
+                        <div class="acc-chevron">▼</div>
+                    </div>
+                    <div class="accordion-body" id="body_${key.replace(/[^a-zA-Z0-9]/g, '_')}">
+                        <div style="text-align: right; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 5px;">
+                            <button class="btn-unread" onclick="window.markAsUnread('${key}')">
+                                <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                Mark as Unread
+                            </button>
+                        </div>
+                        ${innerLogsHtml}
+                    </div>
+                </div>`;
+            }
+
+            container.innerHTML = html;
+        };
+
+        // ACCORDION TOGGLE & AUTO-READ LOGIC
+        window.toggleAccordion = function(key) {
+            const safeId = key.replace(/[^a-zA-Z0-9]/g, '_');
+            const item = document.getElementById(`acc_${safeId}`);
+            const isOpen = item.classList.contains('open');
+
+            // Close all others first (optional, keeps UI clean)
+            document.querySelectorAll('.accordion-item').forEach(el => el.classList.remove('open'));
+
+            if (!isOpen) {
+                item.classList.add('open');
+                
+                // MARK AS READ LOGIC
+                let readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
+                const groupLogs = window.filteredLogsData.filter(l => `${l.user_email}|${l.user_role}` === key);
+                
+                let newlyRead = false;
+                groupLogs.forEach(l => {
+                    if(!readState[l.id]) { readState[l.id] = true; newlyRead = true; }
+                });
+                
+                if(newlyRead) {
+                    localStorage.setItem('globus_audit_read_state', JSON.stringify(readState));
+                    // Remove badge immediately from UI
+                    const badge = item.querySelector('.acc-badge');
+                    if(badge) badge.remove();
+                }
+            }
+        };
+
+        // MARK AS UNREAD LOGIC
+        window.markAsUnread = function(key) {
+            let readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
+            const groupLogs = window.filteredLogsData.filter(l => `${l.user_email}|${l.user_role}` === key);
+            
+            groupLogs.forEach(l => {
+                delete readState[l.id]; // Remove from read list
+            });
+            
+            localStorage.setItem('globus_audit_read_state', JSON.stringify(readState));
+            
+            alert("✅ Logs marked as unviewed!");
+            renderLogs(); // Re-render to show badges and close accordion
         };
 
         window.exportPDF = function() {
@@ -333,7 +457,7 @@
 
             const btn = document.querySelector('.btn-pdf');
             const oldText = btn.innerHTML;
-            btn.innerHTML = '⏳...'; btn.disabled = true;
+            btn.innerHTML = '⏳ Processing...'; btn.disabled = true;
 
             try {
                 const { jsPDF } = window.jspdf;
@@ -386,7 +510,7 @@
             if(isAuth) fetchLogs();
         });
 
-   </script>
+    </script>
 
     <!-- THE NEW DYNAMIC SECURITY SYSTEM -->
     <script type="module">
