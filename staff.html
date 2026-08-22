@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Staff & HR - Globus</title>
+    <title>Staff & HR - ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -215,7 +215,7 @@
                 </select>
             </div>
             <div class="frm-row">
-                <div><label class="frm-label">Email ID (For Login) *</label><input type="email" class="frm-input" id="addEmail" required placeholder="staff@globus.com"></div>
+                <div><label class="frm-label">Email ID (For Login) *</label><input type="email" class="frm-input" id="addEmail" required placeholder="staff@ERP.com"></div>
                 <div><label class="frm-label">Password *</label><input type="text" class="frm-input" id="addPassword" required placeholder="Minimum 6 chars"></div>
             </div>
 
@@ -272,7 +272,7 @@
                             <img id="salaryLogo" src="assets/images/logo.png" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
                         </div>
                         <div>
-                            <div id="salaryInstName" style="font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;line-height:1.1;text-transform:uppercase">GLOBUS</div>
+                            <div id="salaryInstName" style="font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;line-height:1.1;text-transform:uppercase">ERP</div>
                             <div id="salaryInstSub" style="font-size:10px;font-weight:700;color:#fbbf24;letter-spacing:1.5px;margin-top:3px;text-transform:uppercase">TECHNICAL ACADEMY</div>
                             <div id="salaryInstAddress" style="font-size:9px;color:#cbd5e1;font-weight:500;margin-top:4px"></div>
                         </div>
@@ -341,7 +341,7 @@
 
                 <div style="position:absolute;bottom:110px;right:38px;width:120px;height:120px;border:4px solid #16a34a;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-14deg);color:#16a34a;background:rgba(22,163,74,.06);box-shadow:inset 0 0 15px rgba(22,163,74,.15);mix-blend-mode:multiply">
                     <div style="width:104px;height:104px;border:2px dashed rgba(22,163,74,.6);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;box-sizing:border-box">
-                        <div id="salarySealInst" style="font-size:8px;font-weight:900;letter-spacing:.5px;line-height:1.1;margin-bottom:2px">GLOBUS</div>
+                        <div id="salarySealInst" style="font-size:8px;font-weight:900;letter-spacing:.5px;line-height:1.1;margin-bottom:2px">ERP</div>
                         <div style="font-size:24px;font-weight:900;letter-spacing:2px;line-height:1;margin:3px 0">PAID</div>
                         <div style="font-size:6.5px;font-weight:700;letter-spacing:.8px;line-height:1.1">DIGITALLY SIGNED</div>
                         <div id="salarySealDate" style="font-size:6px;font-weight:700;margin-top:2px;letter-spacing:.5px">DD-MM-YYYY</div>
@@ -436,10 +436,10 @@
                     if (data.logo_url) { 
                         const salLogo = document.getElementById('salaryLogo'); if(salLogo) salLogo.src = data.logo_url;
                     }
-                    const sin = document.getElementById('salaryInstName'); if(sin) sin.innerText = data.institute_name || 'GLOBUS';
+                    const sin = document.getElementById('salaryInstName'); if(sin) sin.innerText = data.institute_name || 'ERP';
                     const sisub = document.getElementById('salaryInstSub'); if(sisub) sisub.innerText = data.sub_name || 'TECHNICAL ACADEMY';
                     const siadr = document.getElementById('salaryInstAddress'); if(siadr) siadr.innerText = data.address || '';
-                    const ssealName = document.getElementById('salarySealInst'); if(ssealName) ssealName.innerText = data.institute_name || 'GLOBUS';
+                    const ssealName = document.getElementById('salarySealInst'); if(ssealName) ssealName.innerText = data.institute_name || 'ERP';
                 }
             } catch(e) {}
         }
@@ -834,7 +834,7 @@
 
             try {
                 const { jsPDF } = window.jspdf; const doc = new jsPDF();
-                const instName = instSettings?.institute_name || 'GLOBUS'; const subName = instSettings?.sub_name || 'TECHNICAL ACADEMY';
+                const instName = instSettings?.institute_name || 'ERP'; const subName = instSettings?.sub_name || 'TECHNICAL ACADEMY';
                 
                 doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.setTextColor(15, 23, 42); doc.text(instName, 105, 15, { align: 'center' });
                 doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text(subName, 105, 21, { align: 'center' });
