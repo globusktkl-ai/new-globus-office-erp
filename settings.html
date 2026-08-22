@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>System Settings - erp</title>
+    <title>System Settings - ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
         body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 40px; margin: 0; }
@@ -91,12 +91,12 @@
 
                 <div class="form-group">
                     <label class="form-label">Institute Primary Name</label>
-                    <input type="text" id="instName" class="form-control" placeholder="e.g. erp" required>
+                    <input type="text" id="instName" class="form-control" placeholder="e.g. ERP" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Sub Name / Tagline</label>
-                    <input type="text" id="instSubName" class="form-control" placeholder="e.g. Technical Academy" required>
+                    <input type="text" id="instSubName" class="form-control" placeholder="e.g. Institute" required>
                 </div>
 
                 <div class="form-group">
@@ -135,6 +135,10 @@
                 <div style="color: #64748b; font-size: 12px; font-weight: bold;">Loading roles...</div>
             </div>
             
+            <div style="margin-top: 15px; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+                * Note: The 'Admin' role is permanent and cannot be deleted. New roles will have limited permission by default.
+            </div>
+
             <!-- PERMISSION MATRIX SECTION (Hidden by default) -->
             <div id="permissionSection" class="perm-table-wrap">
                 <div class="perm-header-bar">
@@ -268,10 +272,11 @@
 
         window.currentEditingRole = null;
 
-        // 3. FETCH ROLES
+        // 3. FETCH ROLES (HIDING SUPER ADMIN COMPLETELY)
         window.loadRoles = async function() {
             try {
-                const { data, error } = await supabase.from('role_management').select('id, role_name');
+                // Fetch roles but EXCLUDE 'Super Admin' from the results
+                const { data, error } = await supabase.from('role_management').select('id, role_name').neq('role_name', 'Super Admin');
                 const container = document.getElementById('rolesContainer');
                 
                 if (error) throw error;
@@ -281,7 +286,8 @@
                 }
 
                 container.innerHTML = data.map(role => {
-                    const isSystemRole = (role.role_name === 'Super Admin' || role.role_name === 'Admin');
+                    // Only Admin is treated as system role here now
+                    const isSystemRole = (role.role_name === 'Admin');
                     return `
                         <div class="role-item">
                             <span>${role.role_name}</span>
@@ -343,18 +349,16 @@
             
             const { data } = await supabase.from('role_management').select('permissions').eq('role_name', roleName).single();
             const perms = data ? (data.permissions || {}) : {};
-            const isSuperAdmin = roleName === 'Super Admin'; 
 
             tbody.innerHTML = window.allModules.map(mod => {
                 const p = perms[mod.id] || { view: false, add: false, edit: false, delete: false };
-                const disable = isSuperAdmin ? 'disabled checked' : '';
                 return `
                     <tr>
                         <td>${mod.name}</td>
-                        <td><input type="checkbox" id="perm_${mod.id}_view" ${p.view ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #2563eb;"></td>
-                        <td><input type="checkbox" id="perm_${mod.id}_add" ${p.add ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #10b981;"></td>
-                        <td><input type="checkbox" id="perm_${mod.id}_edit" ${p.edit ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #f59e0b;"></td>
-                        <td><input type="checkbox" id="perm_${mod.id}_delete" ${p.delete ? 'checked' : ''} ${disable} style="width: 18px; height: 18px; accent-color: #ef4444;"></td>
+                        <td><input type="checkbox" id="perm_${mod.id}_view" ${p.view ? 'checked' : ''} style="width: 18px; height: 18px; accent-color: #2563eb;"></td>
+                        <td><input type="checkbox" id="perm_${mod.id}_add" ${p.add ? 'checked' : ''} style="width: 18px; height: 18px; accent-color: #10b981;"></td>
+                        <td><input type="checkbox" id="perm_${mod.id}_edit" ${p.edit ? 'checked' : ''} style="width: 18px; height: 18px; accent-color: #f59e0b;"></td>
+                        <td><input type="checkbox" id="perm_${mod.id}_delete" ${p.delete ? 'checked' : ''} style="width: 18px; height: 18px; accent-color: #ef4444;"></td>
                     </tr>
                 `;
             }).join('');
@@ -365,9 +369,7 @@
 
         // 7. SAVE PERMISSIONS
         window.saveRolePermissions = async function() {
-            if (!window.currentEditingRole || window.currentEditingRole === 'Super Admin') {
-                alert("⚠️ Super Admin permissions cannot be modified."); return;
-            }
+            if (!window.currentEditingRole) return;
             
             let newPermissions = {};
             window.allModules.forEach(mod => {
