@@ -45,8 +45,8 @@
         .btn-toggle-filters { background: #28a745; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s ease; }
         .btn-toggle-filters:active { transform: scale(0.96); }
 
-        /* Smart Filters */
-        .filter-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 20px; display: none; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; align-items: flex-end; }
+        /* Smart Filters Container */
+        .filter-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 20px; display: none; grid-template-columns: 1fr 1fr; gap: 15px; align-items: flex-end; }
         .filter-card.active { display: grid; }
         .filter-group { display: flex; flex-direction: column; }
         .filter-label { font-size: 10px; font-weight: 800; color: #64748b; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
@@ -56,7 +56,16 @@
         .btn-refresh:active { transform: scale(0.95); }
 
         /* ========================================================
-           NEW: WHATSAPP STYLE ACCORDION LOGS (MOBILE FIRST)
+           NEW: PILL STYLE MULTI-SELECT CHECKBOXES
+           ======================================================== */
+        .check-pill-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
+        .check-pill { cursor: pointer; display: inline-flex; }
+        .check-pill input { display: none; }
+        .check-pill span { background: #f8fafc; color: #64748b; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; border: 1px solid #cbd5e1; transition: 0.2s; user-select: none; }
+        .check-pill input:checked + span { background: #eff6ff; color: #2563eb; border-color: #93c5fd; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1); }
+
+        /* ========================================================
+           WHATSAPP STYLE ACCORDION LOGS (MOBILE FIRST)
            ======================================================== */
         .accordion-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .accordion-header { padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: #ffffff; transition: 0.2s; }
@@ -97,16 +106,9 @@
         .empty-state { text-align: center; padding: 30px; font-weight: 800; color: #64748b; font-size: 14px; background: white; border-radius: 12px; border: 1px dashed #cbd5e1;}
 
         #customPromptBox { z-index: 100000; }
-/* ========================================================
-           NEW: PILL STYLE MULTI-SELECT CHECKBOXES
-           ======================================================== */
-        .check-pill-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
-        .check-pill { cursor: pointer; display: inline-flex; }
-        .check-pill input { display: none; }
-        .check-pill span { background: #f1f5f9; color: #475569; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; border: 1px solid #cbd5e1; transition: 0.2s; user-select: none; }
-        .check-pill input:checked + span { background: #eff6ff; color: #2563eb; border-color: #93c5fd; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1); }
+
         /* ========================================================
-           PRINT MODE CSS (Keeps standard table for PDF/Print)
+           PRINT MODE CSS 
            ======================================================== */
         .print-header { display: none; }
         @media print {
@@ -143,21 +145,21 @@
             <p>Generated on: <span id="printDate"></span></p>
         </div>
 
-        <!-- 1. TOGGLE BUTTON FIX -->
+        <!-- TOGGLE BUTTON -->
         <div class="no-print">
             <button class="btn-toggle-filters" onclick="toggleFilters()" id="toggleBtn">
                 <span style="font-size: 16px;">⚙️</span> <span id="toggleText">Toggle Filter Options</span>
             </button>
         </div>
 
-        <!-- Smart Filters -->
+        <!-- Smart Filters with Pill Checkboxes -->
         <div class="filter-card no-print" id="filterContainer">
-            <div class="filter-group">
+            
+            <div class="filter-group" style="grid-column: 1 / -1;">
                 <label class="filter-label">Search Details</label>
                 <input type="text" id="searchLog" class="form-control" placeholder="Search logs..." oninput="renderLogs()">
             </div>
             
-          <!-- 2. ROLE BASED MULTI-SEARCH -->
             <div class="filter-group" style="grid-column: 1 / -1;">
                 <label class="filter-label">User Roles</label>
                 <div class="check-pill-grid">
@@ -191,7 +193,26 @@
                     <label class="check-pill"><input type="checkbox" class="act-cb" value="LOGIN" onchange="renderLogs()"><span>Logins</span></label>
                 </div>
             </div>
-        <!-- 3. ACCORDION UI CONTAINER (Replacing Table) -->
+
+            <div class="filter-group">
+                <label class="filter-label">From Date</label>
+                <input type="date" id="fromDate" class="form-control" onchange="renderLogs()">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">To Date</label>
+                <input type="date" id="toDate" class="form-control" onchange="renderLogs()">
+            </div>
+            
+            <div class="filter-group" style="grid-column: 1 / -1; display: flex; justify-content: flex-end;">
+                <button class="btn-refresh" onclick="fetchLogs()" title="Refresh Logs">
+                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    <span style="margin-left: 8px; font-size: 13px;">Refresh Data</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ACCORDION UI CONTAINER -->
         <div id="logsAccordionContainer">
             <div class="empty-state">Loading audit logs...</div>
         </div>
@@ -246,7 +267,7 @@
             document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
-        // 1. TOGGLE BUTTON LOGIC FIX
+        // TOGGLE BUTTON LOGIC
         window.toggleFilters = function() {
             const filterBox = document.getElementById('filterContainer');
             const btn = document.getElementById('toggleBtn');
@@ -272,7 +293,6 @@
             document.getElementById('printDate').innerText = new Date().toLocaleString('en-IN');
 
             try {
-                // Assuming your table is 'activity_logs' based on the standard setup
                 const { data, error } = await supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(1000);
                 if (error) throw error;
                 auditLogs = data || [];
@@ -283,12 +303,13 @@
             }
         };
 
+        // THE UPDATED RENDER LOGS FUNCTION (Handles Pill Checkboxes correctly)
         window.renderLogs = function() {
             const searchTxt = document.getElementById('searchLog').value.toLowerCase();
             const fromDate = document.getElementById('fromDate').value;
             const toDate = document.getElementById('toDate').value;
             
-            // NEW: Get all checked values as Arrays
+            // Get all checked values as Arrays
             const selectedRoles = Array.from(document.querySelectorAll('.role-cb:checked')).map(cb => cb.value);
             const selectedModules = Array.from(document.querySelectorAll('.mod-cb:checked')).map(cb => cb.value);
             const selectedActions = Array.from(document.querySelectorAll('.act-cb:checked')).map(cb => cb.value);
@@ -321,7 +342,7 @@
                 return;
             }
 
-            // 2. GROUP BY USER (WhatsApp Style)
+            // GROUP BY USER 
             const groupedLogs = {};
             filtered.forEach(log => {
                 const key = `${log.user_email}|${log.user_role}`;
@@ -332,7 +353,7 @@
             // Read states from LocalStorage for Badges
             const readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
 
-            // 3. RENDER ACCORDION UI
+            // RENDER ACCORDION UI
             let html = '';
             for (const [key, logs] of Object.entries(groupedLogs)) {
                 const [email, role] = key.split('|');
@@ -404,13 +425,11 @@
             const item = document.getElementById(`acc_${safeId}`);
             const isOpen = item.classList.contains('open');
 
-            // Close all others first (optional, keeps UI clean)
             document.querySelectorAll('.accordion-item').forEach(el => el.classList.remove('open'));
 
             if (!isOpen) {
                 item.classList.add('open');
                 
-                // MARK AS READ LOGIC
                 let readState = JSON.parse(localStorage.getItem('globus_audit_read_state') || '{}');
                 const groupLogs = window.filteredLogsData.filter(l => `${l.user_email}|${l.user_role}` === key);
                 
@@ -421,7 +440,6 @@
                 
                 if(newlyRead) {
                     localStorage.setItem('globus_audit_read_state', JSON.stringify(readState));
-                    // Remove badge immediately from UI
                     const badge = item.querySelector('.acc-badge');
                     if(badge) badge.remove();
                 }
@@ -434,13 +452,13 @@
             const groupLogs = window.filteredLogsData.filter(l => `${l.user_email}|${l.user_role}` === key);
             
             groupLogs.forEach(l => {
-                delete readState[l.id]; // Remove from read list
+                delete readState[l.id]; 
             });
             
             localStorage.setItem('globus_audit_read_state', JSON.stringify(readState));
             
             alert("✅ Logs marked as unviewed!");
-            renderLogs(); // Re-render to show badges and close accordion
+            renderLogs(); 
         };
 
         window.exportPDF = function() {
