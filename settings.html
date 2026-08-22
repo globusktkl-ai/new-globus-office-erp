@@ -6,13 +6,21 @@
     <title>System Settings - Globus</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 40px; }
+        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 40px; margin: 0; }
         .main-content { padding: 15px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
         
-        .top-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 10px 15px; background: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .btn-back-dashboard { display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 13px; text-decoration: none; color: #1e293b; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        /* FIXED TOP NAV FOR MOBILE */
+        .top-nav { position: relative; display: flex; align-items: center; justify-content: center; padding: 12px 15px; min-height: 60px; background: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); margin-bottom: 20px; }
+        .btn-back-dashboard { position: absolute; left: 15px; display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-weight: 800; font-size: 13px; text-decoration: none; color: #1e293b; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: 0.2s; }
+        .btn-back-dashboard:active { transform: scale(0.95); }
         .btn-back-dashboard svg { width: 18px; height: 18px; stroke: #2563eb; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .page-title { font-size: 16px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; }
+        .page-title { font-size: 16px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
+
+        @media (max-width: 600px) {
+            .btn-back-dashboard span { display: none; } /* Hides 'Dashboard' text on small screens */
+            .btn-back-dashboard { padding: 8px; }
+            .page-title { font-size: 15px; }
+        }
 
         .settings-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 25px; }
         .settings-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
@@ -45,13 +53,13 @@
 <body>
 
     <main class="main-content">
+        <!-- FIXED HEADER -->
         <div class="top-nav">
             <a href="dashboard.html" class="btn-back-dashboard">
                 <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
                 <span>Dashboard</span>
             </a>
             <h1 class="page-title">System Settings</h1>
-            <div style="width: 80px;"></div> <!-- Spacer for flex alignment -->
         </div>
 
         <!-- SECTION 1: INSTITUTE PROFILE -->
@@ -129,7 +137,7 @@
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let borderColor = '#3b82f6'; 
             if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error')) borderColor = '#ef4444'; 
-            else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successful')) borderColor = '#10b981'; 
+            else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successfully')) borderColor = '#10b981'; 
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
             box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
             if(!document.querySelector('style#alertAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="alertAnim">@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}</style>'); }
@@ -184,7 +192,6 @@
                     const file = fileInput.files[0];
                     const fileName = `logo_${Date.now()}.${file.name.split('.').pop()}`;
                     
-                    // Upload to student_photos bucket for simplicity (since it's already public and working)
                     const { error: uploadError } = await supabase.storage.from('student_photos').upload(fileName, file);
                     if (uploadError) throw new Error("Logo Upload Failed: " + uploadError.message);
                     
@@ -199,9 +206,13 @@
                     logo_url: logoUrl.startsWith('http') ? logoUrl : null
                 };
 
-                // Upsert id=1
                 const { error } = await supabase.from('institute_settings').upsert({ id: 1, ...updates });
                 if (error) throw error;
+
+                // --- AUDIT TRAIL LOGGING ---
+                if(window.ThemeManager) {
+                    await window.ThemeManager.logAction('System', 'UPDATE', `Institute profile/settings updated.`);
+                }
 
                 alert("✅ Institute Profile Updated Successfully!");
             } catch (err) {
@@ -245,7 +256,6 @@
             if (!roleName) { alert("⚠️ Please enter a role name."); return; }
 
             try {
-                // Default safe permissions for new roles
                 const defaultPerms = {
                     "Dashboard": { view: true },
                     "Admission": { view: true, add: false, edit: false, delete: false },
@@ -260,6 +270,10 @@
                 if (error) {
                     if(error.code === '23505') throw new Error("Role already exists!");
                     throw error;
+                }
+
+                if(window.ThemeManager) {
+                    await window.ThemeManager.logAction('System', 'CREATE', `New staff role added: ${roleName}`);
                 }
 
                 alert(`✅ Role '${roleName}' created successfully!`);
@@ -278,6 +292,10 @@
                 const { error } = await supabase.from('role_management').delete().eq('id', id);
                 if (error) throw error;
                 
+                if(window.ThemeManager) {
+                    await window.ThemeManager.logAction('System', 'DELETE', `Staff role deleted: ${name}`);
+                }
+
                 alert(`✅ Role '${name}' deleted!`);
                 loadRoles();
             } catch (err) {
@@ -291,10 +309,12 @@
 
     </script>
 
+    <!-- NEW: Global Theme & Audit Engine -->
+    <script type="module" src="assets/js/theme-manager.js"></script>
+
     <!-- SECURITY GUARD -->
     <script type="module">
         import './assets/js/auth-check.js';
-        // Only Super Admin & Admin can access settings
         const userRole = localStorage.getItem('userRole');
         if (userRole !== 'Super Admin' && userRole !== 'Admin') {
             document.body.innerHTML = '';
