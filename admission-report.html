@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admission Analytics - Globus</title>
+    <title>Admission Analytics - ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
     
     <!-- Chart.js for Live Graphs -->
@@ -488,7 +488,7 @@
             }
             let csvFile = new Blob([csv.join("\n")], {type: "text/csv;charset=utf-8;"});
             let link = document.createElement("a");
-            link.download = "Globus_Admissions_Report.csv";
+            link.download = "ERP_Admissions_Report.csv";
             link.href = window.URL.createObjectURL(csvFile);
             link.style.display = "none";
             document.body.appendChild(link);
