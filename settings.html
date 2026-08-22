@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>System Settings - Globus</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 40px; }
+        .main-content { padding: 15px; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+        
+        .top-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 10px 15px; background: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .btn-back-dashboard { display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 13px; text-decoration: none; color: #1e293b; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 18px; height: 18px; stroke: #2563eb; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .page-title { font-size: 16px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; }
+
+        .settings-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 25px; }
+        .settings-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .settings-header h2 { margin: 0; font-size: 18px; color: #0f172a; font-weight: 900; }
+        .settings-header svg { width: 24px; height: 24px; stroke: #3b82f6; stroke-width: 2; fill: none; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-label { display: block; font-size: 12px; font-weight: 800; color: #475569; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-weight: 600; background: #f8fafc; outline: none; transition: 0.2s; box-sizing: border-box; }
+        .form-control:focus { border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+        .logo-preview-box { width: 100px; height: 100px; border: 2px dashed #cbd5e1; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 10px; background: #f8fafc; }
+        .logo-preview-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .btn-save { background: #3b82f6; color: white; border: none; padding: 14px 20px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.2s; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+        .btn-save:active { transform: scale(0.98); }
+        .btn-save:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+
+        /* Role Management Section */
+        .role-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 15px; }
+        .role-item { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-del-role { background: #fee2e2; color: #ef4444; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
+        
+        .add-role-flex { display: flex; gap: 10px; }
+        .btn-add-role { background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+
+        #customAlertBox { z-index: 100000; }
+    </style>
+</head>
+<body>
+
+    <main class="main-content">
+        <div class="top-nav">
+            <a href="dashboard.html" class="btn-back-dashboard">
+                <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <h1 class="page-title">System Settings</h1>
+            <div style="width: 80px;"></div> <!-- Spacer for flex alignment -->
+        </div>
+
+        <!-- SECTION 1: INSTITUTE PROFILE -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <h2>Institute Profile</h2>
+            </div>
+            
+            <form id="instituteForm">
+                <div class="form-group">
+                    <label class="form-label">Institute Logo (Leave blank to keep current)</label>
+                    <div class="logo-preview-box">
+                        <img id="logoPreview" src="" alt="No Logo" onerror="this.style.display='none'">
+                    </div>
+                    <input type="file" id="logoUpload" class="form-control" accept="image/png, image/jpeg, image/jpg">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Institute Primary Name</label>
+                    <input type="text" id="instName" class="form-control" placeholder="e.g. GLOBUS" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Sub Name / Tagline</label>
+                    <input type="text" id="instSubName" class="form-control" placeholder="e.g. Technical Academy" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Contact Phone</label>
+                    <input type="tel" id="instPhone" class="form-control" placeholder="e.g. 9876543210">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Complete Address (For Receipts & Reports)</label>
+                    <textarea id="instAddress" class="form-control" rows="3" placeholder="Enter full address..."></textarea>
+                </div>
+
+                <button type="submit" id="saveProfileBtn" class="btn-save">💾 Save Institute Profile</button>
+            </form>
+        </div>
+
+        <!-- SECTION 2: CUSTOM ROLE MANAGEMENT -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <h2>Custom Staff Designations</h2>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Create New Role</label>
+                <div class="add-role-flex">
+                    <input type="text" id="newRoleName" class="form-control" placeholder="e.g. Senior Accountant">
+                    <button type="button" class="btn-add-role" onclick="window.addNewRole()">+ Add</button>
+                </div>
+            </div>
+
+            <label class="form-label" style="margin-top: 25px;">Available Roles</label>
+            <div class="role-list" id="rolesContainer">
+                <div style="color: #64748b; font-size: 12px; font-weight: bold;">Loading roles...</div>
+            </div>
+            <div style="margin-top: 15px; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+                * Note: Super Admin and Admin roles cannot be deleted. New roles will have 'View Only' permission by default. Edit permissions from the Database or upcoming Permission Matrix.
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+
+        // MAGIC ALERT
+        window.alert = function(msg) {
+            const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
+            const box = document.createElement('div'); box.id = 'customAlertBox';
+            let borderColor = '#3b82f6'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error')) borderColor = '#ef4444'; 
+            else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successful')) borderColor = '#10b981'; 
+            box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
+            box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
+            if(!document.querySelector('style#alertAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="alertAnim">@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}</style>'); }
+            document.body.appendChild(box); setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
+        };
+
+        // IMAGE PREVIEW
+        document.getElementById('logoUpload').addEventListener('change', function(e) {
+            if(e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('logoPreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // 1. FETCH INSTITUTE SETTINGS
+        async function loadProfile() {
+            try {
+                const { data, error } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                if (data) {
+                    document.getElementById('instName').value = data.institute_name || '';
+                    document.getElementById('instSubName').value = data.sub_name || '';
+                    document.getElementById('instPhone').value = data.phone || '';
+                    document.getElementById('instAddress').value = data.address || '';
+                    
+                    if(data.logo_url) {
+                        const preview = document.getElementById('logoPreview');
+                        preview.src = data.logo_url;
+                        preview.style.display = 'block';
+                    }
+                }
+            } catch (err) {
+                console.error("No profile found or error:", err);
+            }
+        }
+
+        // 2. SAVE INSTITUTE PROFILE
+        document.getElementById('instituteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('saveProfileBtn');
+            btn.textContent = '⏳ Saving...'; btn.disabled = true;
+
+            try {
+                let logoUrl = document.getElementById('logoPreview').src;
+                const fileInput = document.getElementById('logoUpload');
+
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const fileName = `logo_${Date.now()}.${file.name.split('.').pop()}`;
+                    
+                    // Upload to student_photos bucket for simplicity (since it's already public and working)
+                    const { error: uploadError } = await supabase.storage.from('student_photos').upload(fileName, file);
+                    if (uploadError) throw new Error("Logo Upload Failed: " + uploadError.message);
+                    
+                    logoUrl = supabase.storage.from('student_photos').getPublicUrl(fileName).data.publicUrl;
+                }
+
+                const updates = {
+                    institute_name: document.getElementById('instName').value,
+                    sub_name: document.getElementById('instSubName').value,
+                    phone: document.getElementById('instPhone').value,
+                    address: document.getElementById('instAddress').value,
+                    logo_url: logoUrl.startsWith('http') ? logoUrl : null
+                };
+
+                // Upsert id=1
+                const { error } = await supabase.from('institute_settings').upsert({ id: 1, ...updates });
+                if (error) throw error;
+
+                alert("✅ Institute Profile Updated Successfully!");
+            } catch (err) {
+                alert("❌ Error: " + err.message);
+            } finally {
+                btn.textContent = '💾 Save Institute Profile'; btn.disabled = false;
+            }
+        });
+
+        // 3. FETCH ROLES
+        async function loadRoles() {
+            try {
+                const { data, error } = await supabase.from('role_management').select('id, role_name');
+                const container = document.getElementById('rolesContainer');
+                
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div>No roles found.</div>';
+                    return;
+                }
+
+                container.innerHTML = data.map(role => {
+                    const isSystemRole = (role.role_name === 'Super Admin' || role.role_name === 'Admin');
+                    return `
+                        <div class="role-item">
+                            <span>${role.role_name}</span>
+                            ${!isSystemRole ? `<button class="btn-del-role" onclick="window.deleteRole(${role.id}, '${role.role_name}')">X</button>` : ''}
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                document.getElementById('rolesContainer').innerHTML = '<div style="color:red;">Error loading roles.</div>';
+            }
+        }
+
+        // 4. ADD NEW ROLE
+        window.addNewRole = async function() {
+            const roleInput = document.getElementById('newRoleName');
+            const roleName = roleInput.value.trim();
+            if (!roleName) { alert("⚠️ Please enter a role name."); return; }
+
+            try {
+                // Default safe permissions for new roles
+                const defaultPerms = {
+                    "Dashboard": { view: true },
+                    "Admission": { view: true, add: false, edit: false, delete: false },
+                    "Students": { view: true, add: false, edit: false, delete: false }
+                };
+
+                const { error } = await supabase.from('role_management').insert([{
+                    role_name: roleName,
+                    permissions: defaultPerms
+                }]);
+
+                if (error) {
+                    if(error.code === '23505') throw new Error("Role already exists!");
+                    throw error;
+                }
+
+                alert(`✅ Role '${roleName}' created successfully!`);
+                roleInput.value = '';
+                loadRoles();
+            } catch (err) {
+                alert("❌ Error: " + err.message);
+            }
+        };
+
+        // 5. DELETE ROLE
+        window.deleteRole = async function(id, name) {
+            if(!confirm(`Are you sure you want to delete the role: ${name}?`)) return;
+
+            try {
+                const { error } = await supabase.from('role_management').delete().eq('id', id);
+                if (error) throw error;
+                
+                alert(`✅ Role '${name}' deleted!`);
+                loadRoles();
+            } catch (err) {
+                alert("❌ Error: " + err.message);
+            }
+        };
+
+        // Initialize
+        loadProfile();
+        loadRoles();
+
+    </script>
+
+    <!-- SECURITY GUARD -->
+    <script type="module">
+        import './assets/js/auth-check.js';
+        // Only Super Admin & Admin can access settings
+        const userRole = localStorage.getItem('userRole');
+        if (userRole !== 'Super Admin' && userRole !== 'Admin') {
+            document.body.innerHTML = '';
+            alert("⛔ SECURITY ALERT: Unauthorized Access.");
+            setTimeout(() => { window.location.replace('dashboard.html'); }, 2000);
+        }
+    </script>
+</body>
+</html>
