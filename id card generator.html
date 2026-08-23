@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Pro ID Card Studio - Master Edition</title>
+<title>Official ID Card Studio - Pro</title>
 
 <!-- Export Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -12,73 +12,83 @@
 <style>
 /* ================= GLOBAL STYLES ================= */
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: #334155; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: #334155; overflow: hidden; height: 100vh; width: 100vw; display: flex; flex-direction: column; }
 
 /* ================= 3D BACK BUTTON & HEADER ================= */
-.top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #ffffff; border-bottom: 2px solid #cbd5e1; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; height: 50px; }
-.btn-back-3d { position: absolute; left: 15px; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 36px; background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%); border: 1px solid #cbd5e1; border-bottom: 3px solid #94a3b8; border-radius: 10px; transition: all 0.1s; z-index: 2001; cursor: pointer; }
+.top-nav { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #ffffff; border-bottom: 2px solid #cbd5e1; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000; height: 50px; }
+.btn-back-3d { position: absolute; left: 15px; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 36px; background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%); border: 1px solid #cbd5e1; border-bottom: 3px solid #94a3b8; border-radius: 10px; transition: all 0.1s; z-index: 1001; cursor: pointer; text-decoration: none; }
 .btn-back-3d:active { transform: translateY(2px); border-bottom: 1px solid #94a3b8; }
 .btn-back-3d svg { width: 20px; height: 20px; stroke: #4c1d95; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .page-title { font-size: 16px; font-weight: 900; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
+.btn-settings-toggle { position: absolute; right: 15px; background: #1e3a8a; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.btn-settings-toggle:active { transform: scale(0.95); }
 
-/* ================= HORIZONTAL SETTINGS TOOLBAR ================= */
-.settings-toolbar { position: fixed; top: 50px; left: 0; right: 0; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-bottom: 1px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1500; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
-.settings-toolbar.hidden-mode { transform: translateY(calc(-100% - 10px)); }
+/* ================= RIGHT-TO-LEFT SETTINGS SIDEBAR ================= */
+.settings-sidebar { position: fixed; top: 50px; right: -320px; width: 300px; max-width: 85vw; height: calc(100vh - 50px); background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-left: 2px solid #cbd5e1; box-shadow: -5px 0 25px rgba(0,0,0,0.1); z-index: 1500; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
+.settings-sidebar.open { right: 0; }
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; background: #ffffff; z-index: 10; }
+.sidebar-header h2 { font-size: 14px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin: 0; }
+.btn-close-sidebar { background: #fee2e2; color: #dc2626; border: none; width: 30px; height: 30px; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 14px; }
 
-.tab-nav { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 8px 10px; gap: 8px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
-.tab-nav::-webkit-scrollbar { display: none; }
-.tab-btn { flex-shrink: 0; padding: 6px 14px; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-.tab-btn.active { background: #1e3a8a; color: #ffffff; border-color: #1e3a8a; box-shadow: 0 2px 6px rgba(30,58,138,0.2); }
-.tab-btn.hide-btn { background: #fee2e2; color: #dc2626; border-color: #fca5a5; margin-left: auto; }
+/* Accordion Tabs inside Sidebar */
+.accordion-item { border-bottom: 1px solid #e2e8f0; }
+.accordion-header { padding: 12px 15px; background: #f8fafc; font-size: 12px; font-weight: 800; color: #1e3a8a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; }
+.accordion-header:hover { background: #f1f5f9; }
+.accordion-header::after { content: '▼'; font-size: 10px; transition: 0.3s; }
+.accordion-item.active .accordion-header::after { transform: rotate(180deg); }
+.accordion-content { display: none; padding: 15px; flex-direction: column; gap: 10px; background: #ffffff; }
+.accordion-item.active .accordion-content { display: flex; }
 
-.tool-panels { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px; background: #ffffff; max-height: 180px; }
-.tool-panels::-webkit-scrollbar { display: none; }
-.tool-panel { display: none; gap: 10px; align-items: flex-start; }
-.tool-panel.active { display: flex; }
+.frm-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 4px; display: block; }
+.frm-input, .frm-select, .frm-textarea { width: 100%; padding: 8px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 12px; font-weight: 700; outline: none; }
+.frm-input:focus, .frm-select:focus, .frm-textarea:focus { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+.frm-row { display: flex; gap: 10px; align-items: center; }
+.color-picker { width: 100%; height: 35px; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0; cursor: pointer; }
 
-.tool-group { flex-shrink: 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; min-width: 200px; display: flex; flex-direction: column; gap: 6px; }
-.tool-group-title { font-size: 10px; text-transform: uppercase; color: #1e3a8a; font-weight: 900; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 4px; }
+/* Media / Photo Controls */
+.upload-btn { background: #e0f2fe; color: #0284c7; border: 1px dashed #7dd3fc; padding: 8px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; width: 100%; text-align: center; display: block; }
+.d-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; width: 100px; margin: 0 auto; }
+.d-pad-btn { background: #e2e8f0; border: none; padding: 6px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold; color: #1e3a8a; display: flex; justify-content: center; align-items: center; }
+.d-pad-btn:active { background: #cbd5e1; }
+.d-pad-btn.up { grid-column: 2; }
+.d-pad-btn.left { grid-column: 1; }
+.d-pad-btn.right { grid-column: 3; }
+.d-pad-btn.down { grid-column: 2; }
 
-.frm-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; }
-.frm-input, .frm-select { width: 100%; padding: 6px 8px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 12px; font-weight: 700; outline: none; }
-.frm-input:focus, .frm-select:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
-.frm-row { display: flex; gap: 6px; align-items: center; }
-
-/* Photo D-Pad inside settings */
-.mini-dpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; width: 70px; margin: 0 auto; }
-.mini-btn { background: #e2e8f0; border: none; padding: 4px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold; color: #1e3a8a; }
-.mini-btn:active { background: #cbd5e1; }
-
-/* Pocket Toggle Button */
-.pocket-toggle { position: fixed; top: 50px; left: 50%; transform: translateX(-50%); background: #ffffff; border: 1px solid #cbd5e1; border-top: none; padding: 4px 15px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); z-index: 1400; font-size: 11px; font-weight: 900; color: #1e3a8a; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: top 0.3s; }
-.pocket-toggle.hidden { top: -50px; }
-
-/* ================= SIDE POCKET (VIEW CONTROLS) ================= */
-.side-pocket { position: fixed; right: 0; top: 50%; transform: translateY(-50%) translateX(100%); z-index: 1200; display: flex; align-items: center; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-.side-pocket.open { transform: translateY(-50%) translateX(0); }
-.pocket-handle { position: absolute; left: -35px; background: #1e3a8a; color: white; padding: 15px 5px; border-radius: 8px 0 0 8px; font-size: 10px; font-weight: 900; writing-mode: vertical-rl; text-orientation: mixed; cursor: pointer; box-shadow: -2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-right: none; }
-.pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border: 1px solid #cbd5e1; border-right: none; border-radius: 12px 0 0 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: -4px 4px 15px rgba(0,0,0,0.05); }
+/* ================= LEFT SIDE POCKET (VIEWS) ================= */
+.left-pocket { position: fixed; left: 0; top: 50%; transform: translateY(-50%) translateX(-100%); z-index: 1200; display: flex; align-items: center; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.left-pocket.open { transform: translateY(-50%) translateX(0); }
+.pocket-handle { position: absolute; right: -30px; background: #1e3a8a; color: white; padding: 15px 5px; border-radius: 0 8px 8px 0; font-size: 10px; font-weight: 900; writing-mode: vertical-rl; text-orientation: mixed; cursor: pointer; box-shadow: 2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-left: none; }
+.pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 4px 4px 15px rgba(0,0,0,0.05); }
 .pocket-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #334155; cursor: pointer; transition: 0.2s; white-space: nowrap; }
 .pocket-btn.active { background: #3b82f6; color: white; border-color: #2563eb; }
 
-/* ================= FREEZE BUTTON (FLOATING) ================= */
-.float-lock { position: fixed; bottom: 70px; right: 20px; width: 40px; height: 40px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.3); z-index: 1200; transition: 0.3s; }
+/* ================= FLOATING ACTIONS (LOCK & ZOOM) ================= */
+.float-lock { position: fixed; bottom: 65px; right: 15px; width: 40px; height: 40px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.3); z-index: 900; transition: 0.3s; }
 .float-lock.locked { background: #ef4444; color: white; border-color: #dc2626; box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
 
-/* ================= ZOOM CONTROLS (FLOATING) ================= */
-.zoom-panel { position: fixed; bottom: 70px; left: 20px; background: white; border-radius: 8px; padding: 4px; display: flex; gap: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; z-index: 1200; }
+.zoom-panel { position: fixed; bottom: 65px; left: 15px; background: white; border-radius: 8px; padding: 4px; display: flex; gap: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; z-index: 900; }
 .z-btn { background: #f8fafc; border: 1px solid #e2e8f0; width: 28px; height: 28px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; color: #1e3a8a; display: flex; align-items: center; justify-content: center;}
 .z-btn:active { background: #e2e8f0; }
 
-/* ================= WORKSPACE & CANVAS (FREE PANNING) ================= */
-.workspace { flex: 1; position: relative; overflow: hidden; background: #e2e8f0; cursor: grab; margin-top: 50px; /* Below Top Nav */ }
-.workspace:active { cursor: grabbing; }
-.canvas-wrapper { position: absolute; transform-origin: 0 0; transition: transform 0.1s; }
+/* ================= COMPACT BOTTOM DOWNLOAD BAR ================= */
+.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #cbd5e1; padding: 8px 15px; display: flex; justify-content: center; gap: 10px; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+.export-btn { flex: 1; max-width: 160px; padding: 10px; border: none; border-radius: 8px; font-size: 12px; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.export-btn:active { transform: scale(0.95); }
+.btn-png { background: linear-gradient(135deg, #10b981, #059669); }
+.btn-pdf { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+/* ================= FREE CANVAS WORKSPACE ================= */
+.workspace { position: absolute; top: 50px; bottom: 50px; left: 0; right: 0; overflow: hidden; background: #e2e8f0; touch-action: none; cursor: grab; }
+.workspace.dragging { cursor: grabbing; }
+.canvas-wrapper { position: absolute; transform-origin: 0 0; }
 
 /* ================= ID CARD STYLES ================= */
 .id-card { position: relative; background: transparent; }
 .id-card.landscape { width: 336px; height: 212px; }
 .id-card.portrait { width: 212px; height: 336px; }
+
+/* Double sided setup */
 .id-card.show-both.landscape { height: 440px; }
 .id-card.show-both.portrait { width: 440px; height: 336px; }
 
@@ -91,56 +101,56 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
 .card-back { display: none; }
 
-/* Template Backgrounds */
-.card-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+/* Backgrounds Layer (Hidden Overflow) */
+.card-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; border-radius: 10px; overflow: hidden; }
 .bg-header, .bg-footer { position: absolute; left: 0; right: 0; }
 
-/* Draggables (Visible Overflow) */
+/* Draggables Layer (Visible Overflow to prevent losing items) */
 .card-drag-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
-.drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; border: 1px dashed transparent; padding: 2px; }
+.drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; border: 1px dashed transparent; padding: 2px; transition: border 0.2s; }
 .drag-el:hover, .drag-el.active-drag { border-color: #f59e0b; background: rgba(245,158,11,0.05); z-index: 10; }
 
-/* Elements */
+/* Custom Elements */
 .el-logo { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; }
 .el-logo img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+
 .el-org { line-height: 1.2; }
-.el-org .name { font-size: 14px; font-weight: 900; text-transform: uppercase; }
-.el-org .sub { font-size: 8px; font-weight: 700; opacity: 0.9; }
-.el-org .addr { font-size: 7px; font-weight: 600; opacity: 0.8; }
+.el-org .name { font-size: 14px; font-weight: 900; text-transform: uppercase; color: #ffffff; }
+.el-org .sub { font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; }
+.el-org .addr { font-size: 7px; font-weight: 600; color: rgba(255,255,255,0.8); }
+
 .el-photo { width: 75px; height: 95px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #cbd5e1; border-radius: 8px; }
 .el-photo img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; transform-origin: center; }
+
 .el-details { line-height: 1.3; }
-.el-details .s-name { font-size: 15px; font-weight: 900; text-transform: uppercase; }
+.el-details .s-name { font-size: 15px; font-weight: 900; text-transform: uppercase; color: #0f172a; }
 .el-details .s-course { font-size: 9px; font-weight: 800; color: #b91c1c; text-transform: uppercase; margin-bottom: 4px; }
-.el-details table { width: 100%; font-size: 9px; font-weight: 700; border-collapse: collapse; }
+.el-details table { width: 100%; font-size: 9px; font-weight: 700; color: #334155; border-collapse: collapse; }
 .el-details td { padding: 1px 0; vertical-align: top; }
 .el-details .lbl { width: 45px; opacity: 0.8; }
-.el-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
+
+.el-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-block; background: #1e3a8a; color: white; }
+
 .el-seal { width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; }
 .el-seal svg { width: 100%; height: 100%; pointer-events: none; }
-.el-qr { width: 60px; height: 60px; object-fit: contain; pointer-events: none; }
+
+.el-qr { width: 60px; height: 60px; object-fit: contain; pointer-events: none; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #94a3b8; }
 .el-terms { font-size: 8px; font-weight: 600; line-height: 1.4; text-align: center; }
 .el-return { font-size: 9px; font-weight: 800; color: #b91c1c; text-align: center; line-height: 1.3; border: 1px dashed #fca5a5; padding: 4px; border-radius: 4px; background: #fef2f2; }
 
-/* SaaS Watermark */
-.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(0,0,0,0.4); z-index: 20; pointer-events: none; display: none; }
-
-/* ================= COMPACT EXPORT BAR ================= */
-.export-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #cbd5e1; padding: 8px 15px; display: flex; justify-content: center; gap: 10px; z-index: 1500; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-.export-btn { flex: 1; max-width: 180px; padding: 10px; border: none; border-radius: 8px; font-size: 12px; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
-.export-btn:active { transform: scale(0.95); }
-.btn-png { background: linear-gradient(135deg, #10b981, #059669); }
-.btn-pdf { background: linear-gradient(135deg, #ef4444, #dc2626); }
+/* Watermark */
+.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(255,255,255,0.7); z-index: 20; pointer-events: none; display: none; }
+.watermark-dark { color: rgba(0,0,0,0.5); }
 
 /* Toast */
-.toast { position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 3000; transition: 0.3s; }
-.toast.show { bottom: 60px; }
+.toast { position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 3000; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.toast.show { bottom: 65px; }
 
-/* 10 Plain Templates - CSS Only */
+/* ================= 10 PLAIN PROFESSIONAL TEMPLATES ================= */
 .tpl-1 .bg-header { height: 55px; top: 0; } .tpl-1 .bg-footer { height: 20px; bottom: 0; }
 .tpl-2 .bg-header { height: 70px; top: 0; border-radius: 0 0 50% 50%; } .tpl-2 .bg-footer { height: 15px; bottom: 0; border-radius: 50% 50% 0 0; }
 .tpl-3 .bg-header { height: 100%; width: 60px; top: 0; left: 0; } .tpl-3 .bg-footer { display: none; }
-.tpl-4 .bg-header { height: 45px; top: 0; background: #ffffff !important; border-bottom: 2px solid; } .tpl-4 .bg-footer { height: 25px; bottom: 0; background: #f8fafc !important; border-top: 1px solid; }
+.tpl-4 .bg-header { height: 45px; top: 0; background: transparent !important; border-bottom: 2px solid; } .tpl-4 .bg-footer { height: 25px; bottom: 0; background: transparent !important; border-top: 1px solid; }
 .tpl-5 .bg-header { height: 10px; top: 0; } .tpl-5 .bg-footer { height: 10px; bottom: 0; }
 .tpl-6 .bg-header { height: 100%; width: 100%; top: 0; left: 0; background: transparent !important; border: 6px solid; border-radius: 10px; } .tpl-6 .bg-footer { display: none; }
 .tpl-7 .bg-header { height: 60px; top: 0; border-bottom: 4px solid; } .tpl-7 .bg-footer { display: none; }
@@ -165,147 +175,130 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
     </a>
     <h1 class="page-title">ID Card Studio</h1>
+    <button class="btn-settings-toggle" onclick="toggleSidebar()">⚙️ Settings</button>
 </div>
 
-<!-- POCKET TOGGLE (Visible when toolbar is hidden) -->
-<div class="pocket-toggle" id="pocketToggle" onclick="toggleToolbar()">
-    🔽 Show Tools
-</div>
-
-<!-- HORIZONTAL SETTINGS TOOLBAR -->
-<div class="settings-toolbar" id="settingsToolbar">
-    <div class="tab-nav">
-        <button class="tab-btn active" onclick="switchTab('info')">📝 Student Info</button>
-        <button class="tab-btn" onclick="switchTab('org')">🏢 Org & Back</button>
-        <button class="tab-btn" onclick="switchTab('photo')">📷 Photo & Seal</button>
-        <button class="tab-btn" onclick="switchTab('design')">🎨 Design & Tpl</button>
-        <button class="tab-btn hide-btn" onclick="toggleToolbar()">🔼 Hide</button>
+<!-- RIGHT-TO-LEFT SETTINGS SIDEBAR -->
+<div class="settings-sidebar no-print" id="settingsSidebar">
+    <div class="sidebar-header">
+        <h2>Card Settings</h2>
+        <button class="btn-close-sidebar" onclick="toggleSidebar()">✖</button>
+    </div>
+    
+    <!-- 1. Student Info -->
+    <div class="accordion-item active">
+        <div class="accordion-header" onclick="toggleAccordion(this)">📝 1. Student Info</div>
+        <div class="accordion-content">
+            <label class="frm-label">Name</label> <input type="text" id="inp_name" class="frm-input" value="Student Name" oninput="updateContent()">
+            <label class="frm-label">Course / Title</label> <input type="text" id="inp_course" class="frm-input" value="Diploma in Engineering" oninput="updateContent()">
+            <label class="frm-label">Reg No</label> <input type="text" id="inp_reg" class="frm-input" value="REG-01" oninput="updateContent()">
+            <div class="frm-row">
+                <div style="flex:1;"><label class="frm-label">DOB</label><input type="text" id="inp_dob" class="frm-input" value="01/01/2000" oninput="updateContent()"></div>
+                <div style="flex:1;"><label class="frm-label">Blood</label><input type="text" id="inp_blood" class="frm-input" value="O+" oninput="updateContent()"></div>
+            </div>
+            <div class="frm-row">
+                <div style="flex:1;"><label class="frm-label">Phone</label><input type="text" id="inp_phone" class="frm-input" value="9000000000" oninput="updateContent()"></div>
+                <div style="flex:1;"><label class="frm-label">Valid</label><input type="text" id="inp_valid" class="frm-input" value="2026" oninput="updateContent()"></div>
+            </div>
+            <label class="frm-label">Role Badge</label>
+            <div class="frm-row">
+                <input type="text" id="inp_role" class="frm-input" value="STUDENT" oninput="updateContent()">
+                <select id="inp_showBadge" class="frm-select" onchange="updateContent()"><option value="true">Show</option><option value="false">Hide</option></select>
+            </div>
+        </div>
     </div>
 
-    <div class="tool-panels">
-        <!-- Info Tab -->
-        <div class="tool-panel active" id="tab-info">
-            <div class="tool-group">
-                <div class="tool-group-title">Personal</div>
-                <div class="frm-row">
-                    <div style="flex:2;"><label class="frm-label">Name</label><input type="text" id="inp_name" class="frm-input" value="Student Name" oninput="updateContent()"></div>
-                    <div style="flex:1;"><label class="frm-label">Reg No</label><input type="text" id="inp_reg" class="frm-input" value="REG-01" oninput="updateContent()"></div>
+    <!-- 2. Org & Back -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">🏢 2. Org & Back</div>
+        <div class="accordion-content">
+            <label class="frm-label">Org Name</label> <input type="text" id="inp_orgName" class="frm-input" value="ERP Technical Academy" oninput="updateContent()">
+            <label class="frm-label">Sub Title</label> <input type="text" id="inp_orgSub" class="frm-input" value="Center of Excellence" oninput="updateContent()">
+            <label class="frm-label">Address</label> <textarea id="inp_orgAddr" class="frm-textarea" oninput="updateContent()">123 Main Street, City&#10;Ph: 9876543210</textarea>
+            <hr style="border:0; border-top:1px dashed #cbd5e1; margin:5px 0;">
+            <label class="frm-label">Terms (Back)</label> <textarea id="inp_terms" class="frm-textarea" oninput="updateContent()">Card is non-transferable.&#10;Must be worn at all times.</textarea>
+            <label style="font-size:11px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_return" checked onchange="updateContent()"> Show "If found return to"</label>
+            <textarea id="inp_return" class="frm-textarea" oninput="updateContent()">If found, return to:&#10;ERP Academy, +91 9876543210</textarea>
+            <label style="font-size:11px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_qr" checked onchange="updateContent()"> Show QR Placeholder</label>
+        </div>
+    </div>
+
+    <!-- 3. Photo & Logo & Seal -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">📷 3. Photo, Logo & Seal</div>
+        <div class="accordion-content">
+            <label class="upload-btn">📷 Upload Photo <input type="file" id="file_photo" style="display:none" accept="image/*" onchange="loadMedia(this, 'imgPhoto', 'ph_photo')"></label>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <button class="mini-btn" onclick="clearMedia('imgPhoto', 'ph_photo')">Clear</button>
+                <div style="display:flex; gap:5px;">
+                    <button class="mini-btn" onclick="zoomMedia('photo', -0.1)">- Zoom</button>
+                    <button class="mini-btn" onclick="zoomMedia('photo', 0.1)">+ Zoom</button>
                 </div>
-                <label class="frm-label">Course</label><input type="text" id="inp_course" class="frm-input" value="Diploma in Engineering" oninput="updateContent()">
             </div>
-            <div class="tool-group">
-                <div class="tool-group-title">Details</div>
-                <div class="frm-row">
-                    <div style="flex:1;"><label class="frm-label">DOB</label><input type="text" id="inp_dob" class="frm-input" value="01/01/2000" oninput="updateContent()"></div>
-                    <div style="flex:1;"><label class="frm-label">Blood</label><input type="text" id="inp_blood" class="frm-input" value="O+" oninput="updateContent()"></div>
-                </div>
-                <div class="frm-row">
-                    <div style="flex:1;"><label class="frm-label">Phone</label><input type="text" id="inp_phone" class="frm-input" value="9000000000" oninput="updateContent()"></div>
-                    <div style="flex:1;"><label class="frm-label">Valid</label><input type="text" id="inp_valid" class="frm-input" value="2026" oninput="updateContent()"></div>
+            <div class="d-pad">
+                <button class="d-pad-btn up" onclick="adjustMedia('photo', 0, -5)">▲</button>
+                <button class="d-pad-btn left" onclick="adjustMedia('photo', -5, 0)">◀</button>
+                <button class="d-pad-btn right" onclick="adjustMedia('photo', 5, 0)">▶</button>
+                <button class="d-pad-btn down" onclick="adjustMedia('photo', 0, 5)">▼</button>
+            </div>
+            
+            <hr style="border:0; border-top:1px dashed #cbd5e1; margin:5px 0;">
+            <label class="upload-btn">🏢 Upload Logo <input type="file" id="file_logo" style="display:none" accept="image/*" onchange="loadMedia(this, 'imgLogo', 'ph_logo')"></label>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <button class="mini-btn" onclick="clearMedia('imgLogo', 'ph_logo')">Clear</button>
+                <div style="display:flex; gap:5px;">
+                    <button class="mini-btn" onclick="zoomMedia('logo', -0.1)">- Zoom</button>
+                    <button class="mini-btn" onclick="zoomMedia('logo', 0.1)">+ Zoom</button>
                 </div>
             </div>
-            <div class="tool-group">
-                <div class="tool-group-title">Badge</div>
-                <label class="frm-label">Role Text</label><input type="text" id="inp_role" class="frm-input" value="STUDENT" oninput="updateContent()">
-                <label class="frm-label">Show Badge</label>
-                <select id="inp_showBadge" class="frm-select" onchange="updateContent()"><option value="true">Yes</option><option value="false">No</option></select>
+            
+            <hr style="border:0; border-top:1px dashed #cbd5e1; margin:5px 0;">
+            <label class="frm-label">Official Seal</label>
+            <div class="frm-row">
+                <select id="sel_sealShape" class="frm-select" onchange="updateSeal()"><option value="round">Round</option><option value="oval">Oval</option></select>
+                <input type="color" id="clr_seal" class="color-picker" value="#16a34a" oninput="updateSeal()">
             </div>
         </div>
+    </div>
 
-        <!-- Org & Back Tab -->
-        <div class="tool-panel" id="tab-org">
-            <div class="tool-group">
-                <div class="tool-group-title">Front Info</div>
-                <label class="frm-label">Org Name</label><input type="text" id="inp_orgName" class="frm-input" value="ERP Technical Academy" oninput="updateContent()">
-                <label class="frm-label">Sub Title</label><input type="text" id="inp_orgSub" class="frm-input" value="Center of Excellence" oninput="updateContent()">
+    <!-- 4. Design & Color -->
+    <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">🎨 4. Design & Color</div>
+        <div class="accordion-content">
+            <div class="frm-row">
+                <div style="flex:1;"><label class="frm-label">Header Grad 1</label><input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" oninput="updateStyle()"></div>
+                <div style="flex:1;"><label class="frm-label">Header Grad 2</label><input type="color" id="clr_h2" class="color-picker" value="#3b82f6" oninput="updateStyle()"></div>
             </div>
-            <div class="tool-group">
-                <div class="tool-group-title">Address & Meta</div>
-                <textarea id="inp_orgAddr" class="frm-input frm-textarea" oninput="updateContent()">123 Main Street, City&#10;Ph: 9876543210</textarea>
+            <div class="frm-row">
+                <div style="flex:1;"><label class="frm-label">Footer Grad 1</label><input type="color" id="clr_f1" class="color-picker" value="#1e3a8a" oninput="updateStyle()"></div>
+                <div style="flex:1;"><label class="frm-label">Footer Grad 2</label><input type="color" id="clr_f2" class="color-picker" value="#3b82f6" oninput="updateStyle()"></div>
             </div>
-            <div class="tool-group">
-                <div class="tool-group-title">Back Side Details</div>
-                <label class="frm-label">Terms</label><input type="text" id="inp_terms" class="frm-input" value="Card is non-transferable." oninput="updateContent()">
-                <label style="font-size:10px; font-weight:bold; display:flex; align-items:center; gap:5px; margin-top:8px;"><input type="checkbox" id="chk_return" checked onchange="updateContent()"> Show Return Addr</label>
-                <input type="text" id="inp_return" class="frm-input" value="If found, return to ERP Academy" oninput="updateContent()">
+            <div class="frm-row">
+                <div style="flex:1;"><label class="frm-label">Card BG</label><input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateStyle()"></div>
+                <div style="flex:1;"><label class="frm-label">Text</label><input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateStyle()"></div>
             </div>
-        </div>
-
-        <!-- Photo & Logo Tab -->
-        <div class="tool-panel" id="tab-photo">
-            <div class="tool-group">
-                <div class="tool-group-title">Photo</div>
-                <div class="frm-row">
-                    <button onclick="document.getElementById('file_photo').click()" style="background:#e0f2fe; color:#0284c7; border:none; padding:6px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; flex:1;">Upload Photo</button>
-                    <input type="file" id="file_photo" style="display:none" accept="image/*" onchange="loadMedia(this, 'imgPhoto', 'ph_photo')">
-                    <button onclick="clearMedia('imgPhoto', 'ph_photo')" style="background:#fee2e2; color:#dc2626; border:none; padding:6px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">X</button>
-                </div>
-                <div class="frm-row" style="margin-top:5px;">
-                    <div style="flex:1;"><label class="frm-label">Border</label><select id="sel_pBorder" class="frm-select" onchange="updateStyle()"><option value="solid">Solid</option><option value="dashed">Dashed</option><option value="none">None</option></select></div>
-                    <div style="flex:1;"><label class="frm-label">Shape</label><select id="sel_pShape" class="frm-select" onchange="updateStyle()"><option value="8px">Rounded</option><option value="50%">Circle</option><option value="0px">Square</option></select></div>
-                </div>
-                <div class="frm-row" style="margin-top:5px; align-items:center;">
-                    <label class="frm-label">Zoom:</label>
-                    <button class="mini-btn" onclick="zoomMedia('photo', -0.1)">-</button>
-                    <button class="mini-btn" onclick="zoomMedia('photo', 0.1)">+</button>
-                    <div class="mini-dpad">
-                        <button class="mini-btn up" onclick="adjustMedia('photo', 0, -5)">▲</button>
-                        <button class="mini-btn left" onclick="adjustMedia('photo', -5, 0)">◀</button>
-                        <button class="mini-btn right" onclick="adjustMedia('photo', 5, 0)">▶</button>
-                        <button class="mini-btn down" onclick="adjustMedia('photo', 0, 5)">▼</button>
-                    </div>
-                </div>
+            
+            <label class="frm-label">Photo Border</label>
+            <div class="frm-row">
+                <select id="sel_pBorder" class="frm-select" onchange="updateStyle()"><option value="solid">Solid</option><option value="dashed">Dashed</option><option value="double">Double</option><option value="none">None</option></select>
+                <select id="sel_pShape" class="frm-select" onchange="updateStyle()"><option value="8px">Rounded</option><option value="50%">Circle</option><option value="0px">Square</option></select>
             </div>
-            <div class="tool-group">
-                <div class="tool-group-title">Logo</div>
-                <div class="frm-row">
-                    <button onclick="document.getElementById('file_logo').click()" style="background:#e0f2fe; color:#0284c7; border:none; padding:6px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; flex:1;">Upload Logo</button>
-                    <input type="file" id="file_logo" style="display:none" accept="image/*" onchange="loadMedia(this, 'imgLogo', 'ph_logo')">
-                    <button onclick="clearMedia('imgLogo', 'ph_logo')" style="background:#fee2e2; color:#dc2626; border:none; padding:6px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">X</button>
-                </div>
-                <div class="frm-row" style="margin-top:5px; align-items:center;">
-                    <label class="frm-label">Zoom:</label>
-                    <button class="mini-btn" onclick="zoomMedia('logo', -0.1)">-</button>
-                    <button class="mini-btn" onclick="zoomMedia('logo', 0.1)">+</button>
-                </div>
-            </div>
-            <div class="tool-group">
-                <div class="tool-group-title">Official Seal</div>
-                <div class="frm-row">
-                    <div style="flex:1;"><label class="frm-label">Shape</label><select id="sel_sealShape" class="frm-select" onchange="updateSeal()"><option value="round">Round</option><option value="oval">Oval</option></select></div>
-                    <div style="flex:1;"><label class="frm-label">Color</label><input type="color" id="clr_seal" class="color-picker" value="#b91c1c" oninput="updateSeal()"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Design Tab -->
-        <div class="tool-panel" id="tab-design">
-            <div class="tool-group">
-                <div class="tool-group-title">Theme Colors</div>
-                <div class="frm-row">
-                    <div style="flex:1;"><label class="frm-label">Header</label><input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" oninput="updateStyle()"></div>
-                    <div style="flex:1;"><label class="frm-label">Footer</label><input type="color" id="clr_f1" class="color-picker" value="#1e3a8a" oninput="updateStyle()"></div>
-                    <div style="flex:1;"><label class="frm-label">Card BG</label><input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateStyle()"></div>
-                    <div style="flex:1;"><label class="frm-label">Text</label><input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateStyle()"></div>
-                </div>
-            </div>
-            <div class="tool-group">
-                <div class="tool-group-title">Templates (10 Plain Styles)</div>
-                <select id="sel_template" class="frm-select" onchange="changeTemplate()">
-                    <option value="1">1. Classic Top & Bottom</option><option value="2">2. Curved Header</option><option value="3">3. Left Sidebar</option><option value="4">4. Simple Borders</option><option value="5">5. Slant Header</option>
-                    <option value="6">6. Full Border Frame</option><option value="7">7. Thick Header</option><option value="8">8. Plain & Dashed</option><option value="9">9. Right Sidebar</option><option value="10">10. Minimalist Block</option>
-                </select>
-            </div>
+            
+            <label class="frm-label">10 Plain Templates</label>
+            <select id="sel_template" class="frm-select" onchange="changeTemplate()">
+                <option value="1">1. Classic Top & Bottom</option><option value="2">2. Curved Drop</option><option value="3">3. Left Sidebar</option><option value="4">4. Simple Borders</option><option value="5">5. Top & Bottom Thin</option>
+                <option value="6">6. Full Border Frame</option><option value="7">7. Thick Header Only</option><option value="8">8. Plain & Dashed Footer</option><option value="9">9. Right Sidebar</option><option value="10">10. Minimalist Block</option>
+            </select>
         </div>
     </div>
 </div>
 
-<!-- ================= WORKSPACE (CANVAS) ================= -->
+<!-- ================= FREE CANVAS WORKSPACE ================= -->
 <div class="workspace" id="workspaceArea">
     
-    <!-- SIDE POCKET FOR VIEWS -->
-    <div class="side-pocket" id="sidePocket">
-        <div class="pocket-handle" onclick="togglePocket()">⚙️ VIEW</div>
+    <!-- LEFT SIDE POCKET (VIEWS) -->
+    <div class="left-pocket" id="leftPocket">
+        <div class="pocket-handle" onclick="togglePocket()">👁️ VIEW</div>
         <div class="pocket-menu">
             <button class="pocket-btn active" id="vbtn-front" onclick="setView('front')">Front</button>
             <button class="pocket-btn" id="vbtn-back" onclick="setView('back')">Back</button>
@@ -315,15 +308,15 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         </div>
     </div>
 
-    <!-- ZOOM CONTROLS -->
+    <!-- ZOOM CONTROLS (Floating Left) -->
     <div class="zoom-panel no-print">
         <button class="z-btn" onclick="changeWorkspaceZoom(-0.1)">-</button>
         <span style="font-size:11px; font-weight:800; align-self:center; width:35px; text-align:center;" id="zoomTxt">100%</span>
         <button class="z-btn" onclick="changeWorkspaceZoom(0.1)">+</button>
     </div>
 
-    <!-- FREEZE BUTTON -->
-    <div class="float-lock no-print" id="btnLock" onclick="toggleLock()" title="Lock Card to scroll">🔓</div>
+    <!-- FREEZE BUTTON (Floating Right) -->
+    <div class="float-lock no-print" id="btnLock" onclick="toggleLock()" title="Lock Card to scroll/pan freely">🔓</div>
 
     <!-- THE CANVAS -->
     <div class="canvas-wrapper" id="canvasWrapper">
@@ -395,14 +388,14 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 </div>
 
 <!-- ================= BOTTOM COMPACT EXPORT BAR ================= -->
-<div class="export-bar no-print">
+<div class="bottom-bar no-print">
     <button class="export-btn btn-png" onclick="exportCard('png')">🖼️ HD PNG</button>
     <button class="export-btn btn-pdf" onclick="exportCard('pdf')">📄 HD PDF</button>
 </div>
 
 <div class="toast" id="toastMsg">Success!</div>
 
-<!-- ================= JAVASCRIPT ================= -->
+<!-- ================= JAVASCRIPT LOGIC ================= -->
 <script type="module">
     import { supabase } from './assets/js/supabase-config.js';
     import './assets/js/auth-check.js';
@@ -410,8 +403,8 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
     // ================= STATE =================
     window.appState = {
-        view: 'front', // front, back, both
-        orientation: 'landscape', // portrait, landscape
+        view: 'front', 
+        orientation: 'landscape',
         isFrozen: false,
         zoom: 1,
         panX: 0, panY: 0, // Canvas panning
@@ -419,7 +412,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         logoState: { x: 0, y: 0, z: 1 }
     };
 
-    // Default Positions relative to Card Face
+    // Default Positions
     const posL = {
         logo: {x: 10, y: 8}, org: {x: 60, y: 10}, photo: {x: 15, y: 75},
         details: {x: 105, y: 75}, badge: {x: 15, y: 180}, seal: {x: 240, y: 130},
@@ -451,32 +444,29 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             el.addEventListener('change', autoSave);
         });
 
-        // Initial Responsive zoom
-        if(window.innerWidth < 600) changeWorkspaceZoom(-0.2);
+        if(window.innerWidth < 600) changeWorkspaceZoom(-0.2); // Initial zoom for mobile
+        centerCanvas();
     });
 
     // ================= UI CONTROLS =================
-    window.toggleToolbar = function() {
-        document.getElementById('settingsToolbar').classList.toggle('hidden-mode');
-        document.getElementById('pocketToggle').classList.toggle('hidden');
+    window.toggleSidebar = function() { document.getElementById('settingsSidebar').classList.toggle('open'); }
+    window.togglePocket = function() { document.getElementById('leftPocket').classList.toggle('open'); }
+    window.toggleAccordion = function(el) {
+        document.querySelectorAll('.accordion-item').forEach(item => { if(item !== el.parentElement) item.classList.remove('active'); });
+        el.parentElement.classList.toggle('active');
     }
-    window.switchTab = function(tab) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        document.getElementById('tab-' + tab).classList.add('active');
-    }
-    window.togglePocket = function() { document.getElementById('sidePocket').classList.toggle('open'); }
     
     window.toggleLock = function() {
         window.appState.isFrozen = !window.appState.isFrozen;
         const btn = document.getElementById('btnLock');
         if(window.appState.isFrozen) {
             btn.classList.add('locked'); btn.innerText = '🔒';
-            showToast("Canvas Locked! You can now pan/scroll.");
+            document.querySelector('.workspace').style.cursor = 'grab';
+            showToast("Canvas Locked! Swipe anywhere to Pan.");
         } else {
             btn.classList.remove('locked'); btn.innerText = '🔓';
-            showToast("Unlocked! You can drag card elements.");
+            document.querySelector('.workspace').style.cursor = 'default';
+            showToast("Unlocked! Drag elements to move them.");
         }
     }
     window.showToast = function(msg) {
@@ -492,6 +482,16 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         applyCanvasTransform();
         document.getElementById('zoomTxt').innerText = Math.round(z * 100) + '%';
     }
+    
+    function centerCanvas() {
+        const ws = document.querySelector('.workspace');
+        const cWrap = document.getElementById('canvasWrapper');
+        const rect = cWrap.getBoundingClientRect();
+        // Calculate center based on width and height
+        window.appState.panX = (ws.clientWidth - (336 * window.appState.zoom)) / 2;
+        window.appState.panY = 50; // top padding
+        applyCanvasTransform();
+    }
 
     // ================= VIEW & ORIENTATION =================
     window.setView = function(v) {
@@ -503,6 +503,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         if(v === 'front') { c.classList.remove('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='none'; }
         else if(v === 'back') { c.classList.remove('show-both'); document.getElementById('cardFront').style.display='none'; document.getElementById('cardBack').style.display='block'; }
         else { c.classList.add('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='block'; }
+        setTimeout(centerCanvas, 350); // Recenter after animation
     }
 
     window.toggleOrient = function() {
@@ -524,6 +525,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             document.getElementById('box_details').style.textAlign = 'left'; document.getElementById('box_details').style.width = '200px';
         }
         applyPositions();
+        setTimeout(centerCanvas, 350);
     }
 
     window.changeTemplate = function() {
@@ -555,24 +557,35 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             document.getElementById('box_return').style.display = 'block';
             document.getElementById('txt_return').innerHTML = document.getElementById('inp_return').value.replace(/\n/g, '<br>');
         } else { document.getElementById('box_return').style.display = 'none'; }
+        
+        document.getElementById('box_qr').style.display = document.getElementById('chk_qr').checked ? 'flex' : 'none';
     }
 
     window.updateStyle = function() {
         const h1 = document.getElementById('clr_h1').value;
+        const h2 = document.getElementById('clr_h2').value;
         const f1 = document.getElementById('clr_f1').value;
+        const f2 = document.getElementById('clr_f2').value;
         const bg = document.getElementById('clr_bg').value;
         const tx = document.getElementById('clr_text').value;
 
         document.querySelectorAll('.card-face').forEach(el => { el.style.backgroundColor = bg; el.style.color = tx; });
-        document.getElementById('bgHeader').style.background = h1;
-        document.getElementById('bgFooter').style.background = f1;
         
-        document.getElementById('box_badge').style.background = h1;
+        // Gradient applies safely based on template
+        document.getElementById('bgHeader').style.background = `linear-gradient(135deg, ${h1}, ${h2})`;
+        document.getElementById('bgFooter').style.background = `linear-gradient(135deg, ${f1}, ${f2})`;
+        
+        document.getElementById('box_badge').style.background = `linear-gradient(135deg, ${h1}, ${h2})`;
         document.getElementById('box_badge').style.color = getContrast(h1);
         
         const orgInfo = document.getElementById('txt_orgName').parentElement;
-        orgInfo.style.color = getContrast(h1);
-        document.getElementById('ph_logo').style.color = getContrast(h1);
+        // Template 4, 8, 10 use transparent headers so text needs to be colored based on bg
+        const tpl = document.getElementById('sel_template').value;
+        if(['4','6','8','10'].includes(tpl)) {
+            orgInfo.style.color = tx; document.getElementById('ph_logo').style.color = tx;
+        } else {
+            orgInfo.style.color = getContrast(h1); document.getElementById('ph_logo').style.color = getContrast(h1);
+        }
 
         const shp = document.getElementById('sel_pShape').value;
         const bdr = document.getElementById('sel_pBorder').value;
@@ -582,6 +595,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
         const wms = document.querySelectorAll('.saas-watermark');
         wms.forEach(w => { if(getContrast(bg) === '#0f172a') w.classList.add('watermark-dark'); else w.classList.remove('watermark-dark'); });
+        
+        // Fix for Template borders color
+        if(tpl === '6' || tpl === '10' || tpl === '7' || tpl === '19' || tpl === '20') {
+             document.getElementById('bgHeader').style.borderColor = h1;
+             document.getElementById('bgFooter').style.borderColor = f1;
+        }
     }
 
     function getContrast(hex) {
@@ -653,35 +672,32 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const workspace = document.querySelector('.workspace');
         let isDown = false, startX, startY;
 
+        // Mouse Events
         workspace.addEventListener('mousedown', (e) => {
             if(!window.appState.isFrozen) return; // Only pan if locked
-            isDown = true;
-            startX = e.pageX - window.appState.panX;
-            startY = e.pageY - window.appState.panY;
+            isDown = true; workspace.classList.add('dragging');
+            startX = e.pageX - window.appState.panX; startY = e.pageY - window.appState.panY;
         });
-        workspace.addEventListener('mouseleave', () => { isDown = false; });
-        workspace.addEventListener('mouseup', () => { isDown = false; });
+        workspace.addEventListener('mouseleave', () => { isDown = false; workspace.classList.remove('dragging'); });
+        workspace.addEventListener('mouseup', () => { isDown = false; workspace.classList.remove('dragging'); });
         workspace.addEventListener('mousemove', (e) => {
             if(!isDown || !window.appState.isFrozen) return;
             e.preventDefault();
-            window.appState.panX = e.pageX - startX;
-            window.appState.panY = e.pageY - startY;
+            window.appState.panX = e.pageX - startX; window.appState.panY = e.pageY - startY;
             applyCanvasTransform();
         });
 
-        // Touch Pan
+        // Touch Events
         workspace.addEventListener('touchstart', (e) => {
             if(!window.appState.isFrozen || e.touches.length !== 1) return;
             isDown = true;
-            startX = e.touches[0].pageX - window.appState.panX;
-            startY = e.touches[0].pageY - window.appState.panY;
-        });
+            startX = e.touches[0].pageX - window.appState.panX; startY = e.touches[0].pageY - window.appState.panY;
+        }, {passive: false});
         workspace.addEventListener('touchend', () => { isDown = false; });
         workspace.addEventListener('touchmove', (e) => {
             if(!isDown || !window.appState.isFrozen || e.touches.length !== 1) return;
             e.preventDefault();
-            window.appState.panX = e.touches[0].pageX - startX;
-            window.appState.panY = e.touches[0].pageY - startY;
+            window.appState.panX = e.touches[0].pageX - startX; window.appState.panY = e.touches[0].pageY - startY;
             applyCanvasTransform();
         }, {passive: false});
     }
@@ -691,17 +707,19 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         wrapper.style.transform = `translate(${window.appState.panX}px, ${window.appState.panY}px) scale(${window.appState.zoom})`;
     }
 
-    // ================= DRAG & DROP ELEMENTS =================
+    // ================= DRAG & DROP ELEMENTS (FLYING FIX) =================
     function initDragAndDrop() {
         const draggables = document.querySelectorAll('.drag-el');
         let activeEl = null; let initX = 0, initY = 0;
 
         function dragStart(e) {
             if(window.appState.isFrozen) return; // Block dragging if locked
-            if (e.target.tagName === 'INPUT') return;
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             activeEl = e.currentTarget; activeEl.classList.add('active-drag');
-            const id = activeEl.dataset.id; const pos = positions[id] || {x:0, y:0}; const z = window.appState.zoom;
+            const id = activeEl.dataset.id; const pos = positions[id] || {x:0, y:0}; 
+            const z = window.appState.zoom;
             
+            // Critical fix: Account for zoom scale when calculating start point
             if (e.type === "touchstart") { initX = (e.touches[0].clientX / z) - pos.x; initY = (e.touches[0].clientY / z) - pos.y; } 
             else { initX = (e.clientX / z) - pos.x; initY = (e.clientY / z) - pos.y; }
         }
@@ -711,6 +729,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             e.preventDefault();
             const z = window.appState.zoom; let curX, curY;
             
+            // Critical fix: Divide mouse movement by zoom scale so items don't fly away
             if (e.type === "touchmove") { curX = (e.touches[0].clientX / z) - initX; curY = (e.touches[0].clientY / z) - initY; } 
             else { curX = (e.clientX / z) - initX; curY = (e.clientY / z) - initY; }
 
@@ -786,12 +805,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             if(el.id) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
         });
         const saveData = { inputs: data, positions: positions, state: window.appState };
-        localStorage.setItem('vpk_id_studio_v2', JSON.stringify(saveData));
+        localStorage.setItem('vpk_id_studio_v3', JSON.stringify(saveData));
     }
 
     function loadAutoSave() {
         try {
-            const saved = localStorage.getItem('vpk_id_studio_v2');
+            const saved = localStorage.getItem('vpk_id_studio_v3');
             if(saved) {
                 const data = JSON.parse(saved);
                 if(data.inputs) {
@@ -840,6 +859,19 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                 }
             } catch(e) {}
         }
+    }
+    
+    // ================= SAAS CONTROLS =================
+    async function applySaaSControls() {
+        try {
+            const microStr = localStorage.getItem('saas_micro_features');
+            if (microStr) {
+                const micro = JSON.parse(microStr);
+                const marks = document.querySelectorAll('.saas-watermark');
+                if (micro.remove_watermark === false) { marks.forEach(m => m.style.display = 'block'); } 
+                else { marks.forEach(m => m.style.display = 'none'); }
+            }
+        } catch(e) {}
     }
 </script>
 </body>
