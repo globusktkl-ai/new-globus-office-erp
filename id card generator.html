@@ -15,7 +15,7 @@
 body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: #334155; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
 
 /* ================= 3D BACK BUTTON & HEADER ================= */
-.top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #ffffff; border-bottom: 2px solid #cbd5e1; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; height: 50px; }
+.top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #ffffff; border-bottom: 1px solid #cbd5e1; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; height: 50px; }
 .btn-back-3d { position: absolute; left: 15px; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 36px; background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%); border: 1px solid #cbd5e1; border-bottom: 3px solid #94a3b8; border-radius: 10px; transition: all 0.1s; z-index: 2001; cursor: pointer; text-decoration: none; }
 .btn-back-3d:active { transform: translateY(2px); border-bottom: 1px solid #94a3b8; }
 .btn-back-3d svg { width: 20px; height: 20px; stroke: #4c1d95; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
@@ -24,7 +24,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .btn-toggle-settings { position: absolute; right: 15px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
 .btn-toggle-settings.active { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
 
-/* ================= HORIZONTAL SLIDING SETTINGS (Right to Left) ================= */
+/* ================= HORIZONTAL SLIDING SETTINGS ================= */
 .settings-slider { position: fixed; top: 50px; left: 0; right: 0; height: 130px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-bottom: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1500; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px 15px; gap: 15px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); align-items: stretch; }
 .settings-slider::-webkit-scrollbar { display: none; }
 .settings-slider.hidden { transform: translateY(-130%); }
@@ -55,15 +55,20 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
 .canvas-wrapper { position: absolute; transform-origin: 0 0; transition: transform 0.1s; }
 
-/* ================= LEFT SIDE POCKET (ARROW ONLY) ================= */
-.left-pocket { position: fixed; left: 0; top: 50%; transform: translateY(-50%) translateX(-100%); z-index: 1200; display: flex; align-items: center; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-.left-pocket.open { transform: translateY(-50%) translateX(0); }
-.pocket-handle { position: absolute; right: -24px; background: #1e3a8a; color: white; width: 24px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 0 8px 8px 0; font-size: 14px; font-weight: 900; cursor: pointer; box-shadow: 2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-left: none; }
-.pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 4px 4px 15px rgba(0,0,0,0.05); max-height: 85vh; overflow-y: auto; }
+/* ================= LEFT SIDE POCKET ================= */
+/* FIXED: Moved top to 70px to avoid hiding behind the header */
+.left-pocket { position: fixed; left: 0; top: 70px; transform: translateX(-100%); z-index: 1200; display: flex; align-items: flex-start; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.left-pocket.open { transform: translateX(0); }
+.pocket-handle { position: absolute; right: -24px; top: 0; background: #1e3a8a; color: white; width: 24px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 0 8px 8px 0; font-size: 14px; font-weight: 900; cursor: pointer; box-shadow: 2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-left: none; }
+.pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 4px 4px 15px rgba(0,0,0,0.05); max-height: calc(100vh - 150px); overflow-y: auto; }
 .pocket-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #334155; cursor: pointer; transition: 0.2s; white-space: nowrap; }
 .pocket-btn.active { background: #3b82f6; color: white; border-color: #2563eb; }
 
-/* ================= FLOATING LOCK BUTTON ================= */
+/* ================= FLOATING CONTROLS ================= */
+.zoom-panel { position: fixed; bottom: 70px; left: 15px; background: white; border-radius: 8px; padding: 4px; display: flex; gap: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; z-index: 1200; }
+.z-btn { background: #f8fafc; border: 1px solid #e2e8f0; width: 32px; height: 32px; border-radius: 6px; font-weight: bold; font-size: 18px; cursor: pointer; color: #1e3a8a; display: flex; align-items: center; justify-content: center;}
+.z-btn:active { background: #e2e8f0; }
+
 .float-lock { position: fixed; bottom: 70px; right: 15px; width: 42px; height: 42px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.3); z-index: 1200; transition: 0.3s; }
 .float-lock.locked { background: #ef4444; color: white; border-color: #dc2626; box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
 
@@ -72,11 +77,10 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .id-card.landscape { width: 336px; height: 212px; }
 .id-card.portrait { width: 212px; height: 336px; }
 
-/* Double sided setup */
 .id-card.show-both.landscape { height: 440px; }
 .id-card.show-both.portrait { width: 440px; height: 336px; }
 
-.card-face { position: absolute; width: 100%; height: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; background-color: var(--c-bg, #ffffff); font-family: var(--c-font, 'Segoe UI'); }
+.card-face { position: absolute; width: 100%; height: 100%; background-color: #ffffff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; background-color: var(--c-bg, #ffffff); font-family: var(--c-font, 'Segoe UI'); }
 
 .id-card.show-both.landscape .card-front { top: 0; height: 212px; }
 .id-card.show-both.landscape .card-back { top: 228px; height: 212px; display: block !important; }
@@ -89,52 +93,44 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .card-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; border-radius: 10px; overflow: hidden; }
 .bg-header, .bg-footer { position: absolute; left: 0; right: 0; }
 
-/* 10 DYNAMIC TEMPLATES USING CSS CLIP-PATHS */
+/* 10 DYNAMIC TEMPLATES */
 .tpl-1 .bg-header { height: 60px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); }
 .tpl-1 .bg-footer { height: 25px; bottom: 0; background: linear-gradient(135deg, var(--f1), var(--f2)); }
-
 .tpl-2 .bg-header { height: 75px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); border-radius: 0 0 50% 50%; }
 .tpl-2 .bg-footer { height: 20px; bottom: 0; background: linear-gradient(135deg, var(--f1), var(--f2)); border-radius: 50% 50% 0 0; }
-
 .tpl-3 .bg-header { height: 100%; width: 30%; top: 0; left: 0; background: linear-gradient(180deg, var(--h1), var(--h2)); }
 .tpl-3 .bg-footer { display: none; }
-
 .tpl-4 .bg-header { height: 65px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); clip-path: polygon(0 0, 100% 0, 100% 60%, 0 100%); }
 .tpl-4 .bg-footer { height: 30px; bottom: 0; background: linear-gradient(135deg, var(--f1), var(--f2)); clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 100%); }
-
 .tpl-5 .bg-header { height: 15px; top: 0; background: var(--h1); }
 .tpl-5 .bg-footer { height: 15px; bottom: 0; background: var(--f1); }
-
 .tpl-6 .bg-header { height: 100%; width: 100%; top: 0; left: 0; background: transparent; border: 6px solid var(--h1); border-radius: 10px; }
 .tpl-6 .bg-footer { display: none; }
-
 .tpl-7 .bg-header { height: 50px; top: 0; background: var(--h1); border-bottom: 4px solid var(--h2); }
 .tpl-7 .bg-footer { display: none; }
-
 .tpl-8 .bg-header { height: 60px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%); }
 .tpl-8 .bg-footer { height: 25px; bottom: 0; background: var(--f1); }
-
 .tpl-9 .bg-header { height: 100%; width: 25px; top: 0; right: 0; left: auto; background: linear-gradient(180deg, var(--h1), var(--h2)); }
 .tpl-9 .bg-footer { display: none; }
-
 .tpl-10 .bg-header { height: 15px; top: 0; background: var(--h1); }
 .tpl-10 .bg-footer { height: 15px; bottom: 0; background: var(--f1); }
 
-/* Draggables Layer (Visible Overflow to prevent losing items) */
+/* Draggables Layer */
 .card-drag-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 .drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; border: 1px dashed transparent; padding: 2px; transition: border 0.2s; }
 .drag-el.selected { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); z-index: 20; }
 .drag-el:active { cursor: grabbing; }
 
 /* Elements */
-.el-logo { width: 45px; height: 45px; background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.el-logo { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; }
+.el-logo img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; transform-origin: center; }
 .el-logo.empty { border: 2px dashed #94a3b8; color: #94a3b8; font-size: 10px; font-weight: bold; background-color: rgba(255,255,255,0.2); }
 
 .el-org { line-height: 1.2; color: var(--c-txt, #0f172a); }
 .el-org .name { font-size: 14px; font-weight: 900; text-transform: uppercase; }
 .el-org .sub { font-size: 8px; font-weight: 700; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* Proper Image Fix for html2canvas */
+/* HTML2Canvas Fix for Photo */
 .el-photo { width: 75px; height: 95px; background-color: #f1f5f9; border: 2px solid #cbd5e1; border-radius: 8px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; z-index: 10;}
 .el-photo img { position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; transform-origin: center; }
 .el-photo.empty { color: #94a3b8; font-size: 24px; }
@@ -144,9 +140,10 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .el-details .s-course { font-size: 9px; font-weight: 800; color: #b91c1c; text-transform: uppercase; margin-bottom: 4px; }
 .el-details table { width: 100%; font-size: 9px; font-weight: 700; color: #334155; border-collapse: collapse; }
 .el-details td { padding: 1px 0; vertical-align: top; }
-.el-details .lbl { width: 45px; opacity: 0.8; }
+.el-details .lbl { width: 55px; opacity: 0.8; }
 
-.el-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; background: var(--h1, #1e3a8a); color: white; width: max-content; z-index: 15; }
+/* FIXED BADGE STYLING: Colors applied to inner span to prevent `.selected` background conflict */
+.inner-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-block; background: var(--h1, #1e3a8a); color: white; }
 
 .el-seal { width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; }
 .el-seal svg { width: 100%; height: 100%; pointer-events: none; }
@@ -193,7 +190,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 <!-- HORIZONTAL SETTINGS SLIDER (Right to Left) -->
 <div class="settings-slider no-print" id="settingsSlider">
     
-    <!-- 1. Theme & Design (Colors explicitly labeled) -->
+    <!-- 1. Theme & Design -->
     <div class="tool-group" style="min-width: 350px;">
         <div class="tool-group-title">1. Theme & Colors</div>
         <div class="frm-row">
@@ -210,33 +207,27 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         </div>
         <div class="frm-row" style="margin-top:5px; gap:10px;">
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Head 1</label>
-                <input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" oninput="updateStyle()">
+                <label class="frm-label">Head 1</label><input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" oninput="updateStyle()">
             </div>
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Head 2</label>
-                <input type="color" id="clr_h2" class="color-picker" value="#3b82f6" oninput="updateStyle()">
+                <label class="frm-label">Head 2</label><input type="color" id="clr_h2" class="color-picker" value="#3b82f6" oninput="updateStyle()">
             </div>
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Foot 1</label>
-                <input type="color" id="clr_f1" class="color-picker" value="#1e3a8a" oninput="updateStyle()">
+                <label class="frm-label">Foot 1</label><input type="color" id="clr_f1" class="color-picker" value="#1e3a8a" oninput="updateStyle()">
             </div>
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Foot 2</label>
-                <input type="color" id="clr_f2" class="color-picker" value="#3b82f6" oninput="updateStyle()">
+                <label class="frm-label">Foot 2</label><input type="color" id="clr_f2" class="color-picker" value="#3b82f6" oninput="updateStyle()">
             </div>
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Card BG</label>
-                <input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateStyle()">
+                <label class="frm-label">Card BG</label><input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateStyle()">
             </div>
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Text</label>
-                <input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateStyle()">
+                <label class="frm-label">Text</label><input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateStyle()">
             </div>
         </div>
     </div>
 
-    <!-- 2. Card Holder (Role) -->
+    <!-- 2. Card Holder -->
     <div class="tool-group">
         <div class="tool-group-title">2. Card Holder Details</div>
         <div class="frm-row">
@@ -273,7 +264,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         <div class="frm-row"><input type="text" id="inp_orgAddr" class="frm-input" placeholder="City & Contact" value="City, State - 123456" oninput="updateContent()"></div>
     </div>
 
-    <!-- 5. Media & Seal (With D-Pad) -->
+    <!-- 5. Media & Adjust -->
     <div class="tool-group" style="min-width: 320px;">
         <div class="tool-group-title">5. Photo, Logo & Adjust</div>
         <div class="frm-row" style="margin-bottom: 5px;">
@@ -285,11 +276,16 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             </div>
         </div>
         <div class="media-ctrl-panel">
+            <div style="font-size:10px; font-weight:800; color:#475569; width:45px; line-height:1.2;">Move<br><span id="txtActiveMedia" style="color:#1e3a8a;">Photo</span></div>
             <div class="mini-dpad">
                 <button class="mini-btn up" onclick="adjustMedia(0, -5)">▲</button>
                 <button class="mini-btn left" onclick="adjustMedia(-5, 0)">◀</button>
                 <button class="mini-btn right" onclick="adjustMedia(5, 0)">▶</button>
                 <button class="mini-btn down" onclick="adjustMedia(0, 5)">▼</button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <button class="mini-btn" onclick="zoomMedia(0.1)">Zoom +</button>
+                <button class="mini-btn" onclick="zoomMedia(-0.1)">Zoom -</button>
             </div>
         </div>
         <div class="frm-row" style="margin-top:2px;">
@@ -298,8 +294,8 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         </div>
     </div>
 
-    <!-- 6. Back Side & QR -->
-    <div class="tool-group">
+    <!-- 6. Back Side -->
+    <div class="tool-group" id="group-back">
         <div class="tool-group-title">6. Back Side & Seal</div>
         <div class="frm-row">
             <select id="sel_sealShape" class="frm-select" onchange="updateSeal()"><option value="round">Round Seal</option><option value="oval">Oval Seal</option></select>
@@ -308,7 +304,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         <div class="frm-row" style="margin-top:6px;">
             <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_qr" checked onchange="updateContent()"> Show QR</label>
             <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_return" checked onchange="updateContent()"> Return Addr</label>
-            <select id="inp_showBadge" class="frm-select" onchange="updateContent()" style="width:auto; padding:2px;"><option value="true">Badge ON</option><option value="false">Badge OFF</option></select>
         </div>
     </div>
 </div>
@@ -341,9 +336,14 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_terms" checked onchange="toggleEl('box_terms', this)"> Terms</label>
             <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_qr" checked onchange="toggleEl('box_qr', this)"> QR</label>
             <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_return" checked onchange="toggleEl('box_return', this)"> Return Addr</label>
-            
-            <button class="pocket-btn" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5; margin-top:4px;" onclick="resetPositions()">🔄 Reset Positions</button>
         </div>
+    </div>
+
+    <!-- ZOOM CONTROLS (Only visible when LOCKED) -->
+    <div class="zoom-panel no-print" id="zoomPanel" style="display:none;">
+        <button class="z-btn" onclick="changeWorkspaceZoom(-0.1)">-</button>
+        <span style="display:flex; align-items:center; font-size:11px; font-weight:800; width:35px; justify-content:center;" id="zoomTxt">100%</span>
+        <button class="z-btn" onclick="changeWorkspaceZoom(0.1)">+</button>
     </div>
 
     <!-- FREEZE BUTTON (LOCK/UNLOCK) -->
@@ -397,7 +397,11 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                             </table>
                         </div>
 
-                        <div class="drag-el el-badge" data-id="badge" id="box_badge"><span id="txt_role">STUDENT</span></div>
+                        <!-- FIXED: Background colors moved to inner span to prevent `.selected` overlap -->
+                        <div class="drag-el" data-id="badge" id="box_badge">
+                            <span id="txt_role" class="inner-badge">STUDENT</span>
+                        </div>
+                        
                         <div class="drag-el el-seal" data-id="seal" id="box_seal"></div>
                         <div class="saas-watermark" id="wmFront">⚡ Powered by VPKTech Solutions</div>
                     </div>
@@ -409,7 +413,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                     <div class="card-drag-layer">
                         <div class="drag-el el-org" data-id="borg" id="box_borg" style="width:200px; text-align:center;">
                             <div class="name" id="txt_borgName" style="font-size:12px; color:#0f172a;">Institution Name</div>
-                            <div class="addr" id="txt_orgAddrBack" style="font-size:8px; color:#475569; margin-top:2px;">Address</div>
                         </div>
                         <div class="drag-el el-terms" data-id="terms" id="box_terms" style="width:200px;"><span id="txt_terms">Terms...</span></div>
                         <div class="drag-el el-qr" data-id="qr" id="box_qr">QR</div>
@@ -459,9 +462,9 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         borg: {x: 68, y: 15, scale: 1}, terms: {x: 68, y: 55, scale: 1}, qr: {x: 138, y: 90, scale: 1}, return: {x: 68, y: 165, scale: 1}
     };
     const posP = {
-        logo: {x: 83, y: 5, scale: 1}, org: {x: 6, y: 55, scale: 1}, photo: {x: 68, y: 105, scale: 1},
-        details: {x: 6, y: 210, scale: 1}, badge: {x: 61, y: 310, scale: 1}, seal: {x: 120, y: 240, scale: 1},
-        borg: {x: 6, y: 15, scale: 1}, terms: {x: 6, y: 55, scale: 1}, qr: {x: 76, y: 120, scale: 1}, return: {x: 6, y: 190, scale: 1}
+        logo: {x: 83, y: 5, scale: 1}, org: {x: 11, y: 55, scale: 1}, photo: {x: 68, y: 105, scale: 1},
+        details: {x: 11, y: 210, scale: 1}, badge: {x: 61, y: 310, scale: 1}, seal: {x: 120, y: 240, scale: 1},
+        borg: {x: 6, y: 20, scale: 1}, terms: {x: 6, y: 50, scale: 1}, qr: {x: 76, y: 120, scale: 1}, return: {x: 6, y: 190, scale: 1}
     };
 
     let positions = JSON.parse(JSON.stringify(posL));
@@ -514,6 +517,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         window.appState.isFrozen = !window.appState.isFrozen;
         const btn = document.getElementById('btnLock');
         const ws = document.getElementById('workspaceArea');
+        const zp = document.getElementById('zoomPanel');
         
         window.appState.selectedId = null;
         document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
@@ -521,11 +525,13 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         if(window.appState.isFrozen) {
             btn.classList.add('locked'); btn.innerText = '🔒';
             ws.classList.add('locked');
-            showToast("Card Locked. Use two fingers to pinch zoom/pan the screen.");
+            zp.style.display = 'flex'; // Show zoom panel when locked
+            showToast("Canvas Locked! Two-finger Pinch & Pan enabled.");
         } else {
             btn.classList.remove('locked'); btn.innerText = '🔓';
             ws.classList.remove('locked');
-            showToast("Unlocked. Select an element to move it.");
+            zp.style.display = 'none'; // Hide zoom panel when unlocked
+            showToast("Unlocked! You can drag card elements.");
         }
     }
     
@@ -542,6 +548,15 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         applyCanvasTransform();
     }
 
+    // ================= DYNAMIC ZOOM (CANVAS ONLY) =================
+    window.changeWorkspaceZoom = function(val) {
+        let z = window.appState.zoom + val;
+        if(z < 0.4) z = 0.4; if(z > 3) z = 3;
+        window.appState.zoom = z;
+        applyCanvasTransform();
+        document.getElementById('zoomTxt').innerText = Math.round(z * 100) + '%';
+    }
+
     // ================= MEDIA SELECTION & D-PAD (ZOOM INNER IMAGE) =================
     window.setActiveMedia = function(type) {
         window.activeMedia = type;
@@ -551,6 +566,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         document.getElementById('sel_logo_btn').style.background = type === 'logo' ? '#eff6ff' : 'transparent';
         
         document.querySelector('#sel_logo_btn label').style.color = type === 'logo' ? '#0284c7' : '#475569';
+        document.getElementById('txtActiveMedia').innerText = type === 'photo' ? 'Photo' : 'Logo';
     }
 
     window.adjustMedia = function(dx, dy) {
@@ -579,7 +595,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         window.appState.view = v;
         document.querySelectorAll('.pocket-btn:not(#vbtn-orient)').forEach(b => b.classList.remove('active'));
         document.getElementById('vbtn-' + v).classList.add('active');
-        togglePocket(); // Auto close
+        togglePocket(); 
 
         const c = document.getElementById('idCard');
         if(v === 'front') { 
@@ -662,19 +678,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         document.getElementById('txt_phone').innerText = document.getElementById('inp_phone').value;
         document.getElementById('txt_valid').innerText = document.getElementById('inp_valid').value;
         
-        document.getElementById('box_badge').style.display = document.getElementById('inp_showBadge').value === 'true' ? 'inline-block' : 'none';
+        // Let toggle handle visibility from pocket menu
+        // document.getElementById('box_badge').style.display = document.getElementById('inp_showBadge').value === 'true' ? 'inline-block' : 'none';
 
         // Back
         document.getElementById('txt_borgName').innerText = document.getElementById('inp_orgName').value;
-        document.getElementById('txt_orgAddrBack').innerHTML = document.getElementById('inp_orgAddr').value.replace(/\n/g, '<br>');
         document.getElementById('txt_terms').innerHTML = document.getElementById('inp_terms').value.replace(/\n/g, '<br>');
-        
-        if(document.getElementById('chk_return').checked) {
-            document.getElementById('box_return').style.display = 'block';
-            document.getElementById('txt_return').innerHTML = document.getElementById('inp_return').value.replace(/\n/g, '<br>');
-        } else { document.getElementById('box_return').style.display = 'none'; }
-        
-        document.getElementById('box_qr').style.display = document.getElementById('chk_qr').checked ? 'flex' : 'none';
     }
 
     window.updateStyle = function() {
@@ -696,8 +705,9 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         idCard.style.setProperty('--c-txt', tx);
         idCard.style.setProperty('--c-font', font);
 
-        document.getElementById('box_badge').style.background = h1;
-        document.getElementById('box_badge').style.color = getContrast(h1);
+        // Fixed inner badge styles
+        document.getElementById('txt_role').style.background = h1;
+        document.getElementById('txt_role').style.color = getContrast(h1);
         
         const orgInfo = document.getElementById('txt_orgName').parentElement;
         const tpl = document.getElementById('sel_template').value;
@@ -729,19 +739,16 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                const el = document.querySelector('.' + imgId.replace('img','el-').toLowerCase());
-                // Set as background image to prevent html2canvas bug
-                el.style.backgroundImage = `url('${e.target.result}')`;
-                el.style.backgroundSize = 'cover';
-                el.style.backgroundPosition = 'center';
-                el.classList.remove('empty');
+                const img = document.getElementById(imgId);
+                img.src = e.target.result;
+                img.style.display = 'block';
                 document.getElementById(phId).style.display = 'none';
                 
-                // Clear the img tag inside it so it doesn't duplicate
-                document.getElementById(imgId).src = '';
-                document.getElementById(imgId).style.display = 'none';
+                const wrapper = document.querySelector('.el-' + type);
+                if (wrapper) wrapper.classList.remove('empty');
                 
                 window.appState.media[type] = {x:0, y:0, z:1};
+                applyMediaTransform();
                 autoSave();
             };
             reader.readAsDataURL(input.files[0]);
@@ -751,20 +758,8 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     window.toggleEl = function(id, cb) {
         const el = document.getElementById(id);
         if(el) {
-            if(id === 'box_badge') el.style.display = cb.checked ? 'inline-block' : 'none';
-            else el.style.display = cb.checked ? 'block' : 'none';
+            el.style.display = cb.checked ? 'block' : 'none';
         }
-        autoSave();
-    };
-
-    window.resetPositions = function() {
-        if(window.appState.orientation === 'portrait') {
-            positions = JSON.parse(JSON.stringify(posP));
-        } else {
-            positions = JSON.parse(JSON.stringify(posL));
-        }
-        applyPositions();
-        showToast("Positions Reset!");
         autoSave();
     };
 
@@ -798,26 +793,24 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
         // Mouse Events
         workspace.addEventListener('mousedown', (e) => {
-            if(!window.appState.isFrozen) return; 
+            if(!window.appState.isFrozen) return; // Only pan if locked
             if(e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
             isDown = true;
-            startX = e.pageX - window.appState.panX; 
-            startY = e.pageY - window.appState.panY;
+            startX = e.pageX - window.appState.panX; startY = e.pageY - window.appState.panY;
         });
         workspace.addEventListener('mouseleave', () => { isDown = false; });
         workspace.addEventListener('mouseup', () => { isDown = false; });
         workspace.addEventListener('mousemove', (e) => {
             if(!isDown || !window.appState.isFrozen) return;
             e.preventDefault();
-            window.appState.panX = e.pageX - startX; 
-            window.appState.panY = e.pageY - startY;
+            window.appState.panX = e.pageX - startX; window.appState.panY = e.pageY - startY;
             applyCanvasTransform();
         });
 
         // Touch Events
         workspace.addEventListener('touchstart', (e) => {
             if(!window.appState.isFrozen) return; 
-            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
+            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket') || e.target.closest('.zoom-panel')) return;
 
             if (e.touches.length === 1) {
                 isDown = true;
@@ -862,6 +855,9 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                 window.appState.zoom = newZoom;
                 initialPinchDist = currentDist; 
                 applyCanvasTransform();
+                
+                const zoomTxt = document.getElementById('zoomTxt');
+                if (zoomTxt) zoomTxt.innerText = Math.round(newZoom * 100) + '%';
             }
         }, {passive: false});
     }
@@ -873,7 +869,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         }
     }
 
-    // ================= DRAG & DROP ELEMENTS =================
+    // ================= DRAG & DROP ELEMENTS (FLYING FIX) =================
     function initDragAndDrop() {
         const draggables = document.querySelectorAll('.drag-el');
         let activeEl = null; let initX = 0, initY = 0;
@@ -1010,6 +1006,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                 if(data.positions) positions = data.positions;
                 if(data.state) {
                     window.appState.media = data.state.media || {photo: {x:0,y:0,z:1}, logo: {x:0,y:0,z:1}};
+                    applyMediaTransform();
                 }
                 
                 ['logo','org','photo','details','badge','seal','borg','terms','qr','return'].forEach(key => {
@@ -1021,6 +1018,17 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             }
         } catch(e) {}
     }
+
+    window.resetPositions = function() {
+        if(window.appState.orientation === 'portrait') {
+            positions = JSON.parse(JSON.stringify(posP));
+        } else {
+            positions = JSON.parse(JSON.stringify(posL));
+        }
+        applyPositions();
+        showToast("Positions Reset!");
+        autoSave();
+    };
 
     // ================= SUPABASE AUTO-LOAD =================
     async function autoLoadStudent() {
@@ -1043,11 +1051,10 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                         if(cData) document.getElementById('inp_course').value = cData.course_name;
                     }
                     if(stu.photo_url) {
-                        const el = document.querySelector('.el-photo');
-                        el.style.backgroundImage = `url('${stu.photo_url}')`;
-                        el.style.backgroundSize = 'cover';
-                        el.style.backgroundPosition = 'center';
-                        el.classList.remove('empty');
+                        const img = document.getElementById('imgPhoto');
+                        img.src = stu.photo_url;
+                        img.style.display = 'block';
+                        document.querySelector('.el-photo').classList.remove('empty');
                         document.getElementById('ph_photo').style.display = 'none';
                     }
                     updateContent(); autoSave(); showToast("✅ Student Auto-Loaded!");
