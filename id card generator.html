@@ -25,7 +25,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .btn-toggle-settings.active { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
 
 /* ================= HORIZONTAL SLIDING SETTINGS (Right to Left) ================= */
-.settings-slider { position: fixed; top: 50px; left: 0; right: 0; height: 130px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-bottom: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1500; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px 15px; gap: 15px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); align-items: stretch; }
+.settings-slider { position: fixed; top: 50px; left: 0; right: 0; height: 110px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-bottom: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1500; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px 15px; gap: 15px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); align-items: stretch; }
 .settings-slider::-webkit-scrollbar { display: none; }
 .settings-slider.hidden { transform: translateY(-130%); }
 
@@ -47,7 +47,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .mini-btn.up { grid-column: 2; } .mini-btn.left { grid-column: 1; } .mini-btn.right { grid-column: 3; } .mini-btn.down { grid-column: 2; }
 
 /* ================= WORKSPACE (FREE PANNING CANVAS) ================= */
-.workspace { position: fixed; top: 180px; bottom: 60px; left: 0; right: 0; overflow: hidden; background: #e2e8f0; touch-action: none; transition: top 0.3s; }
+.workspace { position: fixed; top: 160px; bottom: 60px; left: 0; right: 0; overflow: hidden; background: #e2e8f0; touch-action: none; transition: top 0.3s; }
 .workspace.expanded { top: 50px; }
 .workspace.locked { cursor: grab; }
 .workspace.locked:active { cursor: grabbing; }
@@ -55,7 +55,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .canvas-wrapper { position: absolute; transform-origin: 0 0; transition: transform 0.1s; }
 
 /* ================= LEFT SIDE POCKET (OVERLAPS SETTINGS) ================= */
-/* FIXED: Z-index to 2500 and Top to 50% */
+/* FIXED: Z-index to 2500 and Top to 50% so it perfectly centers and overlaps */
 .left-pocket { position: fixed; left: 0; top: 50%; transform: translateY(-50%) translateX(-100%); z-index: 2500; display: flex; align-items: center; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .left-pocket.open { transform: translateY(-50%) translateX(0); }
 .pocket-handle { position: absolute; right: -30px; top: 50%; transform: translateY(-50%); background: #1e3a8a; color: white; width: 30px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 0 10px 10px 0; font-size: 14px; font-weight: 900; cursor: pointer; box-shadow: 3px 0 10px rgba(0,0,0,0.2); border: 1px solid #1e40af; border-left: none; }
@@ -115,7 +115,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .tpl-10 .bg-header { height: 15px; top: 0; background: var(--h1); }
 .tpl-10 .bg-footer { height: 15px; bottom: 0; background: var(--f1); }
 
-/* Draggables Layer */
+/* Draggables Layer (Visible Overflow to prevent losing items) */
 .card-drag-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 .drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; padding: 2px; border: 2px dashed transparent; transition: border 0.2s; }
 .drag-el.selected { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); z-index: 20; }
@@ -143,7 +143,8 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .el-details .lbl { width: 55px; opacity: 0.8; }
 
 /* THE BADGE BUG FIX: Inner styling avoids background conflict with .selected class */
-.badge-ui { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; background: #1e3a8a; color: white; }
+.badge-wrapper { display: inline-flex; }
+.inner-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; background: var(--h1, #1e3a8a); color: white; }
 
 .el-seal { width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; }
 .el-seal svg { width: 100%; height: 100%; pointer-events: none; }
@@ -184,7 +185,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
     </a>
     <h1 class="page-title">ID Card Studio</h1>
-    <button class="btn-toggle-settings" id="btnToggleSettings" onclick="toggleSettingsSlider()">⚙️ Settings 🔽</button>
+    <button class="btn-toggle-settings" id="btnToggleSettings" onclick="toggleSettingsSlider()">⚙️ Settings</button>
 </div>
 
 <!-- HORIZONTAL SETTINGS SLIDER (Right to Left) -->
@@ -303,10 +304,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             <select id="sel_sealShape" class="frm-select" onchange="updateSeal()"><option value="round">Round Seal</option><option value="oval">Oval Seal</option></select>
             <input type="color" id="clr_seal" class="color-picker" value="#16a34a" oninput="updateSeal()">
         </div>
-        <div class="frm-row" style="margin-top:6px;">
-            <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_qr" checked onchange="updateContent()"> Show QR</label>
-            <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_return" checked onchange="updateContent()"> Return Addr</label>
-        </div>
     </div>
 </div>
 
@@ -314,7 +311,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 <div class="workspace" id="workspaceArea">
     
     <!-- LEFT POCKET (ARROW ONLY & TOGGLES) -->
-    <!-- Z-index to 2500 & Top to 50% fixed so it overlaps settings -->
+    <!-- FIXED: Z-index to 2500 & Top to 50% fixed so it overlaps settings -->
     <div class="left-pocket" id="leftPocket">
         <div class="pocket-handle" id="pocketHandle" onclick="togglePocket()">▶</div>
         <div class="pocket-menu">
@@ -362,13 +359,13 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             <div class="id-card landscape" id="idCard">
                 <!-- FRONT -->
                 <div class="card-face card-front" id="cardFront">
-                    <!-- Background Template Layer (Hidden Overflow) -->
+                    <!-- Background Template Layer -->
                     <div class="card-bg-layer tpl-1" id="cardBgLayer">
                         <div class="bg-header" id="bgHeader"></div>
                         <div class="bg-footer" id="bgFooter"></div>
                     </div>
 
-                    <!-- Draggable Layer (Visible Overflow) -->
+                    <!-- Draggable Layer -->
                     <div class="card-drag-layer">
                         <div class="drag-el el-logo empty" data-id="logo" id="box_logo">
                             <div style="width:100%; height:100%; overflow:hidden; border-radius:50%; position:relative;">
@@ -383,6 +380,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                             <div class="addr" id="txt_orgAddr">Address</div>
                         </div>
 
+                        <!-- Fixed Photo Setup for html2canvas -->
                         <div class="drag-el el-photo empty" data-id="photo" id="box_photo">
                             <div style="width:100%; height:100%; overflow:hidden; border-radius:inherit; position:relative;">
                                 <img id="imgPhoto" src="" style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; transform-origin:center;">
@@ -402,11 +400,9 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                             </table>
                         </div>
 
-                        <!-- THE BADGE (Fixed Wrapper Architecture) -->
-                        <div class="drag-el" data-id="badge" id="box_badge">
-                            <div id="badge_ui" class="badge-ui">
-                                <span id="txt_role">STUDENT</span>
-                            </div>
+                        <!-- FIXED: Badge Wrapper protects the background color -->
+                        <div class="drag-el badge-wrapper" data-id="badge" id="box_badge">
+                            <span id="txt_role" class="inner-badge">STUDENT</span>
                         </div>
 
                         <div class="drag-el el-seal" data-id="seal" id="box_seal"></div>
@@ -463,7 +459,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     };
     window.activeMedia = 'photo'; 
 
-    // Default Positions (Includes Scale)
+    // Default Positions relative to Card Face (Includes Scale)
     const posL = {
         logo: {x: 10, y: 8, scale: 1}, org: {x: 60, y: 10, scale: 1}, photo: {x: 15, y: 75, scale: 1},
         details: {x: 105, y: 75, scale: 1}, badge: {x: 15, y: 180, scale: 1}, seal: {x: 240, y: 130, scale: 1},
@@ -506,7 +502,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         slider.classList.toggle('hidden'); 
         
         if (slider.classList.contains('hidden')) {
-            btn.classList.remove('active'); btn.innerText = '⚙️ Settings 🔽';
+            btn.classList.remove('active'); btn.innerText = '⚙️ Settings';
             ws.classList.add('expanded');
         } else {
             btn.classList.add('active'); btn.innerText = '🔼 Hide';
@@ -573,7 +569,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         }
     }
 
-    // ================= MEDIA SELECTION & D-PAD (INNER IMAGE) =================
+    // ================= MEDIA SELECTION & D-PAD =================
     window.setActiveMedia = function(type) {
         window.activeMedia = type;
         document.getElementById('sel_photo_btn').style.borderColor = type === 'photo' ? '#3b82f6' : '#cbd5e1';
@@ -582,6 +578,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         document.getElementById('sel_logo_btn').style.background = type === 'logo' ? '#eff6ff' : 'transparent';
         
         document.querySelector('#sel_logo_btn label').style.color = type === 'logo' ? '#0284c7' : '#475569';
+        document.getElementById('txtActiveMedia').innerText = type === 'photo' ? 'Photo' : 'Logo';
     }
 
     window.adjustMedia = function(dx, dy) {
@@ -603,7 +600,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         window.appState.view = v;
         document.querySelectorAll('.pocket-btn:not(#vbtn-orient)').forEach(b => b.classList.remove('active'));
         document.getElementById('vbtn-' + v).classList.add('active');
-        togglePocket(); // Auto close
+        togglePocket(); // Auto close pocket
 
         const c = document.getElementById('idCard');
         if(v === 'front') { 
@@ -669,7 +666,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
     // ================= DATA & STYLES UPDATE =================
     window.updateContent = function() {
-        // Role Update
+        // Role
         const roleSel = document.getElementById('inp_role_select').value;
         const finalRole = roleSel === 'Custom' ? document.getElementById('inp_custom_role').value : roleSel;
         document.getElementById('txt_role').innerText = finalRole || 'ROLE';
@@ -686,17 +683,10 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         document.getElementById('txt_phone').innerText = document.getElementById('inp_phone').value;
         document.getElementById('txt_valid').innerText = document.getElementById('inp_valid').value;
         
-        // Back Update
+        // Back
         document.getElementById('txt_borgName').innerText = document.getElementById('inp_orgName').value;
         document.getElementById('txt_orgAddrBack').innerHTML = document.getElementById('inp_orgAddr').value.replace(/\n/g, '<br>');
         document.getElementById('txt_terms').innerHTML = document.getElementById('inp_terms').value.replace(/\n/g, '<br>');
-        
-        if(document.getElementById('chk_return').checked) {
-            document.getElementById('box_return').style.display = 'block';
-            document.getElementById('txt_return').innerHTML = document.getElementById('inp_return').value.replace(/\n/g, '<br>');
-        } else { document.getElementById('box_return').style.display = 'none'; }
-        
-        document.getElementById('box_qr').style.display = document.getElementById('chk_qr').checked ? 'flex' : 'none';
     }
 
     window.updateStyle = function() {
@@ -708,7 +698,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const tx = document.getElementById('clr_text').value;
         const font = document.getElementById('sel_font').value;
 
-        // Apply CSS Variables
+        // Apply CSS Variables so templates can use them dynamically
         const idCard = document.getElementById('idCard');
         idCard.style.setProperty('--h1', h1);
         idCard.style.setProperty('--h2', h2);
@@ -718,14 +708,15 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         idCard.style.setProperty('--c-txt', tx);
         idCard.style.setProperty('--c-font', font);
 
-        // BADGE COLOR FIX: Target the inner UI element, not the wrapper!
-        const badgeUi = document.getElementById('badge_ui');
+        // BADGE COLOR FIX
+        const badgeUi = document.getElementById('txt_role');
         badgeUi.style.background = h1;
         badgeUi.style.color = getContrast(h1);
         
         const orgInfo = document.getElementById('txt_orgName').parentElement;
         const tpl = document.getElementById('sel_template').value;
         
+        // Some templates have white backgrounds for header, so text needs to be main color
         if(['4','6','8','10'].includes(tpl)) {
             orgInfo.style.color = tx; document.getElementById('ph_logo').style.color = tx;
         } else {
@@ -748,7 +739,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         return (r*299 + g*587 + b*114)/1000 > 128 ? '#0f172a' : '#ffffff';
     }
 
-    // ================= MEDIA UPLOAD & TOGGLES =================
+    // ================= MEDIA UPLOAD =================
     window.loadMedia = function(input, imgId, phId, type) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -893,7 +884,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         }
     }
 
-    // ================= DRAG & DROP ELEMENTS =================
+    // ================= DRAG & DROP ELEMENTS (FLYING FIX & SELECTION) =================
     function initDragAndDrop() {
         const draggables = document.querySelectorAll('.drag-el');
         let activeEl = null; let initX = 0, initY = 0;
@@ -1013,12 +1004,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             if(el.id && !el.id.startsWith('slot_name')) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
         });
         const saveData = { inputs: data, positions: positions, state: window.appState };
-        localStorage.setItem('vpk_id_studio_v5', JSON.stringify(saveData));
+        localStorage.setItem('vpk_id_studio_v6', JSON.stringify(saveData));
     }
 
     function loadAutoSave() {
         try {
-            const saved = localStorage.getItem('vpk_id_studio_v5');
+            const saved = localStorage.getItem('vpk_id_studio_v6');
             if(saved) {
                 const data = JSON.parse(saved);
                 if(data.inputs) {
