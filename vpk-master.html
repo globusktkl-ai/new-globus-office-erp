@@ -22,7 +22,7 @@
         .stat-icon { position: absolute; right: -10px; bottom: -20px; font-size: 80px; opacity: 0.05; z-index: 1; }
         .text-green { color: #10b981; } .text-red { color: #ef4444; } .text-blue { color: #3b82f6; } .text-orange { color: #f59e0b; }
 
-        /* TABS (Mobile Friendly Scroll) */
+        /* TABS */
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
         .tabs::-webkit-scrollbar { display: none; }
         .tab-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 12px 25px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 14px; white-space: nowrap; }
@@ -34,7 +34,6 @@
         .card { background: #1e293b; border-radius: 16px; border: 1px solid #334155; padding: 25px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .card-title { margin-top: 0; margin-bottom: 20px; font-size: 15px; font-weight: 900; color: #e2e8f0; display: flex; align-items: center; justify-content: space-between; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* FORM GRIDS */
         .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; margin-bottom: 20px;}
         .form-group { display: flex; flex-direction: column; gap: 8px; width: 100%;}
         .form-group label { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
@@ -43,7 +42,6 @@
         select.form-control { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; cursor: pointer; }
         select.form-control option { background: #1e293b; color: #fff; }
 
-        /* CHECKBOX SECTIONS */
         .chk-section { background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .chk-title { font-size: 11px; color: #f59e0b; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px dashed #334155; padding-bottom: 8px;}
         .chk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
@@ -58,7 +56,6 @@
         .btn-success { background: #10b981; color: white; } .btn-success:hover { background: #059669; }
         .btn-upgrade { background: #8b5cf6; color: white; padding: 6px 12px; font-size: 11px; margin-top: 8px; width: 100%; } .btn-upgrade:hover { background: #7c3aed; }
 
-        /* 🔥 MOBILE OPTIMIZED TABLE STYLES 🔥 */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; padding-bottom: 10px; }
         .table-responsive::-webkit-scrollbar { height: 6px; }
         .table-responsive::-webkit-scrollbar-track { background: #0f172a; border-radius: 10px; }
@@ -69,7 +66,6 @@
         th { color: #94a3b8; font-weight: 800; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; background: #0f172a; white-space: nowrap; }
         td { color: #e2e8f0; font-weight: 600; }
         
-        /* PERFECT BADGE STYLING (No overlapping!) */
         .badges-wrapper { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         .badge { display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
         .bg-green { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
@@ -85,12 +81,14 @@
         input:checked + .slider { background-color: #10b981; }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* UPGRADE MODAL */
         #upgradeModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.9); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); }
         .modal-content { background: #1e293b; width: 90%; max-width: 400px; padding: 25px; border-radius: 16px; border: 1px solid #3b82f6; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: sheetUp 0.3s ease; }
-        @keyframes sheetUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
+        
         #customAlertBox { z-index: 100002; }
+
+        /* 🔥 MASTER LOGIN SCREEN STYLES 🔥 */
+        #masterLoginScreen { display:none; flex-direction:column; align-items:center; justify-content:center; height:100vh; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
+        .login-box { background: #1e293b; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid #334155; text-align: center; }
 
         @media (max-width: 768px) { 
             body { padding: 15px; }
@@ -105,148 +103,171 @@
 
     <div id="securityLock" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 100000; display: flex; align-items: center; justify-content: center; flex-direction: column;">
         <div style="font-size: 50px; animation: pulse 2s infinite;">🔒</div>
-        <h2 style="color: white; font-family: sans-serif; letter-spacing: 2px;">AUTHENTICATING MASTER...</h2>
+        <h2 style="color: white; font-family: sans-serif; letter-spacing: 2px;">AUTHENTICATING...</h2>
     </div>
 
-    <!-- UPGRADE / CHANGE PLAN MODAL -->
-    <div id="upgradeModal">
-        <div class="modal-content">
-            <h3 style="color:#10b981; margin-top:0; font-weight:900;">🔄 Upgrade/Change Plan</h3>
-            <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;" id="upgradeClientName"></p>
-            <div class="form-group">
-                <label>Select New Dynamic Plan</label>
-                <select id="upgradePlanSelect" class="form-control"></select>
-                <small style="color: #64748b; font-size: 10px; margin-top: 5px;">* Limits & Expiry date will be auto-updated instantly.</small>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:25px;">
-                <button class="btn btn-primary" style="flex:1;" onclick="submitPlanUpgrade()">Confirm Upgrade</button>
-                <button class="btn btn-danger" style="flex:1;" onclick="closeUpgradeModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="header">
-        <div class="logo-area">
-            <div class="logo-icon">V</div>
-            <div class="title-text">
-                <h1>VPKTECH MASTER CONSOLE</h1>
-                <p>Global SaaS Control Center</p>
-            </div>
-        </div>
-        <div><button class="btn btn-danger" onclick="logoutMaster()" style="padding: 10px 15px; font-size: 12px;">Secure Logout</button></div>
-    </div>
-
-    <!-- GLOBAL OVERVIEW BANNER -->
-    <div class="stats-grid">
-        <div class="stat-card"><div class="stat-icon">🏢</div><div class="stat-val text-blue" id="totClients">0</div><div class="stat-label">Total Tenants</div></div>
-        <div class="stat-card"><div class="stat-icon">🟢</div><div class="stat-val text-green" id="actClients">0</div><div class="stat-label">Active Licenses</div></div>
-        <div class="stat-card"><div class="stat-icon">⚠️</div><div class="stat-val text-orange" id="expClients">0</div><div class="stat-label">Expiring (<15d)</div></div>
-        <div class="stat-card"><div class="stat-icon">⛔</div><div class="stat-val text-red" id="blkClients">0</div><div class="stat-label">Suspended</div></div>
-    </div>
-
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('clients')">🏢 Client Matrix</button>
-        <button class="tab-btn" onclick="switchTab('studio')">💎 Dynamic Subscription Studio</button>
-    </div>
-
-    <!-- TAB 1: CLIENT MATRIX -->
-    <div id="tab-clients" class="tab-content active">
-        <div class="card">
-            <div class="card-title">➕ Provision New Tenant</div>
-            <form id="addClientForm" onsubmit="addClient(event)">
-                <div class="form-row">
-                    <div class="form-group"><label>Institute Name</label><input type="text" id="cName" class="form-control" placeholder="e.g. Oxford Academy" required></div>
-                    <div class="form-group"><label>Super Admin Email</label><input type="email" id="cEmail" class="form-control" placeholder="admin@oxford.com" required></div>
-                    <div class="form-group"><label>Create Password</label><input type="text" id="cPassword" class="form-control" placeholder="Min 6 chars" minlength="6" required></div>
-                    <div class="form-group">
-                        <label>Assign Dynamic Plan</label>
-                        <select id="cPlanSelect" class="form-control" required><option value="">Loading Plans...</option></select>
-                    </div>
+    <!-- 🔥 INDEPENDENT MASTER LOGIN SCREEN 🔥 -->
+    <div id="masterLoginScreen">
+        <div class="login-box">
+            <div style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; color: white; margin: 0 auto 20px; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);">V</div>
+            <h2 style="color: white; margin: 0 0 5px 0; font-weight: 900; letter-spacing: 1px;">MASTER CONSOLE</h2>
+            <p style="color: #94a3b8; font-size: 12px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px;">Authorized Access Only</p>
+            
+            <form onsubmit="handleMasterLogin(event)">
+                <div class="form-group" style="text-align: left;">
+                    <label>Super Admin Email</label>
+                    <input type="email" id="mLoginEmail" class="form-control" placeholder="vpk@vpk.com" required style="margin-bottom: 15px;">
                 </div>
-                <button type="submit" class="btn btn-primary" id="saveBtn" style="width: 100%;">🚀 Deploy Tenant</button>
+                <div class="form-group" style="text-align: left;">
+                    <label>Master Password</label>
+                    <input type="password" id="mLoginPass" class="form-control" placeholder="••••••••" required style="margin-bottom: 25px;">
+                </div>
+                <button type="submit" id="mLoginBtn" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px;">ACCESS CONSOLE</button>
             </form>
-        </div>
-
-        <div class="card">
-            <div class="card-title">⚙️ Global Client Matrix</div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Institute Details</th>
-                            <th>Active Plan</th>
-                            <th style="text-align: center;">Status</th>
-                            <th>Valid Until</th>
-                            <th>Promo Offer</th>
-                            <th style="text-align: right;">Danger Zone</th>
-                        </tr>
-                    </thead>
-                    <tbody id="clientsTableBody">
-                        <tr><td colspan="6" style="text-align:center; padding: 30px;">Loading clients data...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <p style="color: #64748b; font-size: 11px; margin-top: 20px;">Forgot Password? Reset via Supabase Dashboard.</p>
         </div>
     </div>
 
-    <!-- TAB 2: DYNAMIC SUBSCRIPTION STUDIO -->
-    <div id="tab-studio" class="tab-content">
-        <div class="card">
-            <div class="card-title" style="color: #10b981;">💎 Build Dynamic SaaS Plan</div>
-            <form onsubmit="addPlan(event)">
-                <div class="form-row">
-                    <div class="form-group"><label>Plan Name</label><input type="text" id="pName" class="form-control" placeholder="e.g., Free Extension" required></div>
-                    <div class="form-group"><label>Price (₹)</label><input type="number" id="pPrice" class="form-control" value="0" required></div>
-                    <div class="form-group"><label>Duration Value</label><input type="number" id="pDurVal" class="form-control" value="14" required></div>
-                    <div class="form-group">
-                        <label>Duration Type</label>
-                        <select id="pDurType" class="form-control"><option value="Days">Days</option><option value="Months">Months</option><option value="Years">Years</option></select>
-                    </div>
+    <!-- MAIN DASHBOARD CONTENT -->
+    <div id="masterDashboard" style="display:none;">
+        <div id="upgradeModal">
+            <div class="modal-content">
+                <h3 style="color:#10b981; margin-top:0; font-weight:900;">🔄 Upgrade/Change Plan</h3>
+                <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;" id="upgradeClientName"></p>
+                <div class="form-group">
+                    <label>Select New Dynamic Plan</label>
+                    <select id="upgradePlanSelect" class="form-control"></select>
+                    <small style="color: #64748b; font-size: 10px; margin-top: 5px;">* Limits & Expiry date will be auto-updated instantly.</small>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Max Admissions Limit</label><input type="number" id="pMaxAdm" class="form-control" value="50" required></div>
-                    <div class="form-group"><label>Max Staff Accounts Limit</label><input type="number" id="pMaxStaff" class="form-control" value="1" required></div>
+                <div style="display:flex; gap:10px; margin-top:25px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="submitPlanUpgrade()">Confirm Upgrade</button>
+                    <button class="btn btn-danger" style="flex:1;" onclick="closeUpgradeModal()">Cancel</button>
                 </div>
-
-                <div class="chk-section">
-                    <div class="chk-title">Level 1: Macro-Module Access (Show/Hide Pages)</div>
-                    <div class="chk-grid">
-                        <label class="chk-label"><input type="checkbox" id="modAdm" checked> Admission Module</label>
-                        <label class="chk-label"><input type="checkbox" id="modFee"> Fee Collect & Accounts</label>
-                        <label class="chk-label"><input type="checkbox" id="modDay"> Day Book</label>
-                        <label class="chk-label"><input type="checkbox" id="modInv"> Inventory & Store</label>
-                    </div>
-                </div>
-                <div class="chk-section">
-                    <div class="chk-title">Level 2: Micro-Action Control (Granular Features)</div>
-                    <div class="chk-grid">
-                        <label class="chk-label"><input type="checkbox" id="micPhoto"> Allow Photo Upload</label>
-                        <label class="chk-label"><input type="checkbox" id="micExcel"> Allow Excel Export</label>
-                        <label class="chk-label"><input type="checkbox" id="micSms"> Bulk SMS Send</label>
-                        <label class="chk-label"><input type="checkbox" id="micWater"> Remove Watermark</label>
-                    </div>
-                </div>
-                <div style="text-align: right;"><button type="submit" class="btn btn-success" style="padding: 15px 30px; font-size: 15px; width: 100%; max-width: 300px;">💾 Create Dynamic Plan</button></div>
-            </form>
+            </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">📋 Active Subscription Matrix</div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Plan Details</th>
-                            <th>Time / Price</th>
-                            <th>Quotas (Limits)</th>
-                            <th>Active Modules</th>
-                            <th style="text-align: right;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="plansTableBody">
-                        <tr><td colspan="5" style="text-align:center;">Loading plans...</td></tr>
-                    </tbody>
-                </table>
+        <div class="header">
+            <div class="logo-area">
+                <div class="logo-icon">V</div>
+                <div class="title-text">
+                    <h1>VPKTECH MASTER CONSOLE</h1>
+                    <p>Global SaaS Control Center</p>
+                </div>
+            </div>
+            <div><button class="btn btn-danger" onclick="logoutMaster()" style="padding: 10px 15px; font-size: 12px;">Secure Logout</button></div>
+        </div>
+
+        <!-- GLOBAL OVERVIEW BANNER -->
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-icon">🏢</div><div class="stat-val text-blue" id="totClients">0</div><div class="stat-label">Total Tenants</div></div>
+            <div class="stat-card"><div class="stat-icon">🟢</div><div class="stat-val text-green" id="actClients">0</div><div class="stat-label">Active Licenses</div></div>
+            <div class="stat-card"><div class="stat-icon">⚠️</div><div class="stat-val text-orange" id="expClients">0</div><div class="stat-label">Expiring (<15d)</div></div>
+            <div class="stat-card"><div class="stat-icon">⛔</div><div class="stat-val text-red" id="blkClients">0</div><div class="stat-label">Suspended</div></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('clients')">🏢 Client Matrix</button>
+            <button class="tab-btn" onclick="switchTab('studio')">💎 Dynamic Subscription Studio</button>
+        </div>
+
+        <!-- TAB 1: CLIENT MATRIX -->
+        <div id="tab-clients" class="tab-content active">
+            <div class="card">
+                <div class="card-title">➕ Provision New Tenant</div>
+                <form id="addClientForm" onsubmit="addClient(event)">
+                    <div class="form-row">
+                        <div class="form-group"><label>Institute Name</label><input type="text" id="cName" class="form-control" placeholder="e.g. Oxford Academy" required></div>
+                        <div class="form-group"><label>Super Admin Email</label><input type="email" id="cEmail" class="form-control" placeholder="admin@oxford.com" required></div>
+                        <div class="form-group"><label>Create Password</label><input type="text" id="cPassword" class="form-control" placeholder="Min 6 chars" minlength="6" required></div>
+                        <div class="form-group">
+                            <label>Assign Dynamic Plan</label>
+                            <select id="cPlanSelect" class="form-control" required><option value="">Loading Plans...</option></select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="saveBtn" style="width: 100%;">🚀 Deploy Tenant</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-title">⚙️ Global Client Matrix</div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Institute Details</th>
+                                <th>Active Plan</th>
+                                <th style="text-align: center;">Status</th>
+                                <th>Valid Until</th>
+                                <th>Promo Offer</th>
+                                <th style="text-align: right;">Danger Zone</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientsTableBody">
+                            <tr><td colspan="6" style="text-align:center; padding: 30px;">Loading clients data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: DYNAMIC SUBSCRIPTION STUDIO -->
+        <div id="tab-studio" class="tab-content">
+            <div class="card">
+                <div class="card-title" style="color: #10b981;">💎 Build Dynamic SaaS Plan</div>
+                <form onsubmit="addPlan(event)">
+                    <div class="form-row">
+                        <div class="form-group"><label>Plan Name</label><input type="text" id="pName" class="form-control" placeholder="e.g., Free Extension" required></div>
+                        <div class="form-group"><label>Price (₹)</label><input type="number" id="pPrice" class="form-control" value="0" required></div>
+                        <div class="form-group"><label>Duration Value</label><input type="number" id="pDurVal" class="form-control" value="14" required></div>
+                        <div class="form-group">
+                            <label>Duration Type</label>
+                            <select id="pDurType" class="form-control"><option value="Days">Days</option><option value="Months">Months</option><option value="Years">Years</option></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Max Admissions Limit</label><input type="number" id="pMaxAdm" class="form-control" value="50" required></div>
+                        <div class="form-group"><label>Max Staff Accounts Limit</label><input type="number" id="pMaxStaff" class="form-control" value="1" required></div>
+                    </div>
+                    <div class="chk-section">
+                        <div class="chk-title">Level 1: Macro-Module Access (Show/Hide Pages)</div>
+                        <div class="chk-grid">
+                            <label class="chk-label"><input type="checkbox" id="modAdm" checked> Admission Module</label>
+                            <label class="chk-label"><input type="checkbox" id="modFee"> Fee Collect & Accounts</label>
+                            <label class="chk-label"><input type="checkbox" id="modDay"> Day Book</label>
+                            <label class="chk-label"><input type="checkbox" id="modInv"> Inventory & Store</label>
+                        </div>
+                    </div>
+                    <div class="chk-section">
+                        <div class="chk-title">Level 2: Micro-Action Control (Granular Features)</div>
+                        <div class="chk-grid">
+                            <label class="chk-label"><input type="checkbox" id="micPhoto"> Allow Photo Upload</label>
+                            <label class="chk-label"><input type="checkbox" id="micExcel"> Allow Excel Export</label>
+                            <label class="chk-label"><input type="checkbox" id="micSms"> Bulk SMS Send</label>
+                            <label class="chk-label"><input type="checkbox" id="micWater"> Remove Watermark</label>
+                        </div>
+                    </div>
+                    <div style="text-align: right;"><button type="submit" class="btn btn-success" style="padding: 15px 30px; font-size: 15px; width: 100%; max-width: 300px;">💾 Create Dynamic Plan</button></div>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📋 Active Subscription Matrix</div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Plan Details</th>
+                                <th>Time / Price</th>
+                                <th>Quotas (Limits)</th>
+                                <th>Active Modules</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plansTableBody">
+                            <tr><td colspan="5" style="text-align:center;">Loading plans...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -259,13 +280,15 @@
         const SUPABASE_URL = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
 
+        // 🟢 MAGIC FIX: Master Console gets its own Isolated Auth Storage!
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             auth: { storageKey: 'vpk-master-secret-key' }
         });
+
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
-            let bg = '#10b981'; if(msg.includes('❌') || msg.includes('⚠️')) bg = '#ef4444';
+            let bg = '#10b981'; if(msg.includes('❌') || msg.includes('⚠️') || msg.includes('Failed')) bg = '#ef4444';
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: ${bg}; color: white; padding: 15px 25px; border-radius: 8px; font-weight: bold; z-index: 100003; box-shadow: 0 10px 30px rgba(0,0,0,0.5);`;
             box.innerText = msg; document.body.appendChild(box); setTimeout(() => box.remove(), 4000);
         };
@@ -279,19 +302,51 @@
 
         let clientsData = [];
         let plansData = [];
-        let upgradeClientId = null; // Store ID when upgrading
+        let upgradeClientId = null; 
 
         async function initMaster() {
+            document.getElementById('securityLock').style.display = 'flex';
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session || session.user.email.toLowerCase() !== MY_REAL_SUPER_ADMIN_EMAIL.toLowerCase()) {
-                document.body.innerHTML = `<div style="height:100vh; display:flex; align-items:center; justify-content:center; background:#000; color:#ef4444; flex-direction:column; text-align:center;"><h1 style="font-size:60px; margin:0;">⛔ FATAL ERROR</h1></div>`;
-                setTimeout(() => { window.location.href = 'login.html'; }, 3000);
+            document.getElementById('securityLock').style.display = 'none';
+
+            // 1. If no session, show Master Login Screen
+            if (!session) {
+                document.getElementById('masterLoginScreen').style.display = 'flex';
+                document.getElementById('masterDashboard').style.display = 'none';
                 return;
             }
-            document.getElementById('securityLock').style.display = 'none';
+
+            // 2. If logged in with wrong email, show FATAL ERROR
+            if (session.user.email.toLowerCase() !== MY_REAL_SUPER_ADMIN_EMAIL.toLowerCase()) {
+                document.body.innerHTML = `<div style="height:100vh; display:flex; align-items:center; justify-content:center; background:#000; color:#ef4444; flex-direction:column; text-align:center;"><h1 style="font-size:60px; margin:0;">⛔ FATAL ERROR</h1><p style="color:#94a3b8;">Unauthorized Email Address</p><button onclick="logoutMaster()" style="padding:10px 20px; margin-top:20px; cursor:pointer;">Go Back</button></div>`;
+                return;
+            }
+            
+            // 3. Success! Show Dashboard
+            document.getElementById('masterLoginScreen').style.display = 'none';
+            document.getElementById('masterDashboard').style.display = 'block';
             await fetchPlans();
             await fetchClients();
         }
+
+        // ==========================================
+        // MASTER LOGIN SYSTEM
+        // ==========================================
+        window.handleMasterLogin = async function(e) {
+            e.preventDefault();
+            const em = document.getElementById('mLoginEmail').value.trim();
+            const pw = document.getElementById('mLoginPass').value.trim();
+            const btn = document.getElementById('mLoginBtn');
+            btn.innerText = 'Authenticating...'; btn.disabled = true;
+
+            const { error } = await supabase.auth.signInWithPassword({ email: em, password: pw });
+            if (error) {
+                alert("❌ Login Failed: " + error.message);
+                btn.innerText = 'ACCESS CONSOLE'; btn.disabled = false;
+            } else {
+                window.location.reload(); // Reload to run initMaster
+            }
+        };
 
         // ==========================================
         // DYNAMIC PLAN MANAGEMENT
@@ -411,7 +466,6 @@
             document.getElementById('blkClients').innerText = blocked;
         }
 
-        // --- NEW: UPGRADE MODAL LOGIC ---
         window.openUpgradeModal = function(id, name) {
             upgradeClientId = id;
             document.getElementById('upgradeClientName').innerText = "Client: " + name;
@@ -441,7 +495,7 @@
                     plan_name: selectedPlan.plan_name,
                     admission_limit: selectedPlan.usage_limits.max_admissions,
                     valid_until: validUntilDate.toISOString().split('T')[0],
-                    is_active: true // Auto-reactivate if they were suspended!
+                    is_active: true
                 }).eq('id', upgradeClientId);
 
                 if(error) throw error;
@@ -483,16 +537,22 @@
                 }]);
                 if (dbErr) throw dbErr;
                 
-                document.body.innerHTML = `<div style="height:100vh; display:flex; align-items:center; justify-content:center; background:#0f172a; flex-direction:column; text-align:center;"><h1 style="font-size:40px; color:#10b981;">✅ TENANT PROVISIONED!</h1><p style="color:#94a3b8;">Rebooting Master Console for Security...</p></div>`;
-                await supabase.auth.signOut();
-                setTimeout(() => { window.location.href = 'login.html'; }, 2000);
-            } catch (err) { alert("❌ Error: " + err.message); btn.innerText = '🚀 Deploy Tenant'; btn.disabled = false; }
+                // NO MORE AUTO-LOGOUT! Just refresh the table.
+                alert("✅ TENANT PROVISIONED SUCCESSFULLY!");
+                e.target.reset();
+                fetchClients();
+            } catch (err) { alert("❌ Error: " + err.message); }
+            finally { btn.innerText = '🚀 Deploy Tenant'; btn.disabled = false; }
         };
 
         window.toggleKillSwitch = async function(id, isActive) { await supabase.from('saas_clients').update({ is_active: isActive }).eq('id', id); fetchClients(); };
         window.setOffer = async function(id) { const msg = prompt("Enter Promo Offer for this client:"); if(msg !== null) { await supabase.from('saas_clients').update({ promo_message: msg }).eq('id', id); fetchClients(); } };
         window.deleteClient = async function(id, name) { const code = prompt(`TYPE 'TERMINATE' TO DELETE ${name}:`); if (code === 'TERMINATE') { await supabase.from('saas_clients').delete().eq('id', id); fetchClients(); } };
-        window.logoutMaster = async function() { await supabase.auth.signOut(); window.location.href = 'login.html'; };
+        
+        window.logoutMaster = async function() { 
+            await supabase.auth.signOut(); 
+            window.location.reload(); 
+        };
 
         initMaster();
     </script>
