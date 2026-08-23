@@ -419,6 +419,9 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
+        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
+        window.exmPerms = { view: true, add: false, edit: false, delete: false };
+
         // ==========================================
         // NEW MAGIC ALERT OVERRIDE FOR ALL WARNINGS AND ERRORS
         // ==========================================
@@ -430,7 +433,7 @@
             
             let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
             
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Warning') || msg.includes('Cannot')) {
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Warning') || msg.includes('Cannot') || msg.includes('Denied')) {
                 iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
             } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successfully') || msg.includes('Saved') || msg.includes('Completed')) {
                 iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
@@ -499,6 +502,18 @@
                 const userRole = localStorage.getItem('userRole') || 'Admin';
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
+                
+                // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
+                if (userRole === 'Super Admin' || userRole === 'Admin') {
+                    window.exmPerms = { view: true, add: true, edit: true, delete: true };
+                } else if (userRole !== 'Guest') {
+                    const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).single();
+                    if (data && data.permissions && data.permissions['Exams']) {
+                        window.exmPerms = data.permissions['Exams'];
+                    }
+                }
+                // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
+
                 loadSettings(); 
                 fetchData();
             } catch(e) {
@@ -651,6 +666,12 @@
                 selectEl.value = selectEl.getAttribute('data-prev') || selectEl.options[0].value;
                 return; 
             }
+            
+            if (!window.exmPerms.edit) {
+                alert("⛔ Permission Denied: You cannot edit past marks.");
+                selectEl.value = selectEl.getAttribute('data-prev') || selectEl.options[0].value;
+                return;
+            }
 
             let selectedOption = selectEl.options[selectEl.selectedIndex];
             let isLocked = selectedOption.getAttribute('data-locked') === 'true';
@@ -745,14 +766,15 @@
                     });
                 }
 
-                let displayActionArea = isCompleted ? 'none' : 'block';
+                // --- 🔒 DYNAMIC ACTION AREA HIDE/SHOW ---
+                let displayActionArea = (isCompleted || !window.exmPerms.edit) ? 'none' : 'block';
                 let isLastModule = (!isCompleted && (currentModule.toLowerCase() === 'job training' || currentModule === course.modules[course.modules.length - 1]));
                 let btnText = isLastModule ? '2. Finish' : '2. Promotion';
 
                 let buttonsHtml = '';
                 if (isCompleted) {
                     buttonsHtml = `
-                        <button id="upd_btn_${student.id}" class="action-btn" style="background:#3b82f6; margin-bottom:10px; font-size:13px; padding:12px; display: none; width: 100%;" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
+                        ${window.exmPerms.edit ? `<button id="upd_btn_${student.id}" class="action-btn" style="background:#3b82f6; margin-bottom:10px; font-size:13px; padding:12px; display: none; width: 100%;" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>` : ''}
                         
                         <button id="ml_btn_${student.id}" class="action-btn" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9); margin:0 0 8px 0; font-size:14px; padding:12px; box-shadow: 0 4px 6px rgba(139, 92, 246, 0.2);" onclick="showMarklist('${student.id}', '${course.id}')">📄 Generate Marklist</button>
                         <button class="action-btn" style="background: linear-gradient(135deg, #f59e0b, #ea580c); margin:0; width:100%; font-size:14px; padding:12px; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
@@ -760,13 +782,18 @@
                 } else {
                     buttonsHtml = `
                         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                            ${window.exmPerms.edit ? `
                             <button id="upd_btn_${student.id}" class="action-btn" style="background:#3b82f6; margin:0; font-size:11px; padding:10px 2px; display: ${displayActionArea};" onclick="updateMarks('${student.id}', '${course.id}')">1. Update Mark</button>
                             <button id="prom_${student.id}" class="action-btn" style="background:#10b981; margin:0; opacity:0.5; font-size:11px; padding:10px 2px; display: ${displayActionArea};" disabled onclick="execPromote('${student.id}', '${course.id}')">${btnText}</button>
+                            ` : `
+                            <div style="grid-column: span 2; display: flex; align-items: center; justify-content: center; background: #f1f5f9; border-radius: 8px; font-size: 11px; font-weight: bold; color: #64748b; border: 1px dashed #cbd5e1;">🔒 Edit Locked</div>
+                            `}
                             <button id="ml_btn_${student.id}" class="action-btn" style="background:#8b5cf6; margin:0; font-size:11px; padding:10px 2px;" onclick="showMarklist('${student.id}', '${course.id}')">3. Marklist</button>
                         </div>
                         <button class="action-btn" style="background: linear-gradient(135deg, #f59e0b, #ea580c); margin-top:8px; width:100%; font-size:13px; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
                     `;
                 }
+                // ----------------------------------------
 
                 const card = document.createElement('div');
                 card.className = 'exam-card';
@@ -813,6 +840,7 @@
 
         window.updateMarks = async function(studentId, courseId) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.exmPerms.edit) { alert("⛔ Permission Denied: You cannot edit marks."); return; }
             
             const mod = document.getElementById(`mod_${studentId}`).value;
             const marks = document.getElementById(`marks_${studentId}`).value;
@@ -841,6 +869,7 @@
 
         window.execPromote = async function(studentId, courseId) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.exmPerms.edit) { alert("⛔ Permission Denied: You cannot promote students."); return; }
 
             let n1 = Math.floor(Math.random() * 10) + 1;
             let n2 = Math.floor(Math.random() * 10) + 1;
