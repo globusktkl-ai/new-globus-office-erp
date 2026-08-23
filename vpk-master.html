@@ -259,8 +259,9 @@
         const SUPABASE_URL = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
 
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { storageKey: 'vpk-master-secret-key' }
+        });
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
