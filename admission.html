@@ -14,7 +14,8 @@
         }
         .btn-submit-custom:hover { filter: brightness(0.9); }
         .btn-submit-custom:active { transform: scale(0.98); }
-        .btn-submit-custom:disabled { background-color: #94a3b8; cursor: not-allowed; box-shadow: none; }
+        /* 🔥 NEW: Disabled state styling for Hard Lock 🔥 */
+        .btn-submit-custom:disabled { background-color: #ef4444 !important; cursor: not-allowed; box-shadow: none; opacity: 0.9; }
 
         /* Premium 3D Back to Dashboard Button */
         .btn-back-dashboard { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
@@ -51,7 +52,6 @@
 </head>
 <body>
     <nav class="app-header" style="position: relative; display: flex; align-items: center; justify-content: center; padding: 12px 15px; min-height: 60px;">
-        <!-- JS Error ഒഴിവാക്കാനുള്ള അദൃശ്യമായ IDs -->
         <div style="display: none;">
             <img id="navLogo">
             <span id="navInstName"></span>
@@ -69,6 +69,9 @@
 
     <main class="main-content">
         <div class="form-card">
+
+            <!-- 🔥 NEW: SAAS TRAFFIC LIGHT WARNING BOX 🔥 -->
+            <div id="saasWarningBox"></div>
 
             <form id="admissionForm">
                 <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="fullName" class="form-control" required></div>
@@ -113,7 +116,11 @@
                     </select>
                 </div>
 
-                <div class="form-group"><label class="form-label">Student Photo</label><input type="file" id="photoFile" class="form-control" accept="image/*"></div>
+                <!-- 🔥 NEW: SAAS DYNAMIC PHOTO LOCK CONTAINER 🔥 -->
+                <div class="form-group" id="photoUploadContainer">
+                    <label class="form-label">Student Photo</label>
+                    <input type="file" id="photoFile" class="form-control" accept="image/*">
+                </div>
 
                 <div class="form-group"><label class="form-label">Select Course</label><select id="courseSelect" class="form-control" required><option value="">-- Select Course --</option></select></div>
                 <div class="form-group"><label class="form-label">Select Module (Optional)</label><select id="moduleSelect" class="form-control"><option value="">-- Select Module --</option></select></div>
@@ -134,7 +141,6 @@
             </form>
 
             <div style="display: flex; justify-content: center; margin-top: 25px;">
-                <!-- 3D RETURN TO DASHBOARD BUTTON (FOOTER) -->
                 <a href="dashboard.html" class="btn-back-dashboard">
                     <svg viewBox="0 0 24 24" style="stroke:url(#grad-return-footer);">
                         <defs>
@@ -152,7 +158,6 @@
         </div>
     </main>
 
-    <!-- NEW: Global Theme & Audit Engine -->
     <script type="module" src="assets/js/theme-manager.js"></script>
 
     <script type="module">
@@ -163,7 +168,7 @@
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let borderColor = '#3b82f6'; 
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('Failed') || msg.includes('Denied')) borderColor = '#ef4444'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('Failed') || msg.includes('Denied') || msg.includes('REACHED')) borderColor = '#ef4444'; 
             else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successful')) borderColor = '#10b981'; 
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
             box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
@@ -176,9 +181,57 @@
         let globalCourses = [];
         let institutePrefix = "GLB"; 
 
+        // 🔥 NEW: GLOBAL VARIABLES FOR SAAS LIMIT CHECK 🔥
+        window.currentSaaSAdmissions = 0;
+        window.maxSaaSAdmissions = 99999;
+
         document.addEventListener('wheel', function(event) {
             if (document.activeElement.type === 'number') { document.activeElement.blur(); }
         });
+
+        // 🔥 NEW: APPLY SAAS DYNAMIC CONTROLS 🔥
+        async function applySaaSControls() {
+            try {
+                // 1. DYNAMIC MICRO-FEATURE CHECK (Photo Upload)
+                const microFeaturesStr = localStorage.getItem('saas_micro_features');
+                if (microFeaturesStr) {
+                    const microFeatures = JSON.parse(microFeaturesStr);
+                    if (microFeatures.photo_upload === false) {
+                        const photoContainer = document.getElementById('photoUploadContainer');
+                        photoContainer.innerHTML = `
+                            <label class="form-label" style="display:flex; align-items:center; gap:5px;">Student Photo <span style="background:#fef3c7; color:#d97706; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:900;">👑 PRO</span></label>
+                            <div style="background:#f8fafc; border:1px dashed #cbd5e1; padding:15px; border-radius:8px; text-align:center; color:#94a3b8; font-size:12px; font-weight:700;">
+                                🔒 Photo upload feature is locked in your current plan. Upgrade to unlock.
+                            </div>
+                        `;
+                    }
+                }
+
+                // 2. TRAFFIC LIGHT ADMISSION WARNING
+                const limitStr = localStorage.getItem('saas_limit_admissions');
+                if (!limitStr) return;
+                
+                window.maxSaaSAdmissions = parseInt(limitStr);
+
+                const { count, error } = await supabase.from('students').select('*', { count: 'exact', head: true });
+                if (error) return;
+                
+                window.currentSaaSAdmissions = count || 0;
+                const percentage = (window.currentSaaSAdmissions / window.maxSaaSAdmissions) * 100;
+                const warningBox = document.getElementById('saasWarningBox');
+                const submitBtn = document.getElementById('submitBtn');
+
+                if (percentage >= 100) {
+                    warningBox.innerHTML = `<div style="background:#fee2e2; border:1px solid #ef4444; color:#b91c1c; padding:12px 15px; border-radius:8px; font-size:13px; font-weight:800; display:flex; align-items:center; gap:8px; margin-bottom:20px;">⛔ LIMIT REACHED: You have used all ${window.maxSaaSAdmissions} seats in your plan.</div>`;
+                    submitBtn.disabled = true;
+                    submitBtn.innerText = '🔒 Admission Locked (Upgrade Plan)';
+                } else if (percentage >= 95) {
+                    warningBox.innerHTML = `<div style="background:#ffedd5; border:1px solid #f59e0b; color:#b45309; padding:12px 15px; border-radius:8px; font-size:13px; font-weight:800; display:flex; align-items:center; gap:8px; margin-bottom:20px;">⚠️ WARNING: Only ${window.maxSaaSAdmissions - window.currentSaaSAdmissions} seats left in your current plan!</div>`;
+                } else if (percentage >= 90) {
+                    warningBox.innerHTML = `<div style="background:#fef9c3; border:1px solid #fde047; color:#854d0e; padding:12px 15px; border-radius:8px; font-size:13px; font-weight:800; display:flex; align-items:center; gap:8px; margin-bottom:20px;">📝 NOTE: You have reached 90% of your admission limit (${window.currentSaaSAdmissions}/${window.maxSaaSAdmissions}).</div>`;
+                }
+            } catch(e) { console.log("SaaS Control Error:", e); }
+        }
 
         async function checkAuth() {
             const userRole = localStorage.getItem('userRole') || 'Admin';
@@ -194,7 +247,7 @@
             if (userRole === 'Super Admin' || userRole === 'Admin') {
                 window.admPermsAdd = true;
             } else if (userRole === 'Guest') {
-                window.admPermsAdd = false; // Guest can view the form for demo, but can't save
+                window.admPermsAdd = false; 
             } else {
                 try {
                     const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).single();
@@ -205,7 +258,6 @@
             }
 
             if (!window.admPermsAdd && userRole !== 'Guest') {
-                // ഫോം പൂർണ്ണമായും ഹൈഡ് ചെയ്യുന്നു 
                 document.getElementById('admissionForm').style.display = 'none';
                 
                 const formCard = document.querySelector('.form-card');
@@ -217,7 +269,7 @@
                         <p style="color:#7f1d1d; font-size:13px; font-weight:700; margin:0;">You do not have permission to add new admissions.</p>
                     </div>`;
                 formCard.insertBefore(errorMsg, formCard.firstChild);
-                return; // ഇതിനുതാഴെയുള്ള ലോഡിങ് (Auto Reg generation etc) എല്ലാം ഇവിടെവെച്ച് തടയുന്നു!
+                return; 
             }
             // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
 
@@ -250,6 +302,10 @@
             }
 
             document.getElementById('admissionDate').value = new Date().toISOString().split('T')[0];
+            
+            // 🔥 NEW: Check SaaS Limits before proceeding 🔥
+            await applySaaSControls();
+            
             await loadSettings();
             fetchCourses();
             generateAutoRegNumber();
@@ -384,9 +440,6 @@
             if (/^\d+$/.test(val) && val.length > 10) this.value = val.slice(0, 10);
         });
 
-        // ==========================================
-        // NEW: IMAGE COMPRESSION FUNCTION (Client-Side)
-        // ==========================================
         function compressImage(file, maxWidth, maxHeight, quality) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -426,7 +479,12 @@
 
             // --- 🔒 FINAL SECURITY CHECK (Just in Case) ---
             if (!window.admPermsAdd) { alert("⛔ Permission Denied: You do not have access to add new students."); return; }
-            // ----------------------------------------------
+
+            // 🔥 NEW: DOUBLE CHECK SAAS LIMITS BEFORE SUBMIT 🔥
+            if (window.currentSaaSAdmissions >= window.maxSaaSAdmissions) {
+                alert(`⛔ LIMIT REACHED: You have used all ${window.maxSaaSAdmissions} seats. Upgrade your plan to admit more students.`);
+                return;
+            }
 
             const phoneVal = document.getElementById('phone').value.trim();
             if (phoneVal.length !== 10) { alert('❌ Phone number must be exactly 10 digits.'); return; }
@@ -450,18 +508,17 @@
             const fileInput = document.getElementById('photoFile');
 
             try {
-                if (fileInput.files.length > 0) {
+                // Only process photo if the input exists (hasn't been removed by SaaS Lock)
+                if (fileInput && fileInput.files.length > 0) {
                     btn.textContent = 'Compressing Image...';
                     let originalFile = fileInput.files[0];
                     
-                    // COMPRESS THE IMAGE (Max 600px width/height, 60% Quality)
                     const compressedFile = await compressImage(originalFile, 600, 600, 0.6);
                     console.log(`Original: ${(originalFile.size/1024).toFixed(2)}KB -> Compressed: ${(compressedFile.size/1024).toFixed(2)}KB`);
 
                     btn.textContent = 'Uploading Image...';
                     const fileName = `${Date.now()}_${compressedFile.name.replace(/\.[^/.]+$/, "")}.jpg`; 
                     
-                    // FIXED: Using student_photos (with underscore)
                     const { data: uploadData, error: uploadError } = await supabase.storage.from('student_photos').upload(fileName, compressedFile);
 
                     if (uploadError) {
@@ -495,7 +552,6 @@
 
                 if (error) throw error;
 
-                // --- AUDIT TRAIL LOGGING ---
                 if(window.ThemeManager) {
                     await window.ThemeManager.logAction(
                         'Admission', 
