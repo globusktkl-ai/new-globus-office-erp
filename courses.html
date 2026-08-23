@@ -60,7 +60,7 @@
         </div>
 
         <!-- 2. പുതിയ കോഴ്‌സ് ചേർക്കാനുള്ള ഫോം (MOVED TO BOTTOM) -->
-        <div class="form-card" style="margin-bottom: 25px;">
+        <div class="form-card" id="addCourseFormCard" style="margin-bottom: 25px;">
             <h2 style="font-size: 18px; margin-bottom: 15px; color: var(--primary-dark);">Add New Course</h2>
             <form id="courseForm">
                 <div class="form-group">
@@ -133,6 +133,9 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
+        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
+        window.crsPerms = { view: true, add: false, edit: false, delete: false };
+
         // ==========================================
         // NEW MAGIC ALERT OVERRIDE FOR ALL WARNINGS AND ERRORS
         // ==========================================
@@ -144,7 +147,7 @@
             
             let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
             
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('cancelled') || msg.includes('does not match')) {
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('cancelled') || msg.includes('does not match') || msg.includes('Denied')) {
                 iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
             } else if (msg.includes('✅') || msg.includes('success') || msg.includes('successfully') || msg.includes('added')) {
                 iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
@@ -227,8 +230,26 @@
         });
 
         async function checkAuth() {
+            const userRole = localStorage.getItem('userRole') || 'Admin';
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
+            if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
+            
+            // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
+            if (userRole === 'Super Admin' || userRole === 'Admin') {
+                window.crsPerms = { view: true, add: true, edit: true, delete: true };
+            } else if (userRole !== 'Guest') {
+                const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).single();
+                if (data && data.permissions && data.permissions['Courses']) {
+                    window.crsPerms = data.permissions['Courses'];
+                }
+            }
+
+            // Hide Add Form if no permission
+            if (!window.crsPerms.add && userRole !== 'Guest') {
+                document.getElementById('addCourseFormCard').style.display = 'none';
+            }
+            // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
+
             fetchCourses();
         }
 
@@ -254,6 +275,20 @@
             courses.forEach(c => {
                 const mods = Array.isArray(c.modules) ? c.modules.length : 0;
                 
+                // --- 🔒 DYNAMIC ACTION BUTTONS BASED ON PERMISSION ---
+                let actionBtns = `<button onclick="viewCourse('${c.id}')" style="background: #3B82F6; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">View</button>`;
+                
+                let btnCount = 1;
+                if (window.crsPerms.edit) {
+                    actionBtns += `<button onclick="editCourse('${c.id}')" style="background: #F59E0B; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Edit</button>`;
+                    btnCount++;
+                }
+                if (window.crsPerms.delete) {
+                    actionBtns += `<button onclick="deleteCourse('${c.id}', '${c.course_name}')" style="background: #EF4444; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Delete</button>`;
+                    btnCount++;
+                }
+                // -----------------------------------------------------
+
                 const card = document.createElement('div');
                 card.style.cssText = "background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 8px; padding: 12px; margin-bottom: 10px;";
                 card.innerHTML = `
@@ -264,10 +299,8 @@
                             <div style="font-size: 12px; color: #6B7280; margin-top: 2px;">Capacity: ${c.capacity || 'N/A'} | Status: <span style="font-weight:600; color:${c.status === 'Active' ? '#10B981' : '#EF4444'};">${c.status || 'Active'}</span></div>
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;">
-                        <button onclick="viewCourse('${c.id}')" style="background: #3B82F6; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">View</button>
-                        <button onclick="editCourse('${c.id}')" style="background: #F59E0B; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Edit</button>
-                        <button onclick="deleteCourse('${c.id}', '${c.course_name}')" style="background: #EF4444; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px;">Delete</button>
+                    <div style="display: grid; grid-template-columns: repeat(${btnCount}, 1fr); gap: 8px; margin-top: 10px;">
+                        ${actionBtns}
                     </div>
                 `;
                 container.appendChild(card);
@@ -289,6 +322,7 @@
         document.getElementById('courseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode. You cannot add new courses."); return; }
+            if (!window.crsPerms.add) { alert("⛔ Permission Denied: You do not have access to add new courses."); return; }
 
             const name = document.getElementById('courseName').value.trim();
             const duration = document.getElementById('courseDuration').value.trim();
@@ -355,6 +389,8 @@
         };
 
         window.editCourse = function(id) {
+            if (!window.crsPerms.edit) { alert("⛔ Permission Denied: You cannot edit courses."); return; }
+            
             const c = allCourses.find(x => x.id === id);
             if (!c) return;
 
@@ -421,6 +457,7 @@
         window.saveCourseEdit = async function(e, id) {
             e.preventDefault();
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.crsPerms.edit) { alert("⛔ Permission Denied: You do not have access to edit courses."); return; }
             
             // MATH CAPTCHA SECURITY
             let n1 = Math.floor(Math.random() * 10) + 1;
@@ -463,6 +500,7 @@
 
         window.deleteCourse = async function(id, courseName) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.crsPerms.delete) { alert("⛔ Permission Denied: You do not have access to delete courses."); return; }
             
             let confirmName = await window.magicPrompt(`⚠️ Are you sure you want to delete this course?\n\nType the course name exactly as shown below to confirm:\n\n"${courseName}"`, true);
             
