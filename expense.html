@@ -78,7 +78,7 @@
     </nav>
 
     <div class="main-content">
-        <div class="form-card">
+        <div class="form-card" id="expenseFormCard">
             
             <form id="expenseForm">
                 <div class="form-group">
@@ -156,7 +156,7 @@
             
             let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
             
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Warning')) {
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Warning') || msg.includes('Denied')) {
                 iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
             } else if (msg.includes('✅') || msg.includes('success') || msg.includes('successfully') || msg.includes('Complete')) {
                 iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
@@ -175,7 +175,7 @@
             document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
-        // GUEST RESTRICTION
+        // GUEST & PERMISSION RESTRICTION
         async function checkAuth() {
             const userRole = localStorage.getItem('userRole') || 'Admin';
             const { data: { session } } = await supabase.auth.getSession();
@@ -184,6 +184,35 @@
                 window.location.href = 'login.html'; 
                 return; 
             }
+
+            // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
+            window.expPermsAdd = false;
+            if (userRole === 'Super Admin' || userRole === 'Admin') {
+                window.expPermsAdd = true;
+            } else if (userRole !== 'Guest') {
+                try {
+                    const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).single();
+                    if (data && data.permissions && data.permissions['DayBook'] && data.permissions['DayBook'].add) {
+                        window.expPermsAdd = true;
+                    }
+                } catch(e) { console.error("Permission check failed", e); }
+            }
+
+            if (!window.expPermsAdd && userRole !== 'Guest') {
+                document.getElementById('expenseForm').style.display = 'none';
+                const formCard = document.getElementById('expenseFormCard');
+                if(formCard) {
+                    const errorMsg = document.createElement('div');
+                    errorMsg.innerHTML = `
+                        <div style="text-align:center; padding: 40px 20px; background:#fef2f2; border:2px dashed #fca5a5; border-radius:12px;">
+                            <svg viewBox="0 0 24 24" width="40" height="40" stroke="#ef4444" stroke-width="2.5" fill="none" style="margin-bottom:10px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                            <h3 style="color:#b91c1c; font-size:18px; font-weight:900; margin:0 0 5px 0;">ACCESS DENIED</h3>
+                            <p style="color:#7f1d1d; font-size:13px; font-weight:700; margin:0;">You do not have permission to add expenses.</p>
+                        </div>`;
+                    formCard.appendChild(errorMsg);
+                }
+            }
+            // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
         }
         checkAuth();
 
@@ -193,6 +222,11 @@
             // Checking Guest Mode
             if (localStorage.getItem('userRole') === 'Guest') { 
                 alert("⚠️ This action is disabled in Guest/Demo mode. You cannot record expenses."); 
+                return; 
+            }
+
+            if (!window.expPermsAdd) { 
+                alert("⛔ Permission Denied: You do not have access to add expenses."); 
                 return; 
             }
 
