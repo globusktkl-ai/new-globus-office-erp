@@ -266,7 +266,7 @@
             <div class="card">
                 <div class="card-header-flex">
                     <div class="card-title" style="color:#d97706">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
     Manage Categories
 </div>
                     <button class="btn-close-sm" onclick="switchTab('list')" title="Close">✖</button>
@@ -329,6 +329,36 @@
             </form>
         </div>
     </div>
+    
+    <!-- STOCK IN/OUT MODAL -->
+    <div id="stockModal" class="modal-overlay">
+        <div class="modal-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 id="modalItemName" style="margin: 0; color: #1e3a8a; font-size:16px;">Update Stock</h3>
+                <button type="button" onclick="closeModal('stockModal')" style="background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight:bold;">X</button>
+            </div>
+            
+            <form onsubmit="handleStockUpdate(event)">
+                <input type="hidden" id="modalItemId">
+                <input type="hidden" id="modalType">
+                
+                <label class="frm-label">Quantity</label>
+                <input type="number" id="modalQty" class="frm-input" required min="1">
+                
+                <label class="frm-label">Remarks / Purpose</label>
+                <input type="text" id="modalRemarks" class="frm-input" placeholder="Optional notes...">
+                
+                <div id="stockExpenseWrapper" style="display:none;">
+                    <label class="expense-check">
+                        <input type="checkbox" id="stockExpenseCheck" checked>
+                        Log this purchase as Expense in Day Book
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary" id="modalBtn" style="margin-top:10px;">Update Stock</button>
+            </form>
+        </div>
+    </div>
 
     <!-- Bottom Navigation Bar -->
     <nav class="bottom-tabs">
@@ -345,13 +375,16 @@
             Reports
         </button>
         <button class="btab" onclick="switchTab('settings')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
     Settings
 </button>
     </nav>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
+        
+        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
+        window.invPerms = { view: true, add: false, edit: false, delete: false };
 
         // ==========================================
         // NEW MAGIC ALERT OVERRIDE FOR ALL WARNINGS AND ERRORS
@@ -364,7 +397,7 @@
             
             let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
             
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Invalid') || msg.includes('Not enough')) {
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Invalid') || msg.includes('Not enough') || msg.includes('Denied')) {
                 iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
             } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successfully') || msg.includes('Added')) {
                 iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
@@ -422,9 +455,40 @@
         let invCategories = [];
 
         async function init() {
+            const userRole = localStorage.getItem('userRole') || 'Admin';
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
+            if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
             
+            // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
+            if (userRole === 'Super Admin' || userRole === 'Admin') {
+                window.invPerms = { view: true, add: true, edit: true, delete: true };
+            } else if (userRole !== 'Guest') {
+                const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).single();
+                if (data && data.permissions && data.permissions['Inventory']) {
+                    window.invPerms = data.permissions['Inventory'];
+                }
+            }
+
+            // Hide Add Item and Settings Tabs if no add permission
+            if (!window.invPerms.add && userRole !== 'Guest') {
+                const addTabBtn = document.querySelector('.btab[onclick="switchTab(\\\'add\\\')"]');
+                if(addTabBtn) addTabBtn.style.display = 'none';
+                
+                const settingsTabBtn = document.querySelector('.btab[onclick="switchTab(\\\'settings\\\')"]');
+                if(settingsTabBtn) settingsTabBtn.style.display = 'none';
+
+                const restrictedHTML = `
+                    <div style="text-align:center; padding: 40px 20px; background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px; margin-top:20px;">
+                        <svg viewBox="0 0 24 24" width="40" height="40" stroke="#64748b" stroke-width="2.5" fill="none" style="margin-bottom:10px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <h3 style="color:#475569; font-size:16px; font-weight:900; margin:0 0 5px 0;">ACCESS RESTRICTED</h3>
+                        <p style="color:#64748b; font-size:12px; font-weight:700; margin:0;">You don't have permission to view this section.</p>
+                    </div>`;
+
+                document.getElementById('panel-add').innerHTML = restrictedHTML;
+                document.getElementById('panel-settings').innerHTML = restrictedHTML;
+            }
+            // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
+
             const today = new Date();
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
             document.getElementById('logFromDate').value = firstDay.toISOString().split('T')[0];
@@ -464,12 +528,13 @@
         function populateCategoryDropdowns() {
             const filterSelect = document.getElementById('filterCat');
             const addSelect = document.getElementById('newItemCat');
-            filterSelect.innerHTML = '<option value="All">All Categories</option>' + invCategories.map(c => `<option value="${c}">${c}</option>`).join('');
-            addSelect.innerHTML = invCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+            if(filterSelect) filterSelect.innerHTML = '<option value="All">All Categories</option>' + invCategories.map(c => `<option value="${c}">${c}</option>`).join('');
+            if(addSelect) addSelect.innerHTML = invCategories.map(c => `<option value="${c}">${c}</option>`).join('');
         }
 
         window.renderCategoriesList = function() {
             const list = document.getElementById('categoriesList');
+            if(!list) return;
             if(invCategories.length === 0) { list.innerHTML = '<div style="font-size:12px;color:#94a3b8;text-align:center;padding:10px;">No categories added.</div>'; return; }
             list.innerHTML = invCategories.map((c, index) => `
                 <div class="cat-item">
@@ -481,6 +546,7 @@
 
         window.addCategory = function() {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.invPerms.add) { alert("⛔ Permission Denied: You do not have access to add categories."); return; }
             
             const input = document.getElementById('newCatInput');
             const val = input.value.trim();
@@ -495,6 +561,7 @@
 
         window.deleteCategory = async function(index) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.invPerms.add) { alert("⛔ Permission Denied: You do not have access to delete categories."); return; }
             
             let n1 = Math.floor(Math.random() * 10) + 1;
             let n2 = Math.floor(Math.random() * 10) + 1;
@@ -565,6 +632,24 @@
             container.innerHTML = filtered.map(item => {
                 const isLow = item.quantity <= item.min_stock_level;
                 const lowClass = isLow ? 'low-stock' : '';
+                
+                // --- 🔒 DYNAMIC ACTION BUTTONS BASED ON PERMISSION ---
+                let actionBtns = '';
+                if (window.invPerms.edit) {
+                    actionBtns += `
+                        <button class="btn-stock-in" onclick="openModal('${item.id}', 'IN')">➕ IN</button>
+                        <button class="btn-stock-out" onclick="openModal('${item.id}', 'OUT')">➖ OUT</button>
+                        <button class="btn-edit-item" onclick="openEditModal('${item.id}')" title="Edit Item">✏️</button>`;
+                }
+                if (window.invPerms.delete) {
+                    actionBtns += `<button class="btn-edit-item" onclick="deleteItem('${item.id}')" title="Delete Item" style="color:#dc2626; background:#fee2e2; border-color:#fca5a5;">🗑️</button>`;
+                }
+                
+                if (!window.invPerms.edit && !window.invPerms.delete) {
+                    actionBtns = `<div style="width:100%; text-align:center; font-size:11px; font-weight:bold; color:#64748b; background:#f1f5f9; padding:8px; border-radius:8px; border: 1px dashed #cbd5e1;">🔒 Read Only</div>`;
+                }
+                // -----------------------------------------------------
+
                 return `
                 <div class="inv-card ${lowClass}">
                     <div class="inv-header">
@@ -578,10 +663,7 @@
                         </div>
                     </div>
                     <div class="inv-actions">
-                        <button class="btn-stock-in" onclick="openModal('${item.id}', 'IN')">➕ IN</button>
-                        <button class="btn-stock-out" onclick="openModal('${item.id}', 'OUT')">➖ OUT</button>
-                        <button class="btn-edit-item" onclick="openEditModal('${item.id}')" title="Edit Item">✏️</button>
-                        <button class="btn-edit-item" onclick="deleteItem('${item.id}')" title="Delete Item" style="color:#dc2626; background:#fee2e2; border-color:#fca5a5;">🗑️</button>
+                        ${actionBtns}
                     </div>
                 </div>`;
             }).join('');
@@ -609,6 +691,7 @@
         window.saveEditedItem = async function(e) {
             e.preventDefault();
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.invPerms.edit) { alert("⛔ Permission Denied: You do not have access to edit items."); return; }
             
             let n1 = Math.floor(Math.random() * 10) + 1;
             let n2 = Math.floor(Math.random() * 10) + 1;
@@ -654,6 +737,7 @@
         // ================= DELETE ITEM =================
         window.deleteItem = async function(id) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.invPerms.delete) { alert("⛔ Permission Denied: You do not have access to delete items."); return; }
             
             const item = itemsData.find(i => i.id === id);
             if(!item) return;
@@ -763,7 +847,8 @@
         window.handleAddItem = async function(e) {
             e.preventDefault();
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
-            
+            if (!window.invPerms.add) { alert("⛔ Permission Denied: You do not have access to add items."); return; }
+
             const btn = document.getElementById('addBtn');
             btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
 
@@ -829,6 +914,7 @@
         window.handleStockUpdate = async function(e) {
             e.preventDefault();
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.invPerms.edit) { alert("⛔ Permission Denied: You do not have access to update stock."); return; }
             
             const id = document.getElementById('modalItemId').value;
             const type = document.getElementById('modalType').value;
