@@ -1,7 +1,6 @@
 import { supabase } from './supabase-config.js';
 import './theme-manager.js';
 
-// മനോഹരമായ (Custom UI) അലേർട്ട് സിസ്റ്റം
 function showCustomAlert(message, redirectUrl) {
     const oldBox = document.getElementById('customAlertBox'); 
     if (oldBox) oldBox.remove();
@@ -10,7 +9,6 @@ function showCustomAlert(message, redirectUrl) {
 
     let iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
     
-    // Premium Lock ആണെങ്കിൽ സ്വർണ്ണ നിറത്തിലുള്ള കിരീടം കാണിക്കാൻ
     if (message.includes('PREMIUM') || message.includes('Upgrade')) {
         iconHtml = `<div style="background:#fef3c7; color:#d97706; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; font-size:24px;">👑</div>`;
     }
@@ -32,13 +30,11 @@ function showCustomAlert(message, redirectUrl) {
     };
 
     if(redirectUrl) {
-        setTimeout(() => { window.location.replace(redirectUrl); }, 3000);
+        // 🔥 മാക്രോ-ലോക്ക് വരുമ്പോൾ വായിക്കാൻ 5 സെക്കൻഡ് സമയം നൽകുന്നു 🔥
+        setTimeout(() => { window.location.replace(redirectUrl); }, 5000); 
     }
 }
 
-// ========================================================
-// SaaS SECURITY BRIDGE (Kill Switch, Expiry & DYNAMIC FEATURES)
-// ========================================================
 async function verifySaaSStatus() {
     try {
         const { data: client, error } = await supabase.from('saas_clients').select('*').limit(1).single();
@@ -56,7 +52,6 @@ async function verifySaaSStatus() {
             throw new Error("NO_LICENSE_FOUND");
         }
 
-        // 1. THE SOFT KILL SWITCH (EXPIRED)
         if (client.is_active === false) {
             document.body.innerHTML = `
                 <div style="height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: #0f172a; color: #f8fafc; flex-direction: column; font-family: 'Segoe UI', Tahoma, sans-serif; text-align: center; padding: 20px; position: fixed; top: 0; left: 0; z-index: 9999999;">
@@ -74,7 +69,6 @@ async function verifySaaSStatus() {
             throw new Error("SYSTEM_LOCKED_BY_MASTER");
         }
 
-        // 2. EXPIRY WARNING SYSTEM
         const userRole = localStorage.getItem('userRole');
         if (client.valid_until && (userRole === 'Super Admin' || userRole === 'Admin')) {
             const diffDays = Math.ceil((new Date(client.valid_until) - new Date()) / (1000 * 60 * 60 * 24));
@@ -86,29 +80,25 @@ async function verifySaaSStatus() {
             }
         }
 
-        // 🔥 3. FETCH DYNAMIC PLAN DETAILS FOR MICRO/MACRO CONTROL 🔥
         if (client.plan_name) {
             const { data: plan } = await supabase.from('subscription_plans').select('*').eq('plan_name', client.plan_name).single();
             
             if (plan) {
-                // Save Micro-Features & Limits for other pages to read quickly
                 localStorage.setItem('saas_micro_features', JSON.stringify(plan.micro_features || {}));
                 localStorage.setItem('saas_limit_admissions', plan.usage_limits ? plan.usage_limits.max_admissions : 100);
                 localStorage.setItem('saas_current_plan', plan.plan_name);
 
-                // 🔥 MACRO-MODULE URL BLOCKER 🔥
                 const currentPage = window.location.pathname.split('/').pop();
                 let isBlocked = false;
                 const mods = plan.module_access || {};
 
-                // Map specific pages to the Dynamic Plan Toggles
                 if (currentPage === 'admission.html' && mods.admission === false) isBlocked = true;
                 if (currentPage === 'fees.html' && mods.fee_collect === false) isBlocked = true;
                 if ((currentPage === 'expense.html' || currentPage === 'report.html') && mods.day_book === false) isBlocked = true;
                 if (currentPage === 'inventory.html' && mods.inventory === false) isBlocked = true;
 
                 if (isBlocked) {
-                    document.body.innerHTML = ''; // Nuke the screen to hide content
+                    document.body.innerHTML = ''; 
                     showCustomAlert(`👑 PREMIUM FEATURE LOCKED\n\nYour current plan (${plan.plan_name}) does not include access to this module.\n\nPlease contact VPKTech to upgrade your plan.`, 'dashboard.html');
                     throw new Error("SAAS_MODULE_LOCKED");
                 }
@@ -121,7 +111,6 @@ async function verifySaaSStatus() {
     }
 }
 
-// Basic Session Check
 async function enforceSecurity() {
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     if (currentPage === 'login.html' || currentPage === 'index.html') return;
@@ -134,11 +123,9 @@ async function enforceSecurity() {
         return;
     }
 
-    // Run SaaS verification
     await verifySaaSStatus();
 }
 
-// 4. ROLE BASED ACCESS CHECKER
 window.checkDynamicAccess = async function(moduleName) {
     const userRole = localStorage.getItem('userRole');
     if (!userRole) return false;
