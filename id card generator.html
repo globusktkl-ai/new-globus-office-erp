@@ -25,7 +25,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .btn-toggle-settings.active { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
 
 /* ================= HORIZONTAL SLIDING SETTINGS (Right to Left) ================= */
-.settings-slider { position: fixed; top: 50px; left: 0; right: 0; height: 110px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-bottom: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1500; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px 15px; gap: 15px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); align-items: stretch; }
+.settings-slider { position: fixed; top: 50px; left: 0; right: 0; height: 130px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-bottom: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1500; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px 15px; gap: 15px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); align-items: stretch; }
 .settings-slider::-webkit-scrollbar { display: none; }
 .settings-slider.hidden { transform: translateY(-130%); }
 
@@ -47,27 +47,28 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .mini-btn.up { grid-column: 2; } .mini-btn.left { grid-column: 1; } .mini-btn.right { grid-column: 3; } .mini-btn.down { grid-column: 2; }
 
 /* ================= WORKSPACE (FREE PANNING CANVAS) ================= */
-.workspace { position: fixed; top: 160px; bottom: 50px; left: 0; right: 0; overflow: hidden; background: #e2e8f0; touch-action: none; transition: top 0.3s; }
+.workspace { position: fixed; top: 180px; bottom: 60px; left: 0; right: 0; overflow: hidden; background: #e2e8f0; touch-action: none; transition: top 0.3s; }
 .workspace.expanded { top: 50px; }
 .workspace.locked { cursor: grab; }
 .workspace.locked:active { cursor: grabbing; }
 
 .canvas-wrapper { position: absolute; transform-origin: 0 0; transition: transform 0.1s; }
 
-/* ================= LEFT SIDE POCKET (ARROW ONLY) ================= */
-.left-pocket { position: fixed; left: 0; top: 50%; transform: translateY(-50%) translateX(-100%); z-index: 1200; display: flex; align-items: flex-start; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+/* ================= LEFT SIDE POCKET (OVERLAPS SETTINGS) ================= */
+/* FIXED: Z-index to 2500 and Top to 50% */
+.left-pocket { position: fixed; left: 0; top: 50%; transform: translateY(-50%) translateX(-100%); z-index: 2500; display: flex; align-items: center; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .left-pocket.open { transform: translateY(-50%) translateX(0); }
-.pocket-handle { position: absolute; right: -24px; top: 0; background: #1e3a8a; color: white; width: 24px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 0 8px 8px 0; font-size: 14px; font-weight: 900; cursor: pointer; box-shadow: 2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-left: none; }
-.pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 4px 4px 15px rgba(0,0,0,0.05); max-height: 85vh; overflow-y: auto; }
+.pocket-handle { position: absolute; right: -30px; top: 50%; transform: translateY(-50%); background: #1e3a8a; color: white; width: 30px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 0 10px 10px 0; font-size: 14px; font-weight: 900; cursor: pointer; box-shadow: 3px 0 10px rgba(0,0,0,0.2); border: 1px solid #1e40af; border-left: none; }
+.pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 5px 5px 20px rgba(0,0,0,0.15); max-height: 85vh; overflow-y: auto; }
 .pocket-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #334155; cursor: pointer; transition: 0.2s; white-space: nowrap; }
 .pocket-btn.active { background: #3b82f6; color: white; border-color: #2563eb; }
 
 /* ================= FLOATING CONTROLS (LOCK & ZOOM) ================= */
-.zoom-panel { position: fixed; bottom: 65px; left: 15px; background: white; border-radius: 8px; padding: 4px; display: flex; gap: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; z-index: 1200; }
+.zoom-panel { position: fixed; bottom: 70px; left: 15px; background: white; border-radius: 8px; padding: 4px; display: flex; gap: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; z-index: 1200; }
 .z-btn { background: #f8fafc; border: 1px solid #e2e8f0; width: 32px; height: 32px; border-radius: 6px; font-weight: bold; font-size: 18px; cursor: pointer; color: #1e3a8a; display: flex; align-items: center; justify-content: center;}
 .z-btn:active { background: #e2e8f0; }
 
-.float-lock { position: fixed; bottom: 65px; right: 15px; width: 42px; height: 42px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.3); z-index: 1200; transition: 0.3s; }
+.float-lock { position: fixed; bottom: 70px; right: 15px; width: 42px; height: 42px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.3); z-index: 1200; transition: 0.3s; }
 .float-lock.locked { background: #ef4444; color: white; border-color: #dc2626; box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
 
 /* ================= ID CARD STYLES ================= */
@@ -79,7 +80,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .id-card.show-both.landscape { height: 440px; }
 .id-card.show-both.portrait { width: 440px; height: 336px; }
 
-.card-face { position: absolute; width: 100%; height: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; background-color: var(--c-bg, #ffffff); font-family: var(--c-font, 'Segoe UI'); }
+.card-face { position: absolute; width: 100%; height: 100%; background-color: #ffffff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; background-color: var(--c-bg, #ffffff); font-family: var(--c-font, 'Segoe UI'); }
 
 .id-card.show-both.landscape .card-front { top: 0; height: 212px; }
 .id-card.show-both.landscape .card-back { top: 228px; height: 212px; display: block !important; }
@@ -114,7 +115,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .tpl-10 .bg-header { height: 15px; top: 0; background: var(--h1); }
 .tpl-10 .bg-footer { height: 15px; bottom: 0; background: var(--f1); }
 
-/* Draggables Layer (Visible Overflow to prevent losing items) */
+/* Draggables Layer */
 .card-drag-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 .drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; padding: 2px; border: 2px dashed transparent; transition: border 0.2s; }
 .drag-el.selected { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); z-index: 20; }
@@ -142,8 +143,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .el-details .lbl { width: 55px; opacity: 0.8; }
 
 /* THE BADGE BUG FIX: Inner styling avoids background conflict with .selected class */
-.el-badge { display: inline-flex; align-items: center; justify-content: center; }
-.inner-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-block; background: var(--h1, #1e3a8a); color: white; white-space: nowrap; }
+.badge-ui { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; background: #1e3a8a; color: white; }
 
 .el-seal { width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; }
 .el-seal svg { width: 100%; height: 100%; pointer-events: none; }
@@ -153,7 +153,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .el-return { font-size: 9px; font-weight: 800; color: #b91c1c; text-align: center; line-height: 1.3; border: 1px dashed #fca5a5; padding: 4px; border-radius: 4px; background: #fef2f2; }
 
 /* Watermark */
-.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(255,255,255,0.7); z-index: 20; pointer-events: none; display: none; }
+.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(0,0,0,0.5); z-index: 20; pointer-events: none; display: none; }
 .watermark-dark { color: rgba(0,0,0,0.5); }
 
 /* ================= COMPACT EXPORT BAR ================= */
@@ -207,27 +207,33 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         </div>
         <div class="frm-row" style="margin-top:5px; gap:10px;">
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Head 1</label><input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" oninput="updateStyle()">
+                <label class="frm-label">Head 1</label>
+                <input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" oninput="updateStyle()">
             </div>
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Head 2</label><input type="color" id="clr_h2" class="color-picker" value="#3b82f6" oninput="updateStyle()">
+                <label class="frm-label">Head 2</label>
+                <input type="color" id="clr_h2" class="color-picker" value="#3b82f6" oninput="updateStyle()">
             </div>
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Foot 1</label><input type="color" id="clr_f1" class="color-picker" value="#1e3a8a" oninput="updateStyle()">
+                <label class="frm-label">Foot 1</label>
+                <input type="color" id="clr_f1" class="color-picker" value="#1e3a8a" oninput="updateStyle()">
             </div>
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Foot 2</label><input type="color" id="clr_f2" class="color-picker" value="#3b82f6" oninput="updateStyle()">
+                <label class="frm-label">Foot 2</label>
+                <input type="color" id="clr_f2" class="color-picker" value="#3b82f6" oninput="updateStyle()">
             </div>
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Card BG</label><input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateStyle()">
+                <label class="frm-label">Card BG</label>
+                <input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateStyle()">
             </div>
             <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Text</label><input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateStyle()">
+                <label class="frm-label">Text</label>
+                <input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateStyle()">
             </div>
         </div>
     </div>
 
-    <!-- 2. Card Holder (Role) -->
+    <!-- 2. Card Holder -->
     <div class="tool-group">
         <div class="tool-group-title">2. Card Holder Details</div>
         <div class="frm-row">
@@ -283,10 +289,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                 <button class="mini-btn right" onclick="adjustMedia(5, 0)">▶</button>
                 <button class="mini-btn down" onclick="adjustMedia(0, 5)">▼</button>
             </div>
-            <div style="display:flex; flex-direction:column; gap:4px;">
-                <button class="mini-btn" onclick="zoomMedia(0.1)">Zoom +</button>
-                <button class="mini-btn" onclick="zoomMedia(-0.1)">Zoom -</button>
-            </div>
         </div>
         <div class="frm-row" style="margin-top:2px;">
             <select id="sel_pShape" class="frm-select" onchange="updateStyle()"><option value="8px">Round Edge</option><option value="50%">Circle</option><option value="0px">Square</option></select>
@@ -306,23 +308,16 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_return" checked onchange="updateContent()"> Return Addr</label>
         </div>
     </div>
-
-    <!-- 7. Save Slots -->
-    <div class="tool-group">
-        <div class="tool-group-title">7. Saved Cards (Local)</div>
-        <div id="saved-slots-container" style="display:flex; flex-direction:column; gap:4px; max-height:80px; overflow-y:auto; padding-right:5px;">
-            <!-- Generated via JS -->
-        </div>
-    </div>
 </div>
 
 <!-- ================= FREE CANVAS WORKSPACE ================= -->
 <div class="workspace" id="workspaceArea">
     
     <!-- LEFT POCKET (ARROW ONLY & TOGGLES) -->
+    <!-- Z-index to 2500 & Top to 50% fixed so it overlaps settings -->
     <div class="left-pocket" id="leftPocket">
         <div class="pocket-handle" id="pocketHandle" onclick="togglePocket()">▶</div>
-        <div class="pocket-menu" style="max-height: 80vh; overflow-y: auto;">
+        <div class="pocket-menu">
             <button class="pocket-btn active" id="vbtn-front" onclick="setView('front')">Front Face</button>
             <button class="pocket-btn" id="vbtn-back" onclick="setView('back')">Back Face</button>
             <button class="pocket-btn" id="vbtn-both" onclick="setView('both')">View Both</button>
@@ -350,7 +345,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     </div>
 
     <!-- ZOOM CONTROLS (+ / -) -->
-    <div class="zoom-panel no-print">
+    <div class="zoom-panel no-print" id="zoomPanel">
         <button class="z-btn" onclick="changeWorkspaceZoom(-0.1)">-</button>
         <span style="display:flex; align-items:center; font-size:11px; font-weight:800; width:35px; justify-content:center;" id="zoomTxt">100%</span>
         <button class="z-btn" onclick="changeWorkspaceZoom(0.1)">+</button>
@@ -388,7 +383,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                             <div class="addr" id="txt_orgAddr">Address</div>
                         </div>
 
-                        <!-- Fixed Photo Setup for html2canvas -->
                         <div class="drag-el el-photo empty" data-id="photo" id="box_photo">
                             <div style="width:100%; height:100%; overflow:hidden; border-radius:inherit; position:relative;">
                                 <img id="imgPhoto" src="" style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; transform-origin:center;">
@@ -408,8 +402,11 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                             </table>
                         </div>
 
+                        <!-- THE BADGE (Fixed Wrapper Architecture) -->
                         <div class="drag-el" data-id="badge" id="box_badge">
-                            <span id="txt_role" class="inner-badge">STUDENT</span>
+                            <div id="badge_ui" class="badge-ui">
+                                <span id="txt_role">STUDENT</span>
+                            </div>
                         </div>
 
                         <div class="drag-el el-seal" data-id="seal" id="box_seal"></div>
@@ -466,7 +463,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     };
     window.activeMedia = 'photo'; 
 
-    // Default Positions relative to Card Face (Includes Scale)
+    // Default Positions (Includes Scale)
     const posL = {
         logo: {x: 10, y: 8, scale: 1}, org: {x: 60, y: 10, scale: 1}, photo: {x: 15, y: 75, scale: 1},
         details: {x: 105, y: 75, scale: 1}, badge: {x: 15, y: 180, scale: 1}, seal: {x: 240, y: 130, scale: 1},
@@ -491,7 +488,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         updateStyle();
         updateSeal();
         applyPositions();
-        renderSaveSlots();
         loadAutoSave();
         
         document.querySelectorAll('input, textarea, select').forEach(el => {
@@ -536,11 +532,11 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         if(window.appState.isFrozen) {
             btn.classList.add('locked'); btn.innerText = '🔒';
             ws.classList.add('locked');
-            showToast("Card Locked. You can pan and zoom the screen.");
+            showToast("Card Locked. Canvas zoom & pan enabled.");
         } else {
             btn.classList.remove('locked'); btn.innerText = '🔓';
             ws.classList.remove('locked');
-            showToast("Unlocked. Select an element to move it.");
+            showToast("Unlocked. Select an element to move/zoom.");
         }
     }
     
@@ -553,7 +549,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const ws = document.querySelector('.workspace');
         const cWrap = document.getElementById('canvasWrapper');
         window.appState.panX = (ws.clientWidth - (336 * window.appState.zoom)) / 2;
-        window.appState.panY = 20; // top padding
+        window.appState.panY = 20; 
         applyCanvasTransform();
     }
 
@@ -577,7 +573,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         }
     }
 
-    // ================= MEDIA SELECTION & D-PAD (ZOOM INNER IMAGE) =================
+    // ================= MEDIA SELECTION & D-PAD (INNER IMAGE) =================
     window.setActiveMedia = function(type) {
         window.activeMedia = type;
         document.getElementById('sel_photo_btn').style.borderColor = type === 'photo' ? '#3b82f6' : '#cbd5e1';
@@ -586,19 +582,11 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         document.getElementById('sel_logo_btn').style.background = type === 'logo' ? '#eff6ff' : 'transparent';
         
         document.querySelector('#sel_logo_btn label').style.color = type === 'logo' ? '#0284c7' : '#475569';
-        document.getElementById('txtActiveMedia').innerText = type === 'photo' ? 'Photo' : 'Logo';
     }
 
     window.adjustMedia = function(dx, dy) {
         const st = window.appState.media[window.activeMedia];
         st.x += dx; st.y += dy;
-        applyMediaTransform();
-        autoSave();
-    }
-    
-    window.zoomMedia = function(dz) {
-        const st = window.appState.media[window.activeMedia];
-        st.z = Math.max(0.1, st.z + dz);
         applyMediaTransform();
         autoSave();
     }
@@ -615,7 +603,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         window.appState.view = v;
         document.querySelectorAll('.pocket-btn:not(#vbtn-orient)').forEach(b => b.classList.remove('active'));
         document.getElementById('vbtn-' + v).classList.add('active');
-        togglePocket(); // Auto close pocket
+        togglePocket(); // Auto close
 
         const c = document.getElementById('idCard');
         if(v === 'front') { 
@@ -681,7 +669,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
     // ================= DATA & STYLES UPDATE =================
     window.updateContent = function() {
-        // Role
+        // Role Update
         const roleSel = document.getElementById('inp_role_select').value;
         const finalRole = roleSel === 'Custom' ? document.getElementById('inp_custom_role').value : roleSel;
         document.getElementById('txt_role').innerText = finalRole || 'ROLE';
@@ -698,7 +686,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         document.getElementById('txt_phone').innerText = document.getElementById('inp_phone').value;
         document.getElementById('txt_valid').innerText = document.getElementById('inp_valid').value;
         
-        // Back
+        // Back Update
         document.getElementById('txt_borgName').innerText = document.getElementById('inp_orgName').value;
         document.getElementById('txt_orgAddrBack').innerHTML = document.getElementById('inp_orgAddr').value.replace(/\n/g, '<br>');
         document.getElementById('txt_terms').innerHTML = document.getElementById('inp_terms').value.replace(/\n/g, '<br>');
@@ -707,6 +695,8 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             document.getElementById('box_return').style.display = 'block';
             document.getElementById('txt_return').innerHTML = document.getElementById('inp_return').value.replace(/\n/g, '<br>');
         } else { document.getElementById('box_return').style.display = 'none'; }
+        
+        document.getElementById('box_qr').style.display = document.getElementById('chk_qr').checked ? 'flex' : 'none';
     }
 
     window.updateStyle = function() {
@@ -718,7 +708,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const tx = document.getElementById('clr_text').value;
         const font = document.getElementById('sel_font').value;
 
-        // Apply CSS Variables so templates can use them dynamically
+        // Apply CSS Variables
         const idCard = document.getElementById('idCard');
         idCard.style.setProperty('--h1', h1);
         idCard.style.setProperty('--h2', h2);
@@ -728,13 +718,14 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         idCard.style.setProperty('--c-txt', tx);
         idCard.style.setProperty('--c-font', font);
 
-        document.getElementById('txt_role').style.background = h1;
-        document.getElementById('txt_role').style.color = getContrast(h1);
+        // BADGE COLOR FIX: Target the inner UI element, not the wrapper!
+        const badgeUi = document.getElementById('badge_ui');
+        badgeUi.style.background = h1;
+        badgeUi.style.color = getContrast(h1);
         
         const orgInfo = document.getElementById('txt_orgName').parentElement;
         const tpl = document.getElementById('sel_template').value;
         
-        // Some templates have white backgrounds for header, so text needs to be main color
         if(['4','6','8','10'].includes(tpl)) {
             orgInfo.style.color = tx; document.getElementById('ph_logo').style.color = tx;
         } else {
@@ -757,7 +748,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         return (r*299 + g*587 + b*114)/1000 > 128 ? '#0f172a' : '#ffffff';
     }
 
-    // ================= MEDIA UPLOAD =================
+    // ================= MEDIA UPLOAD & TOGGLES =================
     window.loadMedia = function(input, imgId, phId, type) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -816,81 +807,16 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         document.getElementById('box_seal').innerHTML = svg;
     }
 
-    // ================= LOCAL SAVE SLOTS =================
-    window.renderSaveSlots = function() {
-        const container = document.getElementById('saved-slots-container');
-        let html = '';
-        for(let i=1; i<=5; i++) {
-            const saved = localStorage.getItem('vpk_saved_card_' + i);
-            const name = saved ? JSON.parse(saved).name : `Slot ${i}`;
-            html += `
-            <div class="save-slot-row">
-                <input type="text" id="slot_name_${i}" value="${name}" class="frm-input" style="padding:4px; font-size:10px;">
-                <button class="mini-btn" style="background:#10b981; color:white; border-color:#059669;" onclick="saveToSlot(${i})">Save</button>
-                <button class="mini-btn" style="background:#3b82f6; color:white; border-color:#2563eb;" onclick="loadFromSlot(${i})" ${!saved?'disabled':''}>Load</button>
-                <button class="mini-btn" style="background:#ef4444; color:white; border-color:#dc2626;" onclick="resetSlot(${i})" ${!saved?'disabled':''}>X</button>
-            </div>`;
-        }
-        container.innerHTML = html;
-    }
-
-    window.saveToSlot = function(i) {
-        const name = document.getElementById('slot_name_'+i).value || `Slot ${i}`;
-        const data = {};
-        document.querySelectorAll('.frm-input, .frm-select, .frm-textarea, .color-picker').forEach(el => {
-            if(el.id && !el.id.startsWith('slot_name')) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
-        });
-        
-        const saveData = {
-            name: name,
-            inputs: data,
-            positions: positions,
-            state: window.appState
-        };
-        localStorage.setItem('vpk_saved_card_' + i, JSON.stringify(saveData));
-        renderSaveSlots();
-        showToast(`Saved to Slot ${i}`);
-    }
-
-    window.loadFromSlot = function(i) {
-        const saved = localStorage.getItem('vpk_saved_card_' + i);
-        if(saved) {
-            const data = JSON.parse(saved);
-            if(data.inputs) {
-                Object.keys(data.inputs).forEach(key => {
-                    const el = document.getElementById(key);
-                    if(el) { if(el.type === 'checkbox') el.checked = data.inputs[key]; else el.value = data.inputs[key]; }
-                });
-            }
-            if(data.positions) positions = data.positions;
-            if(data.state) {
-                window.appState.media = data.state.media || {photo: {x:0,y:0,z:1}, logo: {x:0,y:0,z:1}};
-                applyMediaTransform();
-                if(window.appState.orientation !== data.state.orientation) toggleOrient();
-            }
-            updateContent(); updateStyle(); updateSeal(); applyPositions();
-            showToast(`Loaded Slot ${i}`);
-        }
-    }
-
-    window.resetSlot = function(i) {
-        if(confirm(`Clear Slot ${i}?`)) {
-            localStorage.removeItem('vpk_saved_card_' + i);
-            renderSaveSlots();
-            showToast(`Slot ${i} Cleared`);
-        }
-    }
-
     // ================= CANVAS PANNING & PINCH ZOOM =================
     function initCanvasPan() {
         const workspace = document.querySelector('.workspace');
         let isDown = false, startX, startY;
         let initialPinchDist = null;
 
-        // 1. Mouse Events (For Computer Panning)
+        // Mouse Events
         workspace.addEventListener('mousedown', (e) => {
-            if(!window.appState.isFrozen) return; // Only pan if Locked (🔒)
-            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
+            if(!window.appState.isFrozen) return; 
+            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket') || e.target.closest('.zoom-panel')) return;
             isDown = true;
             startX = e.pageX - window.appState.panX; 
             startY = e.pageY - window.appState.panY;
@@ -905,19 +831,17 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             applyCanvasTransform();
         });
 
-        // 2. Touch Events (For Mobile Pan & Pinch-to-Zoom)
+        // Touch Events
         workspace.addEventListener('touchstart', (e) => {
-            if(!window.appState.isFrozen) return; // Only work if Locked (🔒)
-            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
+            if(!window.appState.isFrozen) return; 
+            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket') || e.target.closest('.zoom-panel')) return;
 
             if (e.touches.length === 1) {
-                // One finger: Panning
                 isDown = true;
                 initialPinchDist = null;
                 startX = e.touches[0].pageX - window.appState.panX; 
                 startY = e.touches[0].pageY - window.appState.panY;
             } else if (e.touches.length === 2) {
-                // Two fingers: Pinch to Zoom
                 isDown = false;
                 initialPinchDist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
@@ -933,16 +857,14 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
         workspace.addEventListener('touchmove', (e) => {
             if(!window.appState.isFrozen) return;
-            e.preventDefault(); // Prevent screen scrolling
+            e.preventDefault(); 
 
             if (e.touches.length === 1 && isDown) {
-                // Handle Panning
                 window.appState.panX = e.touches[0].pageX - startX; 
                 window.appState.panY = e.touches[0].pageY - startY;
                 applyCanvasTransform();
             } 
             else if (e.touches.length === 2 && initialPinchDist) {
-                // Handle Pinch-to-Zoom
                 const currentDist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
                     e.touches[0].pageY - e.touches[1].pageY
@@ -951,18 +873,15 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                 const scaleDelta = currentDist / initialPinchDist;
                 let newZoom = window.appState.zoom * scaleDelta;
 
-                // Zoom Limits (Min 0.4x, Max 3x)
                 if (newZoom < 0.4) newZoom = 0.4;
                 if (newZoom > 3) newZoom = 3;
 
                 window.appState.zoom = newZoom;
-                initialPinchDist = currentDist; // Reset for continuous zoom
-                
+                initialPinchDist = currentDist; 
                 applyCanvasTransform();
-
-                // Update text if zoom text element still exists
+                
                 const zoomTxt = document.getElementById('zoomTxt');
-                if (zoomTxt) zoomTxt.innerText = Math.round(newZoom * 100) + '%';
+                if(zoomTxt) zoomTxt.innerText = Math.round(newZoom * 100) + '%';
             }
         }, {passive: false});
     }
@@ -974,7 +893,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         }
     }
 
-    // ================= DRAG & DROP ELEMENTS (FLYING FIX & SELECTION) =================
+    // ================= DRAG & DROP ELEMENTS =================
     function initDragAndDrop() {
         const draggables = document.querySelectorAll('.drag-el');
         let activeEl = null; let initX = 0, initY = 0;
@@ -1090,7 +1009,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     // ================= AUTO SAVE & LOAD =================
     function autoSave() {
         const data = {};
-        document.querySelectorAll('.frm-input, .frm-select, .frm-textarea, .color-picker').forEach(el => {
+        document.querySelectorAll('.frm-input, .frm-select, .color-picker, input[type="checkbox"]').forEach(el => {
             if(el.id && !el.id.startsWith('slot_name')) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
         });
         const saveData = { inputs: data, positions: positions, state: window.appState };
