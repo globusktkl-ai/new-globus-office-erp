@@ -515,20 +515,25 @@
 
         async function loadSaaSDetails(adminEmail) {
             try {
-                const { data, error } = await supabase.from('saas_clients').select('valid_until, promo_message, is_active').eq('admin_email', adminEmail).single();
+                const { data, error } = await supabase.from('saas_clients').select('*').eq('admin_email', adminEmail).single();
                 if(data) {
-                    if (data.valid_until) {
-                        const dateObj = new Date(data.valid_until);
-                        const formattedDate = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-                        document.getElementById('licExpiry').innerText = formattedDate;
-                    } else {
-                        document.getElementById('licExpiry').innerText = 'N/A';
-                    }
+                    // HTML ഘടന മാറ്റുന്നു (പുതിയ പ്ലാൻ വിവരങ്ങൾ കാണിക്കാൻ)
+                    const planBoxHtml = `
+                        <div class="plan-box-label">Active Plan</div>
+                        <div class="plan-box-val" id="licPlanName" style="margin-bottom: 15px;">${data.plan_name || 'Free Tier'}</div>
+                        <div style="display:flex; justify-content:space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                            <div>
+                                <div class="plan-box-label">Limit</div>
+                                <div class="plan-box-val" style="font-size:14px; color:#e2e8f0;">${data.admission_limit || '0'} Students</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div class="plan-box-label">Valid Until</div>
+                                <div class="plan-box-val" style="font-size:14px; color:${!data.is_active ? '#ef4444' : '#e2e8f0'};">${data.valid_until ? new Date(data.valid_until).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}</div>
+                            </div>
+                        </div>
+                    `;
+                    document.querySelector('.plan-box').innerHTML = planBoxHtml;
 
-                    if(!data.is_active) {
-                        document.getElementById('licStatus').innerText = '🔴 SUSPENDED';
-                        document.getElementById('licStatus').style.color = '#ef4444';
-                    }
                     if(data.promo_message && data.promo_message.trim() !== '') {
                         const promoDiv = document.getElementById('promoBadge');
                         promoDiv.style.display = 'block';
@@ -537,7 +542,6 @@
                 }
             } catch(e) { console.log(e); }
         }
-
         window.openBugReport = function() {
             const section = document.getElementById('bugReportSection');
             section.style.display = section.style.display === 'none' ? 'block' : 'none';
