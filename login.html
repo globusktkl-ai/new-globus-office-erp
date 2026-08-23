@@ -72,8 +72,9 @@
             <button type="submit" class="btn-custom" id="loginBtn">Secure Sign In</button>
         </form>
 
-        <div class="divider">OR</div>
-        <button type="button" class="btn-guest" onclick="window.guestLogin()">👀 Explore as Guest (Demo)</button>
+        <!-- 🔥 FIXED: Added Unique IDs here 🔥 -->
+        <div class="divider" id="guestDivider">OR</div>
+        <button type="button" class="btn-guest" id="guestLoginBtn" onclick="window.guestLogin()">👀 Explore as Guest (Demo)</button>
     </div>
 
     <!-- Global Theme & Guest Toggle Logic -->
@@ -221,7 +222,7 @@
             window.location.replace('dashboard.html');
         };
 
-        // 🔥 THE MAGIC FIX: ROBUST BOOLEAN CHECK 🔥
+        // 🔥 THE MAGIC FIX: Get elements by exact ID 🔥
         async function applySystemSettings() {
             try {
                 const { data } = await supabase.from('institute_settings').select('theme_color, guest_login_enabled').eq('id', 1).single();
@@ -230,14 +231,13 @@
                         document.documentElement.style.setProperty('--primary-dark', data.theme_color);
                     }
                     
-                    const guestBtn = document.querySelector('.btn-guest');
-                    const divider = document.querySelector('.divider');
+                    // Fetch by ID to avoid selecting the modal's cancel button!
+                    const guestBtn = document.getElementById('guestLoginBtn');
+                    const divider = document.getElementById('guestDivider');
                     
                     if (guestBtn && divider) {
-                        // Data from database might be true, false, "true", "false", 1 or 0.
                         const isEnabled = data.guest_login_enabled;
                         
-                        // If it is explicitly set to false (or text "false")
                         if (isEnabled === false || isEnabled === 'false' || isEnabled === 0 || isEnabled === '0') {
                             guestBtn.style.display = 'none'; 
                             divider.style.display = 'none';
