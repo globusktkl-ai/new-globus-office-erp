@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Directory - ERP Technical Academy</title>
+    <title>Directory - ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
 
     <style>
@@ -58,13 +58,11 @@
         .student-mobile-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s; width: 100%; }
         .smc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 15px; }
         
-        /* THIS IS THE FIX: Forces the left side to shrink and breaks long words */
         .smc-header-left { flex: 1; min-width: 0; padding-right: 15px; }
         .smc-name { font-size: 19px; font-weight: 900; color: #0f172a; margin-bottom: 4px; line-height: 1.2; text-transform: uppercase; word-break: break-word; overflow-wrap: break-word; }
         
         .smc-reg { font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Keeps the image circle from squishing */
         .avatar-circle { width: 65px; height: 65px; border-radius: 50%; background: #fbcfe8; border: 3px solid #fdf2f8; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; flex-shrink: 0;}
         .avatar-circle svg { width: 40px; height: 40px; fill: #ec4899; margin-top: 10px;}
         .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
@@ -79,14 +77,15 @@
         .progress-fill { height: 100%; border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 10px; font-weight: 900; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: width 0.5s ease-in-out; }
         .progress-fill.active { background: linear-gradient(90deg, #3b82f6, #6366f1); }
         .progress-fill.completed { background: linear-gradient(90deg, #10b981, #059669); }
+        .progress-fill.archived { background: linear-gradient(90deg, #94a3b8, #64748b); }
         .progress-text-out { position: absolute; width: 100%; text-align: center; top: 0; left: 0; font-size: 10px; font-weight: 800; color: #475569; line-height: 16px; z-index: 1; mix-blend-mode: overlay;}
 
         /* PROFESSIONAL BUTTON STYLES */
         .card-action-btns { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; }
-        .btn-card { border: none; padding: 12px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 13px; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .btn-card { border: none; padding: 12px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 13px; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 5px; width: 100%; }
         .btn-view { background: var(--app-theme-color, #6366f1); color: #fff; }
-        .btn-del-full { background: transparent; color: #ef4444; border: 1px solid #fca5a5; width: 100%; padding: 12px; margin-top: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 14px; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn-del-full:hover { background: #fef2f2; }
+        .btn-del-full { background: #fff7ed; color: #ea580c; border: 1px dashed #fdba74; width: 100%; padding: 12px; margin-top: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 14px; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-del-full:hover { background: #ffedd5; border-color: #ea580c; }
 
         /* MODAL LAYOUTS */
         .close-modal-btn { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; border: 2px solid white; border-radius: 50%; width: 36px; height: 36px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.2s; }
@@ -167,11 +166,14 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
+        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
+        window.dirPerms = { view: true, add: false, edit: false, delete: false };
+
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let borderColor = 'var(--app-theme-color, #3b82f6)'; 
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed')) borderColor = '#ef4444'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('Denied') || msg.includes('failed')) borderColor = '#ef4444'; 
             else if (msg.includes('✅') || msg.includes('success')) borderColor = '#10b981'; 
             
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
@@ -211,8 +213,20 @@
                 const userRole = localStorage.getItem('userRole') || 'Admin';
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
+                
+                // --- ACTION LEVEL SECURITY CHECK ---
+                if (userRole === 'Super Admin' || userRole === 'Admin') {
+                    window.dirPerms = { view: true, add: true, edit: true, delete: true };
+                } else if (userRole !== 'Guest') {
+                    const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).single();
+                    if (data && data.permissions && data.permissions['Directory']) {
+                        window.dirPerms = data.permissions['Directory'];
+                    }
+                }
+                // -----------------------------------
+
                 fetchStudents();
-            } catch(e) { console.log("Supabase not connected."); }
+            } catch(e) { console.log("Auth error:", e); }
         }
 
         window.toggleFilter = function(selectId, isChecked) { document.getElementById(selectId).disabled = !isChecked; };
@@ -308,6 +322,8 @@
                 let progressPercent = 0; let progressClass = 'active'; let progressText = '0%';
                 if (s.status && s.status.toLowerCase() === 'completed') {
                     progressPercent = 100; progressClass = 'completed'; progressText = 'Course Completed';
+                } else if (s.status && s.status.toLowerCase() === 'archived') {
+                    progressPercent = 100; progressClass = 'archived'; progressText = 'Archived Record';
                 } else {
                     const course = globalCourses.find(c => c.id == s.course_id);
                     if (course && course.modules && Array.isArray(course.modules)) {
@@ -329,19 +345,31 @@
                     </div>
                 `;
 
+                // --- SMART BUTTON LOGIC ---
+                let actionBtnsHTML = `<div class="card-action-btns">`;
+                
+                if (s.status === 'archived') {
+                    actionBtnsHTML += `<div style="text-align:center; padding:10px; color:#ea580c; font-weight:800; background:#fff7ed; border-radius:8px; border:1px dashed #fdba74;">🗄️ Archived (Read-Only List)</div>`;
+                    actionBtnsHTML += `</div>`;
+                } else {
+                    if (window.dirPerms.edit || window.dirPerms.view) {
+                        let btnText = window.dirPerms.edit ? "View / Edit" : "View Details";
+                        actionBtnsHTML += `<button onclick="window.viewAndEditStudent('${s.id}')" class="btn-card btn-view"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> ${btnText}</button>`;
+                    }
+                    actionBtnsHTML += `</div>`;
+
+                    if (window.dirPerms.delete) {
+                        actionBtnsHTML += `
+                        <button onclick="window.archiveAndFreeSpace('${s.id}', '${s.register_number}', '${s.photo_url || ''}')" class="btn-del-full">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                            Archive & Free Storage
+                        </button>`;
+                    }
+                }
+                // --------------------------
+
                 const card = document.createElement('div');
                 card.className = 'student-mobile-card';
-                
-                let actionBtnsHTML = `
-                    <div class="card-action-btns">
-                        <button onclick="window.viewAndEditStudent('${s.id}')" class="btn-card btn-view"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> View / Edit</button>
-                    </div>
-                    <button onclick="window.archiveStudent('${s.id}', '${s.register_number}')" class="btn-del-full" style="color: #ea580c; border-color: #fdba74;">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
-                        Archive Student
-                    </button>
-                `;
-
                 card.innerHTML = `
                     <div class="smc-header">
                         <div class="smc-header-left">
@@ -386,6 +414,11 @@
                 }
             }
 
+            // Lock inputs if user has no Edit permission
+            const lockState = !window.dirPerms.edit ? 'disabled style="background:#e2e8f0;"' : '';
+            const btnState = !window.dirPerms.edit ? 'display:none;' : '';
+            const msgState = !window.dirPerms.edit ? '<p style="color:#ef4444; font-size:12px; font-weight:bold; margin-bottom:10px;">⚠️ You only have view access. Editing is locked.</p>' : '';
+
             document.getElementById('viewEditContent').innerHTML = `
                 <div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:15px; font-size:13px; line-height:1.6; border: 1px solid #e2e8f0;">
                     <p><b>Name:</b> ${s.full_name}</p>
@@ -397,26 +430,27 @@
                     <p><b>Total Fee:</b> ₹ ${s.total_fee || 0}</p>
                 </div>
                 <hr style="border:0; border-top:1px solid #e5e7eb; margin-bottom:15px;">
+                ${msgState}
                 <form onsubmit="window.saveFullEdit(event, '${s.id}')">
-                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Full Name</label><input type="text" id="fullEditName" value="${s.full_name}" class="form-control-cert" required></div>
-                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Phone Number</label><input type="text" id="fullEditPhone" value="${s.phone_number}" class="form-control-cert" required maxlength="10"></div>
+                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Full Name</label><input type="text" id="fullEditName" value="${s.full_name}" class="form-control-cert" required ${lockState}></div>
+                    <div style="margin-bottom:10px;"><label style="font-size:12px; font-weight:600;">Phone Number</label><input type="text" id="fullEditPhone" value="${s.phone_number}" class="form-control-cert" required maxlength="10" ${lockState}></div>
                     
                     <div style="display:flex; gap:10px; margin-bottom:10px;">
-                        <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Course</label><select id="fullEditCourse" class="form-control-cert" required onchange="window.updateEditModules(this.value)">${courseOptions}</select></div>
-                        <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Module</label><select id="fullEditModule" class="form-control-cert">${moduleOptions}</select></div>
+                        <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Course</label><select id="fullEditCourse" class="form-control-cert" required onchange="window.updateEditModules(this.value)" ${lockState}>${courseOptions}</select></div>
+                        <div style="flex:1;"><label style="font-size:12px; font-weight:600;">Module</label><select id="fullEditModule" class="form-control-cert" ${lockState}>${moduleOptions}</select></div>
                     </div>
 
                     <div style="display:flex; gap:10px; margin-bottom:15px;">
                         <div style="flex:1;">
                             <label style="font-size:12px; font-weight:600;">Course Status</label>
-                            <select id="fullEditStatus" class="form-control-cert">
+                            <select id="fullEditStatus" class="form-control-cert" ${lockState}>
                                 <option value="active" ${(!s.status || s.status==='active')?'selected':''}>Active</option>
                                 <option value="completed" ${s.status==='completed'?'selected':''}>Completed</option>
                             </select>
                         </div>
                         <div style="flex:1;">
                             <label style="font-size:12px; font-weight:600;">Qualification</label>
-                            <select id="fullEditQual" class="form-control-cert" required>
+                            <select id="fullEditQual" class="form-control-cert" required ${lockState}>
                                 <option value="SSLC" ${s.qualification==='SSLC'?'selected':''}>SSLC</option>
                                 <option value="Plus Two" ${s.qualification==='Plus Two'?'selected':''}>Plus Two</option>
                                 <option value="Degree" ${s.qualification==='Degree'?'selected':''}>Degree</option>
@@ -424,7 +458,7 @@
                             </select>
                         </div>
                     </div>
-                    <button type="submit" style="width:100%; background:var(--app-theme-color, #10B981); color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">Update Profile</button>
+                    <button type="submit" style="width:100%; background:var(--app-theme-color, #10B981); color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; ${btnState}">Update Profile</button>
                 </form>
             `;
         };
@@ -441,6 +475,7 @@
         window.saveFullEdit = async function(e, id) {
             e.preventDefault();
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.dirPerms.edit) { alert("⛔ Permission Denied: You don't have edit access."); return; }
             
             let hasMarks = false;
             try {
@@ -468,34 +503,47 @@
 
             if (error) alert('Error updating: ' + error.message);
             else { 
-                // --- NEW: AUDIT TRAIL LOGGING ---
-                if(window.ThemeManager) {
-                    window.ThemeManager.logAction('Directory', 'UPDATE', `Updated profile for: ${newName}`);
-                }
+                if(window.ThemeManager) { window.ThemeManager.logAction('Directory', 'UPDATE', `Updated profile for: ${newName}`); }
                 alert('✅ Profile updated successfully!'); 
                 window.closeModal(); 
                 fetchStudents(); 
             }
         };
 
-        window.archiveStudent = async function(id, regNo) {
+        // --- THE SMART ARCHIVE (SOFT DELETE + PHOTO WIPE) ---
+        window.archiveAndFreeSpace = async function(id, regNo, photoUrl) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
-            let ans = await window.magicPrompt(`⚠️ Security Verification\nTo Archive Reg No: ${regNo}, solve:\n\n5 + 5 = ?`);
+            if (!window.dirPerms.delete) { alert("⛔ Permission Denied: You don't have delete access."); return; }
+            
+            let ans = await window.magicPrompt(`⚠️ STORAGE WARNING\nArchiving Reg No: ${regNo} will permanently delete their Photo to free up space. Their basic text details will remain in the 'Archived' list.\n\nSolve to confirm:\n\n5 + 5 = ?`);
+            
             if (ans !== null && parseInt(ans) === 10) {
-                const { error } = await supabase.from('students').update({ status: 'archived' }).eq('id', id);
-                if (error) { alert('Error archiving student: ' + error.message); } 
-                else { 
-                    // --- NEW: AUDIT TRAIL LOGGING ---
+                // 1. Delete Photo from Storage to save space
+                if (photoUrl && photoUrl.includes('student_photos/')) {
+                    try {
+                        const fileName = photoUrl.substring(photoUrl.lastIndexOf('/') + 1);
+                        await supabase.storage.from('student_photos').remove([fileName]);
+                    } catch(e) { console.error("Photo delete error", e); }
+                }
+                
+                // 2. Soft-Delete in Database (Status = archived, Photo = null)
+                const { error } = await supabase.from('students').update({ status: 'archived', photo_url: null }).eq('id', id);
+                if (error) { 
+                    alert('❌ Error archiving student: ' + error.message); 
+                } else { 
                     if(window.ThemeManager) {
-                        window.ThemeManager.logAction('Directory', 'DELETE', `Archived student Reg No: ${regNo}`);
+                        window.ThemeManager.logAction('Directory', 'DELETE', `Archived student & freed photo space: ${regNo}`);
                     }
-                    alert('✅ Student successfully moved to Archives.'); 
+                    alert('✅ Student archived and photo storage freed!'); 
                     fetchStudents(); 
                 }
-            } else { if(ans !== null) alert('❌ Verification failed! Archiving aborted.'); }
+            } else { 
+                if(ans !== null) alert('❌ Verification failed! Archiving aborted.'); 
+            }
         };
+        // ---------------------------------------------
 
-       window.closeModal = function() { 
+        window.closeModal = function() { 
             document.getElementById('studentModal').style.display = 'none';
             document.getElementById('viewEditContainer').style.display = 'none';
         };
