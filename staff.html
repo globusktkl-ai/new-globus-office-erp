@@ -76,6 +76,8 @@
             border-radius:9px; font-size:14px; font-weight:600; outline:none; margin:0 0 12px 0; background:#f8fafc; transition:.2s; display:block;
         }
         .frm-input:focus,.frm-select:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1);background:#fff}
+        .frm-input:disabled,.frm-select:disabled{background:#e2e8f0;color:#64748b;cursor:not-allowed;}
+        
         .frm-group{width:100%;max-width:100%;margin-bottom:12px;min-width:0;box-sizing:border-box;}
         .frm-group .frm-input,.frm-group .frm-select{margin-bottom:0;}
         .frm-row{display:grid;grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);gap:10px;width:100%;max-width:100%;margin-bottom:12px;min-width:0;box-sizing:border-box;}
@@ -151,12 +153,12 @@
                 </div>
             </div>
             <div id="staffList"><div class="empty-state">Loading staff data...</div></div>
-            <button class="fab-add" onclick="openModal('addStaffModal')" title="Add New Staff">+</button>
+            <button class="fab-add" id="fabAddStaff" onclick="openModal('addStaffModal')" title="Add New Staff">+</button>
         </div>
 
         <!-- TAB 2: ADVANCES -->
         <div id="panel-advances" class="tab-panel">
-            <div class="payroll-card">
+            <div class="payroll-card" id="advanceFormArea">
                 <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Record Staff Advance</h3>
                 <div class="frm-group"><label class="frm-label">Select Staff</label><select class="frm-select" id="advStaffSelect"><option value="">-- Choose Staff --</option></select></div>
                 <div class="frm-row">
@@ -172,7 +174,7 @@
 
         <!-- TAB 3: PAYROLL -->
         <div id="panel-payroll" class="tab-panel">
-            <div class="payroll-card">
+            <div class="payroll-card" id="payrollFormArea">
                 <h3 style="margin:0 0 14px;font-size:16px;color:#1e3a8a;font-weight:900;">Process Monthly Salary</h3>
                 <div class="frm-row">
                     <div><label class="frm-label">Month</label><input type="month" class="frm-input" id="payMonth"></div>
@@ -205,7 +207,6 @@
                 <div><label class="frm-label">Gender</label><select class="frm-select" id="addGender"><option value="Male">Male</option><option value="Female">Female</option></select></div>
             </div>
             
-            <!-- NEW: Role Dropdown, Email and Password -->
             <div class="frm-group">
                 <label class="frm-label">Role / Designation *</label>
                 <select class="frm-select" id="addRole">
@@ -233,7 +234,8 @@
     <div id="editStaffModal" class="modal-overlay">
         <div class="modal-sheet">
             <button class="modal-close" onclick="closeModal('editStaffModal')">×</button>
-            <h2 class="modal-title">✏️ Edit Staff Profile</h2>
+            <h2 class="modal-title">👤 Staff Profile</h2>
+            <div id="editLockMsg"></div>
             <input type="hidden" id="editId">
             <div class="frm-group"><label class="frm-label">Full Name *</label><input type="text" class="frm-input" id="editName"></div>
             <div class="frm-row">
@@ -258,7 +260,7 @@
             </div>
             <div class="frm-group"><label class="frm-label">Status</label><select class="frm-select" id="editStatus"><option value="active">Active</option><option value="archived">Archived</option></select></div>
             <div class="frm-group"><label class="frm-label">Address</label><input type="text" class="frm-input" id="editAddress"></div>
-            <button class="frm-submit" onclick="updateStaff()">💾 Update Profile</button>
+            <button class="frm-submit" id="btnUpdateStaffProfile" onclick="updateStaff()">💾 Update Profile</button>
         </div>
     </div>
 
@@ -355,12 +357,15 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
+        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
+        window.staffPerms = { view: true, add: false, edit: false, delete: false };
+
         // 1. MAGIC ALERT OVERRIDE
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let borderColor = '#3b82f6'; 
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('failed') || msg.includes('required')) borderColor = '#ef4444'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('failed') || msg.includes('required') || msg.includes('Denied')) borderColor = '#ef4444'; 
             else if (msg.includes('✅') || msg.includes('success') || msg.includes('Complete')) borderColor = '#10b981'; 
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
             box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
@@ -410,6 +415,31 @@
                 const { data: { session } } = await supabase.auth.getSession();
                 
                 if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
+
+                // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
+                if (userRole === 'Super Admin' || userRole === 'Admin') {
+                    window.staffPerms = { view: true, add: true, edit: true, delete: true };
+                } else if (userRole !== 'Guest') {
+                    const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).single();
+                    if (data && data.permissions && data.permissions['StaffHR']) {
+                        window.staffPerms = data.permissions['StaffHR'];
+                    }
+                }
+
+                if (!window.staffPerms.add && userRole !== 'Guest') {
+                    // Hide Add Staff button
+                    const fabBtn = document.getElementById('fabAddStaff');
+                    if(fabBtn) fabBtn.style.display = 'none';
+
+                    // Lock Advances Form
+                    const advForm = document.getElementById('advanceFormArea');
+                    if(advForm) advForm.innerHTML = `<div style="text-align:center; padding: 30px 20px; background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px;"><h3 style="color:#475569; font-size:16px; margin:0;">🔒 ACCESS RESTRICTED</h3><p style="color:#64748b; font-size:12px; margin:5px 0 0;">You don't have permission to record advances.</p></div>`;
+
+                    // Lock Payroll Form
+                    const payForm = document.getElementById('payrollFormArea');
+                    if(payForm) payForm.innerHTML = `<div style="text-align:center; padding: 30px 20px; background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px;"><h3 style="color:#475569; font-size:16px; margin:0;">🔒 ACCESS RESTRICTED</h3><p style="color:#64748b; font-size:12px; margin:5px 0 0;">You don't have permission to process salaries.</p></div>`;
+                }
+                // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
 
                 if (userRole === 'Guest') {
                     setTimeout(() => {
@@ -517,9 +547,21 @@
             });
             const container = document.getElementById('staffList');
             if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No staff found.</div>'; return; }
+            
             container.innerHTML = filtered.map(s => {
                 const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
                 const statusColor = (s.status || 'active') === 'active' ? '#10b981' : '#94a3b8';
+                
+                // --- 🔒 DYNAMIC ACTION BUTTONS BASED ON PERMISSION ---
+                let actionBtns = '';
+                if (window.staffPerms.edit || window.staffPerms.view) {
+                    let btnText = window.staffPerms.edit ? 'View / Edit' : 'View Details';
+                    actionBtns += `<div class="sc-actions"><button class="sc-btn sc-btn-view" onclick="openEditStaff('${s.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> ${btnText}</button></div>`;
+                }
+                
+                let deleteBtn = window.staffPerms.delete ? `<div class="sc-actions-full"><button class="sc-btn sc-btn-archive" onclick="archiveStaff('${s.id}','${s.full_name}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg> Archive Staff</button></div>` : '';
+                // -----------------------------------------------------
+
                 return `
                 <div class="staff-card">
                     <div class="sc-header">
@@ -533,10 +575,8 @@
                     <div class="sc-row"><span class="sc-label">Phone:</span><span class="sc-value">${s.phone || 'N/A'}</span></div>
                     <div class="sc-row"><span class="sc-label">Salary:</span><span class="sc-value" style="color:#1d4ed8;font-size:15px">₹ ${s.basic_salary || 0}</span></div>
                     <div class="sc-row"><span class="sc-label">Joined:</span><span class="sc-value">${formatDate(s.joining_date)}</span></div>
-                    <div class="sc-actions">
-                        <button class="sc-btn sc-btn-view" onclick="openEditStaff('${s.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> View / Edit</button>
-                    </div>
-                    <div class="sc-actions-full"><button class="sc-btn sc-btn-archive" onclick="archiveStaff('${s.id}','${s.full_name}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg> Archive Staff</button></div>
+                    ${actionBtns}
+                    ${deleteBtn}
                 </div>`;
             }).join('');
         };
@@ -553,10 +593,31 @@
             document.getElementById('editJoinDate').value = s.joining_date || '';
             document.getElementById('editStatus').value = s.status || 'active';
             document.getElementById('editAddress').value = s.address || '';
+            
+            // --- 🔒 ACTION LEVEL SECURITY CHECK (UI Lock) ---
+            const isEditAllowed = window.staffPerms.edit;
+            
+            ['editName', 'editPhone', 'editGender', 'editRole', 'editSalary', 'editJoinDate', 'editStatus', 'editAddress'].forEach(fieldId => {
+                document.getElementById(fieldId).disabled = !isEditAllowed;
+            });
+
+            const updateBtn = document.getElementById('btnUpdateStaffProfile');
+            if (updateBtn) updateBtn.style.display = isEditAllowed ? 'block' : 'none';
+
+            let lockMsg = document.getElementById('editLockMsg');
+            if (!isEditAllowed) {
+                lockMsg.innerHTML = '<div style="background:#fef2f2; border:1px dashed #fca5a5; padding:10px; border-radius:8px; margin-bottom:15px; text-align:center;"><p style="color:#ef4444; font-size:12px; font-weight:bold; margin:0;">🔒 You only have view access. Editing is locked.</p></div>';
+            } else {
+                lockMsg.innerHTML = '';
+            }
+            // ------------------------------------------------
+
             openModal('editStaffModal');
         };
 
         window.updateStaff = async function() {
+            if (!window.staffPerms.edit) { alert('⛔ Permission Denied: You do not have access to edit staff.'); return; }
+
             const id = document.getElementById('editId').value;
             const updates = {
                 full_name: document.getElementById('editName').value.trim(), 
@@ -576,6 +637,8 @@
 
         window.archiveStaff = async function(id, name) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.staffPerms.delete) { alert('⛔ Permission Denied: You do not have access to archive staff.'); return; }
+            
             const n1 = Math.floor(Math.random()*10)+1, n2 = Math.floor(Math.random()*10)+1;
             const ans = await window.magicPrompt(`⚠️ Security Verification\nTo archive "${name}", solve:\n\n${n1} + ${n2} = ?`);
             if (ans === null) return;
@@ -587,6 +650,8 @@
         };
 
         window.saveNewStaff = async function() {
+            if (!window.staffPerms.add) { alert('⛔ Permission Denied: You do not have access to add staff.'); return; }
+
             const btn = document.getElementById('addStaffBtn');
             const name = document.getElementById('addName').value.trim();
             const phone = document.getElementById('addPhone').value.trim();
@@ -665,6 +730,8 @@
         }
 
         window.saveAdvance = async function() {
+            if (!window.staffPerms.add) { alert('⛔ Permission Denied: You do not have access to record advances.'); return; }
+
             const staffId = document.getElementById('advStaffSelect').value;
             const advanceAmount = Number(document.getElementById('advAmount').value) || 0;
             const advanceDate = document.getElementById('advDate').value;
@@ -716,6 +783,8 @@
         };
 
         window.processSalary = async function() {
+            if (!window.staffPerms.add) { alert('⛔ Permission Denied: You do not have access to process payroll.'); return; }
+
             const staffId = document.getElementById('payStaffSelect').value;
             const month = document.getElementById('payMonth').value;
             if (!staffId || !month) { alert('Select staff and month!'); return; }
@@ -773,7 +842,7 @@
                         <span>💰 Basic: ₹${p.basic_salary || 0}</span>
                         <span style="color:#ef4444">Ded: ₹${p.deductions || 0}</span>
                     </div>
-                    <button class="slip-dl-btn" onclick="window.downloadSalarySlip('${p.id}')">📄 Download Slip</button>
+                    <button class="slip-dl-btn" style="background:#eff6ff; color:#1e3a8a; border:1px solid #bfdbfe; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer; margin-top:8px;" onclick="window.downloadSalarySlip('${p.id}')">📄 Download Slip</button>
                 </div>`;
             }).join('');
         }
