@@ -36,7 +36,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .frm-input, .frm-select { width: 100%; padding: 6px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 11px; font-weight: 700; outline: none; }
 .frm-input:focus, .frm-select:focus { border-color: #3b82f6; }
 .frm-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; }
-.color-picker { width: 100%; height: 26px; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; padding: 0; background: transparent; }
+.color-picker { width: 35px; height: 26px; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; padding: 0; background: transparent; }
 .upload-btn { background: #e0f2fe; color: #0284c7; border: 1px dashed #7dd3fc; padding: 6px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; width: 100%; text-align: center; display: block; margin: 0; transition: 0.2s; }
 
 /* Photo D-Pad Controls */
@@ -54,15 +54,19 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
 .canvas-wrapper { position: absolute; transform-origin: 0 0; transition: transform 0.1s; }
 
-/* ================= LEFT SIDE POCKET (VIEWS) ================= */
+/* ================= LEFT SIDE POCKET (VIEWS & TOGGLES) ================= */
 .left-pocket { position: fixed; left: 0; top: 50%; transform: translateY(-50%) translateX(-100%); z-index: 1200; display: flex; align-items: center; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .left-pocket.open { transform: translateY(-50%) translateX(0); }
-.pocket-handle { position: absolute; right: -24px; background: #1e3a8a; color: white; width: 24px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 0 8px 8px 0; font-size: 12px; font-weight: 900; cursor: pointer; box-shadow: 2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-left: none; }
-.pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 4px 4px 15px rgba(0,0,0,0.05); }
+.pocket-handle { position: absolute; right: -24px; background: #1e3a8a; color: white; width: 24px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 0 8px 8px 0; font-size: 12px; font-weight: 900; cursor: pointer; box-shadow: 2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-left: none; }
+.pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 4px 4px 15px rgba(0,0,0,0.05); max-height: 85vh; overflow-y: auto; }
 .pocket-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #334155; cursor: pointer; transition: 0.2s; white-space: nowrap; }
 .pocket-btn.active { background: #3b82f6; color: white; border-color: #2563eb; }
 
-/* ================= FLOATING LOCK BUTTON ================= */
+/* ================= FLOATING CONTROLS (LOCK & ZOOM) ================= */
+.zoom-panel { position: fixed; bottom: 70px; left: 15px; background: white; border-radius: 8px; padding: 4px; display: flex; gap: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; z-index: 1200; }
+.z-btn { background: #f8fafc; border: 1px solid #e2e8f0; width: 32px; height: 32px; border-radius: 6px; font-weight: bold; font-size: 18px; cursor: pointer; color: #1e3a8a; display: flex; align-items: center; justify-content: center;}
+.z-btn:active { background: #e2e8f0; }
+
 .float-lock { position: fixed; bottom: 70px; right: 15px; width: 42px; height: 42px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.3); z-index: 1200; transition: 0.3s; }
 .float-lock.locked { background: #ef4444; color: white; border-color: #dc2626; box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
 
@@ -75,7 +79,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .id-card.show-both.landscape { height: 440px; }
 .id-card.show-both.portrait { width: 440px; height: 336px; }
 
-.card-face { position: absolute; width: 100%; height: 100%; background-color: #ffffff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; background-color: var(--c-bg, #ffffff); font-family: 'Segoe UI', Tahoma, sans-serif; }
+.card-face { position: absolute; width: 100%; height: 100%; background-color: #ffffff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; background-color: var(--c-bg, #ffffff); font-family: var(--c-font, 'Segoe UI'); }
 
 .id-card.show-both.landscape .card-front { top: 0; height: 212px; }
 .id-card.show-both.landscape .card-back { top: 228px; height: 212px; display: block !important; }
@@ -88,7 +92,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .card-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; border-radius: 10px; overflow: hidden; }
 .bg-header, .bg-footer { position: absolute; left: 0; right: 0; }
 
-/* 10 DYNAMIC TEMPLATES USING CSS CLIP-PATHS */
+/* 10 DYNAMIC TEMPLATES */
 .tpl-1 .bg-header { height: 60px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); }
 .tpl-1 .bg-footer { height: 25px; bottom: 0; background: linear-gradient(135deg, var(--f1), var(--f2)); }
 
@@ -119,21 +123,21 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .tpl-10 .bg-header { height: 15px; top: 0; background: var(--h1); }
 .tpl-10 .bg-footer { height: 15px; bottom: 0; background: var(--f1); }
 
-/* Draggables Layer */
+/* Draggables Layer (Visible Overflow to prevent losing items) */
 .card-drag-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 .drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; border: 1px dashed transparent; padding: 2px; transition: border 0.2s; }
 .drag-el.selected { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); z-index: 10; }
+.drag-el:active { cursor: grabbing; }
 
 /* Elements */
-.el-logo { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; }
-.el-logo img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; transform-origin: center; }
+.el-logo { width: 45px; height: 45px; background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .el-logo.empty { border: 2px dashed #94a3b8; color: #94a3b8; font-size: 10px; font-weight: bold; background-color: rgba(255,255,255,0.2); }
 
 .el-org { line-height: 1.2; color: var(--c-txt, #0f172a); }
 .el-org .name { font-size: 14px; font-weight: 900; text-transform: uppercase; }
 .el-org .sub { font-size: 8px; font-weight: 700; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* Background image fixes html2canvas bug */
+/* Proper Image Fix for html2canvas */
 .el-photo { width: 75px; height: 95px; background-color: #f1f5f9; border: 2px solid #cbd5e1; border-radius: 8px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .el-photo img { position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; transform-origin: center; }
 .el-photo.empty { color: #94a3b8; font-size: 24px; }
@@ -155,7 +159,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .el-return { font-size: 9px; font-weight: 800; color: #b91c1c; text-align: center; line-height: 1.3; border: 1px dashed #fca5a5; padding: 4px; border-radius: 4px; background: #fef2f2; }
 
 /* Watermark */
-.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(255,255,255,0.7); z-index: 20; pointer-events: none; display: none; }
+.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(0,0,0,0.5); z-index: 20; pointer-events: none; display: none; }
 .watermark-dark { color: rgba(0,0,0,0.5); }
 
 /* ================= COMPACT EXPORT BAR ================= */
@@ -192,21 +196,48 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 <!-- HORIZONTAL SETTINGS SLIDER (Right to Left) -->
 <div class="settings-slider no-print" id="settingsSlider">
     
-    <!-- 1. Student Info -->
+    <!-- 1. Theme & Design -->
     <div class="tool-group">
-        <div class="tool-group-title">1. Student Details</div>
+        <div class="tool-group-title">1. Theme & Font</div>
         <div class="frm-row">
-            <input type="text" id="inp_name" class="frm-input" placeholder="Full Name" value="Student Name" oninput="updateContent()">
-            <input type="text" id="inp_reg" class="frm-input" placeholder="Reg No" value="REG-01" style="width:70px;" oninput="updateContent()">
+            <select id="sel_template" class="frm-select" onchange="updateStyle()">
+                <option value="1">1. Classic Top</option><option value="2">2. Curved</option><option value="3">3. Left Sidebar</option><option value="4">4. Slant Cut</option><option value="5">5. Thin Header</option>
+                <option value="6">6. Frame</option><option value="7">7. Header Border</option><option value="8">8. Plain & Dashed</option><option value="9">9. RightBar</option><option value="10">10. Mini Drop</option>
+            </select>
+            <select id="sel_font" class="frm-select" onchange="updateStyle()">
+                <option value="'Segoe UI', Tahoma, sans-serif">Standard Font</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Times New Roman', serif">Times Roman</option>
+                <option value="'Courier New', monospace">Courier</option>
+            </select>
         </div>
-        <div class="frm-row">
-            <input type="text" id="inp_course" class="frm-input" placeholder="Course" value="Diploma in Engineering" oninput="updateContent()">
+        <div class="frm-row" style="margin-top:2px;">
+            <input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" title="Header Grad 1" oninput="updateStyle()">
+            <input type="color" id="clr_h2" class="color-picker" value="#3b82f6" title="Header Grad 2" oninput="updateStyle()">
+            <input type="color" id="clr_bg" class="color-picker" value="#ffffff" title="Card BG" oninput="updateStyle()">
+            <input type="color" id="clr_text" class="color-picker" value="#0f172a" title="Text Color" oninput="updateStyle()">
         </div>
     </div>
 
-    <!-- 2. More Info -->
+    <!-- 2. Card Holder (Role) -->
     <div class="tool-group">
-        <div class="tool-group-title">2. Additional Info</div>
+        <div class="tool-group-title">2. Card Holder Details</div>
+        <div class="frm-row">
+            <select id="inp_role_select" class="frm-select" onchange="handleRoleChange()" style="flex:1;">
+                <option value="STUDENT">Student</option><option value="STAFF">Staff</option><option value="EMPLOYEE">Employee</option><option value="Custom">Custom Role</option>
+            </select>
+            <input type="text" id="inp_custom_role" class="frm-input" placeholder="Type role..." style="display:none; flex:1;" oninput="updateContent()">
+        </div>
+        <div class="frm-row">
+            <input type="text" id="inp_name" class="frm-input" placeholder="Full Name" value="Student Name" oninput="updateContent()">
+            <input type="text" id="inp_reg" class="frm-input" placeholder="Reg/ID No" value="REG-01" style="width:70px;" oninput="updateContent()">
+        </div>
+    </div>
+
+    <!-- 3. Extra Details -->
+    <div class="tool-group">
+        <div class="tool-group-title">3. Extra Info</div>
+        <div class="frm-row"><input type="text" id="inp_course" class="frm-input" placeholder="Designation / Course" value="Diploma in Engineering" oninput="updateContent()"></div>
         <div class="frm-row">
             <input type="text" id="inp_dob" class="frm-input" placeholder="DOB" value="01/01/2000" oninput="updateContent()">
             <input type="text" id="inp_blood" class="frm-input" placeholder="Blood" value="O+" style="width:50px;" oninput="updateContent()">
@@ -217,20 +248,18 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         </div>
     </div>
 
-    <!-- 3. Org Details -->
+    <!-- 4. Org Details -->
     <div class="tool-group">
-        <div class="tool-group-title">3. Organization</div>
-        <div class="frm-row">
-            <input type="text" id="inp_orgName" class="frm-input" placeholder="Org Name" value="ERP Technical Academy" oninput="updateContent()">
-        </div>
-        <div class="frm-row">
-            <input type="text" id="inp_orgSub" class="frm-input" placeholder="Tagline" value="Center of Excellence" oninput="updateContent()">
-        </div>
+        <div class="tool-group-title">4. Organization Info</div>
+        <div class="frm-row"><input type="text" id="inp_orgName" class="frm-input" placeholder="Org Name" value="ERP Technical Academy" oninput="updateContent()"></div>
+        <div class="frm-row"><input type="text" id="inp_orgSub" class="frm-input" placeholder="Tagline" value="Center of Excellence" oninput="updateContent()"></div>
+        <div class="frm-row"><input type="text" id="inp_orgAddr" class="frm-input" placeholder="City & Contact" value="City, State - 123456" oninput="updateContent()"></div>
     </div>
 
-    <!-- 4. Photo & Logo -->
-    <div class="tool-group" style="min-width: 300px;">
-        <div class="tool-group-title">4. Photo, Logo & Seal</div>
+    <!-- 5. Media & Seal (With D-Pad Fix) -->
+    <div class="tool-group" style="min-width: 320px;">
+        <div class="tool-group-title">5. Photo, Logo & Adjust</div>
+        
         <div class="frm-row" style="margin-bottom: 5px;">
             <div id="sel_photo_btn" onclick="setActiveMedia('photo')" style="flex:1; border:1px solid #3b82f6; background:#eff6ff; padding:4px; border-radius:6px; cursor:pointer;">
                 <label class="upload-btn" style="margin:0; background:transparent; border:none;">📷 Photo <input type="file" id="file_photo" style="display:none" accept="image/*" onchange="loadMedia(this, 'imgPhoto', 'ph_photo', 'photo')"></label>
@@ -239,52 +268,37 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                 <label class="upload-btn" style="margin:0; background:transparent; border:none; color:#475569;">🏢 Logo <input type="file" id="file_logo" style="display:none" accept="image/*" onchange="loadMedia(this, 'imgLogo', 'ph_logo', 'logo')"></label>
             </div>
         </div>
+
         <div class="media-ctrl-panel">
+            <div style="font-size:10px; font-weight:800; color:#475569; width:45px; line-height:1.2;">Move<br><span id="txtActiveMedia" style="color:#1e3a8a;">Photo</span></div>
             <div class="mini-dpad">
                 <button class="mini-btn up" onclick="adjustMedia(0, -5)">▲</button>
                 <button class="mini-btn left" onclick="adjustMedia(-5, 0)">◀</button>
                 <button class="mini-btn right" onclick="adjustMedia(5, 0)">▶</button>
                 <button class="mini-btn down" onclick="adjustMedia(0, 5)">▼</button>
             </div>
+            <div class="zoom-col">
+                <button class="mini-btn" onclick="zoomMedia(0.1)">Zoom +</button>
+                <button class="mini-btn" onclick="zoomMedia(-0.1)">Zoom -</button>
+            </div>
         </div>
-        <div class="frm-row" style="margin-top:2px;">
+
+        <div class="frm-row" style="margin-top:5px;">
             <select id="sel_pShape" class="frm-select" onchange="updateStyle()"><option value="8px">Round Edge</option><option value="50%">Circle</option><option value="0px">Square</option></select>
             <select id="sel_pBorder" class="frm-select" onchange="updateStyle()"><option value="solid">Solid Bdr</option><option value="dashed">Dashed Bdr</option><option value="none">No Bdr</option></select>
         </div>
     </div>
 
-    <!-- 5. Design & Colors (RESTORED) -->
-    <div class="tool-group" style="min-width: 320px;">
-        <div class="tool-group-title">5. Theme Colors & Design</div>
+    <!-- 6. Back Side -->
+    <div class="tool-group" id="group-back">
+        <div class="tool-group-title">6. Back Side Details</div>
         <div class="frm-row">
-            <div style="flex:1;"><label class="frm-label" style="margin:0;">H-Grad 1</label><input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" oninput="updateStyle()"></div>
-            <div style="flex:1;"><label class="frm-label" style="margin:0;">H-Grad 2</label><input type="color" id="clr_h2" class="color-picker" value="#3b82f6" oninput="updateStyle()"></div>
-            <div style="flex:1;"><label class="frm-label" style="margin:0;">F-Grad 1</label><input type="color" id="clr_f1" class="color-picker" value="#1e3a8a" oninput="updateStyle()"></div>
-            <div style="flex:1;"><label class="frm-label" style="margin:0;">F-Grad 2</label><input type="color" id="clr_f2" class="color-picker" value="#3b82f6" oninput="updateStyle()"></div>
-        </div>
-        <div class="frm-row" style="margin-top: 5px;">
-            <div style="flex:1;"><label class="frm-label" style="margin:0;">Card BG</label><input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateStyle()"></div>
-            <div style="flex:1;"><label class="frm-label" style="margin:0;">Text</label><input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateStyle()"></div>
-            <div style="flex:2;">
-                <label class="frm-label" style="margin:0;">Template</label>
-                <select id="sel_template" class="frm-select" onchange="changeTemplate()">
-                    <option value="1">1. Classic</option><option value="2">2. Curved</option><option value="3">3. Sidebar</option><option value="4">4. Borders</option><option value="5">5. TopThin</option>
-                    <option value="6">6. Frame</option><option value="7">7. ThickHead</option><option value="8">8. Dashed</option><option value="9">9. RightBar</option><option value="10">10. MinBlock</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <!-- 6. Back Side & QR -->
-    <div class="tool-group">
-        <div class="tool-group-title">6. Back Side & Seal</div>
-        <div class="frm-row">
-            <input type="text" id="inp_role" class="frm-input" placeholder="Badge" value="STUDENT" style="width:70px;" oninput="updateContent()">
-            <select id="inp_showBadge" class="frm-select" onchange="updateContent()"><option value="true">Badge ON</option><option value="false">Badge OFF</option></select>
-        </div>
-        <div class="frm-row" style="margin-top:5px;">
             <select id="sel_sealShape" class="frm-select" onchange="updateSeal()"><option value="round">Round Seal</option><option value="oval">Oval Seal</option></select>
             <input type="color" id="clr_seal" class="color-picker" value="#16a34a" oninput="updateSeal()">
+        </div>
+        <div class="frm-row" style="margin-top:6px;">
+            <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_qr" checked onchange="updateContent()"> Show QR</label>
+            <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_return" checked onchange="updateContent()"> Return Addr</label>
         </div>
     </div>
 </div>
@@ -292,16 +306,41 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 <!-- ================= FREE CANVAS WORKSPACE ================= -->
 <div class="workspace" id="workspaceArea">
     
-    <!-- LEFT POCKET (ARROW ONLY) -->
+    <!-- LEFT POCKET (ARROW ONLY & TOGGLES) -->
     <div class="left-pocket" id="leftPocket">
         <div class="pocket-handle" id="pocketHandle" onclick="togglePocket()">▶</div>
-        <div class="pocket-menu">
+        <div class="pocket-menu" style="max-height: 80vh; overflow-y: auto;">
             <button class="pocket-btn active" id="vbtn-front" onclick="setView('front')">Front Face</button>
             <button class="pocket-btn" id="vbtn-back" onclick="setView('back')">Back Face</button>
             <button class="pocket-btn" id="vbtn-both" onclick="setView('both')">View Both</button>
             <div style="height:1px; background:#cbd5e1; margin:2px 0;"></div>
             <button class="pocket-btn" id="vbtn-orient" onclick="toggleOrient()">Portrait</button>
+            
+            <div style="height:1px; background:#cbd5e1; margin:4px 0;"></div>
+            <div style="font-size:10px; font-weight:900; color:#1e3a8a; text-align:center; margin-bottom:4px;">SHOW / HIDE</div>
+            
+            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_logo" checked onchange="toggleEl('box_logo', this)"> Logo</label>
+            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_org" checked onchange="toggleEl('box_org', this)"> Org Info</label>
+            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_photo" checked onchange="toggleEl('box_photo', this)"> Photo</label>
+            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_details" checked onchange="toggleEl('box_details', this)"> Details</label>
+            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_badge" checked onchange="toggleEl('box_badge', this)"> Badge</label>
+            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_seal" checked onchange="toggleEl('box_seal', this)"> Seal</label>
+            
+            <div style="height:1px; background:#cbd5e1; margin:4px 0;"></div>
+            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_borg" checked onchange="toggleEl('box_borg', this)"> Back Org</label>
+            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_terms" checked onchange="toggleEl('box_terms', this)"> Terms</label>
+            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_qr" checked onchange="toggleEl('box_qr', this)"> QR</label>
+            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_return" checked onchange="toggleEl('box_return', this)"> Return Addr</label>
+            
+            <button class="pocket-btn" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5; margin-top:4px;" onclick="resetPositions()">🔄 Reset Positions</button>
         </div>
+    </div>
+
+    <!-- ZOOM CONTROLS (+ / -) -->
+    <div class="zoom-panel no-print">
+        <button class="z-btn" onclick="changeWorkspaceZoom(-0.1)">-</button>
+        <span style="display:flex; align-items:center; font-size:11px; font-weight:800; width:35px; justify-content:center;" id="zoomTxt">100%</span>
+        <button class="z-btn" onclick="changeWorkspaceZoom(0.1)">+</button>
     </div>
 
     <!-- FREEZE BUTTON (LOCK/UNLOCK) -->
@@ -333,6 +372,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                         <div class="drag-el el-org" data-id="org" id="box_org" style="width:200px;">
                             <div class="name" id="txt_orgName">Institution Name</div>
                             <div class="sub" id="txt_orgSub">Sub Title</div>
+                            <div class="addr" id="txt_orgAddr">Address</div>
                         </div>
 
                         <!-- Fixed Photo Setup for html2canvas -->
@@ -367,6 +407,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                     <div class="card-drag-layer">
                         <div class="drag-el el-org" data-id="borg" id="box_borg" style="width:200px; text-align:center;">
                             <div class="name" id="txt_borgName" style="font-size:12px; color:#0f172a;">Institution Name</div>
+                            <div class="addr" id="txt_orgAddrBack" style="font-size:8px; color:#475569; margin-top:2px;">Address</div>
                         </div>
                         <div class="drag-el el-terms" data-id="terms" id="box_terms" style="width:200px;"><span id="txt_terms">Terms...</span></div>
                         <div class="drag-el el-qr" data-id="qr" id="box_qr">QR</div>
@@ -413,11 +454,11 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     const posL = {
         logo: {x: 10, y: 8, scale: 1}, org: {x: 60, y: 10, scale: 1}, photo: {x: 15, y: 75, scale: 1},
         details: {x: 105, y: 75, scale: 1}, badge: {x: 15, y: 180, scale: 1}, seal: {x: 240, y: 130, scale: 1},
-        borg: {x: 68, y: 20, scale: 1}, terms: {x: 68, y: 45, scale: 1}, qr: {x: 138, y: 90, scale: 1}, return: {x: 68, y: 165, scale: 1}
+        borg: {x: 68, y: 15, scale: 1}, terms: {x: 68, y: 55, scale: 1}, qr: {x: 138, y: 90, scale: 1}, return: {x: 68, y: 165, scale: 1}
     };
     const posP = {
-        logo: {x: 83, y: 5, scale: 1}, org: {x: 6, y: 55, scale: 1}, photo: {x: 68, y: 105, scale: 1},
-        details: {x: 6, y: 210, scale: 1}, badge: {x: 61, y: 310, scale: 1}, seal: {x: 120, y: 240, scale: 1},
+        logo: {x: 83, y: 5, scale: 1}, org: {x: 11, y: 55, scale: 1}, photo: {x: 68, y: 105, scale: 1},
+        details: {x: 11, y: 210, scale: 1}, badge: {x: 61, y: 310, scale: 1}, seal: {x: 120, y: 240, scale: 1},
         borg: {x: 6, y: 20, scale: 1}, terms: {x: 6, y: 50, scale: 1}, qr: {x: 76, y: 120, scale: 1}, return: {x: 6, y: 190, scale: 1}
     };
 
@@ -429,6 +470,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         autoLoadStudent();
         initDragAndDrop();
         initCanvasPan();
+        handleRoleChange(); 
         updateContent();
         updateStyle();
         updateSeal();
@@ -477,11 +519,11 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         if(window.appState.isFrozen) {
             btn.classList.add('locked'); btn.innerText = '🔒';
             ws.classList.add('locked');
-            showToast("Card Locked. You can now use two fingers to zoom/pan the canvas.");
+            showToast("Card Locked. You can pan and zoom the screen.");
         } else {
             btn.classList.remove('locked'); btn.innerText = '🔓';
             ws.classList.remove('locked');
-            showToast("Unlocked. Select an element to move it.");
+            showToast("Unlocked. Select an element to move or zoom it.");
         }
     }
     
@@ -498,37 +540,24 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         applyCanvasTransform();
     }
 
-    // ================= MEDIA SELECTION & D-PAD (ZOOM INNER IMAGE) =================
-    window.setActiveMedia = function(type) {
-        window.activeMedia = type;
-        document.getElementById('sel_photo_btn').style.borderColor = type === 'photo' ? '#3b82f6' : '#cbd5e1';
-        document.getElementById('sel_photo_btn').style.background = type === 'photo' ? '#eff6ff' : 'transparent';
-        document.getElementById('sel_logo_btn').style.borderColor = type === 'logo' ? '#3b82f6' : '#cbd5e1';
-        document.getElementById('sel_logo_btn').style.background = type === 'logo' ? '#eff6ff' : 'transparent';
-        
-        document.querySelector('#sel_logo_btn label').style.color = type === 'logo' ? '#0284c7' : '#475569';
-    }
-
-    window.adjustMedia = function(dx, dy) {
-        const st = window.appState.media[window.activeMedia];
-        st.x += dx; st.y += dy;
-        applyMediaTransform();
-        autoSave();
-    }
-    
-    // Zoom logic for media
-    window.zoomMedia = function(dz) {
-        const st = window.appState.media[window.activeMedia];
-        st.z = Math.max(0.1, st.z + dz);
-        applyMediaTransform();
-        autoSave();
-    }
-
-    function applyMediaTransform() {
-        const p = window.appState.media.photo;
-        document.getElementById('imgPhoto').style.transform = `translate(${p.x}px, ${p.y}px) scale(${p.z})`;
-        const l = window.appState.media.logo;
-        document.getElementById('imgLogo').style.transform = `translate(${l.x}px, ${l.y}px) scale(${l.z})`;
+    // ================= DYNAMIC ZOOM (CANVAS OR ELEMENT) =================
+    window.changeWorkspaceZoom = function(val) {
+        if (!window.appState.isFrozen && window.appState.selectedId) {
+            // Zoom the selected element!
+            let id = window.appState.selectedId;
+            if(!positions[id].scale) positions[id].scale = 1;
+            positions[id].scale += val;
+            if(positions[id].scale < 0.2) positions[id].scale = 0.2;
+            if(positions[id].scale > 5) positions[id].scale = 5;
+            applyPositions();
+        } else {
+            // Zoom the whole canvas
+            let z = window.appState.zoom + val;
+            if(z < 0.4) z = 0.4; if(z > 3) z = 3;
+            window.appState.zoom = z;
+            applyCanvasTransform();
+            document.getElementById('zoomTxt').innerText = Math.round(z * 100) + '%';
+        }
     }
 
     // ================= VIEW & ORIENTATION =================
@@ -541,12 +570,15 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const c = document.getElementById('idCard');
         if(v === 'front') { 
             c.classList.remove('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='none'; 
+            document.getElementById('group-back').style.display = 'none'; // Contextual hide
         }
         else if(v === 'back') { 
             c.classList.remove('show-both'); document.getElementById('cardFront').style.display='none'; document.getElementById('cardBack').style.display='block'; 
+            document.getElementById('group-back').style.display = 'flex'; // Contextual show
         }
         else { 
             c.classList.add('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='block'; 
+            document.getElementById('group-back').style.display = 'flex'; // Contextual show
         }
         setTimeout(centerCanvas, 300);
     }
@@ -609,6 +641,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
         document.getElementById('txt_orgName').innerText = document.getElementById('inp_orgName').value;
         document.getElementById('txt_orgSub').innerText = document.getElementById('inp_orgSub').value;
+        document.getElementById('txt_orgAddr').innerHTML = document.getElementById('inp_orgAddr').value.replace(/\n/g, '<br>');
         
         document.getElementById('txt_name').innerText = document.getElementById('inp_name').value;
         document.getElementById('txt_course').innerText = document.getElementById('inp_course').value;
@@ -620,7 +653,17 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         
         document.getElementById('box_badge').style.display = document.getElementById('inp_showBadge').value === 'true' ? 'inline-block' : 'none';
 
+        // Back
         document.getElementById('txt_borgName').innerText = document.getElementById('inp_orgName').value;
+        document.getElementById('txt_orgAddrBack').innerHTML = document.getElementById('inp_orgAddr').value.replace(/\n/g, '<br>');
+        document.getElementById('txt_terms').innerHTML = document.getElementById('inp_terms').value.replace(/\n/g, '<br>');
+        
+        if(document.getElementById('chk_return').checked) {
+            document.getElementById('box_return').style.display = 'block';
+            document.getElementById('txt_return').innerHTML = document.getElementById('inp_return').value.replace(/\n/g, '<br>');
+        } else { document.getElementById('box_return').style.display = 'none'; }
+        
+        document.getElementById('box_qr').style.display = document.getElementById('chk_qr').checked ? 'flex' : 'none';
     }
 
     window.updateStyle = function() {
@@ -630,6 +673,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const f2 = document.getElementById('clr_f2').value;
         const bg = document.getElementById('clr_bg').value;
         const tx = document.getElementById('clr_text').value;
+        const font = document.getElementById('sel_font').value;
 
         // Apply CSS Variables so templates can use them dynamically
         const idCard = document.getElementById('idCard');
@@ -639,13 +683,15 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         idCard.style.setProperty('--f2', f2);
         idCard.style.setProperty('--c-bg', bg);
         idCard.style.setProperty('--c-txt', tx);
+        idCard.style.setProperty('--c-font', font);
 
-        document.getElementById('box_badge').style.background = `linear-gradient(135deg, ${h1}, ${h2})`;
+        document.getElementById('box_badge').style.background = h1;
         document.getElementById('box_badge').style.color = getContrast(h1);
         
         const orgInfo = document.getElementById('txt_orgName').parentElement;
         const tpl = document.getElementById('sel_template').value;
         
+        // Some templates have white backgrounds for header, so text needs to be main color
         if(['4','6','8','10'].includes(tpl)) {
             orgInfo.style.color = tx; document.getElementById('ph_logo').style.color = tx;
         } else {
@@ -668,7 +714,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         return (r*299 + g*587 + b*114)/1000 > 128 ? '#0f172a' : '#ffffff';
     }
 
-    // ================= MEDIA UPLOAD =================
+    // ================= MEDIA UPLOAD & TOGGLES =================
     window.loadMedia = function(input, imgId, phId, type) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -685,6 +731,58 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             };
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+    window.toggleEl = function(id, cb) {
+        const el = document.getElementById(id);
+        if(el) {
+            if(id === 'box_badge') el.style.display = cb.checked ? 'inline-block' : 'none';
+            else el.style.display = cb.checked ? 'block' : 'none';
+        }
+        autoSave();
+    };
+
+    window.resetPositions = function() {
+        if(window.appState.orientation === 'portrait') {
+            positions = JSON.parse(JSON.stringify(posP));
+        } else {
+            positions = JSON.parse(JSON.stringify(posL));
+        }
+        applyPositions();
+        showToast("Positions Reset!");
+        autoSave();
+    };
+
+    window.setActiveMedia = function(type) {
+        window.activeMedia = type;
+        document.getElementById('sel_photo_btn').style.borderColor = type === 'photo' ? '#3b82f6' : '#cbd5e1';
+        document.getElementById('sel_photo_btn').style.background = type === 'photo' ? '#eff6ff' : 'transparent';
+        document.getElementById('sel_logo_btn').style.borderColor = type === 'logo' ? '#3b82f6' : '#cbd5e1';
+        document.getElementById('sel_logo_btn').style.background = type === 'logo' ? '#eff6ff' : 'transparent';
+        
+        document.querySelector('#sel_logo_btn label').style.color = type === 'logo' ? '#0284c7' : '#475569';
+        document.getElementById('txtActiveMedia').innerText = type === 'photo' ? 'Photo' : 'Logo';
+    }
+
+    window.adjustMedia = function(dx, dy) {
+        const st = window.appState.media[window.activeMedia];
+        st.x += dx; st.y += dy;
+        applyMediaTransform();
+        autoSave();
+    }
+    
+    window.zoomMedia = function(dz) {
+        const st = window.appState.media[window.activeMedia];
+        st.z = Math.max(0.1, st.z + dz);
+        applyMediaTransform();
+        autoSave();
+    }
+
+    function applyMediaTransform() {
+        const p = window.appState.media.photo;
+        document.getElementById('imgPhoto').style.transform = `translate(${p.x}px, ${p.y}px) scale(${p.z})`;
+        const l = window.appState.media.logo;
+        document.getElementById('imgLogo').style.transform = `translate(${l.x}px, ${l.y}px) scale(${l.z})`;
     }
 
     window.updateSeal = function() {
@@ -709,94 +807,53 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         document.getElementById('box_seal').innerHTML = svg;
     }
 
-    // ================= CANVAS PANNING & PINCH ZOOM =================
+    // ================= CANVAS PANNING =================
     function initCanvasPan() {
         const workspace = document.querySelector('.workspace');
         let isDown = false, startX, startY;
-        let initialPinchDist = null;
 
-        // 1. Mouse Events
         workspace.addEventListener('mousedown', (e) => {
-            if(!window.appState.isFrozen) return; // Only pan if Locked (🔒)
-            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
+            if(!window.appState.isFrozen) return; // Only pan if locked
+            if(e.target.closest('.zoom-panel') || e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
             isDown = true;
-            startX = e.pageX - window.appState.panX; 
-            startY = e.pageY - window.appState.panY;
+            startX = e.pageX - window.appState.panX; startY = e.pageY - window.appState.panY;
         });
         workspace.addEventListener('mouseleave', () => { isDown = false; });
         workspace.addEventListener('mouseup', () => { isDown = false; });
         workspace.addEventListener('mousemove', (e) => {
             if(!isDown || !window.appState.isFrozen) return;
             e.preventDefault();
-            window.appState.panX = e.pageX - startX; 
-            window.appState.panY = e.pageY - startY;
+            window.appState.panX = e.pageX - startX; window.appState.panY = e.pageY - startY;
             applyCanvasTransform();
         });
 
-        // 2. Touch Events (For Mobile Pan & Pinch-to-Zoom)
+        // Touch Pan
         workspace.addEventListener('touchstart', (e) => {
-            if(!window.appState.isFrozen) return; 
-            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
-
-            if (e.touches.length === 1) {
-                isDown = true;
-                initialPinchDist = null;
-                startX = e.touches[0].pageX - window.appState.panX; 
-                startY = e.touches[0].pageY - window.appState.panY;
-            } else if (e.touches.length === 2) {
-                isDown = false;
-                initialPinchDist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-            }
+            if(!window.appState.isFrozen || e.touches.length !== 1) return;
+            if(e.target.closest('.zoom-panel') || e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
+            isDown = true;
+            startX = e.touches[0].pageX - window.appState.panX; startY = e.touches[0].pageY - window.appState.panY;
         }, {passive: false});
-
-        workspace.addEventListener('touchend', (e) => { 
-            isDown = false; 
-            if (e.touches.length < 2) initialPinchDist = null;
-        });
-
+        workspace.addEventListener('touchend', () => { isDown = false; });
         workspace.addEventListener('touchmove', (e) => {
-            if(!window.appState.isFrozen) return;
-            e.preventDefault(); 
-
-            if (e.touches.length === 1 && isDown) {
-                window.appState.panX = e.touches[0].pageX - startX; 
-                window.appState.panY = e.touches[0].pageY - startY;
-                applyCanvasTransform();
-            } 
-            else if (e.touches.length === 2 && initialPinchDist) {
-                const currentDist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-
-                const scaleDelta = currentDist / initialPinchDist;
-                let newZoom = window.appState.zoom * scaleDelta;
-
-                if (newZoom < 0.4) newZoom = 0.4;
-                if (newZoom > 3) newZoom = 3;
-
-                window.appState.zoom = newZoom;
-                initialPinchDist = currentDist; 
-                applyCanvasTransform();
-            }
+            if(!isDown || !window.appState.isFrozen || e.touches.length !== 1) return;
+            e.preventDefault();
+            window.appState.panX = e.touches[0].pageX - startX; window.appState.panY = e.touches[0].pageY - startY;
+            applyCanvasTransform();
         }, {passive: false});
     }
 
     function applyCanvasTransform() {
         const wrapper = document.getElementById('canvasWrapper');
-        if (wrapper) {
-            wrapper.style.transform = `translate(${window.appState.panX}px, ${window.appState.panY}px) scale(${window.appState.zoom})`;
-        }
+        wrapper.style.transform = `translate(${window.appState.panX}px, ${window.appState.panY}px) scale(${window.appState.zoom})`;
     }
 
-    // ================= DRAG & DROP ELEMENTS =================
+    // ================= DRAG & DROP ELEMENTS (FLYING FIX & SELECTION) =================
     function initDragAndDrop() {
         const draggables = document.querySelectorAll('.drag-el');
         let activeEl = null; let initX = 0, initY = 0;
 
+        // Deselect when clicking empty space
         document.getElementById('workspaceArea').addEventListener('mousedown', (e) => {
             if (!e.target.closest('.drag-el') && !window.appState.isFrozen) {
                 document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
@@ -805,9 +862,10 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         });
 
         function dragStart(e) {
-            if(window.appState.isFrozen) return; 
+            if(window.appState.isFrozen) return; // Block dragging if locked
             if (e.target.tagName === 'INPUT') return;
             
+            // Selection logic
             document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
             activeEl = e.currentTarget; 
             activeEl.classList.add('selected');
@@ -817,6 +875,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             const pos = positions[id] || {x:0, y:0, scale:1}; 
             const z = window.appState.zoom;
             
+            // Critical fix: Account for zoom scale when calculating start point
             if (e.type === "touchstart") { initX = (e.touches[0].clientX / z) - pos.x; initY = (e.touches[0].clientY / z) - pos.y; } 
             else { initX = (e.clientX / z) - pos.x; initY = (e.clientY / z) - pos.y; }
         }
@@ -826,6 +885,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             e.preventDefault();
             const z = window.appState.zoom; let curX, curY;
             
+            // Critical fix: Divide mouse movement by zoom scale so items don't fly away
             if (e.type === "touchmove") { curX = (e.touches[0].clientX / z) - initX; curY = (e.touches[0].clientY / z) - initY; } 
             else { curX = (e.clientX / z) - initX; curY = (e.clientY / z) - initY; }
 
@@ -863,19 +923,21 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const btn = document.querySelector(`.btn-${type}`);
         const oldText = btn.innerText; btn.innerText = '⏳ Processing...'; btn.disabled = true;
 
+        // Hide borders and selection
         document.querySelectorAll('.drag-el').forEach(el => { el.style.border = 'none'; el.classList.remove('selected'); });
         window.appState.selectedId = null;
         
+        // Reset transform for 1:1 HD capturing
         const wrapper = document.getElementById('print-render-area');
         const cWrapper = document.getElementById('canvasWrapper');
         const oldTrans = cWrapper.style.transform;
         cWrapper.style.transform = 'translate(0px, 0px) scale(1)';
         
-        await new Promise(r => setTimeout(r, 150)); 
+        await new Promise(r => setTimeout(r, 150)); // Paint delay
 
         try {
             const canvas = await html2canvas(wrapper, {
-                scale: 4, 
+                scale: 4, // 4X Super HD Quality
                 useCORS: true,
                 backgroundColor: null,
                 logging: false,
@@ -908,7 +970,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     // ================= AUTO SAVE & LOAD =================
     function autoSave() {
         const data = {};
-        document.querySelectorAll('.frm-input, .frm-select, .color-picker').forEach(el => {
+        document.querySelectorAll('.frm-input, .frm-select, .color-picker, input[type="checkbox"]').forEach(el => {
             if(el.id && !el.id.startsWith('slot_name')) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
         });
         const saveData = { inputs: data, positions: positions, state: window.appState };
@@ -931,6 +993,13 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                     window.appState.media = data.state.media || {photo: {x:0,y:0,z:1}, logo: {x:0,y:0,z:1}};
                     applyMediaTransform();
                 }
+                
+                // Sync pocket toggles
+                ['logo','org','photo','details','badge','seal','borg','terms','qr','return'].forEach(key => {
+                    const chk = document.getElementById('pkt_' + key);
+                    if(chk) toggleEl('box_' + key, chk);
+                });
+
                 updateContent(); updateStyle(); updateSeal(); applyPositions();
             }
         } catch(e) {}
@@ -947,6 +1016,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                     document.getElementById('inp_name').value = stu.full_name || '';
                     document.getElementById('inp_reg').value = stu.register_number || '';
                     document.getElementById('inp_phone').value = stu.phone_number || '';
+                    document.getElementById('inp_blood').value = stu.blood_group || '';
                     if(stu.dob) {
                         const d = new Date(stu.dob);
                         document.getElementById('inp_dob').value = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
