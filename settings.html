@@ -21,6 +21,14 @@
             .page-title { font-size: 15px; }
         }
 
+        /* TABS STYLING (NEW) */
+        .settings-tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .tab-btn { flex: 1; min-width: 120px; padding: 12px 10px; background: #fff; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 13px; font-weight: 800; color: #475569; cursor: pointer; text-align: center; transition: 0.2s; white-space: nowrap; }
+        .tab-btn.active { background: #1e3a8a; color: #fff; border-color: #1e3a8a; box-shadow: 0 4px 12px rgba(30,58,138,.25); }
+        .tab-panel { display: none; animation: fadeUp 0.3s ease; }
+        .tab-panel.active { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .settings-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 25px; }
         .settings-header { border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .settings-header h2 { margin: 0; font-size: 18px; color: #0f172a; font-weight: 900; display: flex; align-items: center; gap: 10px; }
@@ -57,6 +65,27 @@
         .perm-header-bar { display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 10px 15px; border-bottom: 1px solid #e2e8f0; }
         .perm-role-title { font-size: 15px; font-weight: 900; color: #1e3a8a; display: flex; align-items: center; gap: 8px; }
 
+        /* VPKTech Support Section Styles (NEW) */
+        .vpk-brand-card { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 16px; padding: 25px; color: #fff; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(15,23,42,0.3); }
+        .vpk-brand-card::after { content: 'V'; position: absolute; right: -20px; top: -30px; font-size: 180px; font-weight: 900; color: rgba(255,255,255,0.03); pointer-events: none; }
+        .vpk-title { font-size: 22px; font-weight: 900; letter-spacing: 1px; margin: 0 0 5px; color: #fff; }
+        .vpk-sub { font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; }
+        
+        .plan-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+        .plan-box-label { font-size: 11px; color: #cbd5e1; text-transform: uppercase; font-weight: 700; }
+        .plan-box-val { font-size: 18px; font-weight: 900; color: #3b82f6; margin-top: 5px; }
+
+        .promo-badge { display: none; background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; padding: 15px; border-radius: 12px; font-weight: 800; font-size: 14px; text-align: center; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+
+        .vpk-contact { font-size: 13px; font-weight: 600; color: #cbd5e1; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .vpk-contact strong { color: #fff; }
+
+        .support-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .btn-bug { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1.5px solid rgba(239, 68, 68, 0.5); padding: 12px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .btn-backup { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1.5px solid rgba(16, 185, 129, 0.5); padding: 12px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .btn-bug:active, .btn-backup:active { transform: scale(0.95); }
+
         #customAlertBox { z-index: 100000; }
     </style>
 </head>
@@ -71,109 +100,164 @@
             <h1 class="page-title">System Settings</h1>
         </div>
 
-        <!-- SECTION 1: INSTITUTE PROFILE -->
-        <div class="settings-card">
-            <div class="settings-header">
-                <h2>
-                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    Institute Profile
-                </h2>
-            </div>
-            
-            <form id="instituteForm">
-                <div class="form-group">
-                    <label class="form-label">Institute Logo (Leave blank to keep current)</label>
-                    <div class="logo-preview-box">
-                        <img id="logoPreview" src="" alt="No Logo" onerror="this.style.display='none'">
-                    </div>
-                    <input type="file" id="logoUpload" class="form-control" accept="image/png, image/jpeg, image/jpg">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Institute Primary Name</label>
-                    <input type="text" id="instName" class="form-control" placeholder="e.g. ERP" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Sub Name / Tagline</label>
-                    <input type="text" id="instSubName" class="form-control" placeholder="e.g. Institute" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Contact Phone</label>
-                    <input type="tel" id="instPhone" class="form-control" placeholder="e.g. 9876543210">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Complete Address (For Receipts & Reports)</label>
-                    <textarea id="instAddress" class="form-control" rows="3" placeholder="Enter full address..."></textarea>
-                </div>
-
-                <button type="submit" id="saveProfileBtn" class="btn-save">💾 Save Institute Profile</button>
-            </form>
+        <!-- NEW TAB SYSTEM -->
+        <div class="settings-tabs">
+            <button class="tab-btn active" onclick="switchTab('institute')">Institution Info</button>
+            <button class="tab-btn" onclick="switchTab('roles')">Role Permissions</button>
+            <button class="tab-btn" id="tabBilling" onclick="switchTab('billing')" style="display:none; border-color:#3b82f6; color:#3b82f6;">💎 Support & Billing</button>
         </div>
 
-        <!-- SECTION 2: CUSTOM ROLE MANAGEMENT & PERMISSIONS -->
-        <div class="settings-card">
-            <div class="settings-header">
-                <h2>
-                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                    Staff Roles & Permissions
-                </h2>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Create New Role</label>
-                <div class="add-role-flex">
-                    <input type="text" id="newRoleName" class="form-control" placeholder="e.g. Senior Accountant">
-                    <button type="button" class="btn-add-role" onclick="window.addNewRole()">+ Add Role</button>
+        <!-- SECTION 1: INSTITUTE PROFILE (Wrapped in Tab) -->
+        <div id="panel-institute" class="tab-panel active">
+            <div class="settings-card">
+                <div class="settings-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        Institute Profile
+                    </h2>
                 </div>
-            </div>
-
-            <label class="form-label" style="margin-top: 25px;">Available Roles (Click Edit to change permissions)</label>
-            <div class="role-list" id="rolesContainer">
-                <div style="color: #64748b; font-size: 12px; font-weight: bold;">Loading roles...</div>
-            </div>
-            
-            <div style="margin-top: 15px; font-size: 11px; color: #94a3b8; line-height: 1.5;">
-                * Note: The 'Admin' role is permanent and cannot be deleted. New roles will have limited permission by default.
-            </div>
-
-            <!-- PERMISSION MATRIX SECTION (Hidden by default) -->
-            <div id="permissionSection" class="perm-table-wrap">
-                <div class="perm-header-bar">
-                    <div class="perm-role-title">
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        Editing Permissions: <span id="editingRoleNameText" style="color: #ef4444; font-weight: 900; margin-left: 5px;">-</span>
+                
+                <form id="instituteForm">
+                    <div class="form-group">
+                        <label class="form-label">Institute Logo (Leave blank to keep current)</label>
+                        <div class="logo-preview-box">
+                            <img id="logoPreview" src="" alt="No Logo" onerror="this.style.display='none'">
+                        </div>
+                        <input type="file" id="logoUpload" class="form-control" accept="image/png, image/jpeg, image/jpg">
                     </div>
-                    <button onclick="document.getElementById('permissionSection').style.display='none'" style="background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; color: #475569;">Close</button>
+
+                    <div class="form-group">
+                        <label class="form-label">Institute Primary Name</label>
+                        <input type="text" id="instName" class="form-control" placeholder="e.g. ERP" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Sub Name / Tagline</label>
+                        <input type="text" id="instSubName" class="form-control" placeholder="e.g. Institute" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Contact Phone</label>
+                        <input type="tel" id="instPhone" class="form-control" placeholder="e.g. 9876543210">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Complete Address (For Receipts & Reports)</label>
+                        <textarea id="instAddress" class="form-control" rows="3" placeholder="Enter full address..."></textarea>
+                    </div>
+
+                    <button type="submit" id="saveProfileBtn" class="btn-save">💾 Save Institute Profile</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SECTION 2: CUSTOM ROLE MANAGEMENT & PERMISSIONS (Wrapped in Tab) -->
+        <div id="panel-roles" class="tab-panel">
+            <div class="settings-card">
+                <div class="settings-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        Staff Roles & Permissions
+                    </h2>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Create New Role</label>
+                    <div class="add-role-flex">
+                        <input type="text" id="newRoleName" class="form-control" placeholder="e.g. Senior Accountant">
+                        <button type="button" class="btn-add-role" onclick="window.addNewRole()">+ Add Role</button>
+                    </div>
                 </div>
 
-                <table class="perm-table">
-                    <thead>
-                        <tr>
-                            <th style="text-align: left;">App Feature</th>
-                            <th>View</th>
-                            <th>Add</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody id="permissionsTableBody">
-                        <tr><td colspan="5">Loading...</td></tr>
-                    </tbody>
-                </table>
-                <div style="padding: 15px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
-                    <button onclick="window.saveRolePermissions()" class="btn-save" style="background: #10b981; max-width: 300px; display: block; margin: 0 auto;">✅ Save Permissions</button>
+                <label class="form-label" style="margin-top: 25px;">Available Roles (Click Edit to change permissions)</label>
+                <div class="role-list" id="rolesContainer">
+                    <div style="color: #64748b; font-size: 12px; font-weight: bold;">Loading roles...</div>
+                </div>
+                
+                <div style="margin-top: 15px; font-size: 11px; color: #94a3b8; line-height: 1.5;">
+                    * Note: The 'Admin' role is permanent and cannot be deleted. New roles will have limited permission by default.
+                </div>
+
+                <!-- PERMISSION MATRIX SECTION (Hidden by default) -->
+                <div id="permissionSection" class="perm-table-wrap">
+                    <div class="perm-header-bar">
+                        <div class="perm-role-title">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            Editing Permissions: <span id="editingRoleNameText" style="color: #ef4444; font-weight: 900; margin-left: 5px;">-</span>
+                        </div>
+                        <button onclick="document.getElementById('permissionSection').style.display='none'" style="background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; color: #475569;">Close</button>
+                    </div>
+
+                    <table class="perm-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">App Feature</th>
+                                <th>View</th>
+                                <th>Add</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissionsTableBody">
+                            <tr><td colspan="5">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                    <div style="padding: 15px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
+                        <button onclick="window.saveRolePermissions()" class="btn-save" style="background: #10b981; max-width: 300px; display: block; margin: 0 auto;">✅ Save Permissions</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECTION 3: VPKTECH SUPPORT & BILLING (NEW TAB) -->
+        <div id="panel-billing" class="tab-panel">
+            <div class="vpk-brand-card">
+                <h2 class="vpk-title">VPKTech Solutions</h2>
+                <div class="vpk-sub">Authorized ERP Provider</div>
+
+                <div id="promoBadge" class="promo-badge">
+                    🎉 Special Offer Loading...
+                </div>
+
+                <div class="plan-box">
+                    <div class="plan-box-label">License Status</div>
+                    <div class="plan-box-val" id="licStatus">🟢 Active</div>
+                    
+                    <div class="plan-box-label" style="margin-top:10px;">Valid Until</div>
+                    <div class="plan-box-val" id="licExpiry" style="color:#f1f5f9; font-size:14px;">Fetching...</div>
+                </div>
+
+                <div class="vpk-contact">✉️ Email: <strong>vpktechsolutions@gmail.com</strong></div>
+                <div class="vpk-contact">🌐 Support: <strong>Available 24/7</strong></div>
+
+                <div class="support-btn-grid">
+                    <button class="btn-backup" onclick="window.exportLocalBackup()">💾 Backup Data</button>
+                    <button class="btn-bug" onclick="window.openBugReport()">🐞 Report Issue</button>
                 </div>
             </div>
 
+            <!-- BUG REPORT FORM -->
+            <div id="bugReportSection" class="settings-card" style="display:none; margin-top:15px; border-color:#ef4444; padding:20px;">
+                <h3 style="margin:0 0 10px; color:#ef4444; font-size:15px; font-weight:900;">Send Error Report</h3>
+                <label class="form-label">Describe the issue in detail</label>
+                <textarea class="form-control" id="bugDesc" placeholder="Example: I cannot save fees for 2nd year students..." style="height:100px; resize:none;"></textarea>
+                <button class="btn-save" style="background:#ef4444; margin-top:10px;" onclick="window.submitBugReport()">📨 Send to VPKTech</button>
+            </div>
         </div>
 
     </main>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
+
+        // TAB SWITCHER
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('panel-' + tabId).classList.add('active');
+        };
 
         // MAGIC ALERT
         window.alert = function(msg) {
@@ -272,10 +356,9 @@
 
         window.currentEditingRole = null;
 
-        // 3. FETCH ROLES (HIDING SUPER ADMIN COMPLETELY)
+        // 3. FETCH ROLES
         window.loadRoles = async function() {
             try {
-                // Fetch roles but EXCLUDE 'Super Admin' from the results
                 const { data, error } = await supabase.from('role_management').select('id, role_name').neq('role_name', 'Super Admin');
                 const container = document.getElementById('rolesContainer');
                 
@@ -286,7 +369,6 @@
                 }
 
                 container.innerHTML = data.map(role => {
-                    // Only Admin is treated as system role here now
                     const isSystemRole = (role.role_name === 'Admin');
                     return `
                         <div class="role-item">
@@ -310,7 +392,7 @@
             if (!roleName) { alert("⚠️ Please enter a role name."); return; }
 
             try {
-                const defaultPerms = { "Directory": { view: true } }; // Basic default
+                const defaultPerms = { "Directory": { view: true } };
                 const { error } = await supabase.from('role_management').insert([{ role_name: roleName, permissions: defaultPerms }]);
                 if (error) {
                     if(error.code === '23505') throw new Error("Role already exists!");
@@ -363,7 +445,6 @@
                 `;
             }).join('');
             
-            // Scroll to the permission table
             document.getElementById('permissionSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         };
 
@@ -390,9 +471,99 @@
             }
         };
 
-        // Initialize
+        // ==========================================
+        // NEW SAAS LOGIC (Billing, Backup & Bugs)
+        // ==========================================
+        
+        async function initSaaS() {
+            const userRole = localStorage.getItem('userRole');
+            if (userRole === 'Super Admin') {
+                document.getElementById('tabBilling').style.display = 'inline-block';
+                const { data: { session } } = await supabase.auth.getSession();
+                if(session && session.user) {
+                    loadSaaSDetails(session.user.email);
+                }
+            }
+        }
+
+        async function loadSaaSDetails(adminEmail) {
+            try {
+                const { data, error } = await supabase.from('saas_clients').select('valid_until, promo_message, is_active').eq('admin_email', adminEmail).single();
+                if(data) {
+                    document.getElementById('licExpiry').innerText = data.valid_until ? new Date(data.valid_until).toDateString() : 'N/A';
+                    if(!data.is_active) {
+                        document.getElementById('licStatus').innerText = '🔴 SUSPENDED';
+                        document.getElementById('licStatus').style.color = '#ef4444';
+                    }
+                    if(data.promo_message && data.promo_message.trim() !== '') {
+                        const promoDiv = document.getElementById('promoBadge');
+                        promoDiv.style.display = 'block';
+                        promoDiv.innerText = `🎁 ${data.promo_message}`;
+                    }
+                }
+            } catch(e) { console.log(e); }
+        }
+
+        window.openBugReport = function() {
+            const section = document.getElementById('bugReportSection');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+            if(section.style.display === 'block') document.getElementById('bugDesc').focus();
+        };
+
+        window.submitBugReport = async function() {
+            const issue = document.getElementById('bugDesc').value.trim();
+            if(!issue) return alert('⚠️ Please describe the issue before sending.');
+
+            const instName = document.getElementById('instName').value || 'Unknown Client';
+            const { data: { session } } = await supabase.auth.getSession();
+            const email = session ? session.user.email : 'Unknown Email';
+
+            const btn = event.target;
+            btn.innerText = 'Sending...'; btn.disabled = true;
+
+            try {
+                const { error } = await supabase.from('bug_reports').insert([{ institute_name: instName, reported_by_email: email, issue_details: issue, status: 'Open' }]);
+                if(error) throw error;
+                alert('✅ Issue Reported Successfully! VPKTech Support will review it shortly.');
+                document.getElementById('bugDesc').value = '';
+                document.getElementById('bugReportSection').style.display = 'none';
+            } catch(e) { alert('❌ Failed to send report.'); } 
+            finally { btn.innerText = '📨 Send to VPKTech'; btn.disabled = false; }
+        };
+
+        window.exportLocalBackup = async function() {
+            alert("⏳ Preparing Data Backup... Please wait.");
+            try {
+                const { data, error } = await supabase.from('students').select('*');
+                if(error) throw error;
+                if(!data || data.length === 0) return alert('⚠️ No student data found to backup.');
+
+                const keys = Object.keys(data[0]);
+                let csv = keys.join(',') + '\n';
+                data.forEach(row => {
+                    csv += keys.map(k => {
+                        let cell = row[k] === null ? '' : String(row[k]);
+                        cell = cell.replace(/"/g, '""');
+                        return `"${cell}"`;
+                    }).join(',') + '\n';
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `ERP_Backup_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                alert("✅ Backup Downloaded Successfully! Please keep this file safe.");
+            } catch(e) { alert("❌ Backup Failed: " + e.message); }
+        };
+
+        // Initialize Everything
         loadProfile();
         loadRoles();
+        initSaaS();
 
     </script>
 
