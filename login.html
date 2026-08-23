@@ -26,9 +26,32 @@
         .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
         .divider:not(:empty)::before { margin-right: .5em; }
         .divider:not(:empty)::after { margin-left: .5em; }
+
+        /* 🔥 NEW: Forgot Password Modal Styles 🔥 */
+        #forgotModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.9); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); }
+        .modal-content { background: #ffffff; width: 90%; max-width: 400px; padding: 30px 24px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); text-align:center; animation: sheetUp 0.3s ease; }
+        @keyframes sheetUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
+
+    <!-- 🔥 NEW: Forgot Password Modal 🔥 -->
+    <div id="forgotModal">
+        <div class="modal-content">
+            <div style="background:#eff6ff; color:#3b82f6; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <h3 style="color:#1e293b; margin-top:0; font-weight:900;">Reset Password</h3>
+            <p style="color:#64748b; font-size:13px; margin-bottom:20px; line-height:1.5;">Enter the email address associated with your account, and we'll send you a secure link to reset your password.</p>
+            
+            <input type="email" id="resetEmail" style="width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box; margin-bottom: 20px; outline:none;" placeholder="Enter your email address">
+            
+            <div style="display:flex; gap:10px;">
+                <button class="btn-custom" style="flex:1;" onclick="sendResetLink(event)">Send Recovery Link</button>
+                <button class="btn-guest" style="flex:1; margin-top:0;" onclick="closeForgotModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <div class="login-card">
         <img src="assets/images/logo.png" alt="Institution Logo" class="login-logo" onerror="this.src='https://via.placeholder.com/150x100?text=LOGO'">
@@ -37,11 +60,16 @@
         <form id="loginForm">
             <div class="form-group" style="text-align: left; margin-bottom: 15px;">
                 <label class="form-label" style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block;">Email Address</label>
-                <input type="email" id="email" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box;" required placeholder="admin@example.com">
+                <input type="email" id="email" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box; outline:none;" required placeholder="admin@example.com">
             </div>
-            <div class="form-group" style="text-align: left; margin-bottom: 24px;">
+            <div class="form-group" style="text-align: left; margin-bottom: 15px;">
                 <label class="form-label" style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block;">Password</label>
-                <input type="password" id="password" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box;" required placeholder="••••••••">
+                <input type="password" id="password" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box; outline:none;" required placeholder="••••••••">
+            </div>
+            
+            <!-- 🔥 NEW: Forgot Password Link 🔥 -->
+            <div style="text-align: right; margin-bottom: 20px; margin-top: -5px;">
+                <a href="#" onclick="openForgotModal(event)" style="color: #3b82f6; font-size: 12px; font-weight: 800; text-decoration: none; transition: 0.2s;">Forgot Password?</a>
             </div>
             
             <button type="submit" class="btn-custom" id="loginBtn">Secure Sign In</button>
@@ -67,17 +95,57 @@
             
             let iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
             
+            if (msg.includes('✅') || msg.includes('sent')) {
+                iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
+            }
+
             box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
             box.innerHTML = `
                 <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
                     ${iconHtml}
                     <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
-                    <button id="cAlertOk" style="width: 100%; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s;">Try Again</button>
+                    <button id="cAlertOk" style="width: 100%; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s;">OK</button>
                 </div>
             `;
             if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
             document.body.appendChild(box);
             document.getElementById('cAlertOk').onclick = () => box.remove();
+        };
+
+        // 🔥 NEW: PASSWORD RECOVERY LOGIC 🔥
+        window.openForgotModal = function(e) {
+            e.preventDefault();
+            document.getElementById('resetEmail').value = document.getElementById('email').value; // Auto-fill if already typed
+            document.getElementById('forgotModal').style.display = 'flex';
+        };
+
+        window.closeForgotModal = function() {
+            document.getElementById('forgotModal').style.display = 'none';
+        };
+
+        window.sendResetLink = async function(e) {
+            const emailInput = document.getElementById('resetEmail').value.trim();
+            if(!emailInput) return alert('⚠️ Please enter your registered email address.');
+
+            const btn = e.target;
+            const originalText = btn.innerText;
+            btn.innerText = 'Sending...'; btn.disabled = true;
+
+            try {
+                // Request Supabase to send the recovery email
+                const { data, error } = await supabase.auth.resetPasswordForEmail(emailInput, {
+                    redirectTo: window.location.origin + window.location.pathname.replace('login.html', 'settings.html'),
+                });
+
+                if (error) throw error;
+                
+                alert('✅ Password reset link has been sent! Please check your email inbox.');
+                closeForgotModal();
+            } catch (err) {
+                alert('❌ Error: ' + err.message);
+            } finally {
+                btn.innerText = originalText; btn.disabled = false;
+            }
         };
 
         // Check if already logged in
@@ -109,14 +177,10 @@
                 alert('⚠️ Login Failed: Invalid Email or Password.');
                 btn.textContent = 'Secure Sign In'; btn.disabled = false;
             } else {
-                // ========================================================
-                // IMPORTANT: താങ്കളുടെ സൂപ്പർ അഡ്മിൻ ഇമെയിൽ ഇവിടെ നൽകുക
-                // ========================================================
                 const superAdminEmail = 'vpk@vpk.com'; 
-                
                 let userRole = 'Office Staff'; // Default fallback
                 
-                // A. സൂപ്പർ അഡ്മിൻ ചെക്ക് (താങ്കളെ എപ്പോഴും കയറ്റിവിടാൻ)
+                // A. സൂപ്പർ അഡ്മിൻ ചെക്ക്
                 if (email.toLowerCase() === superAdminEmail.toLowerCase()) {
                     userRole = 'Super Admin'; 
                 } else {
@@ -124,7 +188,6 @@
                     const { data: staffData } = await supabase.from('staff').select('role, status').eq('email', email).single();
                     
                     if (staffData) {
-                        // അക്കൗണ്ട് ആക്റ്റീവ് ആണോ എന്ന് നോക്കുന്നു (ചെറിയ അക്ഷരവും വലിയ അക്ഷരവും സപ്പോർട്ട് ചെയ്യും)
                         const currentStatus = (staffData.status || '').toLowerCase();
                         if (currentStatus !== 'active') {
                             alert('❌ Account Disabled: Your access has been revoked by the Administrator.');
@@ -132,17 +195,25 @@
                             btn.textContent = 'Secure Sign In'; btn.disabled = false;
                             return;
                         }
-                        
-                        // യാതൊരു മാറ്റവുമില്ലാതെ ഡാറ്റാബേസിലെ അതേ റോൾ നൽകുന്നു!
-                        if (staffData.role) {
-                            userRole = staffData.role;
-                        }
+                        if (staffData.role) { userRole = staffData.role; }
                     } else {
-                        // സ്റ്റാഫ് ലിസ്റ്റിൽ പേരില്ലെങ്കിൽ പുറത്താക്കും
-                        alert('❌ Account Error: Profile not found in the staff directory.');
-                        await supabase.auth.signOut();
-                        btn.textContent = 'Secure Sign In'; btn.disabled = false;
-                        return;
+                        // Check if it is SaaS Client Admin (SaaS ടേബിളിൽ ഉണ്ടോ എന്ന് നോക്കുന്നു)
+                        const { data: saasClient } = await supabase.from('saas_clients').select('id, is_active').ilike('admin_email', email).single();
+                        
+                        if (saasClient) {
+                            if (!saasClient.is_active) {
+                                alert('❌ Account Suspended: Your ERP subscription is currently inactive.');
+                                await supabase.auth.signOut();
+                                btn.textContent = 'Secure Sign In'; btn.disabled = false;
+                                return;
+                            }
+                            userRole = 'Admin'; // Allocate Admin role to SaaS client
+                        } else {
+                            alert('❌ Account Error: Profile not found in the directory.');
+                            await supabase.auth.signOut();
+                            btn.textContent = 'Secure Sign In'; btn.disabled = false;
+                            return;
+                        }
                     }
                 }
 
@@ -168,25 +239,22 @@
             
             window.location.replace('dashboard.html');
         };
+
         // ഡാറ്റാബേസിൽ നിന്ന് സെറ്റിംഗ്സ് വായിച്ച് ഗസ്റ്റ് ബട്ടൺ നിയന്ത്രിക്കുന്നു
         async function applySystemSettings() {
             try {
                 const { data } = await supabase.from('institute_settings').select('theme_color, guest_login_enabled').eq('id', 1).single();
                 if (data) {
-                    // ലോഗിൻ പേജിന്റെ ബാക്ക്ഗ്രൗണ്ട് കളർ മാറ്റാൻ
                     if (data.theme_color) {
                         document.documentElement.style.setProperty('--primary-dark', data.theme_color);
                     }
-                    // ഗസ്റ്റ് ലോഗിൻ ഓഫ് ആണെങ്കിൽ ബട്ടൺ മറയ്ക്കുന്നു
                     const guestBtn = document.querySelector('.btn-guest');
                     const divider = document.querySelector('.divider');
                     if (guestBtn && divider) {
                         if (data.guest_login_enabled === false) {
-                            guestBtn.style.display = 'none';
-                            divider.style.display = 'none';
+                            guestBtn.style.display = 'none'; divider.style.display = 'none';
                         } else {
-                            guestBtn.style.display = 'block';
-                            divider.style.display = 'flex';
+                            guestBtn.style.display = 'block'; divider.style.display = 'flex';
                         }
                     }
                 }
