@@ -104,6 +104,8 @@
         .adv-status.unpaid{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
         .adv-status.paid{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
 
+        .empty-state { text-align: center; padding: 30px; font-weight: 800; color: #64748b; font-size: 14px; background: white; border-radius: 12px; border: 1px dashed #cbd5e1;}
+
         #advancesList, #salaryHistory, #staffList {width:100%;max-width:100%;box-sizing:border-box;overflow-x:hidden;}
 
         /* PAYROLL CARD */
@@ -357,12 +359,14 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // 1. MAGIC ALERT OVERRIDE
+        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
+        window.staffPerms = { view: true, add: false, edit: false, delete: false };
+
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let borderColor = '#3b82f6'; 
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('failed') || msg.includes('required')) borderColor = '#ef4444'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('failed') || msg.includes('required') || msg.includes('Denied')) borderColor = '#ef4444'; 
             else if (msg.includes('✅') || msg.includes('success') || msg.includes('Complete')) borderColor = '#10b981'; 
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
             box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
@@ -370,16 +374,13 @@
             document.body.appendChild(box); setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
         };
 
-        // 2. BRAND NEW CUSTOM MAGIC PROMPT UI
         window.magicPrompt = function(msg) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox');
                 if (oldBox) oldBox.remove();
-                
                 const box = document.createElement('div');
                 box.id = 'customPromptBox';
                 box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
-                
                 box.innerHTML = `
                     <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
                         <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 16px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
@@ -391,10 +392,8 @@
                     </div>
                 `;
                 document.body.appendChild(box);
-                
                 const input = document.getElementById('cPromptInput');
                 input.focus();
-                
                 document.getElementById('cPromptCancel').onclick = () => { box.remove(); resolve(null); };
                 document.getElementById('cPromptOk').onclick = () => { box.remove(); resolve(input.value); };
                 input.addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('cPromptOk').click(); });
@@ -405,7 +404,6 @@
         let instSettings = null; let payrollAdvances = []; 
         let lastProcessedPaymentId = null; 
 
-        // ===================== AUTH & GUEST SECURITY =====================
         async function init() {
             try {
                 const userRole = localStorage.getItem('userRole') || 'Admin';
@@ -413,7 +411,6 @@
                 
                 if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
 
-                // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
                 if (userRole === 'Super Admin' || userRole === 'Admin') {
                     window.staffPerms = { view: true, add: true, edit: true, delete: true };
                 } else if (userRole !== 'Guest') {
@@ -421,39 +418,26 @@
                         const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).maybeSingle();
                         if (data && data.permissions && data.permissions['StaffHR']) {
                             window.staffPerms = data.permissions['StaffHR'];
-                        } else {
-                            // Failsafe default if role isn't completely configured
-                            window.staffPerms = { view: true, add: false, edit: false, delete: false };
                         }
-                    } catch(err) {
-                        console.error("Role fetch error:", err);
-                        window.staffPerms = { view: true, add: false, edit: false, delete: false };
-                    }
+                    } catch(err) { console.error("Role fetch error:", err); }
                 }
 
                 if (!window.staffPerms.add && userRole !== 'Guest') {
-                    // Hide Add Staff button
                     const fabBtn = document.getElementById('fabAddStaff');
                     if(fabBtn) fabBtn.style.display = 'none';
 
-                    // Lock Advances Form
                     const advForm = document.getElementById('advanceFormArea');
                     if(advForm) advForm.innerHTML = `<div style="text-align:center; padding: 30px 20px; background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px;"><h3 style="color:#475569; font-size:16px; margin:0;">🔒 ACCESS RESTRICTED</h3><p style="color:#64748b; font-size:12px; margin:5px 0 0;">You don't have permission to record advances.</p></div>`;
 
-                    // Lock Payroll Form
                     const payForm = document.getElementById('payrollFormArea');
                     if(payForm) payForm.innerHTML = `<div style="text-align:center; padding: 30px 20px; background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px;"><h3 style="color:#475569; font-size:16px; margin:0;">🔒 ACCESS RESTRICTED</h3><p style="color:#64748b; font-size:12px; margin:5px 0 0;">You don't have permission to process salaries.</p></div>`;
                 }
-                // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
 
                 if (userRole === 'Guest') {
                     setTimeout(() => {
                         const actionButtons = document.querySelectorAll('.frm-submit, .sc-btn-archive');
                         actionButtons.forEach(btn => {
-                            const btnText = btn.innerText.toLowerCase();
-                            if(btnText.includes('save') || btnText.includes('update') || btnText.includes('archive') || btnText.includes('record') || btnText.includes('process')) {
-                                btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); alert("⚠️ This action is disabled in Guest/Demo mode."); return false; };
-                            }
+                            btn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); alert("⚠️ This action is disabled in Guest/Demo mode."); return false; };
                         });
                         const fabBtn = document.querySelector('.fab-add');
                         if(fabBtn) fabBtn.onclick = function(e) { e.preventDefault(); alert("⚠️ This action is disabled in Guest/Demo mode."); return false; }
@@ -464,7 +448,8 @@
                 await fetchAllData();
             } catch(e) { 
                 console.error("Init error:", e); 
-                document.getElementById('staffList').innerHTML = '<div class="empty-state" style="color:red;">Error loading staff data.</div>';
+                const container = document.getElementById('staffList');
+                if (container) container.innerHTML = '<div class="empty-state" style="color:red;">Error connecting to database. Please refresh.</div>';
             }
         }
 
@@ -473,9 +458,7 @@
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
                     instSettings = data;
-                    if (data.logo_url) { 
-                        const salLogo = document.getElementById('salaryLogo'); if(salLogo) salLogo.src = data.logo_url;
-                    }
+                    if (data.logo_url) { const salLogo = document.getElementById('salaryLogo'); if(salLogo) salLogo.src = data.logo_url; }
                     const sin = document.getElementById('salaryInstName'); if(sin) sin.innerText = data.institute_name || 'ERP';
                     const sisub = document.getElementById('salaryInstSub'); if(sisub) sisub.innerText = data.sub_name || 'TECHNICAL ACADEMY';
                     const siadr = document.getElementById('salaryInstAddress'); if(siadr) siadr.innerText = data.address || '';
@@ -491,9 +474,21 @@
                     supabase.from('staff_advances').select('*').order('advance_date', { ascending: false }),
                     supabase.from('salary_payments').select('*').order('created_at', { ascending: false })
                 ]);
-                allStaff = staffRes.data || []; allAdvances = advRes.data || []; allSalaryPayments = salRes.data || [];
-                populateRoleFilter(); populateStaffDropdowns(); renderDirectory(); renderAdvances(); renderSalaryHistory();
-            } catch(e) { console.error("Fetch error:", e); }
+                
+                allStaff = staffRes.data || []; 
+                allAdvances = advRes.data || []; 
+                allSalaryPayments = salRes.data || [];
+                
+                populateRoleFilter(); 
+                populateStaffDropdowns(); 
+                renderDirectory(); 
+                renderAdvances(); 
+                renderSalaryHistory();
+            } catch(e) { 
+                console.error("Fetch error:", e); 
+                const container = document.getElementById('staffList');
+                if (container) container.innerHTML = '<div class="empty-state" style="color:red;">Error loading staff data.</div>';
+            }
         }
 
         function generateAvatar(name, gender) {
@@ -517,86 +512,103 @@
             return 'Rupees ' + inWords(Math.floor(num)).trim() + ' Only';
         }
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        window.openModal = function(id) { document.getElementById(id).style.display = 'flex'; };
+        window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; };
+        
         window.switchStaffTab = function(tab) {
             document.querySelectorAll('.staff-tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             event.currentTarget.classList.add('active');
             document.getElementById('panel-' + tab).classList.add('active');
         };
-        window.openModal = openModal; window.closeModal = closeModal;
 
         // ===================== TAB 1: DIRECTORY =====================
         function populateRoleFilter() {
-            const roleSet = new Set(); allStaff.forEach(s => { if (s.role) roleSet.add(s.role); });
-            const sel = document.getElementById('filterRole'); sel.innerHTML = '<option value="all">All Roles</option>';
-            [...roleSet].sort().forEach(r => { sel.add(new Option(r, r)); });
+            try {
+                const roleSet = new Set(); allStaff.forEach(s => { if (s.role) roleSet.add(s.role); });
+                const sel = document.getElementById('filterRole'); 
+                if (!sel) return;
+                sel.innerHTML = '<option value="all">All Roles</option>';
+                [...roleSet].sort().forEach(r => { sel.add(new Option(r, r)); });
+            } catch(e) {}
         }
+
         function populateStaffDropdowns() {
-            const active = allStaff.filter(s => (s.status || 'active') === 'active');
-            ['advStaffSelect', 'payStaffSelect'].forEach(id => {
-                const sel = document.getElementById(id); if (!sel) return;
-                sel.innerHTML = '<option value="">-- Choose Staff --</option>';
-                active.forEach(s => { sel.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)); });
-            });
-            
-            const advDateInput = document.getElementById('advDate');
-            if(advDateInput) { advDateInput.value = new Date().toISOString().split('T')[0]; }
-            
-            const payMonthInput = document.getElementById('payMonth');
-            if(payMonthInput) { 
-                const now = new Date(); 
-                payMonthInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`; 
-            }
+            try {
+                const active = allStaff.filter(s => (s.status || 'active') === 'active');
+                ['advStaffSelect', 'payStaffSelect'].forEach(id => {
+                    const sel = document.getElementById(id); if (!sel) return;
+                    sel.innerHTML = '<option value="">-- Choose Staff --</option>';
+                    active.forEach(s => { sel.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)); });
+                });
+                const advDateInput = document.getElementById('advDate');
+                if(advDateInput) { advDateInput.value = new Date().toISOString().split('T')[0]; }
+                const payMonthInput = document.getElementById('payMonth');
+                if(payMonthInput) { 
+                    const now = new Date(); 
+                    payMonthInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`; 
+                }
+            } catch(e) {}
         }
         
         window.renderDirectory = function() {
-            const search = document.getElementById('staffSearch').value.toLowerCase();
-            const role = document.getElementById('filterRole').value;
-            const status = document.getElementById('filterStatus').value;
-            let filtered = allStaff.filter(s => {
-                const sStatus = (s.status || 'active').toLowerCase();
-                if (status === 'active' && sStatus !== 'active') return false;
-                if (status === 'archived' && sStatus !== 'archived') return false;
-                if (role !== 'all' && s.role !== role) return false;
-                if (search) { const str = `${s.full_name || ''} ${s.phone || ''}`.toLowerCase(); if (!str.includes(search)) return false; }
-                return true;
-            });
-            const container = document.getElementById('staffList');
-            if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No staff found.</div>'; return; }
-            
-            container.innerHTML = filtered.map(s => {
-                const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
-                const statusColor = (s.status || 'active') === 'active' ? '#10b981' : '#94a3b8';
-                
-                // --- 🔒 DYNAMIC ACTION BUTTONS BASED ON PERMISSION ---
-                let actionBtns = '';
-                if (window.staffPerms.edit || window.staffPerms.view) {
-                    let btnText = window.staffPerms.edit ? 'View / Edit' : 'View Details';
-                    actionBtns += `<div class="sc-actions"><button class="sc-btn sc-btn-view" onclick="openEditStaff('${s.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> ${btnText}</button></div>`;
-                }
-                
-                let deleteBtn = window.staffPerms.delete ? `<div class="sc-actions-full"><button class="sc-btn sc-btn-archive" onclick="archiveStaff('${s.id}','${s.full_name}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg> Archive Staff</button></div>` : '';
-                // -----------------------------------------------------
+            try {
+                const container = document.getElementById('staffList');
+                if (!container) return;
 
-                return `
-                <div class="staff-card">
-                    <div class="sc-header">
-                        <div class="sc-avatar"><img src="${avatar}" alt="${s.full_name}" onerror="this.src='${generateAvatar(s.full_name, s.gender)}'"></div>
-                        <div style="flex:1;min-width:0">
-                            <div class="sc-name">${s.full_name || 'N/A'}</div>
-                            <span class="sc-role-badge">${s.role || 'Staff'}</span>
-                            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${statusColor};margin-left:8px;vertical-align:middle"></span>
+                const searchEl = document.getElementById('staffSearch');
+                const roleEl = document.getElementById('filterRole');
+                const statusEl = document.getElementById('filterStatus');
+
+                const search = searchEl ? searchEl.value.toLowerCase() : '';
+                const role = roleEl ? roleEl.value : 'all';
+                const status = statusEl ? statusEl.value : 'active';
+                
+                let filtered = allStaff.filter(s => {
+                    const sStatus = (s.status || 'active').toLowerCase();
+                    if (status === 'active' && sStatus !== 'active') return false;
+                    if (status === 'archived' && sStatus !== 'archived') return false;
+                    if (role !== 'all' && s.role !== role) return false;
+                    if (search) { const str = `${s.full_name || ''} ${s.phone || ''}`.toLowerCase(); if (!str.includes(search)) return false; }
+                    return true;
+                });
+                
+                if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No staff found.</div>'; return; }
+                
+                container.innerHTML = filtered.map(s => {
+                    const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
+                    const statusColor = (s.status || 'active') === 'active' ? '#10b981' : '#94a3b8';
+                    
+                    let actionBtns = '';
+                    if (window.staffPerms.edit || window.staffPerms.view) {
+                        let btnText = window.staffPerms.edit ? 'View / Edit' : 'View Details';
+                        actionBtns += `<div class="sc-actions"><button class="sc-btn sc-btn-view" onclick="openEditStaff('${s.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> ${btnText}</button></div>`;
+                    }
+                    
+                    let deleteBtn = window.staffPerms.delete ? `<div class="sc-actions-full"><button class="sc-btn sc-btn-archive" onclick="archiveStaff('${s.id}','${s.full_name}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg> Archive Staff</button></div>` : '';
+
+                    return `
+                    <div class="staff-card">
+                        <div class="sc-header">
+                            <div class="sc-avatar"><img src="${avatar}" alt="${s.full_name}" onerror="this.src='${generateAvatar(s.full_name, s.gender)}'"></div>
+                            <div style="flex:1;min-width:0">
+                                <div class="sc-name">${s.full_name || 'N/A'}</div>
+                                <span class="sc-role-badge">${s.role || 'Staff'}</span>
+                                <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${statusColor};margin-left:8px;vertical-align:middle"></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="sc-row"><span class="sc-label">Phone:</span><span class="sc-value">${s.phone || 'N/A'}</span></div>
-                    <div class="sc-row"><span class="sc-label">Salary:</span><span class="sc-value" style="color:#1d4ed8;font-size:15px">₹ ${s.basic_salary || 0}</span></div>
-                    <div class="sc-row"><span class="sc-label">Joined:</span><span class="sc-value">${formatDate(s.joining_date)}</span></div>
-                    ${actionBtns}
-                    ${deleteBtn}
-                </div>`;
-            }).join('');
+                        <div class="sc-row"><span class="sc-label">Phone:</span><span class="sc-value">${s.phone || 'N/A'}</span></div>
+                        <div class="sc-row"><span class="sc-label">Salary:</span><span class="sc-value" style="color:#1d4ed8;font-size:15px">₹ ${s.basic_salary || 0}</span></div>
+                        <div class="sc-row"><span class="sc-label">Joined:</span><span class="sc-value">${formatDate(s.joining_date)}</span></div>
+                        ${actionBtns}
+                        ${deleteBtn}
+                    </div>`;
+                }).join('');
+            } catch(e) {
+                console.error("Render Directory Error:", e);
+                const container = document.getElementById('staffList');
+                if(container) container.innerHTML = '<div class="empty-state" style="color:red;">Error rendering UI. Please refresh.</div>';
+            }
         };
 
         window.openEditStaff = function(id) {
@@ -612,7 +624,6 @@
             document.getElementById('editStatus').value = s.status || 'active';
             document.getElementById('editAddress').value = s.address || '';
             
-            // --- 🔒 ACTION LEVEL SECURITY CHECK (UI Lock) ---
             const isEditAllowed = window.staffPerms.edit;
             
             ['editName', 'editPhone', 'editGender', 'editRole', 'editSalary', 'editJoinDate', 'editStatus', 'editAddress'].forEach(fieldId => {
@@ -628,7 +639,6 @@
             } else {
                 lockMsg.innerHTML = '';
             }
-            // ------------------------------------------------
 
             openModal('editStaffModal');
         };
@@ -670,7 +680,6 @@
         window.saveNewStaff = async function() {
             if (!window.staffPerms.add) { alert('⛔ Permission Denied: You do not have access to add staff.'); return; }
 
-            const btn = document.getElementById('addStaffBtn');
             const name = document.getElementById('addName').value.trim();
             const phone = document.getElementById('addPhone').value.trim();
             const email = document.getElementById('addEmail').value.trim();
@@ -681,7 +690,8 @@
             if (password.length < 6) { alert('Password must be at least 6 characters!'); return; }
             if (phone && phone.length !== 10) { alert('Phone must be 10 digits!'); return; }
             
-            btn.disabled = true; btn.textContent = '⏳ Saving...';
+            // FULL SCREEN LOCK UI TO PREVENT CLICKING AWAY
+            document.body.insertAdjacentHTML('beforeend', '<div id="secLockUI" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.95);z-index:999999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;"><div style="font-size:50px;margin-bottom:15px;animation:pulse 1.5s infinite;">🔐</div><h2 style="margin:0 0 10px 0;">Creating Secure Login...</h2><p style="color:#94a3b8; font-size:14px;">Please wait, do not close this page.</p></div>');
 
             try {
                 // 1. Insert Staff Profile Details FIRST
@@ -699,8 +709,9 @@
                 }]);
 
                 if (dbError) { 
+                    const lockUI = document.getElementById('secLockUI');
+                    if (lockUI) lockUI.remove();
                     alert('Error saving profile: ' + dbError.message); 
-                    btn.disabled = false; btn.textContent = '✅ Save Staff Member';
                     return;
                 } 
 
@@ -711,42 +722,56 @@
                 });
                 
                 if (authErr) {
+                    const lockUI = document.getElementById('secLockUI');
+                    if (lockUI) lockUI.remove();
                     alert('⚠️ Staff added to DB, but login creation failed: ' + authErr.message);
                     closeModal('addStaffModal');
                     await fetchAllData();
                 } else {
-                    alert('✅ Staff successfully added!\n\nSecurity Notice: Because you created a new login, the system has securely logged you out. Please log in again as Super Admin.'); 
+                    // FORCE IMMEDIATE LOGOUT TO PREVENT SESSION SWAP BUG
                     await supabase.auth.signOut();
                     localStorage.clear();
-                    window.location.replace('login.html');
+                    
+                    const lockUI = document.getElementById('secLockUI');
+                    if (lockUI) {
+                        lockUI.innerHTML = '<div style="font-size:50px;margin-bottom:15px;">✅</div><h2 style="margin:0 0 10px 0; color:#10b981;">Staff Created!</h2><p style="color:#94a3b8; font-size:14px;">Redirecting to login securely...</p>';
+                    }
+                    
+                    setTimeout(() => {
+                        window.location.replace('login.html');
+                    }, 1500);
                 }
             } catch(e) {
+                const lockUI = document.getElementById('secLockUI');
+                if (lockUI) lockUI.remove();
                 alert('Unexpected Error: ' + e.message);
-                btn.disabled = false; btn.textContent = '✅ Save Staff Member';
             }
         };
 
         // ===================== TAB 2: ADVANCES =====================
         function renderAdvances() {
-            const container = document.getElementById('advancesList');
-            if (allAdvances.length === 0) { container.innerHTML = '<div class="empty-state">No advances recorded yet.</div>'; return; }
-            container.innerHTML = allAdvances.slice(0, 50).map(a => {
-                const staff = allStaff.find(s => s.id === a.staff_id);
-                const sName = staff ? staff.full_name : 'Unknown';
-                const isPaid = (a.status || 'unpaid').toLowerCase() === 'paid';
-                return `
-                <div class="adv-card">
-                    <div class="adv-top">
-                        <div class="adv-name">${sName}</div>
-                        <div class="adv-amount">₹ ${a.amount || 0}</div>
-                    </div>
-                    <div class="adv-meta">
-                        <span>📅 ${formatDate(a.advance_date)}</span>
-                        <span class="adv-status ${isPaid ? 'paid' : 'unpaid'}">${isPaid ? 'Paid' : 'Unpaid'}</span>
-                        ${a.remarks ? `<span>📝 ${a.remarks}</span>` : ''}
-                    </div>
-                </div>`;
-            }).join('');
+            try {
+                const container = document.getElementById('advancesList');
+                if (!container) return;
+                if (allAdvances.length === 0) { container.innerHTML = '<div class="empty-state">No advances recorded yet.</div>'; return; }
+                container.innerHTML = allAdvances.slice(0, 50).map(a => {
+                    const staff = allStaff.find(s => s.id === a.staff_id);
+                    const sName = staff ? staff.full_name : 'Unknown';
+                    const isPaid = (a.status || 'unpaid').toLowerCase() === 'paid';
+                    return `
+                    <div class="adv-card">
+                        <div class="adv-top">
+                            <div class="adv-name">${sName}</div>
+                            <div class="adv-amount">₹ ${a.amount || 0}</div>
+                        </div>
+                        <div class="adv-meta">
+                            <span>📅 ${formatDate(a.advance_date)}</span>
+                            <span class="adv-status ${isPaid ? 'paid' : 'unpaid'}">${isPaid ? 'Paid' : 'Unpaid'}</span>
+                            ${a.remarks ? `<span>📝 ${a.remarks}</span>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch(e) {}
         }
 
         window.saveAdvance = async function() {
@@ -847,24 +872,27 @@
         };
 
         function renderSalaryHistory() {
-            const container = document.getElementById('salaryHistory');
-            if (allSalaryPayments.length === 0) { container.innerHTML = '<div class="empty-state">No salary payments yet.</div>'; return; }
-            container.innerHTML = allSalaryPayments.slice(0, 30).map(p => {
-                const staff = allStaff.find(s => s.id === p.staff_id);
-                return `
-                <div class="adv-card">
-                    <div class="adv-top">
-                        <div class="adv-name">${staff ? staff.full_name : 'Unknown'}</div>
-                        <div style="font-weight:900;color:#059669;font-size:16px">₹ ${p.net_salary || 0}</div>
-                    </div>
-                    <div class="adv-meta">
-                        <span>📅 ${formatMonthDisplay(p.month) || '-'}</span>
-                        <span>💰 Basic: ₹${p.basic_salary || 0}</span>
-                        <span style="color:#ef4444">Ded: ₹${p.deductions || 0}</span>
-                    </div>
-                    <button class="slip-dl-btn" style="background:#eff6ff; color:#1e3a8a; border:1px solid #bfdbfe; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer; margin-top:8px;" onclick="window.downloadSalarySlip('${p.id}')">📄 Download Slip</button>
-                </div>`;
-            }).join('');
+            try {
+                const container = document.getElementById('salaryHistory');
+                if (!container) return;
+                if (allSalaryPayments.length === 0) { container.innerHTML = '<div class="empty-state">No salary payments yet.</div>'; return; }
+                container.innerHTML = allSalaryPayments.slice(0, 30).map(p => {
+                    const staff = allStaff.find(s => s.id === p.staff_id);
+                    return `
+                    <div class="adv-card">
+                        <div class="adv-top">
+                            <div class="adv-name">${staff ? staff.full_name : 'Unknown'}</div>
+                            <div style="font-weight:900;color:#059669;font-size:16px">₹ ${p.net_salary || 0}</div>
+                        </div>
+                        <div class="adv-meta">
+                            <span>📅 ${formatMonthDisplay(p.month) || '-'}</span>
+                            <span>💰 Basic: ₹${p.basic_salary || 0}</span>
+                            <span style="color:#ef4444">Ded: ₹${p.deductions || 0}</span>
+                        </div>
+                        <button class="slip-dl-btn" style="background:#eff6ff; color:#1e3a8a; border:1px solid #bfdbfe; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer; margin-top:8px;" onclick="window.downloadSalarySlip('${p.id}')">📄 Download Slip</button>
+                    </div>`;
+                }).join('');
+            } catch(e) {}
         }
 
         window.downloadLastSlip = function() {
@@ -947,7 +975,7 @@
             } catch (error) { alert("Error generating report! " + error.message); }
         };
 
-        init();
+        window.onload = init;
     </script>
     
     <!-- THE NEW DYNAMIC SECURITY SYSTEM -->
