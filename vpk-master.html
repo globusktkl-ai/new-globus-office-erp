@@ -158,16 +158,11 @@
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
         // =========================================================================
-        // 🔴 ATTENTION: താങ്കളുടെ യഥാർത്ഥ വിവരങ്ങൾ ഇവിടെ നൽകുക!
+        // REAL CREDENTIALS (NO MORE ERRORS)
         // =========================================================================
-        
-        // 1. ഇവിടെ vpk@vpk.com എന്നതിന് പകരം താങ്കളുടെ യഥാർത്ഥ സൂപ്പർ അഡ്മിൻ ഇമെയിൽ നൽകുക
-        const MY_REAL_SUPER_ADMIN_EMAIL = 'YOUR_REAL_EMAIL_HERE'; 
-
-        // 2. ഇവിടെ താങ്കളുടെ യഥാർത്ഥ Supabase URL ഉം Key ഉം നൽകുക
+        const MY_REAL_SUPER_ADMIN_EMAIL = 'vpk@vpk.com'; 
         const SUPABASE_URL = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
-
         // =========================================================================
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -192,19 +187,9 @@
         let clientsData = [];
 
         async function authenticateMaster() {
-            // Check if URL and Key are replaced
-            if(SUPABASE_URL === 'YOUR_SUPABASE_URL_HERE' || MY_REAL_SUPER_ADMIN_EMAIL === 'YOUR_REAL_EMAIL_HERE') {
-                document.body.innerHTML = `
-                    <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; color: #f59e0b; flex-direction: column; font-family: monospace; text-align: center; padding: 20px;">
-                        <h1 style="font-size: 60px; margin: 0;">⚠️ CONFIG MISSING</h1>
-                        <h2>Please enter your real Email, Supabase URL & Key in the code!</h2>
-                    </div>`;
-                return;
-            }
-
             const { data: { session }, error } = await supabase.auth.getSession();
             
-            // STRICT EMAIL CHECK USING THE NEW VARIABLE
+            // STRICT EMAIL CHECK
             if (!session || session.user.email.toLowerCase() !== MY_REAL_SUPER_ADMIN_EMAIL.toLowerCase()) {
                 document.body.innerHTML = `
                     <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; color: #ef4444; flex-direction: column; font-family: monospace; text-align: center;">
@@ -215,6 +200,7 @@
                 setTimeout(() => { window.location.href = 'login.html'; }, 3000);
                 return;
             }
+            
             document.getElementById('securityLock').style.display = 'none';
             fetchClients();
         }
@@ -226,7 +212,7 @@
                 clientsData = data || [];
                 renderTable();
             } catch (err) {
-                alert("❌ Database Connection Failed! Did you put the correct URL and KEY?");
+                alert("❌ Database Connection Failed!");
                 console.error(err);
             }
         }
@@ -351,7 +337,9 @@
             window.location.href = 'login.html';
         };
 
+        // Initiate sequence
         authenticateMaster();
+
     </script>
 </body>
 </html>
