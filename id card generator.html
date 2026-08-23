@@ -1,564 +1,1121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pro ID Card Studio - Drag & Drop Builder</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Official ID Card Studio</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+<!-- External Libraries for Exporting PNG & PDF smoothly -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    <!-- React & ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+/* ================= GLOBAL STYLES ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
 
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+:root {
+    --primary: #1e3a8a;
+    --secondary: #0f172a;
+    --accent: #3b82f6;
+    --bg-light: #f1f5f9;
+    --glass-bg: #ffffff;
+    --border-color: #cbd5e1;
+    --text-main: #334155;
+    --text-muted: #64748b;
+}
 
-    <!-- html-to-image & jsPDF for Bulletproof HD Export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg-light);
+    color: var(--text-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+}
 
-    <style>
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f1f5f9; overflow-x: hidden; }
-        * { box-sizing: border-box; }
+/* ================= SMART MOBILE TOOLBAR ================= */
+/* Master Container */
+.master-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.master-toolbar.hidden-mode { transform: translateY(-100%); }
 
-        /* Top Navigation */
-        .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: white; border-bottom: 2px solid #e2e8f0; position: sticky; top: 0; z-index: 50; }
-        .btn-back-dashboard { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s; cursor: pointer; }
-        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .btn-back-dashboard svg { width: 20px; height: 20px; stroke: #4c1d95; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .top-title { font-size: 18px; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
-        
-        .main-layout { display: flex; flex-direction: row; height: calc(100vh - 65px); width: 100%; }
-        
-        /* Left Sidebar - Settings */
-        .sidebar { width: 350px; background: white; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow-y: auto; }
-        .sidebar-section { padding: 15px; border-bottom: 1px solid #e2e8f0; }
-        .section-title { font-size: 13px; font-weight: 900; color: #1e3a8a; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-        
-        .frm-label { font-size: 11px; font-weight: 800; color: #475569; margin-bottom: 4px; display: block; text-transform: uppercase; }
-        .frm-input, .frm-select, .frm-textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #f8fafc; margin-bottom: 10px; transition: 0.2s; }
-        .frm-input:focus, .frm-select:focus, .frm-textarea:focus { border-color: #3b82f6; background: white; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
-        .frm-textarea { resize: vertical; min-height: 60px; }
-        
-        .color-picker-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .color-input { width: 35px; height: 35px; border: none; border-radius: 8px; cursor: pointer; padding: 0; background: transparent; }
+/* Top Row - 4 Buttons */
+.toolbar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
 
-        .btn-upload { background: #e0f2fe; color: #0284c7; border: 1px dashed #7dd3fc; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; width: 100%; text-align: center; display: block; margin-bottom: 10px; transition: 0.2s; }
-        .btn-upload:hover { background: #bae6fd; }
+.header-btn {
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    color: var(--secondary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+}
+.header-btn:active { transform: scale(0.95); background: #e2e8f0; }
+.header-btn.back-btn { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+.header-btn.hide-btn { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
 
-        /* Right Area - Canvas */
-        .canvas-area { flex: 1; display: flex; flex-direction: column; background: #e2e8f0; position: relative; overflow: hidden; }
-        .canvas-toolbar { display: flex; justify-content: center; gap: 10px; padding: 15px; background: white; border-bottom: 1px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.02); z-index: 10; }
-        
-        .btn-action { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .btn-action:active { transform: scale(0.95); }
-        .btn-png { background: linear-gradient(135deg, #10b981, #059669); color: white; }
-        .btn-pdf { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
-        .btn-layout { background: #475569; color: white; }
+/* The Pocket Button (To unhide toolbar) */
+.pocket-toggle {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    padding: 6px 20px;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    z-index: 999;
+    font-size: 12px;
+    font-weight: 900;
+    color: #1e3a8a;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: top 0.3s;
+}
+.pocket-toggle.active-mode { top: -50px; }
 
-        .workspace { flex: 1; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 20px; }
-        
-        /* The Actual ID Card Render Area */
-        .id-card-wrapper { background: white; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: width 0.3s, height 0.3s; transform-origin: center center; border: 1px solid #cbd5e1;}
-        .id-card-portrait { width: 250px; height: 390px; border-radius: 12px; }
-        .id-card-landscape { width: 390px; height: 250px; border-radius: 12px; }
+/* Settings Area (Tabs & Panels) */
+.settings-area {
+    background: rgba(255,255,255,0.98);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    border-bottom: 2px solid var(--border-color);
+    transition: max-height 0.3s ease-in-out, opacity 0.3s;
+    max-height: 500px;
+    overflow: visible;
+}
+.settings-area.collapsed { max-height: 0; opacity: 0; pointer-events: none; overflow: hidden; }
 
-        /* Draggable Element Styles */
-        .drag-element { position: absolute; cursor: move; user-select: none; touch-action: none; padding: 2px; border: 1px dashed transparent; transition: border 0.2s; }
-        .drag-element:hover { border-color: rgba(59,130,246,0.5); }
-        .drag-element:active { cursor: grabbing; }
+/* Panel Toggle Pocket */
+.panel-toggle-pocket {
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    padding: 4px 20px;
+    border-radius: 0 0 10px 10px;
+    font-size: 10px;
+    font-weight: 900;
+    color: #475569;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    z-index: 1001;
+}
 
-        /* Block Styles */
-        .block-header-bg { position: absolute; top: 0; left: 0; right: 0; z-index: 1; }
-        .block-footer-bg { position: absolute; bottom: 0; left: 0; right: 0; z-index: 1; }
-        .block-content { position: relative; z-index: 10; display: flex; flex-direction: column; line-height: 1.3; }
+/* Tabs */
+.tab-nav {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 10px 15px;
+    gap: 8px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-btn {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.tab-btn.active { background: var(--primary); color: #ffffff; border-color: var(--primary); box-shadow: 0 4px 10px rgba(30,58,138,0.2); }
 
-        /* Watermark */
-        .saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 7px; color: rgba(255,255,255,0.7); font-weight: 800; z-index: 100; pointer-events: none; }
-        .watermark-dark { color: rgba(0,0,0,0.5); }
+/* Tool Panels */
+.tool-panels {
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.tool-panels::-webkit-scrollbar { display: none; }
+.tool-panel { display: none; gap: 15px; }
+.tool-panel.active { display: flex; }
 
-        @media (max-width: 768px) {
-            .main-layout { flex-direction: column; overflow-y: auto; height: auto; }
-            .sidebar { width: 100%; border-right: none; border-bottom: 2px solid #cbd5e1; }
-            .canvas-area { min-height: 500px; }
-            .top-title { font-size: 15px; }
-            .btn-back-dashboard span { display: none; }
-        }
+.tool-group {
+    flex-shrink: 0;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px;
+    min-width: 220px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+.tool-group-title { font-size: 11px; text-transform: uppercase; color: var(--primary); letter-spacing: 0.5px; margin-bottom: 10px; font-weight: 900; border-bottom: 1px dashed #e2e8f0; padding-bottom: 5px; }
 
-        @media print {
-            body * { visibility: hidden; }
-            #printable-card-area, #printable-card-area * { visibility: visible; }
-            #printable-card-area { position: absolute; left: 0; top: 0; margin: 0; padding: 0; transform: none !important; box-shadow: none !important; }
-            .drag-element { border: none !important; }
-        }
-    </style>
+.frm-label { display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px; margin-top: 8px; }
+.frm-input, .frm-select, .frm-textarea {
+    width: 100%; padding: 8px 10px; background: #f8fafc; border: 1px solid var(--border-color);
+    border-radius: 6px; color: var(--secondary); font-size: 13px; font-weight: 600; outline: none; transition: 0.2s;
+}
+.frm-input:focus, .frm-select:focus, .frm-textarea:focus { border-color: var(--accent); background: #ffffff; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.frm-textarea { height: 50px; resize: none; }
+
+.color-row { display: flex; gap: 8px; align-items: center; margin-top: 5px; }
+.color-picker { width: 35px; height: 35px; border: none; border-radius: 6px; cursor: pointer; padding: 0; background: transparent; }
+
+.upload-box {
+    width: 100%; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 15px; text-align: center;
+    cursor: pointer; background: #f8fafc; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.upload-box:hover { border-color: var(--accent); background: #eff6ff; }
+.upload-box img { max-width: 100%; max-height: 80px; object-fit: contain; display: none; border-radius: 4px; }
+.upload-box span { font-size: 24px; margin-bottom: 5px; }
+
+/* ================= WORKSPACE & VIEW CONTROLS ================= */
+.workspace-area {
+    margin-top: 180px; /* Space for toolbar */
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: calc(100vh - 180px);
+    transition: margin-top 0.3s;
+}
+
+/* Sticky View Controls */
+.view-controls-wrapper {
+    position: sticky;
+    top: 10px;
+    z-index: 500;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 20px;
+    pointer-events: none; /* Let clicks pass through empty space */
+}
+.view-controls {
+    display: inline-flex;
+    background: #ffffff;
+    padding: 6px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+    gap: 5px;
+    pointer-events: auto; /* Re-enable clicks for buttons */
+}
+.v-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.v-btn.active { background: var(--primary); color: #ffffff; }
+.v-btn-outline { border: 1px solid var(--border-color); background: #f8fafc; color: var(--secondary); }
+
+/* The ID Card Canvas */
+.card-canvas-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 100px;
+}
+.card-zoom-wrapper { transition: transform 0.2s; transform-origin: top center; }
+
+/* Official Professional Dimensions (CR80 Standard Ratio) */
+.id-card {
+    width: 336px;
+    height: 212px;
+    position: relative;
+    transition: width 0.3s, height 0.3s;
+    background: transparent;
+}
+.id-card.portrait { width: 212px; height: 336px; }
+
+/* Double sided setup */
+.id-card.show-both { height: 440px; }
+.id-card.show-both.portrait { width: 440px; height: 336px; }
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border: 1px solid #e2e8f0;
+    box-sizing: border-box;
+}
+
+.id-card.show-both .card-front { top: 0; height: 212px; }
+.id-card.show-both .card-back { top: 228px; height: 212px; display: block !important; }
+.id-card.show-both.portrait .card-front { top: 0; left: 0; width: 212px; height: 336px; }
+.id-card.show-both.portrait .card-back { top: 0; left: 228px; width: 212px; height: 336px; display: block !important; }
+
+.card-back { display: none; }
+
+/* ================= DRAG & DROP ELEMENTS ================= */
+.draggable {
+    position: absolute;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    border: 1px dashed transparent;
+    padding: 2px;
+    z-index: 10;
+}
+.draggable:hover, .draggable.active-drag {
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.05);
+}
+.draggable:active { cursor: grabbing; }
+
+/* Element specific standard styles */
+.el-logo { width: 45px; height: 45px; object-fit: contain; }
+.el-org { line-height: 1.2; text-align: center; }
+.el-org-name { font-size: 14px; font-weight: 900; text-transform: uppercase; }
+.el-org-sub { font-size: 8px; font-weight: 700; opacity: 0.9; }
+.el-org-address { font-size: 7px; font-weight: 600; opacity: 0.8; }
+.el-photo { width: 75px; height: 95px; border-radius: 8px; border: 2px solid #cbd5e1; object-fit: cover; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.el-photo img { width: 100%; height: 100%; object-fit: cover; }
+.el-name-block { text-align: center; line-height: 1.2; }
+.el-name { font-size: 15px; font-weight: 900; color: #0f172a; text-transform: uppercase; }
+.el-designation { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; margin-top: 2px; }
+.el-details { font-size: 9px; font-weight: 700; color: #334155; line-height: 1.5; }
+.el-details table { width: 100%; border-collapse: collapse; }
+.el-details td { padding: 1px 0; vertical-align: top; }
+.el-details .dlbl { color: #64748b; width: 55px; }
+.el-signature { display: flex; flex-direction: column; align-items: center; }
+.el-signature img { height: 25px; object-fit: contain; }
+.el-signature-line { border-top: 1px solid #000; width: 60px; text-align: center; font-size: 7px; font-weight: 700; padding-top: 2px; margin-top: 2px; }
+.el-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Back elements */
+.el-qr { width: 60px; height: 60px; object-fit: contain; }
+.el-terms { font-size: 8px; font-weight: 600; color: #475569; text-align: center; line-height: 1.4; }
+.el-return { font-size: 9px; font-weight: 800; color: #b91c1c; text-align: center; line-height: 1.3; border: 1px dashed #fca5a5; padding: 4px; border-radius: 4px; background: #fef2f2; }
+
+/* Shapes */
+.bg-shape-top, .bg-shape-bottom { position: absolute; left: 0; right: 0; z-index: 1; }
+.bg-shape-top { top: 0; }
+.bg-shape-bottom { bottom: 0; }
+
+/* SaaS Watermark */
+.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(0,0,0,0.4); z-index: 100; pointer-events: none; display: none; }
+
+/* ================= 20 PROFESSIONAL LIGHT TEMPLATES ================= */
+/* We define variables that JS will inject. We use generic light CSS */
+.tpl-1 .bg-shape-top { height: 60px; background: #1e3a8a; border-bottom: 4px solid #f59e0b; }
+.tpl-1 .bg-shape-bottom { height: 15px; background: #1e3a8a; }
+
+.tpl-2 .bg-shape-top { height: 75px; background: #0f766e; border-radius: 0 0 50% 50%; }
+.tpl-2 .bg-shape-bottom { height: 20px; background: #0f766e; border-radius: 50% 50% 0 0; }
+
+.tpl-3 .bg-shape-top { height: 100%; width: 35%; background: #be185d; right: auto; }
+.tpl-3 .bg-shape-bottom { display: none; }
+
+.tpl-4 .bg-shape-top { height: 50px; background: #ffffff; border-bottom: 2px solid #cbd5e1; }
+.tpl-4 .bg-shape-bottom { height: 30px; background: #f8fafc; border-top: 1px solid #cbd5e1; }
+
+.tpl-5 .bg-shape-top { height: 65px; background: linear-gradient(135deg, #4338ca, #312e81); clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%); }
+.tpl-5 .bg-shape-bottom { height: 20px; background: #312e81; clip-path: polygon(0 30%, 100% 0, 100% 100%, 0 100%); }
+
+.tpl-6 .bg-shape-top { height: 55px; background: #b45309; }
+.tpl-6 .bg-shape-bottom { height: 10px; background: #b45309; }
+
+.tpl-7 .bg-shape-top { height: 15px; background: #047857; }
+.tpl-7 .bg-shape-bottom { height: 15px; background: #047857; }
+
+.tpl-8 .bg-shape-top { height: 80px; background: #f1f5f9; border-bottom: 3px double #94a3b8; }
+.tpl-8 .bg-shape-bottom { display: none; }
+
+.tpl-9 .bg-shape-top { height: 70px; background: #6d28d9; clip-path: ellipse(100% 100% at 50% 0%); }
+.tpl-9 .bg-shape-bottom { height: 20px; background: #6d28d9; }
+
+.tpl-10 .bg-shape-top { height: 100%; width: 100%; background: #ffffff; border: 8px solid #1e40af; border-radius: 10px; }
+.tpl-10 .bg-shape-bottom { display: none; }
+
+/* The rest follow plain white/light layouts with varied accent borders */
+.tpl-11 .bg-shape-top { height: 50px; background: #334155; }
+.tpl-12 .bg-shape-top { height: 40px; background: #0284c7; }
+.tpl-13 .bg-shape-top { height: 100%; width: 15px; background: #dc2626; left: 0; right: auto; }
+.tpl-14 .bg-shape-top { height: 60px; background: #ea580c; clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%); }
+.tpl-15 .bg-shape-top { height: 8px; background: #000000; }
+.tpl-16 .bg-shape-top { height: 70px; background: #059669; border-radius: 0 0 20px 20px; }
+.tpl-17 .bg-shape-top { height: 55px; background: #4f46e5; }
+.tpl-18 .bg-shape-top { height: 45px; background: #ffffff; border-bottom: 3px solid #1e293b; }
+.tpl-19 .bg-shape-top { height: 100%; width: 100%; background: #f8fafc; border: 2px solid #cbd5e1; }
+.tpl-20 .bg-shape-top { height: 65px; background: #2563eb; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 75%); }
+
+/* ================= MODALS & TOAST ================= */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); }
+.modal-overlay.active { display: flex; }
+.modal-box { background: white; border-radius: 16px; width: 100%; max-width: 500px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
+.modal-header h2 { font-size: 16px; font-weight: 900; color: #0f172a; }
+.close-btn { background: #fef2f2; color: #dc2626; border: none; width: 30px; height: 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+.tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+.tpl-card { background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; font-size: 11px; font-weight: 800; color: #475569; }
+.tpl-card:hover { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
+
+.toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; z-index: 3000; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+.toast.show { bottom: 30px; }
+
+/* Print Overrides */
+@media print {
+    body * { visibility: hidden; }
+    #print-render-area, #print-render-area * { visibility: visible; }
+    #print-render-area { position: absolute; left: 0; top: 0; transform: none !important; box-shadow: none !important; margin: 0 !important; }
+    .draggable { border: none !important; }
+    @page { margin: 0; }
+}
+</style>
 </head>
 <body>
 
-    <!-- Top Navigation -->
-    <div class="top-bar no-print">
-        <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
-            <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
-            <span>Dashboard</span>
+<!-- SMART TOOLBAR -->
+<div class="pocket-toggle" id="pocketToggle" onclick="toggleMasterToolbar()">
+    🔽 Edit Tools
+</div>
+
+<div class="master-toolbar" id="masterToolbar">
+    <div class="toolbar-header">
+        <a href="dashboard.html" class="header-btn back-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg> Back
         </a>
-        <h1 class="top-title">Plain Drag & Drop ID Maker</h1>
-        <div style="width: 40px;"></div> <!-- Spacer -->
+        <div style="display:flex; gap:8px;">
+            <button class="header-btn" onclick="openModal('tplModal')">📐 Templates</button>
+            <button class="header-btn" onclick="openModal('saveModal')">💾 Saved</button>
+            <button class="header-btn hide-btn" onclick="toggleMasterToolbar()">🔼 Hide</button>
+        </div>
+    </div>
+    
+    <div class="settings-area" id="settingsArea">
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('info')">📝 Info</button>
+            <button class="tab-btn" onclick="switchTab('org')">🏢 Org & Logo</button>
+            <button class="tab-btn" onclick="switchTab('photo')">👤 Photo & Sign</button>
+            <button class="tab-btn" onclick="switchTab('design')">🎨 Colors</button>
+            <button class="tab-btn" onclick="switchTab('back')">🔙 Back Side</button>
+            <button class="tab-btn" onclick="switchTab('export')" style="background:#dcfce7; color:#16a34a; border-color:#86efac;">🖨️ Export</button>
+        </div>
+
+        <div class="tool-panels">
+            <!-- Info Tab -->
+            <div class="tool-panel active" id="tab-info">
+                <div class="tool-group">
+                    <div class="tool-group-title">Student Details</div>
+                    <label class="frm-label">Name</label> <input type="text" id="inp_name" class="frm-input" oninput="updateCard()">
+                    <label class="frm-label">Course / Title</label> <input type="text" id="inp_course" class="frm-input" oninput="updateCard()">
+                    <label class="frm-label">Reg No</label> <input type="text" id="inp_reg" class="frm-input" oninput="updateCard()">
+                </div>
+                <div class="tool-group">
+                    <div class="tool-group-title">Other Details</div>
+                    <label class="frm-label">Phone</label> <input type="text" id="inp_phone" class="frm-input" oninput="updateCard()">
+                    <label class="frm-label">DOB</label> <input type="text" id="inp_dob" class="frm-input" oninput="updateCard()">
+                    <label class="frm-label">Blood Group</label> <input type="text" id="inp_blood" class="frm-input" oninput="updateCard()">
+                    <label class="frm-label">Validity</label> <input type="text" id="inp_validity" class="frm-input" oninput="updateCard()">
+                </div>
+                <div class="tool-group">
+                    <div class="tool-group-title">Badge</div>
+                    <label class="frm-label">Role Text</label> <input type="text" id="inp_role" class="frm-input" value="STUDENT" oninput="updateCard()">
+                    <label class="frm-label">Show Badge</label>
+                    <select id="inp_showBadge" class="frm-select" onchange="updateCard()">
+                        <option value="true">Yes</option><option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Org Tab -->
+            <div class="tool-panel" id="tab-org">
+                <div class="tool-group">
+                    <div class="tool-group-title">Organization Info</div>
+                    <label class="frm-label">Org Name</label> <input type="text" id="inp_orgName" class="frm-input" oninput="updateCard()">
+                    <label class="frm-label">Sub Title</label> <input type="text" id="inp_orgSub" class="frm-input" oninput="updateCard()">
+                    <label class="frm-label">Address / Meta</label> <input type="text" id="inp_orgAddress" class="frm-input" oninput="updateCard()">
+                </div>
+                <div class="tool-group">
+                    <div class="tool-group-title">Logo</div>
+                    <label class="upload-box">
+                        <img id="logoPreview">
+                        <span id="logoPlaceholder">🏢</span>
+                        <div style="font-size:10px; font-weight:bold; margin-top:5px;">Tap to Upload</div>
+                        <input type="file" id="logoInput" style="display:none" accept="image/*" onchange="handleImageUpload(this, 'logoPreview')">
+                    </label>
+                    <button class="header-btn" style="width:100%; justify-content:center; margin-top:5px; border-color:#fca5a5; color:#dc2626;" onclick="clearImage('logoPreview')">Remove Logo</button>
+                </div>
+            </div>
+
+            <!-- Photo & Sign Tab -->
+            <div class="tool-panel" id="tab-photo">
+                <div class="tool-group">
+                    <div class="tool-group-title">Photograph</div>
+                    <label class="upload-box">
+                        <img id="photoPreview">
+                        <span id="photoPlaceholder">👤</span>
+                        <div style="font-size:10px; font-weight:bold; margin-top:5px;">Tap to Upload</div>
+                        <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="handleImageUpload(this, 'photoPreview')">
+                    </label>
+                    <button class="header-btn" style="width:100%; justify-content:center; margin-top:5px; border-color:#fca5a5; color:#dc2626;" onclick="clearImage('photoPreview')">Remove Photo</button>
+                </div>
+                <div class="tool-group">
+                    <div class="tool-group-title">Signature</div>
+                    <label class="upload-box" style="padding:5px;">
+                        <img id="signPreview">
+                        <span id="signPlaceholder">✍️</span>
+                        <div style="font-size:10px; font-weight:bold;">Upload Sign</div>
+                        <input type="file" id="signInput" style="display:none" accept="image/*" onchange="handleImageUpload(this, 'signPreview')">
+                    </label>
+                    <button class="header-btn" style="width:100%; justify-content:center; margin-top:5px; border-color:#fca5a5; color:#dc2626;" onclick="clearImage('signPreview')">Remove Sign</button>
+                </div>
+            </div>
+
+            <!-- Design Tab -->
+            <div class="tool-panel" id="tab-design">
+                <div class="tool-group">
+                    <div class="tool-group-title">Theme Colors</div>
+                    <div class="color-row"><input type="color" id="clr_header" class="color-picker" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Header Color</span></div>
+                    <div class="color-row"><input type="color" id="clr_footer" class="color-picker" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Footer Color</span></div>
+                    <div class="color-row"><input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Card BG</span></div>
+                    <div class="color-row"><input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Text Color</span></div>
+                </div>
+                <div class="tool-group">
+                    <div class="tool-group-title">Photo Border</div>
+                    <label class="frm-label">Border Width (px)</label> <input type="number" id="inp_borderW" class="frm-input" value="2" oninput="updateCardStyle()">
+                    <label class="frm-label">Border Radius (px)</label> <input type="number" id="inp_borderR" class="frm-input" value="8" oninput="updateCardStyle()">
+                    <div class="color-row"><input type="color" id="clr_photoBorder" class="color-picker" value="#cbd5e1" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Border Color</span></div>
+                </div>
+            </div>
+
+            <!-- Back Side Tab -->
+            <div class="tool-panel" id="tab-back">
+                <div class="tool-group">
+                    <div class="tool-group-title">Back Details</div>
+                    <label class="frm-label">Terms / Rules</label>
+                    <textarea id="inp_terms" class="frm-textarea" oninput="updateCard()">This card is non-transferable. Must be worn at all times.</textarea>
+                    
+                    <label style="display:flex; align-items:center; gap:5px; margin: 10px 0; font-size: 12px; font-weight: 800;">
+                        <input type="checkbox" id="inp_showReturn" checked onchange="updateCard()"> Show "If found return to"
+                    </label>
+                    
+                    <label class="frm-label">Return Address / Phone</label>
+                    <textarea id="inp_returnAddr" class="frm-textarea" oninput="updateCard()">If found, return to: ERP Technical Academy, +91 9876543210</textarea>
+                </div>
+                <div class="tool-group">
+                    <div class="tool-group-title">QR Code Element</div>
+                    <label style="display:flex; align-items:center; gap:5px; margin: 10px 0; font-size: 12px; font-weight: 800;">
+                        <input type="checkbox" id="inp_showQR" checked onchange="updateCard()"> Show QR Placeholder
+                    </label>
+                </div>
+            </div>
+
+            <!-- Export Tab -->
+            <div class="tool-panel" id="tab-export">
+                <div class="tool-group" style="width:100%;">
+                    <div class="tool-group-title">HD Export Options</div>
+                    <p style="font-size:11px; color:#64748b; margin-bottom:10px; font-weight:600;">Downloads are generated in high-resolution, perfect for PVC card printing.</p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <button class="header-btn" style="background:#10b981; color:white; border-color:#059669; justify-content:center;" onclick="exportCard('png')">🖼️ Download PNG</button>
+                        <button class="header-btn" style="background:#ef4444; color:white; border-color:#dc2626; justify-content:center;" onclick="exportCard('pdf')">📄 Download PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel-toggle-pocket" onclick="toggleSettingsArea()">
+            ▲ Toggle Panels
+        </div>
+    </div>
+</div>
+
+<!-- WORKSPACE -->
+<div class="workspace-area">
+    <!-- View Controls (Always Visible) -->
+    <div class="view-controls-wrapper no-print">
+        <div class="view-controls">
+            <button class="v-btn active" id="vbtn-front" onclick="setView('front')">Front</button>
+            <button class="v-btn" id="vbtn-back" onclick="setView('back')">Back</button>
+            <button class="v-btn" id="vbtn-both" onclick="setView('both')">Both</button>
+            <div style="width:2px; background:#e2e8f0; margin:0 5px;"></div>
+            <button class="v-btn v-btn-outline" id="vbtn-orient" onclick="toggleOrientation()">Portrait</button>
+        </div>
     </div>
 
-    <!-- React Root -->
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-
-        // Custom Draggable Wrapper Component
-        const DraggableBlock = ({ id, pos, setPos, children, style }) => {
-            const handlePointerDown = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // Get starting mouse position relative to the element's top-left corner
-                const startX = e.clientX - pos.x;
-                const startY = e.clientY - pos.y;
-                
-                const handlePointerMove = (moveEvent) => {
-                    setPos(id, {
-                        x: moveEvent.clientX - startX,
-                        y: moveEvent.clientY - startY
-                    });
-                };
-                
-                const handlePointerUp = () => {
-                    document.removeEventListener('pointermove', handlePointerMove);
-                    document.removeEventListener('pointerup', handlePointerUp);
-                };
-                
-                document.addEventListener('pointermove', handlePointerMove);
-                document.addEventListener('pointerup', handlePointerUp);
-            };
-
-            return (
-                <div 
-                    className="drag-element"
-                    style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, ...style }}
-                    onPointerDown={handlePointerDown}
-                >
-                    {children}
-                </div>
-            );
-        };
-
-        function IDCardApp() {
-            // Data States
-            const [data, setData] = useState({
-                orgName: 'ERP Technical Academy',
-                orgSub: 'Center of Excellence',
-                orgAddress: '123 Main Street, City, State - 123456',
-                orgPhone: 'Ph: +91 9876543210 | Email: info@erp.com',
-                stuName: 'Student Name',
-                stuReg: 'REG-0001',
-                stuCourse: 'Diploma in Engineering',
-                stuPhone: '+91 9000000000',
-                stuDob: '01/01/2000',
-                stuBlood: 'O+',
-                stuValidity: '2026 - 2027',
-                showReturn: true,
-                returnText: 'If found, please return to:',
-                returnPhone: 'ERP Academy: +91 9876543210'
-            });
-
-            const [images, setImages] = useState({
-                logo: null,
-                photo: null,
-                sign: null
-            });
-
-            const [design, setDesign] = useState({
-                orientation: 'portrait', // portrait | landscape
-                bgColor: '#ffffff',
-                headerColor: '#1e3a8a',
-                footerColor: '#1e3a8a',
-                textColor: '#0f172a',
-                headerTextColor: '#ffffff',
-                photoRadius: 8,
-                photoBorderWidth: 2,
-                photoBorderColor: '#cbd5e1'
-            });
-
-            // Element Positions State
-            const defaultPosPortrait = {
-                headerBg: { h: 70 },
-                footerBg: { h: 35 },
-                logo: { x: 10, y: 10, w: 45, h: 45 },
-                orgInfo: { x: 60, y: 10, align: 'left', w: 180 },
-                photo: { x: 75, y: 80, w: 90, h: 110 },
-                stuName: { x: 10, y: 200, align: 'center', w: 230 },
-                stuDetails: { x: 15, y: 225, align: 'left', w: 220 },
-                sign: { x: 150, y: 315, w: 80, h: 30 },
-                returnInfo: { x: 10, y: 360, align: 'center', w: 230 }
-            };
-
-            const defaultPosLandscape = {
-                headerBg: { h: 60 },
-                footerBg: { h: 30 },
-                logo: { x: 10, y: 10, w: 40, h: 40 },
-                orgInfo: { x: 55, y: 10, align: 'left', w: 300 },
-                photo: { x: 15, y: 70, w: 80, h: 100 },
-                stuName: { x: 110, y: 75, align: 'left', w: 270 },
-                stuDetails: { x: 110, y: 105, align: 'left', w: 270 },
-                sign: { x: 280, y: 175, w: 80, h: 30 },
-                returnInfo: { x: 10, y: 225, align: 'center', w: 370 }
-            };
-
-            const [positions, setPositions] = useState(defaultPosPortrait);
-            const [watermarkLocked, setWatermarkLocked] = useState(false);
-            const [zoom, setZoom] = useState(1);
-
-            const cardRef = useRef(null);
-
-            // Fetch Student Data & SaaS Watermark via Custom Events
-            useEffect(() => {
-                const handleStudentLoad = (e) => {
-                    const s = e.detail;
-                    setData(prev => ({
-                        ...prev,
-                        stuName: s.full_name || prev.stuName,
-                        stuReg: s.register_number || prev.stuReg,
-                        stuPhone: s.phone_number || prev.stuPhone,
-                        stuDob: s.dob || prev.stuDob,
-                        stuBlood: s.blood_group || prev.stuBlood,
-                        stuCourse: s.course_name_display || s.course_name || prev.stuCourse
-                    }));
-                    if (s.photo_url) setImages(prev => ({...prev, photo: s.photo_url}));
-                };
-                
-                const handleWatermark = (e) => {
-                    setWatermarkLocked(e.detail.locked);
-                };
-
-                window.addEventListener('studentDataLoaded', handleStudentLoad);
-                window.addEventListener('watermarkStateLoaded', handleWatermark);
-                
-                // Trigger global init function defined in module script
-                if (window.initIDCardBackend) window.initIDCardBackend();
-
-                // Responsive Zoom
-                if (window.innerWidth < 600) setZoom(0.8);
-
-                return () => {
-                    window.removeEventListener('studentDataLoaded', handleStudentLoad);
-                    window.removeEventListener('watermarkStateLoaded', handleWatermark);
-                };
-            }, []);
-
-            const updatePos = (id, newPos) => {
-                setPositions(prev => ({
-                    ...prev,
-                    [id]: { ...prev[id], ...newPos }
-                }));
-            };
-
-            const handleChange = (e, field) => {
-                setData({...data, [field]: e.target.value});
-            };
-
-            const handleDesignChange = (e, field) => {
-                setDesign({...design, [field]: e.target.value});
-            };
-
-            const handleImageUpload = (e, field) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => setImages({...images, [field]: reader.result});
-                    reader.readAsDataURL(file);
-                }
-            };
-
-            const toggleOrientation = () => {
-                const newOr = design.orientation === 'portrait' ? 'landscape' : 'portrait';
-                setDesign({...design, orientation: newOr});
-                setPositions(newOr === 'portrait' ? defaultPosPortrait : defaultPosLandscape);
-            };
-
-            // High-Resolution Bulletproof Export
-            const exportCard = async (type) => {
-                const btnText = document.getElementById(`btn-${type}`).innerText;
-                document.getElementById(`btn-${type}`).innerText = '⏳ Processing...';
-                
-                // Hide drag borders for clean print
-                const dragElements = document.querySelectorAll('.drag-element');
-                dragElements.forEach(el => el.style.border = 'none');
-                
-                // Temporarily remove transform scale from wrapper to get 1:1 crisp render
-                const wrapper = document.getElementById('printable-card-area');
-                const oldTransform = wrapper.style.transform;
-                wrapper.style.transform = 'scale(1)';
-
-                try {
-                    const canvas = await html2canvas(wrapper, {
-                        scale: 4, // 4X Super HD Quality
-                        useCORS: true,
-                        backgroundColor: design.bgColor,
-                        logging: false
-                    });
-
-                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+    <div class="card-canvas-container">
+        <div class="card-zoom-wrapper" id="zoomWrapper">
+            
+            <!-- THE ACTUAL PRINTABLE AREA -->
+            <div id="print-render-area">
+                <div class="id-card id-card-portrait tpl-1" id="idCard">
                     
-                    if (type === 'png') {
-                        const link = document.createElement('a');
-                        link.download = `ID_Card_${data.stuName.replace(/ /g, '_')}.jpg`;
-                        link.href = imgData;
-                        link.click();
-                    } else if (type === 'pdf') {
-                        const isPort = design.orientation === 'portrait';
-                        // Standard CR80 Size in mm (approx 54x86mm)
-                        const w = isPort ? 54 : 86;
-                        const h = isPort ? 86 : 54;
-                        
-                        const pdf = new window.jspdf.jsPDF({ orientation: isPort ? 'p' : 'l', unit: 'mm', format: [w, h] });
-                        pdf.addImage(imgData, 'JPEG', 0, 0, w, h, '', 'FAST');
-                        pdf.save(`ID_Card_${data.stuName.replace(/ /g, '_')}.pdf`);
-                    }
-                } catch (error) {
-                    alert("Error exporting card. Please try again.");
-                    console.error(error);
-                } finally {
-                    wrapper.style.transform = oldTransform;
-                    dragElements.forEach(el => el.style.border = '');
-                    document.getElementById(`btn-${type}`).innerText = btnText;
-                }
-            };
+                    <!-- FRONT FACE -->
+                    <div class="card-face card-front" id="cardFront">
+                        <!-- Dynamic Template BG Shapes -->
+                        <div class="bg-shape-top" id="bgTop"></div>
+                        <div class="bg-shape-bottom" id="bgBottom"></div>
 
-            const isPortrait = design.orientation === 'portrait';
-            const cardClass = isPortrait ? 'id-card-portrait' : 'id-card-landscape';
-            const watermarkClass = getContrastText(design.footerColor) === '#ffffff' ? '' : 'watermark-dark';
-
-            // Utility to calculate contrast text
-            function getContrastText(hexcolor) {
-                if(!hexcolor) return '#ffffff';
-                const r = parseInt(hexcolor.substr(1,2),16);
-                const g = parseInt(hexcolor.substr(3,2),16);
-                const b = parseInt(hexcolor.substr(5,2),16);
-                return (r * 299 + g * 587 + b * 114) / 1000 > 128 ? '#0f172a' : '#ffffff';
-            }
-
-            return (
-                <div className="main-layout">
-                    {/* LEFT SIDEBAR - CONTROLS */}
-                    <div className="sidebar no-print">
-                        <div className="sidebar-section">
-                            <h3 className="section-title"><span>📐</span> Layout & Colors</h3>
-                            <button className="btn-action btn-layout" onClick={toggleOrientation} style={{ width: '100%', justifyContent: 'center', marginBottom: '15px' }}>
-                                🔄 Switch to {isPortrait ? 'Landscape' : 'Portrait'}
-                            </button>
-                            
-                            <div className="color-picker-row">
-                                <div style={{flex:1}}><label className="frm-label">Card BG</label><input type="color" className="color-input" value={design.bgColor} onChange={e=>handleDesignChange(e,'bgColor')}/></div>
-                                <div style={{flex:1}}><label className="frm-label">Header BG</label><input type="color" className="color-input" value={design.headerColor} onChange={e=>handleDesignChange(e,'headerColor')}/></div>
-                                <div style={{flex:1}}><label className="frm-label">Footer BG</label><input type="color" className="color-input" value={design.footerColor} onChange={e=>handleDesignChange(e,'footerColor')}/></div>
-                            </div>
-                            <div className="color-picker-row">
-                                <div style={{flex:1}}><label className="frm-label">Text Color</label><input type="color" className="color-input" value={design.textColor} onChange={e=>handleDesignChange(e,'textColor')}/></div>
-                                <div style={{flex:1}}><label className="frm-label">Header Text</label><input type="color" className="color-input" value={design.headerTextColor} onChange={e=>handleDesignChange(e,'headerTextColor')}/></div>
-                            </div>
+                        <!-- DRAGGABLE ELEMENTS -->
+                        <!-- 1. Logo -->
+                        <div class="draggable el-logo" data-id="logo" style="transform: translate(15px, 15px);">
+                            <img id="renderLogo" src="" style="display:none; width:100%; height:100%; object-fit:contain;">
+                            <div id="placeholderLogo" style="width:100%; height:100%; background:rgba(0,0,0,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold;">LOGO</div>
                         </div>
 
-                        <div className="sidebar-section">
-                            <h3 className="section-title"><span>🏢</span> Organization Info</h3>
-                            <label className="frm-label">Institution Name</label><input type="text" className="frm-input" value={data.orgName} onChange={e=>handleChange(e,'orgName')}/>
-                            <label className="frm-label">Sub Title / Tagline</label><input type="text" className="frm-input" value={data.orgSub} onChange={e=>handleChange(e,'orgSub')}/>
-                            <label className="frm-label">Address</label><textarea className="frm-textarea" value={data.orgAddress} onChange={e=>handleChange(e,'orgAddress')}></textarea>
-                            <label className="frm-label">Contact Details</label><input type="text" className="frm-input" value={data.orgPhone} onChange={e=>handleChange(e,'orgPhone')}/>
-                            
-                            <label className="btn-upload">📷 Upload Logo <input type="file" style={{display:'none'}} accept="image/*" onChange={e=>handleImageUpload(e,'logo')}/></label>
+                        <!-- 2. Org Info -->
+                        <div class="draggable el-org" data-id="orgInfo" style="transform: translate(70px, 15px); width:130px;">
+                            <div class="el-org-name" id="renderOrgName">Institution Name</div>
+                            <div class="el-org-sub" id="renderOrgSub">Sub Title</div>
+                            <div class="el-org-address" id="renderOrgAddress">Address & Details</div>
                         </div>
 
-                        <div className="sidebar-section">
-                            <h3 className="section-title"><span>👤</span> Student Details</h3>
-                            <label className="frm-label">Full Name</label><input type="text" className="frm-input" value={data.stuName} onChange={e=>handleChange(e,'stuName')}/>
-                            <label className="frm-label">Register No</label><input type="text" className="frm-input" value={data.stuReg} onChange={e=>handleChange(e,'stuReg')}/>
-                            <label className="frm-label">Course</label><input type="text" className="frm-input" value={data.stuCourse} onChange={e=>handleChange(e,'stuCourse')}/>
-                            
-                            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
-                                <div><label className="frm-label">DOB</label><input type="text" className="frm-input" value={data.stuDob} onChange={e=>handleChange(e,'stuDob')}/></div>
-                                <div><label className="frm-label">Blood Grp</label><input type="text" className="frm-input" value={data.stuBlood} onChange={e=>handleChange(e,'stuBlood')}/></div>
-                            </div>
-                            
-                            <label className="frm-label">Phone No</label><input type="text" className="frm-input" value={data.stuPhone} onChange={e=>handleChange(e,'stuPhone')}/>
-                            <label className="frm-label">Validity Period</label><input type="text" className="frm-input" value={data.stuValidity} onChange={e=>handleChange(e,'stuValidity')}/>
-                            
-                            <label className="btn-upload">👤 Upload Photo <input type="file" style={{display:'none'}} accept="image/*" onChange={e=>handleImageUpload(e,'photo')}/></label>
-                            
-                            <div className="color-picker-row mt-2">
-                                <div style={{flex:1}}><label className="frm-label">Border Rad</label><input type="number" className="frm-input" style={{padding:'6px'}} value={design.photoRadius} onChange={e=>handleDesignChange(e,'photoRadius')}/></div>
-                                <div style={{flex:1}}><label className="frm-label">Border Wt</label><input type="number" className="frm-input" style={{padding:'6px'}} value={design.photoBorderWidth} onChange={e=>handleDesignChange(e,'photoBorderWidth')}/></div>
-                                <div style={{flex:1}}><label className="frm-label">Photo Brdr</label><input type="color" className="color-input" value={design.photoBorderColor} onChange={e=>handleDesignChange(e,'photoBorderColor')}/></div>
-                            </div>
+                        <!-- 3. Photo -->
+                        <div class="draggable el-photo" data-id="photo" style="transform: translate(68px, 90px);">
+                            <img id="renderPhoto" src="" style="display:none;">
+                            <div id="placeholderPhoto" style="font-size:30px; color:#cbd5e1;">👤</div>
                         </div>
 
-                        <div className="sidebar-section">
-                            <h3 className="section-title"><span>📝</span> Extra Settings</h3>
-                            <label className="btn-upload" style={{borderColor:'#10b981', color:'#059669', background:'#d1fae5'}}>✍️ Upload Signature <input type="file" style={{display:'none'}} accept="image/*" onChange={e=>handleImageUpload(e,'sign')}/></label>
-                            
-                            <label style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'10px', fontSize:'13px', fontWeight:'700', color:'#1e293b'}}>
-                                <input type="checkbox" checked={data.showReturn} onChange={e=>setData({...data, showReturn: e.target.checked})} style={{width:'18px', height:'18px', accentColor:'#3b82f6'}}/>
-                                Show "Return to Address" on Card
-                            </label>
-                            {data.showReturn && (
-                                <div>
-                                    <input type="text" className="frm-input" value={data.returnText} onChange={e=>handleChange(e,'returnText')} placeholder="If found return to:"/>
-                                    <input type="text" className="frm-input" value={data.returnPhone} onChange={e=>handleChange(e,'returnPhone')} placeholder="Phone / Address details"/>
-                                </div>
-                            )}
+                        <!-- 4. Name & Designation -->
+                        <div class="draggable el-name-block" data-id="nameBlock" style="transform: translate(10px, 195px); width:192px;">
+                            <div class="el-name" id="renderName">Student Name</div>
+                            <div class="el-designation" id="renderCourse">Course Name</div>
                         </div>
+
+                        <!-- 5. Details Table -->
+                        <div class="draggable el-details" data-id="details" style="transform: translate(15px, 230px); width:180px;">
+                            <table>
+                                <tr><td class="dlbl">Reg No</td><td>: <span id="renderReg">REG-001</span></td></tr>
+                                <tr><td class="dlbl">DOB</td><td>: <span id="renderDob">01/01/2000</span></td></tr>
+                                <tr><td class="dlbl">Blood</td><td>: <span id="renderBlood" style="color:#dc2626; font-weight:900;">O+</span></td></tr>
+                                <tr><td class="dlbl">Phone</td><td>: <span id="renderPhone">9000000000</span></td></tr>
+                                <tr><td class="dlbl">Valid Till</td><td>: <span id="renderValidity">2025</span></td></tr>
+                            </table>
+                        </div>
+
+                        <!-- 6. Badge -->
+                        <div class="draggable el-badge" data-id="badge" id="renderBadgeWrapper" style="transform: translate(15px, 305px); background:#1e3a8a; color:#fff;">
+                            <span id="renderBadge">STUDENT</span>
+                        </div>
+
+                        <!-- 7. Signature -->
+                        <div class="draggable el-signature" data-id="sign" style="transform: translate(120px, 290px); width:80px;">
+                            <img id="renderSign" src="" style="display:none;">
+                            <div id="placeholderSign" style="font-size:10px; color:#cbd5e1; height:25px; display:flex; align-items:center;">Sign</div>
+                            <div class="el-signature-line" id="signTextColor">Authorized Signatory</div>
+                        </div>
+
+                        <!-- SaaS Watermark -->
+                        <div class="saas-watermark">⚡ Powered by VPKTech Solutions</div>
                     </div>
-
-                    {/* RIGHT CANVAS AREA */}
-                    <div className="canvas-area">
-                        <div className="canvas-toolbar no-print">
-                            <button id="btn-png" className="btn-action btn-png" onClick={() => exportCard('png')}>🖼️ Download HD Image</button>
-                            <button id="btn-pdf" className="btn-action btn-pdf" onClick={() => exportCard('pdf')}>📄 Download HD PDF</button>
-                            
-                            <div style={{display:'flex', alignItems:'center', gap:'10px', marginLeft:'auto', fontWeight:'bold', color:'#475569'}}>
-                                Zoom: 
-                                <button onClick={()=>setZoom(z=>Math.max(0.5, z-0.1))} style={{background:'white', border:'1px solid #cbd5e1', padding:'2px 8px', borderRadius:'6px', cursor:'pointer'}}>-</button>
-                                <button onClick={()=>setZoom(z=>Math.min(1.5, z+0.1))} style={{background:'white', border:'1px solid #cbd5e1', padding:'2px 8px', borderRadius:'6px', cursor:'pointer'}}>+</button>
-                            </div>
+                    
+                    <!-- BACK FACE -->
+                    <div class="card-face card-back" id="cardBack">
+                        <div class="draggable" data-id="b_org" style="transform: translate(10px, 20px); width:192px; text-align:center;">
+                            <div style="font-size:12px; font-weight:900; text-transform:uppercase;" id="renderBOrg">Institution Name</div>
                         </div>
-                        
-                        <div className="workspace">
-                            {/* Drag Instruction */}
-                            <div className="no-print" style={{position:'absolute', top:'80px', background:'rgba(255,255,255,0.8)', padding:'8px 15px', borderRadius:'20px', fontSize:'12px', fontWeight:'800', color:'#3b82f6', boxShadow:'0 2px 10px rgba(0,0,0,0.1)', zIndex:20}}>
-                                💡 Tip: Click and drag any element inside the card to reposition it perfectly!
-                            </div>
 
-                            <div style={{ transform: `scale(${zoom})`, transition: 'transform 0.2s', transformOrigin: 'center center' }}>
-                                {/* THE ACTUAL RENDER AREA FOR html2canvas */}
-                                <div id="printable-card-area" className={`id-card-wrapper ${cardClass}`} style={{ backgroundColor: design.bgColor, color: design.textColor, fontFamily: design.fontFamily }}>
-                                    
-                                    {/* 1. Static Background Blocks (Can be resized via state if needed, keeping simple here) */}
-                                    <div className="block-header-bg" style={{ height: `${positions.headerBg.h}px`, backgroundColor: design.headerColor }}></div>
-                                    <div className="block-footer-bg" style={{ height: `${positions.footerBg.h}px`, backgroundColor: design.footerColor }}></div>
-
-                                    {/* 2. Draggable Logo */}
-                                    <DraggableBlock id="logo" pos={positions.logo} setPos={updatePos} style={{ width: `${positions.logo.w}px`, height: `${positions.logo.h}px` }}>
-                                        {images.logo ? (
-                                            <img src={images.logo} style={{ width: '100%', height: '100%', objectFit: 'contain' }} alt="Logo" />
-                                        ) : (
-                                            <div style={{ width:'100%', height:'100%', background:'rgba(255,255,255,0.2)', border:'1px dashed rgba(255,255,255,0.5)', display:'flex', alignItems:'center', justifyContent:'center', borderRadius:'50%', fontSize:'10px', color:design.headerTextColor }}>LOGO</div>
-                                        )}
-                                    </DraggableBlock>
-
-                                    {/* 3. Draggable Org Info */}
-                                    <DraggableBlock id="orgInfo" pos={positions.orgInfo} setPos={updatePos} style={{ width: `${positions.orgInfo.w}px`, textAlign: positions.orgInfo.align, color: design.headerTextColor }}>
-                                        <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', lineHeight: '1.1' }}>{data.orgName}</div>
-                                        <div style={{ fontSize: '8px', fontWeight: '700', textTransform: 'uppercase', marginTop: '2px', opacity: 0.9 }}>{data.orgSub}</div>
-                                        <div style={{ fontSize: '7px', fontWeight: '600', marginTop: '2px', opacity: 0.8 }}>{data.orgAddress}</div>
-                                        <div style={{ fontSize: '7px', fontWeight: '600', opacity: 0.8 }}>{data.orgPhone}</div>
-                                    </DraggableBlock>
-
-                                    {/* 4. Draggable Photo */}
-                                    <DraggableBlock id="photo" pos={positions.photo} setPos={updatePos} style={{ width: `${positions.photo.w}px`, height: `${positions.photo.h}px`, borderRadius: `${design.photoRadius}px`, border: `${design.photoBorderWidth}px solid ${design.photoBorderColor}`, overflow: 'hidden', background: '#f8fafc', zIndex: 5 }}>
-                                        {images.photo ? (
-                                            <img src={images.photo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Photo" draggable="false" />
-                                        ) : (
-                                            <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'30px', color:'#cbd5e1' }}>👤</div>
-                                        )}
-                                    </DraggableBlock>
-
-                                    {/* 5. Draggable Student Name & Course */}
-                                    <DraggableBlock id="stuName" pos={positions.stuName} setPos={updatePos} style={{ width: `${positions.stuName.w}px`, textAlign: positions.stuName.align, zIndex: 6 }}>
-                                        <div style={{ fontSize: '14px', fontWeight: '900', textTransform: 'uppercase', color: design.textColor, marginBottom: '2px' }}>{data.stuName}</div>
-                                        <div style={{ fontSize: '10px', fontWeight: '800', color: design.headerColor, textTransform: 'uppercase' }}>{data.stuCourse}</div>
-                                    </DraggableBlock>
-
-                                    {/* 6. Draggable Student Details Table/List */}
-                                    <DraggableBlock id="stuDetails" pos={positions.stuDetails} setPos={updatePos} style={{ width: `${positions.stuDetails.w}px`, textAlign: positions.stuDetails.align, zIndex: 6 }}>
-                                        <table style={{ width: '100%', fontSize: '9.5px', fontWeight: '700', lineHeight: '1.4', color: design.textColor }}>
-                                            <tbody>
-                                                <tr><td style={{width:'40%', color:'#64748b'}}>Reg No</td><td>: {data.stuReg}</td></tr>
-                                                <tr><td style={{color:'#64748b'}}>DOB</td><td>: {data.stuDob}</td></tr>
-                                                <tr><td style={{color:'#64748b'}}>Blood Group</td><td>: <span style={{color:'#dc2626'}}>{data.stuBlood}</span></td></tr>
-                                                <tr><td style={{color:'#64748b'}}>Phone</td><td>: {data.stuPhone}</td></tr>
-                                                <tr><td style={{color:'#64748b'}}>Validity</td><td>: {data.stuValidity}</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </DraggableBlock>
-
-                                    {/* 7. Draggable Signature */}
-                                    <DraggableBlock id="sign" pos={positions.sign} setPos={updatePos} style={{ width: `${positions.sign.w}px`, height: `${positions.sign.h}px`, zIndex: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
-                                        {images.sign && <img src={images.sign} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', marginBottom: '2px' }} alt="Sign" draggable="false" />}
-                                        <div style={{ fontSize: '6px', fontWeight: '700', borderTop: `1px solid ${design.textColor}`, width: '100%', textAlign: 'center', paddingTop: '2px' }}>Auth Signatory</div>
-                                    </DraggableBlock>
-
-                                    {/* 8. Draggable Return Info (Footer) */}
-                                    {data.showReturn && (
-                                        <DraggableBlock id="returnInfo" pos={positions.returnInfo} setPos={updatePos} style={{ width: `${positions.returnInfo.w}px`, textAlign: positions.returnInfo.align, zIndex: 10 }}>
-                                            <div style={{ fontSize: '7.5px', fontWeight: '700', color: getContrastText(design.footerColor) }}>
-                                                {data.returnText} <br/> {data.returnPhone}
-                                            </div>
-                                        </DraggableBlock>
-                                    )}
-
-                                    {/* 🔥 SAAS WATERMARK (Fixed at bottom right) 🔥 */}
-                                    {watermarkLocked && (
-                                        <div className={`saas-watermark ${watermarkClass}`}>
-                                            ⚡ Powered by VPKTech Solutions
-                                        </div>
-                                    )}
-
-                                </div>
-                            </div>
+                        <div class="draggable el-terms" data-id="b_terms" style="transform: translate(15px, 50px); width:182px;">
+                            <span id="renderTerms">Terms and conditions...</span>
                         </div>
+
+                        <div class="draggable el-qr" data-id="b_qr" id="renderQR" style="transform: translate(76px, 120px);">
+                            <div style="width:100%; height:100%; border:2px solid #cbd5e1; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; color:#cbd5e1;">QR</div>
+                        </div>
+
+                        <div class="draggable el-return" data-id="b_return" id="renderReturnWrap" style="transform: translate(15px, 200px); width:182px;">
+                            <span id="renderReturn">If found return to...</span>
+                        </div>
+
+                        <!-- SaaS Watermark -->
+                        <div class="saas-watermark">⚡ Powered by VPKTech Solutions</div>
                     </div>
+                    
                 </div>
-            );
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- TEMPLATE SELECTION MODAL -->
+<div class="modal-overlay" id="tplModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>📐 Choose Official Template</h2>
+            <button class="close-btn" onclick="closeModal('tplModal')">X</button>
+        </div>
+        <div class="tpl-grid">
+            <div class="tpl-card" onclick="setTemplate(1)">1. Classic Top</div>
+            <div class="tpl-card" onclick="setTemplate(2)">2. Curved Header</div>
+            <div class="tpl-card" onclick="setTemplate(3)">3. Left Bar</div>
+            <div class="tpl-card" onclick="setTemplate(4)">4. Standard White</div>
+            <div class="tpl-card" onclick="setTemplate(5)">5. Slant Split</div>
+            <div class="tpl-card" onclick="setTemplate(6)">6. Minimal Thick</div>
+            <div class="tpl-card" onclick="setTemplate(7)">7. Thin Borders</div>
+            <div class="tpl-card" onclick="setTemplate(8)">8. Elegant Double</div>
+            <div class="tpl-card" onclick="setTemplate(9)">9. Modern Ellipse</div>
+            <div class="tpl-card" onclick="setTemplate(10)">10. Full Border</div>
+            <div class="tpl-card" onclick="setTemplate(11)">11. Corporate Block</div>
+            <div class="tpl-card" onclick="setTemplate(12)">12. Simple Top</div>
+            <div class="tpl-card" onclick="setTemplate(13)">13. Side Accent</div>
+            <div class="tpl-card" onclick="setTemplate(14)">14. Angular Corner</div>
+            <div class="tpl-card" onclick="setTemplate(15)">15. Dark Header</div>
+            <div class="tpl-card" onclick="setTemplate(16)">16. Round Drop</div>
+            <div class="tpl-card" onclick="setTemplate(17)">17. Block Color</div>
+            <div class="tpl-card" onclick="setTemplate(18)">18. Underline</div>
+            <div class="tpl-card" onclick="setTemplate(19)">19. Clean Outline</div>
+            <div class="tpl-card" onclick="setTemplate(20)">20. Dynamic Slant</div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toastMsg">Action Successful</div>
+
+<!-- ================= VANILLA JS LOGIC ================= -->
+<script type="module">
+    import { supabase } from './assets/js/supabase-config.js';
+    import './assets/js/auth-check.js';
+    window.checkDynamicAccess('IDCardStudio');
+
+    // Global State
+    window.cardState = {
+        view: 'front', // front, back, both
+        orientation: 'portrait', // portrait, landscape
+        template: 1,
+        zoom: 1
+    };
+
+    // Default Positions for Portrait
+    const posP = {
+        logo: {x: 15, y: 15}, orgInfo: {x: 70, y: 15}, photo: {x: 68, y: 90},
+        nameBlock: {x: 10, y: 195}, details: {x: 15, y: 230}, badge: {x: 15, y: 305},
+        sign: {x: 120, y: 290}, b_org: {x: 10, y: 20}, b_terms: {x: 15, y: 50},
+        b_qr: {x: 76, y: 120}, b_return: {x: 15, y: 200}
+    };
+    
+    // Default Positions for Landscape
+    const posL = {
+        logo: {x: 15, y: 10}, orgInfo: {x: 70, y: 10}, photo: {x: 15, y: 70},
+        nameBlock: {x: 110, y: 70}, details: {x: 110, y: 105}, badge: {x: 15, y: 180},
+        sign: {x: 240, y: 170}, b_org: {x: 10, y: 10}, b_terms: {x: 15, y: 30},
+        b_qr: {x: 138, y: 100}, b_return: {x: 15, y: 170}
+    };
+
+    let positions = JSON.parse(JSON.stringify(posP));
+
+    // ================= INITIALIZATION =================
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Init form values
+        document.getElementById('inp_orgName').value = "ERP Technical Academy";
+        document.getElementById('inp_orgSub').value = "Center of Excellence";
+        document.getElementById('inp_orgAddress').value = "123 Main Street, City, State - 123456\nPh: +91 9876543210 | info@erp.com";
+        document.getElementById('inp_name').value = "Student Name";
+        document.getElementById('inp_course').value = "Diploma in Engineering";
+        document.getElementById('inp_reg').value = "REG-0001";
+        document.getElementById('inp_phone').value = "+91 9000000000";
+        document.getElementById('inp_dob').value = "01/01/2000";
+        document.getElementById('inp_blood').value = "O+";
+        document.getElementById('inp_validity').value = "2026 - 2027";
+        
+        applySaaSControls();
+        autoLoadStudent();
+        initDragAndDrop();
+        updateCard();
+        updateCardStyle();
+        setResponsiveZoom();
+    });
+
+    window.addEventListener('resize', setResponsiveZoom);
+
+    function setResponsiveZoom() {
+        const wrapper = document.getElementById('zoomWrapper');
+        if(window.innerWidth < 500) { window.cardState.zoom = 0.8; wrapper.style.transform = 'scale(0.8)'; }
+        else { window.cardState.zoom = 1; wrapper.style.transform = 'scale(1)'; }
+    }
+
+    // ================= SAAS CONTROLS & AUTOFILL =================
+    async function applySaaSControls() {
+        try {
+            const microStr = localStorage.getItem('saas_micro_features');
+            if (microStr) {
+                const micro = JSON.parse(microStr);
+                const marks = document.querySelectorAll('.saas-watermark');
+                if (micro.remove_watermark === false) { marks.forEach(m => m.style.display = 'block'); } 
+                else { marks.forEach(m => m.style.display = 'none'); }
+            }
+        } catch(e) {}
+    }
+
+    async function autoLoadStudent() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const stuId = urlParams.get('student_id');
+        if(stuId) {
+            try {
+                const { data: stu } = await supabase.from('students').select('*').eq('id', stuId).single();
+                if(stu) {
+                    document.getElementById('inp_name').value = stu.full_name || '';
+                    document.getElementById('inp_reg').value = stu.register_number || '';
+                    document.getElementById('inp_phone').value = stu.phone_number || '';
+                    document.getElementById('inp_blood').value = stu.blood_group || '';
+                    if(stu.dob) {
+                        const d = new Date(stu.dob);
+                        document.getElementById('inp_dob').value = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+                    }
+                    if(stu.course_id) {
+                        const { data: cData } = await supabase.from('courses').select('course_name').eq('id', stu.course_id).single();
+                        if(cData) document.getElementById('inp_course').value = cData.course_name;
+                    }
+                    if(stu.photo_url) {
+                        document.getElementById('renderPhoto').src = stu.photo_url;
+                        document.getElementById('renderPhoto').style.display = 'block';
+                        document.getElementById('placeholderPhoto').style.display = 'none';
+                        document.getElementById('photoPreview').src = stu.photo_url;
+                        document.getElementById('photoPreview').style.display = 'block';
+                        document.getElementById('photoPlaceholder').style.display = 'none';
+                    }
+                    updateCard();
+                    showToast("✅ Student Auto-Loaded!");
+                }
+            } catch(e) {}
+        }
+    }
+
+    // ================= TOOLBAR & UI LOGIC =================
+    window.toggleMasterToolbar = function() {
+        document.getElementById('masterToolbar').classList.toggle('hidden-mode');
+        document.getElementById('pocketToggle').classList.toggle('active-mode');
+    };
+    window.toggleSettingsArea = function() {
+        document.getElementById('settingsArea').classList.toggle('collapsed');
+    };
+    window.switchTab = function(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        document.getElementById('tab-' + tab).classList.add('active');
+    };
+    window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
+    window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
+    window.showToast = function(msg) {
+        const t = document.getElementById('toastMsg'); t.innerText = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    };
+
+    // ================= UPDATE DATA =================
+    window.updateCard = function() {
+        // Front
+        document.getElementById('renderOrgName').innerText = document.getElementById('inp_orgName').value;
+        document.getElementById('renderOrgSub').innerText = document.getElementById('inp_orgSub').value;
+        document.getElementById('renderOrgAddress').innerHTML = document.getElementById('inp_orgAddress').value.replace(/\n/g, '<br>');
+        
+        document.getElementById('renderName').innerText = document.getElementById('inp_name').value;
+        document.getElementById('renderCourse').innerText = document.getElementById('inp_course').value;
+        
+        document.getElementById('renderReg').innerText = document.getElementById('inp_reg').value;
+        document.getElementById('renderDob').innerText = document.getElementById('inp_dob').value;
+        document.getElementById('renderBlood').innerText = document.getElementById('inp_blood').value;
+        document.getElementById('renderPhone').innerText = document.getElementById('inp_phone').value;
+        document.getElementById('renderValidity').innerText = document.getElementById('inp_validity').value;
+        
+        const badge = document.getElementById('inp_role').value;
+        document.getElementById('renderBadge').innerText = badge;
+        document.getElementById('renderBadgeWrapper').style.display = document.getElementById('inp_showBadge').value === 'true' ? 'block' : 'none';
+
+        // Back
+        document.getElementById('renderBOrg').innerText = document.getElementById('inp_orgName').value;
+        document.getElementById('renderTerms').innerHTML = document.getElementById('inp_terms').value.replace(/\n/g, '<br>');
+        
+        const showRet = document.getElementById('inp_showReturn').checked;
+        const retWrap = document.getElementById('renderReturnWrap');
+        if(showRet) {
+            retWrap.style.display = 'block';
+            document.getElementById('renderReturn').innerHTML = document.getElementById('inp_returnAddr').value.replace(/\n/g, '<br>');
+        } else { retWrap.style.display = 'none'; }
+
+        const showQR = document.getElementById('inp_showQR').checked;
+        document.getElementById('renderQR').style.display = showQR ? 'block' : 'none';
+    };
+
+    window.updateCardStyle = function() {
+        const bg = document.getElementById('clr_bg').value;
+        const headerC = document.getElementById('clr_header').value;
+        const footerC = document.getElementById('clr_footer').value;
+        const textC = document.getElementById('clr_text').value;
+        
+        const idCard = document.getElementById('idCard');
+        idCard.style.backgroundColor = bg;
+        idCard.style.color = textC;
+        
+        // Colors
+        document.getElementById('bgTop').style.backgroundColor = headerC;
+        document.getElementById('bgBottom').style.backgroundColor = footerC;
+        document.getElementById('renderBadgeWrapper').style.backgroundColor = headerC;
+        document.getElementById('renderBadgeWrapper').style.color = getContrastText(headerC);
+        
+        const orgInfo = document.getElementById('renderOrgName').parentElement;
+        orgInfo.style.color = headerC === '#ffffff' ? '#0f172a' : getContrastText(headerC);
+
+        document.getElementById('signTextColor').style.borderColor = textC;
+        
+        // Photo Borders
+        const pw = document.getElementById('inp_borderW').value;
+        const pr = document.getElementById('inp_borderR').value;
+        const pc = document.getElementById('clr_photoBorder').value;
+        
+        const pEl = document.querySelector('.el-photo');
+        pEl.style.borderWidth = pw + 'px';
+        pEl.style.borderRadius = pr + 'px';
+        pEl.style.borderColor = pc;
+    };
+
+    function getContrastText(hexcolor) {
+        if(!hexcolor) return '#ffffff';
+        const r = parseInt(hexcolor.substr(1,2),16);
+        const g = parseInt(hexcolor.substr(3,2),16);
+        const b = parseInt(hexcolor.substr(5,2),16);
+        return (r * 299 + g * 587 + b * 114) / 1000 > 128 ? '#0f172a' : '#ffffff';
+    }
+
+    // ================= MEDIA UPLOADS =================
+    window.handleImageUpload = function(input, targetId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Update Preview Sidebar
+                document.getElementById(targetId).src = e.target.result;
+                document.getElementById(targetId).style.display = 'block';
+                document.getElementById(targetId).nextElementSibling.style.display = 'none';
+                
+                // Update Canvas
+                let renderId = targetId === 'logoPreview' ? 'renderLogo' : (targetId === 'photoPreview' ? 'renderPhoto' : 'renderSign');
+                let placeholderId = targetId === 'logoPreview' ? 'placeholderLogo' : (targetId === 'photoPreview' ? 'placeholderPhoto' : 'placeholderSign');
+                
+                document.getElementById(renderId).src = e.target.result;
+                document.getElementById(renderId).style.display = 'block';
+                document.getElementById(placeholderId).style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+
+    window.clearImage = function(targetId) {
+        document.getElementById(targetId).src = '';
+        document.getElementById(targetId).style.display = 'none';
+        document.getElementById(targetId).nextElementSibling.style.display = 'block';
+        
+        let renderId = targetId === 'logoPreview' ? 'renderLogo' : (targetId === 'photoPreview' ? 'renderPhoto' : 'renderSign');
+        let placeholderId = targetId === 'logoPreview' ? 'placeholderLogo' : (targetId === 'photoPreview' ? 'placeholderPhoto' : 'placeholderSign');
+        
+        document.getElementById(renderId).src = '';
+        document.getElementById(renderId).style.display = 'none';
+        document.getElementById(placeholderId).style.display = 'flex';
+    };
+
+    // ================= VIEW & ORIENTATION =================
+    window.setView = function(side) {
+        window.cardState.view = side;
+        document.querySelectorAll('.v-btn:not(.v-btn-outline)').forEach(b => b.classList.remove('active'));
+        document.getElementById('vbtn-' + side).classList.add('active');
+
+        const idCard = document.getElementById('idCard');
+        if (side === 'front') { idCard.classList.remove('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='none'; }
+        else if (side === 'back') { idCard.classList.remove('show-both'); document.getElementById('cardFront').style.display='none'; document.getElementById('cardBack').style.display='block'; }
+        else { idCard.classList.add('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='block'; }
+    };
+
+    window.toggleOrientation = function() {
+        const card = document.getElementById('idCard');
+        const btn = document.getElementById('vbtn-orient');
+        
+        if (window.cardState.orientation === 'portrait') {
+            window.cardState.orientation = 'landscape';
+            card.classList.remove('id-card-portrait');
+            card.classList.add('id-card-landscape');
+            btn.innerText = 'Landscape';
+            positions = JSON.parse(JSON.stringify(posL));
+        } else {
+            window.cardState.orientation = 'portrait';
+            card.classList.remove('id-card-landscape');
+            card.classList.add('id-card-portrait');
+            btn.innerText = 'Portrait';
+            positions = JSON.parse(JSON.stringify(posP));
+        }
+        applyPositions();
+    };
+
+    window.setTemplate = function(num) {
+        const card = document.getElementById('idCard');
+        // Remove old tpl class
+        for(let i=1; i<=20; i++) card.classList.remove('tpl-'+i);
+        card.classList.add('tpl-'+num);
+        closeModal('tplModal');
+        showToast('Template Applied');
+    };
+
+    // ================= DRAG & DROP NATIVE LOGIC =================
+    function initDragAndDrop() {
+        const draggables = document.querySelectorAll('.draggable');
+        let activeEl = null;
+        let initX = 0, initY = 0, currentX = 0, currentY = 0;
+
+        function dragStart(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            activeEl = e.currentTarget;
+            activeEl.classList.add('active-drag');
+            
+            const id = activeEl.dataset.id;
+            const pos = positions[id];
+            
+            if (e.type === "touchstart") {
+                initX = e.touches[0].clientX - pos.x;
+                initY = e.touches[0].clientY - pos.y;
+            } else {
+                initX = e.clientX - pos.x;
+                initY = e.clientY - pos.y;
+            }
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<IDCardApp />);
-    </script>
-
-    <!-- BACKEND SCRIPT TO FETCH SUPABASE DATA -->
-    <script type="module">
-        import { supabase } from './assets/js/supabase-config.js';
-        import './assets/js/auth-check.js';
-        
-        // Define global init function for React to trigger
-        window.initIDCardBackend = async function() {
-            // Check SaaS Watermark Config
-            try {
-                const microFeaturesStr = localStorage.getItem('saas_micro_features');
-                let locked = true;
-                if (microFeaturesStr) {
-                    const microFeatures = JSON.parse(microFeaturesStr);
-                    if (microFeatures.remove_watermark !== false) {
-                        locked = false;
-                    }
-                }
-                // Dispatch event to React
-                window.dispatchEvent(new CustomEvent('watermarkStateLoaded', { detail: { locked: locked } }));
-            } catch(e) {}
-
-            // Load Student Data if ID passed in URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const stuId = urlParams.get('student_id');
-            if(stuId) {
-                try {
-                    const { data: stu } = await supabase.from('students').select('*').eq('id', stuId).single();
-                    if(stu) {
-                        if(stu.course_id) {
-                            const { data: cData } = await supabase.from('courses').select('course_name').eq('id', stu.course_id).single();
-                            if(cData) stu.course_name_display = cData.course_name;
-                        }
-                        // Dispatch event to React
-                        window.dispatchEvent(new CustomEvent('studentDataLoaded', { detail: stu }));
-                    }
-                } catch(e) { console.error("Error auto-loading student:", e); }
+        function drag(e) {
+            if (!activeEl) return;
+            e.preventDefault();
+            
+            if (e.type === "touchmove") {
+                currentX = e.touches[0].clientX - initX;
+                currentY = e.touches[0].clientY - initY;
+            } else {
+                currentX = e.clientX - initX;
+                currentY = e.clientY - initY;
             }
-        };
-    </script>
+
+            const id = activeEl.dataset.id;
+            positions[id].x = currentX;
+            positions[id].y = currentY;
+            
+            activeEl.style.transform = `translate(${currentX}px, ${currentY}px)`;
+        }
+
+        function dragEnd(e) {
+            if (!activeEl) return;
+            activeEl.classList.remove('active-drag');
+            activeEl = null;
+        }
+
+        draggables.forEach(el => {
+            el.addEventListener("mousedown", dragStart, false);
+            el.addEventListener("touchstart", dragStart, {passive: false});
+        });
+
+        document.addEventListener("mousemove", drag, false);
+        document.addEventListener("touchmove", drag, {passive: false});
+        document.addEventListener("mouseup", dragEnd, false);
+        document.addEventListener("touchend", dragEnd, false);
+        
+        applyPositions();
+    }
+
+    function applyPositions() {
+        document.querySelectorAll('.draggable').forEach(el => {
+            const id = el.dataset.id;
+            if(positions[id]) {
+                el.style.transform = `translate(${positions[id].x}px, ${positions[id].y}px)`;
+            }
+        });
+    }
+
+    // ================= HIGH-RES EXPORT =================
+    window.exportCard = async function(type) {
+        const btn = document.getElementById(`btn-${type}`);
+        const oldText = btn.innerText;
+        btn.innerText = '⏳ Processing...';
+        btn.disabled = true;
+
+        // Hide drag borders
+        document.querySelectorAll('.draggable').forEach(el => el.style.border = 'none');
+        
+        // Remove Zoom Transform temporarily
+        const wrapper = document.getElementById('printable-card-area');
+        wrapper.style.transform = 'scale(1)';
+        wrapper.style.boxShadow = 'none';
+
+        try {
+            const canvas = await html2canvas(wrapper, {
+                scale: 4, // Super HD
+                useCORS: true,
+                backgroundColor: document.getElementById('clr_bg').value,
+                logging: false
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const fileName = `ID_Card_${document.getElementById('inp_name').value.replace(/ /g, '_')}`;
+            
+            if (type === 'png') {
+                const link = document.createElement('a');
+                link.download = fileName + '.jpg';
+                link.href = imgData;
+                link.click();
+            } else if (type === 'pdf') {
+                const isPort = window.cardState.orientation === 'portrait';
+                const w = isPort ? 54 : 86; // CR80 standards mm
+                let h = isPort ? 86 : 54;
+                
+                if (window.cardState.view === 'both') {
+                    if(isPort) { w = 112; h = 86; } 
+                    else { w = 86; h = 112; }
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({ orientation: (w > h) ? 'l' : 'p', unit: 'mm', format: [w, h] });
+                pdf.addImage(imgData, 'JPEG', 0, 0, w, h, '', 'FAST');
+                pdf.save(fileName + '.pdf');
+            }
+        } catch (e) {
+            alert("Error exporting card.");
+        } finally {
+            wrapper.style.transform = '';
+            document.querySelectorAll('.draggable').forEach(el => el.style.border = '');
+            btn.innerText = oldText;
+            btn.disabled = false;
+        }
+    };
+</script>
 </body>
 </html>
