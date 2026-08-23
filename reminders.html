@@ -61,12 +61,14 @@
 
         .btn-save-bell { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 16px; width: 100%; border-radius: 10px; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); transition: 0.2s; letter-spacing: 0.5px;}
         .btn-save-bell:active { transform: scale(0.98); }
+        .btn-save-bell:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
 
         .event-form-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; width: 100%; }
         .event-form-row { display: flex; gap: 10px; width: 100%; }
         .event-input { border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-weight: 700; color: #0f172a; outline: none; font-size: 14px; width: 100%; background: white; font-family: inherit;}
         .event-input.time-pick { color: #1e3a8a; background: #eff6ff; cursor: pointer; caret-color: transparent; text-align: center; font-weight: 900;}
         .event-input::placeholder { color: #94a3b8; font-weight: 600; }
+        .event-input:disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
 
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid #f1f5f9; width: 100%;}
         .list-item:last-child { border-bottom: none; }
@@ -256,8 +258,8 @@
                 <div class="bell-list-title">Set Daily Bell Timings</div>
                 <div id="bellListContainer"></div>
                 
-                <button class="btn-add-bell" onclick="window.addNewBellRow()">+ Add New Bell</button>
-                <button class="btn-save-bell" onclick="window.saveBellTimings()">💾 Save Bell Settings</button>
+                <button class="btn-add-bell" onclick="window.addNewBellRow()" id="btnAddBell">+ Add New Bell</button>
+                <button class="btn-save-bell" onclick="window.saveBellTimings()" id="btnSaveBell">💾 Save Bell Settings</button>
             </div>
 
             <!-- PANEL 2: EVENT SCHEDULER -->
@@ -283,7 +285,7 @@
                     </div>
                 </div>
                 
-                <button class="btn-save-bell" onclick="window.saveNewEvent()" style="margin-bottom: 25px; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);">+ Add Local Event</button>
+                <button class="btn-save-bell" onclick="window.saveNewEvent()" id="btnAddLocalEvent" style="margin-bottom: 25px; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);">+ Add Local Event</button>
 
                 <div class="bell-list-title">Upcoming Scheduled Events</div>
                 <div id="eventListContainer">
@@ -308,6 +310,9 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
+        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
+        window.alertPerms = { view: true, add: false, edit: false, delete: false };
+
         // ==========================================
         // MAGIC ALERT OVERRIDE FOR WARNINGS & SUCCESS
         // ==========================================
@@ -319,7 +324,7 @@
             
             let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
             
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Please')) {
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Please') || msg.includes('Denied')) {
                 iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
             } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Saved') || msg.includes('Event') || msg.includes('published')) {
                 iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
@@ -380,11 +385,20 @@
         const userRole = localStorage.getItem('userRole') || 'Guest';
 
         window.initCloudAlerts = function() {
-            if (userRole !== 'Super Admin' && userRole !== 'Admin') {
-                const targetDropdown = document.getElementById('cloudTargetAudience');
-                targetDropdown.value = 'Personal';
-                targetDropdown.style.display = 'none'; 
-                document.getElementById('btnSaveCloudAlert').innerText = "Save Personal Alert 🔒";
+            // --- 🔒 CHECK ADD PERMISSION FOR ALERTS ---
+            if (!window.alertPerms.add) {
+                const cloudForm = document.getElementById('cloudAlertForm');
+                cloudForm.innerHTML = `
+                    <div style="text-align:center; padding: 15px; background:#f1f5f9; border-radius:8px; border:1px dashed #cbd5e1;">
+                        <span style="font-weight:bold; color:#64748b;">🔒 You don't have permission to create alerts.</span>
+                    </div>`;
+            } else {
+                if (userRole !== 'Super Admin' && userRole !== 'Admin') {
+                    const targetDropdown = document.getElementById('cloudTargetAudience');
+                    targetDropdown.value = 'Personal';
+                    targetDropdown.style.display = 'none'; 
+                    document.getElementById('btnSaveCloudAlert').innerText = "Save Personal Alert 🔒";
+                }
             }
             window.fetchCloudAlerts();
         };
@@ -392,6 +406,7 @@
         document.getElementById('cloudAlertForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (userRole === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.alertPerms.add) { alert("⛔ Permission Denied: You cannot create alerts."); return; }
 
             const title = document.getElementById('cloudAlertTitle').value;
             const date = document.getElementById('cloudAlertDate').value;
@@ -454,13 +469,18 @@
                 }
 
                 container.innerHTML = filteredData.map(alert => {
-                    let canDelete = (userRole === 'Super Admin' || userRole === 'Admin' || alert.created_by === userEmail);
+                    let canEditOrDelete = false;
+                    if (userRole === 'Super Admin' || userRole === 'Admin') {
+                        if (window.alertPerms.edit || window.alertPerms.delete) canEditOrDelete = true;
+                    } else if (alert.created_by === userEmail) {
+                        if (window.alertPerms.edit || window.alertPerms.delete) canEditOrDelete = true;
+                    }
+
                     let timeParts = alert.alert_time.split(':');
                     let displayTime = `${timeParts[0] % 12 || 12}:${timeParts[1]} ${timeParts[0] >= 12 ? 'PM' : 'AM'}`;
                     let displayDate = new Date(alert.alert_date).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric'});
                     let badgeClass = `badge-target badge-${alert.target_audience.split(' ')[0]}`;
 
-                    // NEW: Safe Data string for Edit Feature
                     let safeAlertData = JSON.stringify({
                         id: alert.id, title: alert.title, date: alert.alert_date, 
                         time24: alert.alert_time, type: alert.alert_type, target: alert.target_audience
@@ -480,8 +500,8 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid #f1f5f9; padding-top: 8px;">
                             <span style="font-size: 9px; color: #94a3b8; font-weight: 800; text-transform:uppercase;">By: ${alert.created_role}</span>
                             <div style="display: flex; gap: 8px;">
-                                ${canDelete ? `<button style="background: #e0f2fe; color: #0284c7; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 900; cursor: pointer;" onclick="window.editCloudAlert('${safeAlertData}')">Edit</button>` : ''}
-                                ${canDelete ? `<button class="btn-delete-alert" onclick="window.deleteCloudAlert('${alert.id}')">Delete</button>` : ''}
+                                ${(canEditOrDelete && window.alertPerms.edit) ? `<button style="background: #e0f2fe; color: #0284c7; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 900; cursor: pointer;" onclick="window.editCloudAlert('${safeAlertData}')">Edit</button>` : ''}
+                                ${(canEditOrDelete && window.alertPerms.delete) ? `<button class="btn-delete-alert" onclick="window.deleteCloudAlert('${alert.id}')">Delete</button>` : ''}
                             </div>
                         </div>
                     </div>`;
@@ -491,8 +511,9 @@
             }
         };
 
-        // NEW: Smart Edit Function (Auto-fill form and delete old)
         window.editCloudAlert = async function(alertDataString) {
+            if (!window.alertPerms.edit) { alert("⛔ Permission Denied: You cannot edit alerts."); return; }
+            
             const data = JSON.parse(alertDataString);
             const confirmed = await window.magicConfirm(`Do you want to edit "${data.title}"? \nThis will move the alert to the form above.`);
             if(!confirmed) return;
@@ -525,6 +546,7 @@
         };
 
         window.deleteCloudAlert = async function(id) {
+            if (!window.alertPerms.delete) { alert("⛔ Permission Denied: You cannot delete alerts."); return; }
             const confirmed = await window.magicConfirm("Are you sure you want to delete this cloud alert?");
             if(!confirmed) return;
             try {
@@ -680,6 +702,7 @@
 
         window.saveBellTimings = function() {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.alertPerms.add) { alert("⛔ Permission Denied."); return; }
 
             window.silentAudioUnlock(); 
             let bells = [];
@@ -733,6 +756,7 @@
 
         window.saveNewEvent = function() {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.alertPerms.add) { alert("⛔ Permission Denied."); return; }
 
             let name = document.getElementById('eventName').value;
             let date = document.getElementById('eventDate').value;
@@ -785,7 +809,7 @@
                             <h4 style="color:#2563eb; font-size:15px;">${e.name}</h4>
                             <p style="color:#475569; font-weight:800;">${displayDate} | ${displayTime}</p>
                         </div>
-                        <button onclick="window.deleteEvent(${e.id})" style="background:#fee2e2; color:#ef4444; border:none; padding:10px 15px; border-radius:8px; font-weight:900; cursor:pointer;">✖</button>
+                        ${window.alertPerms.delete ? `<button onclick="window.deleteEvent(${e.id})" style="background:#fee2e2; color:#ef4444; border:none; padding:10px 15px; border-radius:8px; font-weight:900; cursor:pointer;">✖</button>` : ''}
                     </div>`;
                 container.insertAdjacentHTML('beforeend', html);
             });
@@ -793,6 +817,7 @@
 
         window.deleteEvent = async function(id) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.alertPerms.delete) { alert("⛔ Permission Denied."); return; }
             
             const confirmed = await window.magicConfirm("Are you sure you want to delete this event?");
             if(!confirmed) return;
@@ -847,7 +872,23 @@
             } catch(e) { document.getElementById('feeList').innerHTML = '<div class="empty-state" style="color:red;">Database Error.</div>'; }
         };
 
-        window.loadSettingsSafe = function() {
+        window.loadSettingsSafe = async function() {
+            // Apply restrictions to buttons based on permission
+            if (!window.alertPerms.add && userRole !== 'Super Admin' && userRole !== 'Admin') {
+                const btnAddBell = document.getElementById('btnAddBell');
+                if(btnAddBell) { btnAddBell.disabled = true; btnAddBell.style.opacity = '0.5'; btnAddBell.style.cursor = 'not-allowed'; }
+                
+                const btnSaveBell = document.getElementById('btnSaveBell');
+                if(btnSaveBell) { btnSaveBell.disabled = true; btnSaveBell.style.opacity = '0.5'; btnSaveBell.style.cursor = 'not-allowed'; }
+                
+                const btnAddEvent = document.getElementById('btnAddLocalEvent');
+                if(btnAddEvent) { btnAddEvent.disabled = true; btnAddEvent.style.opacity = '0.5'; btnAddEvent.style.cursor = 'not-allowed'; }
+                
+                document.querySelectorAll('.time-input-name, .time-input, .event-input').forEach(inp => {
+                    inp.disabled = true;
+                });
+            }
+
             const saved = localStorage.getItem('ERP_bell_settings_final'); 
             if (saved) {
                 bellSettings = JSON.parse(saved);
@@ -878,9 +919,26 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             window.initCustomPicker();
-            window.loadSettingsSafe();
-            window.initCloudAlerts();
-            supabase.auth.getSession().then(({ data: { session } }) => { if (session) window.fetchStudentAlerts(); });
+            supabase.auth.getSession().then(async ({ data: { session } }) => { 
+                if (session) {
+                    // Check initial permissions
+                    const role = localStorage.getItem('userRole') || 'Admin';
+                    if (role === 'Super Admin' || role === 'Admin') {
+                        window.alertPerms = { view: true, add: true, edit: true, delete: true };
+                    } else if (role !== 'Guest') {
+                        try {
+                            const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', role).single();
+                            if (data && data.permissions && data.permissions['SmartAlerts']) {
+                                window.alertPerms = data.permissions['SmartAlerts'];
+                            }
+                        } catch(e) {}
+                    }
+                    
+                    window.loadSettingsSafe();
+                    window.initCloudAlerts();
+                    window.fetchStudentAlerts(); 
+                } 
+            });
         });
     </script>
 
