@@ -3,24 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard - ERP ERP</title>
+    <title>Dashboard - ERP</title>
     <link rel="stylesheet" href="assets/css/style.css">
 
     <style>
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-        /* Dynamic Background Color Variable */
-        :root {
-            --app-theme-color: #2563eb;
-        }
+        :root { --app-theme-color: #2563eb; }
         body { background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%); min-height: 100vh; }
         .main-content { padding: 12px; max-width: 1000px; margin: 0 auto; }
         
-        /* SECTION HEADINGS */
         .section-heading { font-size: 12px !important; font-weight: 900 !important; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 7px; margin: 0 0 10px 0 !important; padding: 0 2px; }
         .section-heading-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .section-heading-icon svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
         
-        /* STAT BOXES */
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
         .stat-box { background: #ffffff; padding: 10px 5px !important; border-radius: 12px !important; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02) !important; border: 1px solid #e2e8f0 !important; display: flex; flex-direction: row; align-items: center; gap: 6px; text-align: left; overflow: hidden; }
         .stat-mini-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -29,7 +24,6 @@
         .stat-label { font-size: 9px !important; margin-bottom: 2px !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .stat-value { font-size: 18px !important; font-weight: 900 !important; line-height: 1; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* FINANCE CARD */
         .unified-finance-card { position: relative; background: #ffffff; border-radius: 14px; padding: 0; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.03); border: 1px solid #e2e8f0; display: grid; grid-template-columns: 1fr 1px 1fr; overflow: hidden; }
         .uf-panel { padding: 12px 12px; display: flex; flex-direction: column; justify-content: space-between; min-height: 95px; position: relative; overflow: hidden; }
         .uf-left { background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%); }
@@ -48,7 +42,7 @@
         .uf-amount { font-size: 22px; font-weight: 900; line-height: 1; letter-spacing: -0.5px; display: flex; align-items: baseline; gap: 4px; font-family: 'Segoe UI', Roboto, sans-serif; }
         .uf-amount-green { color: #047857; }
         .uf-amount-red { color: #b91c1c; }
-        .uf-rupee { font-size: 16px; font-weight: 800; opacity: 0.85; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
+        .uf-rupee { font-size: 16px; font-weight: 800; opacity: 0.85; }
         .uf-footer { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(148, 163, 184, 0.4); display: flex; align-items: center; justify-content: space-between; gap: 4px; }
         .uf-footer-label { font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px; display: flex; align-items: center; }
         .uf-footer-value { font-size: 11px; font-weight: 900; color: #334155; display: flex; align-items: baseline; gap: 2px;}
@@ -58,19 +52,15 @@
         @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } }
         .uf-divider-line { background: linear-gradient(180deg, transparent 0%, #cbd5e1 20%, #cbd5e1 80%, transparent 100%); }
 
-        /* ALERT TICKER */
         .alert-ticker-wrap { overflow: hidden; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1px solid #fde68a; border-radius: 10px; margin-bottom: 12px; padding: 8px 5px; white-space: nowrap; box-shadow: 0 2px 8px rgba(180, 83, 9, 0.08); display: none; }
         .alert-ticker-track { display: inline-block; animation: scrollTicker 15s linear infinite; }
         .alert-item { display: inline-flex; align-items: center; gap: 8px; margin-right: 40px; font-size: 12px; font-weight: 800; text-decoration: none; }
         .ticker-bell { color: #b45309; }
-        .ticker-event { color: #1d4ed8; }
         @keyframes scrollTicker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* MODULE SECTIONS */
         .module-section { background: #ffffff; border-radius: 14px !important; padding: 12px 12px 14px 12px !important; margin-bottom: 12px !important; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02) !important; border: 1px solid #e2e8f0; }
         .module-section .nav-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; margin-top: 10px; }
         
-        /* NAV BUTTONS */
         .nav-btn { position: relative; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px !important; padding: 12px 6px !important; text-decoration: none; color: #334155 !important; font-size: 11px !important; font-weight: 800 !important; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02) !important; height: 100% !important; min-height: 85px !important; text-align: center; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
         .nav-btn:active { transform: scale(0.94); box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important; }
         .nav-btn.fee-btn { background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%) !important; border-color: #bbf7d0 !important; color: #15803d !important; }
@@ -81,7 +71,6 @@
         .nav-btn:active .nav-icon { transform: scale(0.9); }
         .nav-icon svg { width: 22px; height: 22px; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
         
-        /* Apply dynamic theme color to generic icons */
         .icon-bg-adm { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
         .icon-bg-dir { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
         .icon-bg-staff { background: linear-gradient(135deg, #ccfbf1, #99f6e4); }
@@ -98,7 +87,6 @@
         
         .nav-badge { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 0 2px #fff, 0 0 0 3px rgba(239, 68, 68, 0.3); animation: pulseDot 2s ease-in-out infinite; }
 
-        /* HEADER */
         .header-auth-section { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.9); padding: 4px 4px 4px 12px; border-radius: 30px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04); }
         .logged-in-text { font-size: 10px; font-weight: 700; color: #64748b; display: flex; flex-direction: column; text-align: right; line-height: 1.2; }
         .logged-in-email { color: var(--app-theme-color); font-weight: 900; font-size: 11px; }
@@ -132,6 +120,9 @@
 
     <main class="main-content">
         
+        <!-- 🔥 SAAS DYNAMIC BANNERS & TRAFFIC LIGHT WARNINGS 🔥 -->
+        <div id="saasAlertsContainer" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;"></div>
+
         <!-- INSTITUTE OVERVIEW -->
         <h2 class="section-heading" style="color: #1e3a8a;">
             <span class="section-heading-icon" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
@@ -142,27 +133,21 @@
         
         <div class="stat-grid">
             <div class="stat-box">
-                <div class="stat-mini-icon" style="background: linear-gradient(135deg, #64748b, #475569);">
-                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
+                <div class="stat-mini-icon" style="background: linear-gradient(135deg, #64748b, #475569);"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                 <div class="stat-info">
                     <div class="stat-label" style="color: #64748b;">Total</div>
                     <div class="stat-value" id="statTotalStudents" style="color: #334155;">0</div>
                 </div>
             </div>
             <div class="stat-box">
-                <div class="stat-mini-icon" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);">
-                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
+                <div class="stat-mini-icon" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
                 <div class="stat-info">
                     <div class="stat-label" style="color: #2563eb;">Active</div>
                     <div class="stat-value" id="statActiveStudents" style="color: #1d4ed8;">0</div>
                 </div>
             </div>
             <div class="stat-box">
-                <div class="stat-mini-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                    <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                </div>
+                <div class="stat-mini-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
                 <div class="stat-info">
                     <div class="stat-label" style="color: #d97706;">Courses</div>
                     <div class="stat-value" id="statCourses" style="color: #b45309;">0</div>
@@ -170,59 +155,40 @@
             </div>
         </div>
 
-        <!-- UNIFIED FINANCE CARD -->
         <div class="unified-finance-card" id="financeOverviewCard">
             <div class="uf-panel uf-left">
                 <div>
                     <div class="uf-header">
-                        <div class="uf-icon-badge uf-icon-green">
-                            <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        </div>
+                        <div class="uf-icon-badge uf-icon-green"><svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
                         <div class="uf-title uf-title-green">Today's Collection</div>
                     </div>
-                    <div class="uf-amount uf-amount-green">
-                        <span class="uf-rupee">₹</span>
-                        <span id="statTodayCollection">0</span>
-                    </div>
+                    <div class="uf-amount uf-amount-green"><span class="uf-rupee">₹</span><span id="statTodayCollection">0</span></div>
                 </div>
                 <div class="uf-footer">
-                    <span class="uf-footer-label">
-                        <span class="uf-status-dot uf-dot-green"></span>Live Today
-                    </span>
+                    <span class="uf-footer-label"><span class="uf-status-dot uf-dot-green"></span>Live Today</span>
                     <span class="uf-footer-value" style="color: #047857;">↑ Active</span>
                 </div>
             </div>
-
             <div class="uf-divider-line"></div>
-
             <div class="uf-panel uf-right">
                 <div>
                     <div class="uf-header">
-                        <div class="uf-icon-badge uf-icon-red">
-                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        </div>
+                        <div class="uf-icon-badge uf-icon-red"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
                         <div class="uf-title uf-title-red">Current Overdue</div>
                     </div>
-                    <div class="uf-amount uf-amount-red">
-                        <span class="uf-rupee">₹</span>
-                        <span id="statCurrentDue">0</span>
-                    </div>
+                    <div class="uf-amount uf-amount-red"><span class="uf-rupee">₹</span><span id="statCurrentDue">0</span></div>
                 </div>
                 <div class="uf-footer">
                     <span class="uf-footer-label">Total Pending</span>
-                    <span class="uf-footer-value" style="color: #b91c1c;">
-                        <span class="uf-footer-rupee">₹</span><span id="statPendingFees">0</span>
-                    </span>
+                    <span class="uf-footer-value" style="color: #b91c1c;"><span class="uf-footer-rupee">₹</span><span id="statPendingFees">0</span></span>
                 </div>
             </div>
         </div>
 
-        <!-- ALERT TICKER -->
         <div class="alert-ticker-wrap" id="alertTickerWrap">
             <div class="alert-ticker-track" id="alertTickerTrack"></div>
         </div>
 
-        <!-- ACADEMIC & ADMIN SECTION -->
         <div class="module-section">
             <h2 class="section-heading" style="color: #1e3a8a; margin: 0 0 15px 0 !important;">
                 <span class="section-heading-icon" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6);">
@@ -232,66 +198,48 @@
             </h2>
             
             <div class="nav-grid">
-                
                 <a href="enquiry.html" class="nav-btn">
                     <span class="nav-icon icon-bg-enq"><svg viewBox="0 0 24 24" fill="none" stroke="#d97706"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>Enquiry
                 </a>
-                
                 <a href="admission.html" class="nav-btn">
                     <span class="nav-icon icon-bg-adm"><svg viewBox="0 0 24 24" fill="none" stroke="#1d4ed8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg></span>Admission
                 </a>
-                
                 <a href="students.html" class="nav-btn">
                     <span class="nav-icon icon-bg-dir"><svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>Directory
                 </a>
-                
                 <a href="staff.html" class="nav-btn" id="navStaffBtn">
                     <span class="nav-icon icon-bg-staff"><svg viewBox="0 0 24 24" fill="none" stroke="#0f766e"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="12" cy="10" r="2.5"/><path d="M8 16.5c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5"/><line x1="7" y1="2" x2="7" y2="4"/><line x1="17" y1="2" x2="17" y2="4"/></svg></span>Staff & HR
                 </a>
-                
                 <a href="attendance.html" class="nav-btn">
                     <span class="nav-icon icon-bg-att"><svg viewBox="0 0 24 24" fill="none" stroke="#4338ca"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg></span>Attendance
                 </a>
-                
                 <a href="courses.html" class="nav-btn">
                     <span class="nav-icon icon-bg-crs"><svg viewBox="0 0 24 24" fill="none" stroke="#b45309"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>Courses
                 </a>
-                
                 <a href="exams.html" class="nav-btn">
                     <span class="nav-icon icon-bg-exm"><svg viewBox="0 0 24 24" fill="none" stroke="#b91c1c"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></span>Exams
                 </a>
-                
                 <a href="inventory.html" class="nav-btn">
                     <span class="nav-icon icon-bg-inv"><svg viewBox="0 0 24 24" fill="none" stroke="#334155"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>Inventory
                 </a>
-                
                 <a href="admission-report.html" class="nav-btn">
                     <span class="nav-icon icon-bg-rpt-adm"><svg viewBox="0 0 24 24" fill="none" stroke="#0369a1"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></span>Adm Report
                 </a>
-                
                 <a href="reminders.html" class="nav-btn">
                     <span class="nav-badge"></span>
                     <span class="nav-icon icon-bg-alert"><svg viewBox="0 0 24 24" fill="none" stroke="#d97706"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>Smart Alerts
                 </a>
-
                 <button type="button" onclick="window.openIDStudioSecure()" class="nav-btn" style="border: 1px solid #e2e8f0; cursor: pointer; background: transparent;">
                     <span class="nav-icon" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe);"><svg viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><circle cx="9" cy="15" r="2"></circle><line x1="13" y1="14" x2="17" y2="14"></line><line x1="13" y1="16" x2="17" y2="16"></line></svg></span>ID Card Studio
                 </button>
-                
-                <!-- NEW SETTINGS BUTTON FOR ADMIN -->
                 <a href="settings.html" class="nav-btn">
                     <span class="nav-icon" style="background: linear-gradient(135deg, #e2e8f0, #cbd5e1);">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                        </svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     </span>Inst. Settings
                 </a>
-
             </div>
         </div>
 
-        <!-- FINANCE & ACCOUNTS SECTION -->
         <div class="module-section" id="financeSection">
             <h2 class="section-heading" style="color: #064e3b; margin: 0 !important;">
                 <span class="section-heading-icon" style="background: linear-gradient(135deg, #047857, #10b981);">
@@ -301,19 +249,13 @@
             </h2>
             <div class="nav-grid">
                 <a href="fees.html" class="nav-btn fee-btn">
-                    <span class="nav-icon icon-bg-fee">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#047857"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="7" y1="15" x2="9" y2="15"/></svg>
-                    </span>Fee Collect
+                    <span class="nav-icon icon-bg-fee"><svg viewBox="0 0 24 24" fill="none" stroke="#047857"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="7" y1="15" x2="9" y2="15"/></svg></span>Fee Collect
                 </a>
                 <a href="expense.html" class="nav-btn expense-btn">
-                    <span class="nav-icon icon-bg-exp">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#be185d"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="13" y2="11"/></svg>
-                    </span>Day Book
+                    <span class="nav-icon icon-bg-exp"><svg viewBox="0 0 24 24" fill="none" stroke="#be185d"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="13" y2="11"/></svg></span>Day Book
                 </a>
                 <a href="report.html" class="nav-btn" id="navMasterReportBtn">
-                    <span class="nav-icon icon-bg-rpt">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#0f766e"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                    </span>Master Day Book
+                    <span class="nav-icon icon-bg-rpt"><svg viewBox="0 0 24 24" fill="none" stroke="#0f766e"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Master Day Book
                 </a>
             </div>
         </div>
@@ -322,9 +264,6 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
-        // -----------------------------------------------------
-        // MAGIC PROMPT (Verification Modal replacing native prompt)
-        // -----------------------------------------------------
         window.magicPrompt = function(msg, isText = false) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
@@ -352,23 +291,13 @@
             });
         };
 
-        // -----------------------------------------------------
-        // MAGIC ALERT
-        // -----------------------------------------------------
         window.alert = function(msg) {
             const oldBox = document.getElementById('customPromptBox'); 
             if (oldBox) oldBox.remove();
-            const box = document.createElement('div'); 
-            box.id = 'customPromptBox';
-            
+            const box = document.createElement('div'); box.id = 'customPromptBox';
             let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
-            
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('Denied')) {
-                iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
-            } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successfully')) {
-                iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
-            }
-
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('Denied')) { iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`; } 
+            else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successfully')) { iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`; }
             box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
             box.innerHTML = `
                 <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
@@ -382,67 +311,34 @@
             document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
-        // -----------------------------------------------------
-        // OPEN ID CARD STUDIO (With Security check)
-        // -----------------------------------------------------
         window.openIDStudioSecure = async function() {
-            if (localStorage.getItem('userRole') === 'Guest') { 
-                alert("⚠️ ID Studio is locked in Guest mode."); 
-                return; 
-            }
-            
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ ID Studio is locked in Guest mode."); return; }
             let num1 = Math.floor(Math.random() * 10) + 1; 
             let num2 = Math.floor(Math.random() * 10) + 1;
             let userInput = await window.magicPrompt(`🔒 Security Verification\nTo open ID Card Studio, please solve:\n\n${num1} + ${num2} = ?`);
-            
-            if (userInput !== null && parseInt(userInput) === (num1+num2)) {
-                window.location.href = 'id card generator.html'; 
-            } else {
-                if(userInput !== null) alert('❌ Verification failed! Access denied.');
-            }
+            if (userInput !== null && parseInt(userInput) === (num1+num2)) { window.location.href = 'id card generator.html'; } 
+            else { if(userInput !== null) alert('❌ Verification failed! Access denied.'); }
         };
 
-        // ==========================================
-        // 1. AUTHENTICATION & GUEST TIMER LOGIC
-        // ==========================================
         async function checkAuth() {
             const userRole = localStorage.getItem('userRole');
             const { data: { session } } = await supabase.auth.getSession();
 
-            // A. GUEST MODE CHECK (Demo Account)
             if (userRole === 'Guest') {
                 const loginTime = localStorage.getItem('guestLoginTime');
                 const timePassed = Date.now() - parseInt(loginTime || '0');
-                
-                if (timePassed > 30 * 60 * 1000) { // 30 Minutes limit
+                if (timePassed > 30 * 60 * 1000) {
                     alert("⏳ Guest session expired (30 minutes). Please login again.");
-                    localStorage.clear();
-                    window.location.href = 'login.html';
-                    return;
+                    localStorage.clear(); window.location.href = 'login.html'; return;
                 }
-                
                 document.getElementById('authRoleTitle').innerText = "Guest Demo";
                 document.getElementById('authEmail').innerText = "Read Only";
-                
-                // Auto-kick out when 30 mins are up
                 const timeLeft = (30 * 60 * 1000) - timePassed;
-                setTimeout(() => {
-                    alert("⏳ Guest session expired!");
-                    localStorage.clear();
-                    window.location.href = 'login.html';
-                }, Math.max(0, timeLeft));
-
-                applyRoleAccess('Guest');
-                loadSettings();
-                loadDashboardData();
-                return; // Allow Guest to stay on dashboard
+                setTimeout(() => { alert("⏳ Guest session expired!"); localStorage.clear(); window.location.href = 'login.html'; }, Math.max(0, timeLeft));
+                applyRoleAccess('Guest'); loadSettings(); loadDashboardData(); loadSaaSWidgets(); return;
             }
 
-            // B. NORMAL ADMIN / STAFF CHECK
-            if (!session) { 
-                window.location.href = 'login.html'; 
-                return; 
-            }
+            if (!session) { window.location.href = 'login.html'; return; }
             
             document.getElementById('authRoleTitle').innerText = userRole || "Admin";
             document.getElementById('authEmail').innerText = session.user.email.split('@')[0];
@@ -450,83 +346,76 @@
             applyRoleAccess(userRole || 'Admin');
             loadSettings();
             loadDashboardData();
+            loadSaaSWidgets(); // Load the new SaaS Alerts
             buildSmartTicker();
             setInterval(buildSmartTicker, 30000); 
         }
 
-        // ==========================================
-        // 2. DYNAMIC ROLE BASED ACCESS CONTROL (RBAC)
-        // ==========================================
+        // 🔥 NEW: LOAD SAAS ALERTS (Traffic Light & Promo)
+        async function loadSaaSWidgets() {
+            try {
+                const { data: client } = await supabase.from('saas_clients').select('*').limit(1).single();
+                if (!client) return;
+
+                const container = document.getElementById('saasAlertsContainer');
+                let html = '';
+
+                // 1. Promo Message
+                if (client.promo_message && client.promo_message.trim() !== '') {
+                    html += `<div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(16,185,129,0.2);">🎁 ${client.promo_message}</div>`;
+                }
+
+                // 2. Traffic Light Warning
+                const { count, error } = await supabase.from('students').select('*', { count: 'exact', head: true });
+                if (!error && client.admission_limit) {
+                    const limit = client.admission_limit;
+                    const current = count || 0;
+                    const percentage = (current / limit) * 100;
+
+                    if (percentage >= 100) {
+                        html += `<div style="background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px;">⛔ CRITICAL: Admission limit reached (${current}/${limit}). New admissions are locked. Please contact provider.</div>`;
+                    } else if (percentage >= 95) {
+                        html += `<div style="background: #ffedd5; border: 1px solid #f59e0b; color: #b45309; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px;">⚠️ WARNING: Only ${limit - current} seats left in your current plan (${current}/${limit}).</div>`;
+                    } else if (percentage >= 90) {
+                        html += `<div style="background: #fef9c3; border: 1px solid #fde047; color: #854d0e; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px;">📝 Note: You have reached 90% of your admission limit (${current}/${limit}).</div>`;
+                    }
+                }
+                container.innerHTML = html;
+            } catch(e) {}
+        }
+
         window.applyRoleAccess = async function(role) {
-            // Super Admin, Admin, Guest എന്നിവർക്ക് എല്ലാ ഐക്കണുകളും കാണിക്കാം
             if (role === 'Super Admin' || role === 'Admin' || role === 'Guest') {
                 document.querySelectorAll('.nav-btn').forEach(btn => btn.style.setProperty('display', 'flex', 'important'));
                 return;
             }
-
-            // മറ്റ് റോളുകൾക്ക് (Teacher, Staff) 
             document.querySelectorAll('.nav-btn').forEach(btn => btn.style.setProperty('display', 'none', 'important'));
-
             try {
-                // Supabase-ൽ നിന്നും ഈ റോളിന്റെ പെർമിഷനുകൾ എടുക്കുന്നു
                 const { data, error } = await supabase.from('role_management').select('permissions').ilike('role_name', role).single();
-                
                 if (data && data.permissions) {
                     const p = data.permissions;
-                    
                     const moduleMap = {
-                        'Enquiry': 'a[href="enquiry.html"]',
-                        'Admission': 'a[href="admission.html"]',
-                        'Directory': 'a[href="students.html"]',
-                        'StaffHR': 'a[href="staff.html"]',
-                        'Attendance': 'a[href="attendance.html"]',
-                        'Courses': 'a[href="courses.html"]',
-                        'Exams': 'a[href="exams.html"]',
-                        'Inventory': 'a[href="inventory.html"]',
-                        'AdmReport': 'a[href="admission-report.html"]',
-                        'SmartAlerts': 'a[href="reminders.html"]',
-                        'IDCardStudio': 'button[onclick="window.openIDStudioSecure()"]',
-                        'FeeCollect': 'a[href="fees.html"]',
-                        'DayBook': 'a[href="expense.html"]',
-                        'MasterDayBook': 'a[href="report.html"]',
-                        'SystemSettings': 'a[href="settings.html"]'
+                        'Enquiry': 'a[href="enquiry.html"]', 'Admission': 'a[href="admission.html"]', 'Directory': 'a[href="students.html"]', 'StaffHR': 'a[href="staff.html"]',
+                        'Attendance': 'a[href="attendance.html"]', 'Courses': 'a[href="courses.html"]', 'Exams': 'a[href="exams.html"]', 'Inventory': 'a[href="inventory.html"]',
+                        'AdmReport': 'a[href="admission-report.html"]', 'SmartAlerts': 'a[href="reminders.html"]', 'IDCardStudio': 'button[onclick="window.openIDStudioSecure()"]',
+                        'FeeCollect': 'a[href="fees.html"]', 'DayBook': 'a[href="expense.html"]', 'MasterDayBook': 'a[href="report.html"]', 'SystemSettings': 'a[href="settings.html"]'
                     };
-
-                    // ഡാറ്റാബേസിൽ View പെർമിഷൻ (true) ഉള്ളവ മാത്രം സ്ക്രീനിൽ തിരികെ കൊണ്ടുവരുന്നു
                     for (const [modId, selector] of Object.entries(moduleMap)) {
                         const el = document.querySelector(selector);
-                        if (el && p[modId] && p[modId].view === true) {
-                            el.style.setProperty('display', 'flex', 'important'); 
-                        }
+                        if (el && p[modId] && p[modId].view === true) { el.style.setProperty('display', 'flex', 'important'); }
                     }
-
-                    // കാലിയായ സെക്ഷനുകൾ സ്ക്രീനിൽ നിന്ന് പൂർണ്ണമായി മറയ്ക്കാൻ
                     document.querySelectorAll('.module-section').forEach(section => {
-                        // ഈ സെക്ഷനകത്ത് കാണാൻ അനുമതിയുള്ള ഏതെങ്കിലും ബട്ടൺ ഉണ്ടോ എന്ന് നോക്കുന്നു
                         const visibleBtns = Array.from(section.querySelectorAll('.nav-btn')).filter(btn => btn.style.display === 'flex');
-                        
-                        if (visibleBtns.length === 0) {
-                            section.style.setProperty('display', 'none', 'important');
-                        } else {
-                            section.style.setProperty('display', 'block', 'important');
-                        }
+                        if (visibleBtns.length === 0) section.style.setProperty('display', 'none', 'important');
+                        else section.style.setProperty('display', 'block', 'important');
                     });
-
-                } else {
-                    console.log("No permissions assigned or role not found for:", role);
                 }
-            } catch (err) {
-                console.error("Role Verification Error:", err);
-            }
+            } catch (err) {}
         };
 
-        // ==========================================
-        // 3. DASHBOARD WIDGETS & CLOUD TICKER
-        // ==========================================
         window.buildSmartTicker = async function() {
             const eventSet = localStorage.getItem('ERP_events_settings');
             let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
-            
             const wrap = document.getElementById('alertTickerWrap');
             const track = document.getElementById('alertTickerTrack');
 
@@ -535,7 +424,6 @@
             let tickerItems = [];
             const now = new Date();
             
-            // 1. LOCAL BELL WARNINGS (പഴയ ബെൽ സിസ്റ്റം അതുപോലെ നിലനിർത്തിയിട്ടുണ്ട്)
             const savedBell = localStorage.getItem('ERP_bell_settings_final'); 
             if(savedBell) {
                 const bSettings = JSON.parse(savedBell);
@@ -557,20 +445,14 @@
                 }
             }
 
-            // 2. FETCH CLOUD ALERTS FROM SUPABASE (പുതിയ ക്ലൗഡ് നോട്ടിഫിക്കേഷൻ)
             try {
                 const userEmail = localStorage.getItem('userEmail');
                 const userRole = localStorage.getItem('userRole') || 'Guest';
-                
                 let localDate = new Date();
                 localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
                 const todayStr = localDate.toISOString().split('T')[0];
 
-                const { data, error } = await supabase.from('smart_alerts')
-                    .select('*')
-                    .gte('alert_date', todayStr) 
-                    .order('alert_date', { ascending: true })
-                    .order('alert_time', { ascending: true });
+                const { data, error } = await supabase.from('smart_alerts').select('*').gte('alert_date', todayStr).order('alert_date', { ascending: true }).order('alert_time', { ascending: true });
 
                 if (data && data.length > 0) {
                     data.forEach(alert => {
@@ -584,27 +466,19 @@
                             let timeParts = alert.alert_time.split(':');
                             let displayTime = `${timeParts[0] % 12 || 12}:${timeParts[1]} ${timeParts[0] >= 12 ? 'PM' : 'AM'}`;
                             let displayDate = new Date(alert.alert_date).toLocaleDateString('en-IN', { day:'2-digit', month:'short'});
-                            
                             let icon = alert.alert_type === 'Reminder' ? '🔔' : (alert.alert_type === 'Event' ? '📅' : '📢');
                             let targetBadge = alert.target_audience === 'General' ? '' : `[${alert.target_audience}] `;
-                            
                             tickerItems.push(`<a href="reminders.html" class="alert-item" style="color:#0f172a; border: 1px solid #cbd5e1;">${icon} <span style="font-weight:900; color:#2563eb;">${targetBadge}</span> ${alert.title} - ${displayDate} | ${displayTime}</a>`);
                         }
                     });
                 }
-            } catch (err) {
-                console.error("Cloud Ticker Error:", err);
-            }
+            } catch (err) {}
 
-            // 3. RENDER TICKER TO SCREEN
             if (tickerItems.length > 0) {
                 wrap.style.display = 'flex';
                 if(tickerItems.length < 3) tickerItems = [...tickerItems, ...tickerItems, ...tickerItems];
                 track.innerHTML = tickerItems.join('');
-            } else {
-                wrap.style.display = 'none';
-                track.innerHTML = '';
-            }
+            } else { wrap.style.display = 'none'; track.innerHTML = ''; }
         };
 
         async function loadDashboardData() {
@@ -668,32 +542,23 @@
             try {
                 const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
                 if (data) {
-                    if (data.theme_color) {
-                        document.documentElement.style.setProperty('--app-theme-color', data.theme_color);
-                    }
+                    if (data.theme_color) { document.documentElement.style.setProperty('--app-theme-color', data.theme_color); }
                     document.getElementById('navInstName').innerText = data.institute_name || '';
                     document.getElementById('navSubName').innerText = data.sub_name || '';
                     if(data.logo_url) {
                         let logoEl = document.querySelector('.logo-small');
-                        if (logoEl) {
-                            logoEl.src = data.logo_url;
-                            logoEl.style.display = 'block';
-                        }
+                        if (logoEl) { logoEl.src = data.logo_url; logoEl.style.display = 'block'; }
                     }
                 }
             } catch (e) {}
         }
 
-        // ==========================================
-        // 6. LOGOUT
-        // ==========================================
         document.getElementById('logoutBtn').addEventListener('click', async () => { 
             await supabase.auth.signOut(); 
             localStorage.clear(); 
             window.location.replace('login.html'); 
         });
 
-        // Initialize Dashboard
         checkAuth();
     </script>
 </body>
