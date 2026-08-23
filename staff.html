@@ -357,15 +357,12 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
-        window.staffPerms = { view: true, add: false, edit: false, delete: false };
-
         // 1. MAGIC ALERT OVERRIDE
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let borderColor = '#3b82f6'; 
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('failed') || msg.includes('required') || msg.includes('Denied')) borderColor = '#ef4444'; 
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('failed') || msg.includes('required')) borderColor = '#ef4444'; 
             else if (msg.includes('✅') || msg.includes('success') || msg.includes('Complete')) borderColor = '#10b981'; 
             box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #ffffff; color: #1e293b; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-left: 5px solid ${borderColor}; font-size: 14px; font-weight: 800; z-index: 10000; display: flex; align-items: center; justify-content: space-between; min-width: 300px; animation: slideDown 0.3s ease;`;
             box.innerHTML = `<span>${msg}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;font-weight:900;cursor:pointer;color:#94a3b8;font-size:16px;">X</button>`;
@@ -420,9 +417,17 @@
                 if (userRole === 'Super Admin' || userRole === 'Admin') {
                     window.staffPerms = { view: true, add: true, edit: true, delete: true };
                 } else if (userRole !== 'Guest') {
-                    const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).single();
-                    if (data && data.permissions && data.permissions['StaffHR']) {
-                        window.staffPerms = data.permissions['StaffHR'];
+                    try {
+                        const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).maybeSingle();
+                        if (data && data.permissions && data.permissions['StaffHR']) {
+                            window.staffPerms = data.permissions['StaffHR'];
+                        } else {
+                            // Failsafe default if role isn't completely configured
+                            window.staffPerms = { view: true, add: false, edit: false, delete: false };
+                        }
+                    } catch(err) {
+                        console.error("Role fetch error:", err);
+                        window.staffPerms = { view: true, add: false, edit: false, delete: false };
                     }
                 }
 
@@ -454,8 +459,13 @@
                         if(fabBtn) fabBtn.onclick = function(e) { e.preventDefault(); alert("⚠️ This action is disabled in Guest/Demo mode."); return false; }
                     }, 1000);
                 }
-                await loadInstSettings(); await fetchAllData();
-            } catch(e) { console.error("Init error:", e); }
+                
+                await loadInstSettings(); 
+                await fetchAllData();
+            } catch(e) { 
+                console.error("Init error:", e); 
+                document.getElementById('staffList').innerHTML = '<div class="empty-state" style="color:red;">Error loading staff data.</div>';
+            }
         }
 
         async function loadInstSettings() {
@@ -530,9 +540,17 @@
                 sel.innerHTML = '<option value="">-- Choose Staff --</option>';
                 active.forEach(s => { sel.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)); });
             });
-            document.getElementById('advDate').value = new Date().toISOString().split('T')[0];
-            const now = new Date(); document.getElementById('payMonth').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+            
+            const advDateInput = document.getElementById('advDate');
+            if(advDateInput) { advDateInput.value = new Date().toISOString().split('T')[0]; }
+            
+            const payMonthInput = document.getElementById('payMonth');
+            if(payMonthInput) { 
+                const now = new Date(); 
+                payMonthInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`; 
+            }
         }
+        
         window.renderDirectory = function() {
             const search = document.getElementById('staffSearch').value.toLowerCase();
             const role = document.getElementById('filterRole').value;
@@ -666,20 +684,8 @@
             btn.disabled = true; btn.textContent = '⏳ Saving...';
 
             try {
-                // 1. Create Login in Supabase Auth
-                const { data: authData, error: authErr } = await supabase.auth.signUp({
-                    email: email,
-                    password: password
-                });
-                
-                if (authErr) {
-                    alert('Auth Error: ' + authErr.message);
-                    btn.disabled = false; btn.textContent = '✅ Save Staff Member';
-                    return;
-                }
-
-                // 2. Insert Staff Profile Details
-                const { error } = await supabase.from('staff').insert([{
+                // 1. Insert Staff Profile Details FIRST
+                const { error: dbError } = await supabase.from('staff').insert([{
                     full_name: name, 
                     phone: phone, 
                     gender: document.getElementById('addGender').value,
@@ -692,16 +698,30 @@
                     status: 'active'
                 }]);
 
-                if (error) { alert('Error saving profile: ' + error.message); } 
-                else { 
-                    alert('✅ Staff added! NOTE: Supabase Auth might log you out automatically after creating a new user. If so, simply log back in as Super Admin.'); 
+                if (dbError) { 
+                    alert('Error saving profile: ' + dbError.message); 
+                    btn.disabled = false; btn.textContent = '✅ Save Staff Member';
+                    return;
+                } 
+
+                // 2. Create Login in Supabase Auth
+                const { data: authData, error: authErr } = await supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+                
+                if (authErr) {
+                    alert('⚠️ Staff added to DB, but login creation failed: ' + authErr.message);
                     closeModal('addStaffModal');
-                    ['addName','addPhone','addEmail','addPassword','addSalary','addJoinDate','addQual','addAddress'].forEach(id => document.getElementById(id).value = '');
                     await fetchAllData();
+                } else {
+                    alert('✅ Staff successfully added!\n\nSecurity Notice: Because you created a new login, the system has securely logged you out. Please log in again as Super Admin.'); 
+                    await supabase.auth.signOut();
+                    localStorage.clear();
+                    window.location.replace('login.html');
                 }
             } catch(e) {
                 alert('Unexpected Error: ' + e.message);
-            } finally {
                 btn.disabled = false; btn.textContent = '✅ Save Staff Member';
             }
         };
