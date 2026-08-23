@@ -42,7 +42,7 @@ async function verifySaaSStatus() {
         const { data: client, error } = await supabase.from('saas_clients').select('*').limit(1).single();
         if (error || !client) return;
 
-        // 1. THE MASTER KILL SWITCH
+       // 1. THE MASTER KILL SWITCH
         if (client.is_active === false) {
             document.body.innerHTML = `
                 <div style="height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: #0f172a; color: #f8fafc; flex-direction: column; font-family: 'Segoe UI', Tahoma, sans-serif; text-align: center; padding: 20px; position: fixed; top: 0; left: 0; z-index: 9999999;">
@@ -51,8 +51,15 @@ async function verifySaaSStatus() {
                     <p style="color: #94a3b8; font-size: 15px; max-width: 450px; margin-top: 15px; line-height: 1.6;">
                         Your ERP software subscription has been suspended or your license has expired. Access to the system is permanently locked.
                     </p>
+                    
+                    <!-- NEW GRACE PERIOD DATA WARNING -->
+                    <div style="margin-top: 20px; background: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; padding: 12px 20px; border-radius: 8px; color: #fcd34d; font-size: 13px; max-width: 450px; line-height: 1.5;">
+                        ⚠️ <strong style="letter-spacing: 0.5px;">DATA RETENTION WARNING</strong><br>
+                        If the subscription is not renewed, your entire institute data will be permanently deleted from our servers after <strong>60 days</strong>.
+                    </div>
+
                     <div style="margin-top: 30px; background: #1e293b; padding: 15px 25px; border: 1px dashed #334155; border-radius: 12px; color: #cbd5e1; font-size: 14px;">
-                        To restore access, contact your provider:<br>
+                        To restore access and protect your data, contact your provider immediately:<br>
                         <strong style="color: #3b82f6; font-size: 16px; display: inline-block; margin-top: 8px;">vpktechsolutions@gmail.com</strong>
                     </div>
                 </div>
