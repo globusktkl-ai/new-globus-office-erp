@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Official ID Card Studio</title>
+<title>Official ID Card Studio - Pro</title>
 
 <!-- External Libraries for Exporting PNG & PDF smoothly -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -11,566 +11,294 @@
 
 <style>
 /* ================= GLOBAL STYLES ================= */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root { --primary: #1e3a8a; --secondary: #0f172a; --accent: #3b82f6; --bg-light: #f1f5f9; --glass-bg: #ffffff; --border-color: #cbd5e1; --text-main: #334155; --text-muted: #64748b; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #e2e8f0; color: var(--text-main); overflow-x: hidden; min-height: 100vh; }
 
-:root {
-    --primary: #1e3a8a;
-    --secondary: #0f172a;
-    --accent: #3b82f6;
-    --bg-light: #f1f5f9;
-    --glass-bg: #ffffff;
-    --border-color: #cbd5e1;
-    --text-main: #334155;
-    --text-muted: #64748b;
-}
+/* ================= TOP TOOLBAR (HORIZONTAL) ================= */
+.top-toolbar { position: fixed; top: 0; left: 0; right: 0; background: #ffffff; border-bottom: 2px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1000; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+.top-toolbar.hidden-mode { transform: translateY(-100%); }
 
-body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg-light);
-    color: var(--text-main);
-    overflow-x: hidden;
-    min-height: 100vh;
-}
+/* Show Tools Button (Always fixed at top, visible only when toolbar is hidden) */
+.show-tools-btn { position: fixed; top: -50px; left: 50%; transform: translateX(-50%); background: #1e3a8a; color: #ffffff; padding: 6px 20px; border-radius: 0 0 12px 12px; font-size: 12px; font-weight: 800; cursor: pointer; z-index: 999; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #1e40af; border-top: none; }
+.show-tools-btn.active { top: 0; }
 
-/* ================= SMART MOBILE TOOLBAR ================= */
-/* Master Container */
-.master-toolbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.master-toolbar.hidden-mode { transform: translateY(-100%); }
-
-/* Top Row - 4 Buttons */
-.toolbar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 15px;
-    background: #ffffff;
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.header-btn {
-    background: #f8fafc;
-    border: 1px solid var(--border-color);
-    color: var(--secondary);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-}
+.toolbar-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #f1f5f9; }
+.header-btn { background: #f8fafc; border: 1px solid var(--border-color); color: var(--secondary); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px; text-decoration: none; }
 .header-btn:active { transform: scale(0.95); background: #e2e8f0; }
 .header-btn.back-btn { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-.header-btn.hide-btn { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+.header-btn.hide-btn { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
 
-/* The Pocket Button (To unhide toolbar) */
-.pocket-toggle {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ffffff;
-    border: 1px solid var(--border-color);
-    border-top: none;
-    padding: 6px 20px;
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    z-index: 999;
-    font-size: 12px;
-    font-weight: 900;
-    color: #1e3a8a;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: top 0.3s;
-}
-.pocket-toggle.active-mode { top: -50px; }
-
-/* Settings Area (Tabs & Panels) */
-.settings-area {
-    background: rgba(255,255,255,0.98);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-    border-bottom: 2px solid var(--border-color);
-    transition: max-height 0.3s ease-in-out, opacity 0.3s;
-    max-height: 500px;
-    overflow: visible;
-}
-.settings-area.collapsed { max-height: 0; opacity: 0; pointer-events: none; overflow: hidden; }
-
-/* Panel Toggle Pocket */
-.panel-toggle-pocket {
-    position: absolute;
-    bottom: -28px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ffffff;
-    border: 1px solid var(--border-color);
-    border-top: none;
-    padding: 4px 20px;
-    border-radius: 0 0 10px 10px;
-    font-size: 10px;
-    font-weight: 900;
-    color: #475569;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    z-index: 1001;
-}
-
-/* Tabs */
-.tab-nav {
-    display: flex;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding: 10px 15px;
-    gap: 8px;
-    background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
-}
+/* Tabs Navigation */
+.tab-nav { display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px 15px; gap: 8px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
 .tab-nav::-webkit-scrollbar { display: none; }
-.tab-btn {
-    flex-shrink: 0;
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    background: #ffffff;
-    color: var(--text-muted);
-    font-size: 12px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: all 0.2s;
-}
+.tab-btn { flex-shrink: 0; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: #ffffff; color: var(--text-muted); font-size: 12px; font-weight: 800; cursor: pointer; transition: all 0.2s; }
 .tab-btn.active { background: var(--primary); color: #ffffff; border-color: var(--primary); box-shadow: 0 4px 10px rgba(30,58,138,0.2); }
 
 /* Tool Panels */
-.tool-panels {
-    width: 100%;
-    padding: 15px;
-    display: flex;
-    gap: 15px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-}
-.tool-panels::-webkit-scrollbar { display: none; }
+.tool-panels { width: 100%; padding: 15px; display: flex; gap: 15px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; background: #ffffff; max-height: 220px; }
+.tool-panels::-webkit-scrollbar { height: 4px; }
+.tool-panels::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 .tool-panel { display: none; gap: 15px; }
 .tool-panel.active { display: flex; }
 
-.tool-group {
-    flex-shrink: 0;
-    background: #ffffff;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px;
-    min-width: 220px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-}
-.tool-group-title { font-size: 11px; text-transform: uppercase; color: var(--primary); letter-spacing: 0.5px; margin-bottom: 10px; font-weight: 900; border-bottom: 1px dashed #e2e8f0; padding-bottom: 5px; }
+.tool-group { flex-shrink: 0; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; min-width: 220px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+.tool-group-title { font-size: 11px; text-transform: uppercase; color: var(--primary); letter-spacing: 0.5px; margin-bottom: 10px; font-weight: 900; border-bottom: 1px dashed #cbd5e1; padding-bottom: 5px; }
 
 .frm-label { display: block; font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px; margin-top: 8px; }
-.frm-input, .frm-select, .frm-textarea {
-    width: 100%; padding: 8px 10px; background: #f8fafc; border: 1px solid var(--border-color);
-    border-radius: 6px; color: var(--secondary); font-size: 13px; font-weight: 600; outline: none; transition: 0.2s;
-}
-.frm-input:focus, .frm-select:focus, .frm-textarea:focus { border-color: var(--accent); background: #ffffff; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+.frm-input, .frm-select, .frm-textarea { width: 100%; padding: 8px 10px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 6px; color: var(--secondary); font-size: 13px; font-weight: 600; outline: none; transition: 0.2s; }
+.frm-input:focus, .frm-select:focus, .frm-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
 .frm-textarea { height: 50px; resize: none; }
 
 .color-row { display: flex; gap: 8px; align-items: center; margin-top: 5px; }
-.color-picker { width: 35px; height: 35px; border: none; border-radius: 6px; cursor: pointer; padding: 0; background: transparent; }
+.color-picker { width: 35px; height: 35px; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; padding: 0; background: transparent; }
 
-.upload-box {
-    width: 100%; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 15px; text-align: center;
-    cursor: pointer; background: #f8fafc; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center;
-}
+.upload-box { width: 100%; border: 2px dashed #94a3b8; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; background: #ffffff; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 5px; }
 .upload-box:hover { border-color: var(--accent); background: #eff6ff; }
-.upload-box img { max-width: 100%; max-height: 80px; object-fit: contain; display: none; border-radius: 4px; }
-.upload-box span { font-size: 24px; margin-bottom: 5px; }
+.upload-box img { max-width: 100%; max-height: 60px; object-fit: contain; display: none; border-radius: 4px; }
+.upload-box span { font-size: 20px; margin-bottom: 2px; }
 
-/* ================= WORKSPACE & VIEW CONTROLS ================= */
-.workspace-area {
-    margin-top: 180px; /* Space for toolbar */
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: calc(100vh - 180px);
-    transition: margin-top 0.3s;
-}
+/* ================= WORKSPACE (CANVAS) ================= */
+.workspace-area { margin-top: 250px; padding: 20px 15px 120px 15px; display: flex; flex-direction: column; align-items: center; transition: margin-top 0.3s; }
+.workspace-area.expanded { margin-top: 60px; }
 
 /* Sticky View Controls */
-.view-controls-wrapper {
-    position: sticky;
-    top: 10px;
-    z-index: 500;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: 20px;
-    pointer-events: none; /* Let clicks pass through empty space */
-}
-.view-controls {
-    display: inline-flex;
-    background: #ffffff;
-    padding: 6px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border: 1px solid var(--border-color);
-    gap: 5px;
-    pointer-events: auto; /* Re-enable clicks for buttons */
-}
-.v-btn {
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 12px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.2s;
-}
+.view-controls-wrapper { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; width: 100%; }
+.view-controls { display: inline-flex; background: #ffffff; padding: 6px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border-color); gap: 5px; }
+.v-btn { padding: 8px 16px; border-radius: 8px; border: none; background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
 .v-btn.active { background: var(--primary); color: #ffffff; }
 .v-btn-outline { border: 1px solid var(--border-color); background: #f8fafc; color: var(--secondary); }
 
+/* Zoom Controls */
+.zoom-controls { display: inline-flex; align-items: center; background: #ffffff; padding: 6px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border-color); gap: 5px; }
+.z-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; color: #1e3a8a; font-size: 16px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.z-btn:active { background: #e2e8f0; }
+.z-text { font-size: 12px; font-weight: 800; color: #475569; width: 45px; text-align: center; }
+
 /* The ID Card Canvas */
-.card-canvas-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-bottom: 100px;
-}
-.card-zoom-wrapper { transition: transform 0.2s; transform-origin: top center; }
+.card-canvas-container { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding: 20px 0; overflow: visible; }
+.card-zoom-wrapper { transition: transform 0.2s ease-out; transform-origin: top center; }
 
 /* Official Professional Dimensions (CR80 Standard Ratio) */
-.id-card {
-    width: 336px;
-    height: 212px;
-    position: relative;
-    transition: width 0.3s, height 0.3s;
-    background: transparent;
-}
-.id-card.portrait { width: 212px; height: 336px; }
+.id-card-wrapper { position: relative; background: transparent; transition: width 0.3s, height 0.3s; }
+.id-card-wrapper.landscape { width: 336px; height: 212px; }
+.id-card-wrapper.portrait { width: 212px; height: 336px; }
 
 /* Double sided setup */
-.id-card.show-both { height: 440px; }
-.id-card.show-both.portrait { width: 440px; height: 336px; }
+.id-card-wrapper.show-both.landscape { height: 440px; }
+.id-card-wrapper.show-both.portrait { width: 440px; height: 336px; }
 
-.card-face {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: #ffffff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    border: 1px solid #e2e8f0;
-    box-sizing: border-box;
-}
+.card-face { position: absolute; width: 100%; height: 100%; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; }
 
-.id-card.show-both .card-front { top: 0; height: 212px; }
-.id-card.show-both .card-back { top: 228px; height: 212px; display: block !important; }
-.id-card.show-both.portrait .card-front { top: 0; left: 0; width: 212px; height: 336px; }
-.id-card.show-both.portrait .card-back { top: 0; left: 228px; width: 212px; height: 336px; display: block !important; }
+.id-card-wrapper.show-both.landscape .card-front { top: 0; height: 212px; }
+.id-card-wrapper.show-both.landscape .card-back { top: 228px; height: 212px; display: block !important; }
+.id-card-wrapper.show-both.portrait .card-front { top: 0; left: 0; width: 212px; height: 336px; }
+.id-card-wrapper.show-both.portrait .card-back { top: 0; left: 228px; width: 212px; height: 336px; display: block !important; }
 
 .card-back { display: none; }
 
 /* ================= DRAG & DROP ELEMENTS ================= */
-.draggable {
-    position: absolute;
-    cursor: grab;
-    user-select: none;
-    touch-action: none;
-    border: 1px dashed transparent;
-    padding: 2px;
-    z-index: 10;
-}
-.draggable:hover, .draggable.active-drag {
-    border-color: var(--accent);
-    background: rgba(59, 130, 246, 0.05);
-}
-.draggable:active { cursor: grabbing; }
+.drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; border: 1px dashed transparent; padding: 2px; transition: border 0.2s; z-index: 10; }
+.drag-el:hover, .drag-el.active-drag { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+.drag-el:active { cursor: grabbing; }
 
-/* Element specific standard styles */
+/* Element Styles */
 .el-logo { width: 45px; height: 45px; object-fit: contain; }
-.el-org { line-height: 1.2; text-align: center; }
+.el-org { line-height: 1.2; }
 .el-org-name { font-size: 14px; font-weight: 900; text-transform: uppercase; }
 .el-org-sub { font-size: 8px; font-weight: 700; opacity: 0.9; }
 .el-org-address { font-size: 7px; font-weight: 600; opacity: 0.8; }
 .el-photo { width: 75px; height: 95px; border-radius: 8px; border: 2px solid #cbd5e1; object-fit: cover; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.el-photo img { width: 100%; height: 100%; object-fit: cover; }
-.el-name-block { text-align: center; line-height: 1.2; }
-.el-name { font-size: 15px; font-weight: 900; color: #0f172a; text-transform: uppercase; }
-.el-designation { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; margin-top: 2px; }
-.el-details { font-size: 9px; font-weight: 700; color: #334155; line-height: 1.5; }
+.el-photo img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.el-name-block { line-height: 1.2; }
+.el-name { font-size: 15px; font-weight: 900; text-transform: uppercase; }
+.el-designation { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-top: 2px; }
+.el-details { font-size: 9px; font-weight: 700; line-height: 1.5; }
 .el-details table { width: 100%; border-collapse: collapse; }
 .el-details td { padding: 1px 0; vertical-align: top; }
-.el-details .dlbl { color: #64748b; width: 55px; }
+.el-details .dlbl { width: 55px; opacity: 0.8; }
 .el-signature { display: flex; flex-direction: column; align-items: center; }
-.el-signature img { height: 25px; object-fit: contain; }
-.el-signature-line { border-top: 1px solid #000; width: 60px; text-align: center; font-size: 7px; font-weight: 700; padding-top: 2px; margin-top: 2px; }
-.el-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+.el-signature img { height: 25px; object-fit: contain; pointer-events: none; }
+.el-signature-line { border-top: 1px solid; width: 60px; text-align: center; font-size: 7px; font-weight: 700; padding-top: 2px; margin-top: 2px; opacity: 0.8; }
+.el-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
 
 /* Back elements */
-.el-qr { width: 60px; height: 60px; object-fit: contain; }
-.el-terms { font-size: 8px; font-weight: 600; color: #475569; text-align: center; line-height: 1.4; }
-.el-return { font-size: 9px; font-weight: 800; color: #b91c1c; text-align: center; line-height: 1.3; border: 1px dashed #fca5a5; padding: 4px; border-radius: 4px; background: #fef2f2; }
+.el-qr { width: 60px; height: 60px; object-fit: contain; pointer-events: none; }
+.el-terms { font-size: 8px; font-weight: 600; line-height: 1.4; }
+.el-return { font-size: 9px; font-weight: 800; line-height: 1.3; border: 1px dashed; padding: 4px; border-radius: 4px; }
 
-/* Shapes */
-.bg-shape-top, .bg-shape-bottom { position: absolute; left: 0; right: 0; z-index: 1; }
-.bg-shape-top { top: 0; }
-.bg-shape-bottom { bottom: 0; }
+/* BG Shapes */
+.bg-header-shape { position: absolute; top: 0; left: 0; right: 0; z-index: 1; }
+.bg-footer-shape { position: absolute; bottom: 0; left: 0; right: 0; z-index: 1; }
 
 /* SaaS Watermark */
-.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(0,0,0,0.4); z-index: 100; pointer-events: none; display: none; }
+.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 7px; font-weight: 800; z-index: 100; pointer-events: none; display: none; opacity: 0.6; }
 
-/* ================= 20 PROFESSIONAL LIGHT TEMPLATES ================= */
-/* We define variables that JS will inject. We use generic light CSS */
-.tpl-1 .bg-shape-top { height: 60px; background: #1e3a8a; border-bottom: 4px solid #f59e0b; }
-.tpl-1 .bg-shape-bottom { height: 15px; background: #1e3a8a; }
+/* ================= BOTTOM EXPORT BAR ================= */
+.export-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid #cbd5e1; padding: 10px 15px; display: flex; justify-content: center; gap: 10px; z-index: 1000; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); }
+.export-btn { flex: 1; max-width: 200px; padding: 12px; border: none; border-radius: 10px; font-size: 13px; font-weight: 800; color: #fff; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.export-btn:active { transform: scale(0.95); }
+.btn-png { background: linear-gradient(135deg, #10b981, #059669); }
+.btn-pdf { background: linear-gradient(135deg, #ef4444, #dc2626); }
 
-.tpl-2 .bg-shape-top { height: 75px; background: #0f766e; border-radius: 0 0 50% 50%; }
-.tpl-2 .bg-shape-bottom { height: 20px; background: #0f766e; border-radius: 50% 50% 0 0; }
-
-.tpl-3 .bg-shape-top { height: 100%; width: 35%; background: #be185d; right: auto; }
-.tpl-3 .bg-shape-bottom { display: none; }
-
-.tpl-4 .bg-shape-top { height: 50px; background: #ffffff; border-bottom: 2px solid #cbd5e1; }
-.tpl-4 .bg-shape-bottom { height: 30px; background: #f8fafc; border-top: 1px solid #cbd5e1; }
-
-.tpl-5 .bg-shape-top { height: 65px; background: linear-gradient(135deg, #4338ca, #312e81); clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%); }
-.tpl-5 .bg-shape-bottom { height: 20px; background: #312e81; clip-path: polygon(0 30%, 100% 0, 100% 100%, 0 100%); }
-
-.tpl-6 .bg-shape-top { height: 55px; background: #b45309; }
-.tpl-6 .bg-shape-bottom { height: 10px; background: #b45309; }
-
-.tpl-7 .bg-shape-top { height: 15px; background: #047857; }
-.tpl-7 .bg-shape-bottom { height: 15px; background: #047857; }
-
-.tpl-8 .bg-shape-top { height: 80px; background: #f1f5f9; border-bottom: 3px double #94a3b8; }
-.tpl-8 .bg-shape-bottom { display: none; }
-
-.tpl-9 .bg-shape-top { height: 70px; background: #6d28d9; clip-path: ellipse(100% 100% at 50% 0%); }
-.tpl-9 .bg-shape-bottom { height: 20px; background: #6d28d9; }
-
-.tpl-10 .bg-shape-top { height: 100%; width: 100%; background: #ffffff; border: 8px solid #1e40af; border-radius: 10px; }
-.tpl-10 .bg-shape-bottom { display: none; }
-
-/* The rest follow plain white/light layouts with varied accent borders */
-.tpl-11 .bg-shape-top { height: 50px; background: #334155; }
-.tpl-12 .bg-shape-top { height: 40px; background: #0284c7; }
-.tpl-13 .bg-shape-top { height: 100%; width: 15px; background: #dc2626; left: 0; right: auto; }
-.tpl-14 .bg-shape-top { height: 60px; background: #ea580c; clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%); }
-.tpl-15 .bg-shape-top { height: 8px; background: #000000; }
-.tpl-16 .bg-shape-top { height: 70px; background: #059669; border-radius: 0 0 20px 20px; }
-.tpl-17 .bg-shape-top { height: 55px; background: #4f46e5; }
-.tpl-18 .bg-shape-top { height: 45px; background: #ffffff; border-bottom: 3px solid #1e293b; }
-.tpl-19 .bg-shape-top { height: 100%; width: 100%; background: #f8fafc; border: 2px solid #cbd5e1; }
-.tpl-20 .bg-shape-top { height: 65px; background: #2563eb; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 75%); }
-
-/* ================= MODALS & TOAST ================= */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); }
-.modal-overlay.active { display: flex; }
-.modal-box { background: white; border-radius: 16px; width: 100%; max-width: 500px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
-.modal-header h2 { font-size: 16px; font-weight: 900; color: #0f172a; }
-.close-btn { background: #fef2f2; color: #dc2626; border: none; width: 30px; height: 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-.tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-.tpl-card { background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: 0.2s; font-size: 11px; font-weight: 800; color: #475569; }
-.tpl-card:hover { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
-
-.toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; z-index: 3000; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-.toast.show { bottom: 30px; }
+/* TOAST */
+.toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 13px; font-weight: 700; z-index: 3000; transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid #334155; }
+.toast.show { bottom: 80px; }
 
 /* Print Overrides */
 @media print {
     body * { visibility: hidden; }
     #print-render-area, #print-render-area * { visibility: visible; }
     #print-render-area { position: absolute; left: 0; top: 0; transform: none !important; box-shadow: none !important; margin: 0 !important; }
-    .draggable { border: none !important; }
+    .drag-el { border: none !important; }
     @page { margin: 0; }
 }
 </style>
 </head>
 <body>
 
-<!-- SMART TOOLBAR -->
-<div class="pocket-toggle" id="pocketToggle" onclick="toggleMasterToolbar()">
-    🔽 Edit Tools
+<!-- POCKET BUTTON TO UNHIDE TOOLBAR -->
+<div class="show-tools-btn" id="showToolsBtn" onclick="toggleToolbar()">
+    🔽 Show Edit Tools
 </div>
 
-<div class="master-toolbar" id="masterToolbar">
+<!-- SMART TOP TOOLBAR -->
+<div class="top-toolbar" id="topToolbar">
     <div class="toolbar-header">
         <a href="dashboard.html" class="header-btn back-btn">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg> Back
+            <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg> Back
         </a>
-        <div style="display:flex; gap:8px;">
-            <button class="header-btn" onclick="openModal('tplModal')">📐 Templates</button>
-            <button class="header-btn" onclick="openModal('saveModal')">💾 Saved</button>
-            <button class="header-btn hide-btn" onclick="toggleMasterToolbar()">🔼 Hide</button>
-        </div>
+        <h1 style="font-size: 14px; font-weight: 900; color: #1e3a8a; text-transform: uppercase;">ID Card Studio</h1>
+        <button class="header-btn hide-btn" onclick="toggleToolbar()">🔼 Hide Tools</button>
     </div>
     
-    <div class="settings-area" id="settingsArea">
-        <div class="tab-nav">
-            <button class="tab-btn active" onclick="switchTab('info')">📝 Info</button>
-            <button class="tab-btn" onclick="switchTab('org')">🏢 Org & Logo</button>
-            <button class="tab-btn" onclick="switchTab('photo')">👤 Photo & Sign</button>
-            <button class="tab-btn" onclick="switchTab('design')">🎨 Colors</button>
-            <button class="tab-btn" onclick="switchTab('back')">🔙 Back Side</button>
-            <button class="tab-btn" onclick="switchTab('export')" style="background:#dcfce7; color:#16a34a; border-color:#86efac;">🖨️ Export</button>
-        </div>
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('info')">📝 Student Info</button>
+        <button class="tab-btn" onclick="switchTab('org')">🏢 Org & Logo</button>
+        <button class="tab-btn" onclick="switchTab('photo')">👤 Photo & Sign</button>
+        <button class="tab-btn" onclick="switchTab('design')">🎨 Colors & Layout</button>
+        <button class="tab-btn" onclick="switchTab('back')">🔙 Back Side</button>
+    </div>
 
-        <div class="tool-panels">
-            <!-- Info Tab -->
-            <div class="tool-panel active" id="tab-info">
-                <div class="tool-group">
-                    <div class="tool-group-title">Student Details</div>
-                    <label class="frm-label">Name</label> <input type="text" id="inp_name" class="frm-input" oninput="updateCard()">
-                    <label class="frm-label">Course / Title</label> <input type="text" id="inp_course" class="frm-input" oninput="updateCard()">
-                    <label class="frm-label">Reg No</label> <input type="text" id="inp_reg" class="frm-input" oninput="updateCard()">
-                </div>
-                <div class="tool-group">
-                    <div class="tool-group-title">Other Details</div>
-                    <label class="frm-label">Phone</label> <input type="text" id="inp_phone" class="frm-input" oninput="updateCard()">
-                    <label class="frm-label">DOB</label> <input type="text" id="inp_dob" class="frm-input" oninput="updateCard()">
-                    <label class="frm-label">Blood Group</label> <input type="text" id="inp_blood" class="frm-input" oninput="updateCard()">
-                    <label class="frm-label">Validity</label> <input type="text" id="inp_validity" class="frm-input" oninput="updateCard()">
-                </div>
-                <div class="tool-group">
-                    <div class="tool-group-title">Badge</div>
-                    <label class="frm-label">Role Text</label> <input type="text" id="inp_role" class="frm-input" value="STUDENT" oninput="updateCard()">
-                    <label class="frm-label">Show Badge</label>
-                    <select id="inp_showBadge" class="frm-select" onchange="updateCard()">
-                        <option value="true">Yes</option><option value="false">No</option>
-                    </select>
-                </div>
+    <div class="tool-panels">
+        <!-- Info Tab -->
+        <div class="tool-panel active" id="tab-info">
+            <div class="tool-group">
+                <div class="tool-group-title">Personal Details</div>
+                <label class="frm-label">Full Name</label> <input type="text" id="inp_name" class="frm-input" value="Student Name" oninput="updateCard()">
+                <label class="frm-label">Course / Title</label> <input type="text" id="inp_course" class="frm-input" value="Diploma in Engineering" oninput="updateCard()">
+                <label class="frm-label">Reg No</label> <input type="text" id="inp_reg" class="frm-input" value="REG-0001" oninput="updateCard()">
             </div>
-
-            <!-- Org Tab -->
-            <div class="tool-panel" id="tab-org">
-                <div class="tool-group">
-                    <div class="tool-group-title">Organization Info</div>
-                    <label class="frm-label">Org Name</label> <input type="text" id="inp_orgName" class="frm-input" oninput="updateCard()">
-                    <label class="frm-label">Sub Title</label> <input type="text" id="inp_orgSub" class="frm-input" oninput="updateCard()">
-                    <label class="frm-label">Address / Meta</label> <input type="text" id="inp_orgAddress" class="frm-input" oninput="updateCard()">
-                </div>
-                <div class="tool-group">
-                    <div class="tool-group-title">Logo</div>
-                    <label class="upload-box">
-                        <img id="logoPreview">
-                        <span id="logoPlaceholder">🏢</span>
-                        <div style="font-size:10px; font-weight:bold; margin-top:5px;">Tap to Upload</div>
-                        <input type="file" id="logoInput" style="display:none" accept="image/*" onchange="handleImageUpload(this, 'logoPreview')">
-                    </label>
-                    <button class="header-btn" style="width:100%; justify-content:center; margin-top:5px; border-color:#fca5a5; color:#dc2626;" onclick="clearImage('logoPreview')">Remove Logo</button>
-                </div>
+            <div class="tool-group">
+                <div class="tool-group-title">Other Details</div>
+                <label class="frm-label">Phone</label> <input type="text" id="inp_phone" class="frm-input" value="+91 9000000000" oninput="updateCard()">
+                <label class="frm-label">DOB</label> <input type="text" id="inp_dob" class="frm-input" value="01/01/2000" oninput="updateCard()">
+                <label class="frm-label">Blood Group</label> <input type="text" id="inp_blood" class="frm-input" value="O+" oninput="updateCard()">
+                <label class="frm-label">Validity</label> <input type="text" id="inp_validity" class="frm-input" value="2026 - 2027" oninput="updateCard()">
             </div>
-
-            <!-- Photo & Sign Tab -->
-            <div class="tool-panel" id="tab-photo">
-                <div class="tool-group">
-                    <div class="tool-group-title">Photograph</div>
-                    <label class="upload-box">
-                        <img id="photoPreview">
-                        <span id="photoPlaceholder">👤</span>
-                        <div style="font-size:10px; font-weight:bold; margin-top:5px;">Tap to Upload</div>
-                        <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="handleImageUpload(this, 'photoPreview')">
-                    </label>
-                    <button class="header-btn" style="width:100%; justify-content:center; margin-top:5px; border-color:#fca5a5; color:#dc2626;" onclick="clearImage('photoPreview')">Remove Photo</button>
-                </div>
-                <div class="tool-group">
-                    <div class="tool-group-title">Signature</div>
-                    <label class="upload-box" style="padding:5px;">
-                        <img id="signPreview">
-                        <span id="signPlaceholder">✍️</span>
-                        <div style="font-size:10px; font-weight:bold;">Upload Sign</div>
-                        <input type="file" id="signInput" style="display:none" accept="image/*" onchange="handleImageUpload(this, 'signPreview')">
-                    </label>
-                    <button class="header-btn" style="width:100%; justify-content:center; margin-top:5px; border-color:#fca5a5; color:#dc2626;" onclick="clearImage('signPreview')">Remove Sign</button>
-                </div>
-            </div>
-
-            <!-- Design Tab -->
-            <div class="tool-panel" id="tab-design">
-                <div class="tool-group">
-                    <div class="tool-group-title">Theme Colors</div>
-                    <div class="color-row"><input type="color" id="clr_header" class="color-picker" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Header Color</span></div>
-                    <div class="color-row"><input type="color" id="clr_footer" class="color-picker" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Footer Color</span></div>
-                    <div class="color-row"><input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Card BG</span></div>
-                    <div class="color-row"><input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Text Color</span></div>
-                </div>
-                <div class="tool-group">
-                    <div class="tool-group-title">Photo Border</div>
-                    <label class="frm-label">Border Width (px)</label> <input type="number" id="inp_borderW" class="frm-input" value="2" oninput="updateCardStyle()">
-                    <label class="frm-label">Border Radius (px)</label> <input type="number" id="inp_borderR" class="frm-input" value="8" oninput="updateCardStyle()">
-                    <div class="color-row"><input type="color" id="clr_photoBorder" class="color-picker" value="#cbd5e1" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Border Color</span></div>
-                </div>
-            </div>
-
-            <!-- Back Side Tab -->
-            <div class="tool-panel" id="tab-back">
-                <div class="tool-group">
-                    <div class="tool-group-title">Back Details</div>
-                    <label class="frm-label">Terms / Rules</label>
-                    <textarea id="inp_terms" class="frm-textarea" oninput="updateCard()">This card is non-transferable. Must be worn at all times.</textarea>
-                    
-                    <label style="display:flex; align-items:center; gap:5px; margin: 10px 0; font-size: 12px; font-weight: 800;">
-                        <input type="checkbox" id="inp_showReturn" checked onchange="updateCard()"> Show "If found return to"
-                    </label>
-                    
-                    <label class="frm-label">Return Address / Phone</label>
-                    <textarea id="inp_returnAddr" class="frm-textarea" oninput="updateCard()">If found, return to: ERP Technical Academy, +91 9876543210</textarea>
-                </div>
-                <div class="tool-group">
-                    <div class="tool-group-title">QR Code Element</div>
-                    <label style="display:flex; align-items:center; gap:5px; margin: 10px 0; font-size: 12px; font-weight: 800;">
-                        <input type="checkbox" id="inp_showQR" checked onchange="updateCard()"> Show QR Placeholder
-                    </label>
-                </div>
-            </div>
-
-            <!-- Export Tab -->
-            <div class="tool-panel" id="tab-export">
-                <div class="tool-group" style="width:100%;">
-                    <div class="tool-group-title">HD Export Options</div>
-                    <p style="font-size:11px; color:#64748b; margin-bottom:10px; font-weight:600;">Downloads are generated in high-resolution, perfect for PVC card printing.</p>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                        <button class="header-btn" style="background:#10b981; color:white; border-color:#059669; justify-content:center;" onclick="exportCard('png')">🖼️ Download PNG</button>
-                        <button class="header-btn" style="background:#ef4444; color:white; border-color:#dc2626; justify-content:center;" onclick="exportCard('pdf')">📄 Download PDF</button>
-                    </div>
-                </div>
+            <div class="tool-group">
+                <div class="tool-group-title">Badge</div>
+                <label class="frm-label">Role Text</label> <input type="text" id="inp_role" class="frm-input" value="STUDENT" oninput="updateCard()">
+                <label class="frm-label">Show Badge</label>
+                <select id="inp_showBadge" class="frm-select" onchange="updateCard()">
+                    <option value="true">Yes</option><option value="false">No</option>
+                </select>
             </div>
         </div>
-        
-        <div class="panel-toggle-pocket" onclick="toggleSettingsArea()">
-            ▲ Toggle Panels
+
+        <!-- Org Tab -->
+        <div class="tool-panel" id="tab-org">
+            <div class="tool-group">
+                <div class="tool-group-title">Organization Info</div>
+                <label class="frm-label">Org Name</label> <input type="text" id="inp_orgName" class="frm-input" value="ERP Technical Academy" oninput="updateCard()">
+                <label class="frm-label">Sub Title</label> <input type="text" id="inp_orgSub" class="frm-input" value="Center of Excellence" oninput="updateCard()">
+                <label class="frm-label">Address / Meta</label> <textarea id="inp_orgAddress" class="frm-textarea" oninput="updateCard()">123 Main Street, City, State - 123456&#10;Ph: +91 9876543210</textarea>
+            </div>
+            <div class="tool-group">
+                <div class="tool-group-title">Logo</div>
+                <label class="upload-box">
+                    <img id="logoPreview">
+                    <span id="logoPlaceholder">🏢</span>
+                    <div style="font-size:10px; font-weight:bold;">Tap to Upload</div>
+                    <input type="file" id="logoInput" style="display:none" accept="image/*" onchange="handleImageUpload(this, 'logoPreview')">
+                </label>
+                <button class="header-btn hide-btn" style="width:100%; justify-content:center; margin-top:5px;" onclick="clearImage('logoPreview')">Remove Logo</button>
+            </div>
+        </div>
+
+        <!-- Photo & Sign Tab -->
+        <div class="tool-panel" id="tab-photo">
+            <div class="tool-group">
+                <div class="tool-group-title">Photograph</div>
+                <label class="upload-box">
+                    <img id="photoPreview">
+                    <span id="photoPlaceholder">👤</span>
+                    <div style="font-size:10px; font-weight:bold;">Tap to Upload</div>
+                    <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="handleImageUpload(this, 'photoPreview')">
+                </label>
+                <button class="header-btn hide-btn" style="width:100%; justify-content:center; margin-top:5px;" onclick="clearImage('photoPreview')">Remove Photo</button>
+            </div>
+            <div class="tool-group">
+                <div class="tool-group-title">Signature</div>
+                <label class="upload-box" style="padding:5px;">
+                    <img id="signPreview">
+                    <span id="signPlaceholder">✍️</span>
+                    <div style="font-size:10px; font-weight:bold;">Upload Sign</div>
+                    <input type="file" id="signInput" style="display:none" accept="image/*" onchange="handleImageUpload(this, 'signPreview')">
+                </label>
+                <button class="header-btn hide-btn" style="width:100%; justify-content:center; margin-top:5px;" onclick="clearImage('signPreview')">Remove Sign</button>
+            </div>
+        </div>
+
+        <!-- Design Tab -->
+        <div class="tool-panel" id="tab-design">
+            <div class="tool-group">
+                <div class="tool-group-title">Theme Colors</div>
+                <div class="color-row"><input type="color" id="clr_header" class="color-picker" value="#1e3a8a" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Header Color</span></div>
+                <div class="color-row"><input type="color" id="clr_footer" class="color-picker" value="#1e3a8a" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Footer Color</span></div>
+                <div class="color-row"><input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Card BG</span></div>
+                <div class="color-row"><input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Text Color</span></div>
+            </div>
+            <div class="tool-group">
+                <div class="tool-group-title">Header Shape & Style</div>
+                <label class="frm-label">Header Height (px)</label> <input type="number" id="inp_headH" class="frm-input" value="65" oninput="updateCardStyle()">
+                <label class="frm-label">Footer Height (px)</label> <input type="number" id="inp_footH" class="frm-input" value="25" oninput="updateCardStyle()">
+            </div>
+            <div class="tool-group">
+                <div class="tool-group-title">Photo Border</div>
+                <label class="frm-label">Border Width (px)</label> <input type="number" id="inp_borderW" class="frm-input" value="2" oninput="updateCardStyle()">
+                <label class="frm-label">Border Radius (px)</label> <input type="number" id="inp_borderR" class="frm-input" value="8" oninput="updateCardStyle()">
+                <div class="color-row"><input type="color" id="clr_photoBorder" class="color-picker" value="#cbd5e1" oninput="updateCardStyle()"><span style="font-size:12px; font-weight:700;">Border Color</span></div>
+            </div>
+        </div>
+
+        <!-- Back Side Tab -->
+        <div class="tool-panel" id="tab-back">
+            <div class="tool-group">
+                <div class="tool-group-title">Back Details</div>
+                <label class="frm-label">Terms / Rules</label>
+                <textarea id="inp_terms" class="frm-textarea" oninput="updateCard()">This card is non-transferable. Must be worn at all times.</textarea>
+                
+                <label style="display:flex; align-items:center; gap:5px; margin: 10px 0; font-size: 12px; font-weight: 800;">
+                    <input type="checkbox" id="inp_showReturn" checked onchange="updateCard()"> Show "If found return to"
+                </label>
+                
+                <label class="frm-label">Return Address / Phone</label>
+                <textarea id="inp_returnAddr" class="frm-textarea" oninput="updateCard()">If found, return to: ERP Technical Academy, +91 9876543210</textarea>
+            </div>
+            <div class="tool-group">
+                <div class="tool-group-title">QR Code Element</div>
+                <label style="display:flex; align-items:center; gap:5px; margin: 10px 0; font-size: 12px; font-weight: 800;">
+                    <input type="checkbox" id="inp_showQR" checked onchange="updateCard()"> Show QR Placeholder
+                </label>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- WORKSPACE -->
-<div class="workspace-area">
-    <!-- View Controls (Always Visible) -->
+<div class="workspace-area" id="workspaceArea">
+    
     <div class="view-controls-wrapper no-print">
         <div class="view-controls">
             <button class="v-btn active" id="vbtn-front" onclick="setView('front')">Front</button>
@@ -579,6 +307,17 @@ body {
             <div style="width:2px; background:#e2e8f0; margin:0 5px;"></div>
             <button class="v-btn v-btn-outline" id="vbtn-orient" onclick="toggleOrientation()">Portrait</button>
         </div>
+        
+        <div class="zoom-controls">
+            <button class="z-btn" onclick="changeZoom(-0.1)">−</button>
+            <span class="z-text" id="zoomLevel">100%</span>
+            <button class="z-btn" onclick="changeZoom(0.1)">+</button>
+        </div>
+    </div>
+
+    <!-- Drag Instructions -->
+    <div class="no-print" style="background:#e0f2fe; color:#0284c7; padding:8px 15px; border-radius:20px; font-size:12px; font-weight:800; margin-bottom:15px; border:1px dashed #bae6fd;">
+        💡 Tip: Touch & drag any element inside the card to reposition it.
     </div>
 
     <div class="card-canvas-container">
@@ -586,42 +325,42 @@ body {
             
             <!-- THE ACTUAL PRINTABLE AREA -->
             <div id="print-render-area">
-                <div class="id-card id-card-portrait tpl-1" id="idCard">
+                <div class="id-card-wrapper landscape" id="idCard">
                     
                     <!-- FRONT FACE -->
                     <div class="card-face card-front" id="cardFront">
-                        <!-- Dynamic Template BG Shapes -->
-                        <div class="bg-shape-top" id="bgTop"></div>
-                        <div class="bg-shape-bottom" id="bgBottom"></div>
+                        <!-- BG Shapes -->
+                        <div class="bg-header-shape" id="bgTop" style="height: 60px; background: #1e3a8a;"></div>
+                        <div class="bg-footer-shape" id="bgBottom" style="height: 25px; background: #1e3a8a;"></div>
 
                         <!-- DRAGGABLE ELEMENTS -->
                         <!-- 1. Logo -->
-                        <div class="draggable el-logo" data-id="logo" style="transform: translate(15px, 15px);">
+                        <div class="drag-el el-logo" data-id="logo">
                             <img id="renderLogo" src="" style="display:none; width:100%; height:100%; object-fit:contain;">
-                            <div id="placeholderLogo" style="width:100%; height:100%; background:rgba(0,0,0,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold;">LOGO</div>
+                            <div id="placeholderLogo" style="width:100%; height:100%; background:rgba(255,255,255,0.2); border:1px dashed rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:10px; font-weight:bold; color:#fff;">LOGO</div>
                         </div>
 
                         <!-- 2. Org Info -->
-                        <div class="draggable el-org" data-id="orgInfo" style="transform: translate(70px, 15px); width:130px;">
-                            <div class="el-org-name" id="renderOrgName">Institution Name</div>
-                            <div class="el-org-sub" id="renderOrgSub">Sub Title</div>
-                            <div class="el-org-address" id="renderOrgAddress">Address & Details</div>
+                        <div class="drag-el el-org" data-id="orgInfo" style="width:200px; text-align:left;">
+                            <div class="el-org-name" id="renderOrgName" style="color:#ffffff;">Institution Name</div>
+                            <div class="el-org-sub" id="renderOrgSub" style="color:#ffffff;">Sub Title</div>
+                            <div class="el-org-address" id="renderOrgAddress" style="color:#ffffff;">Address & Details</div>
                         </div>
 
                         <!-- 3. Photo -->
-                        <div class="draggable el-photo" data-id="photo" style="transform: translate(68px, 90px);">
+                        <div class="drag-el el-photo" data-id="photo">
                             <img id="renderPhoto" src="" style="display:none;">
                             <div id="placeholderPhoto" style="font-size:30px; color:#cbd5e1;">👤</div>
                         </div>
 
                         <!-- 4. Name & Designation -->
-                        <div class="draggable el-name-block" data-id="nameBlock" style="transform: translate(10px, 195px); width:192px;">
+                        <div class="drag-el el-name-block" data-id="nameBlock" style="width:200px; text-align:left;">
                             <div class="el-name" id="renderName">Student Name</div>
                             <div class="el-designation" id="renderCourse">Course Name</div>
                         </div>
 
                         <!-- 5. Details Table -->
-                        <div class="draggable el-details" data-id="details" style="transform: translate(15px, 230px); width:180px;">
+                        <div class="drag-el el-details" data-id="details" style="width:200px;">
                             <table>
                                 <tr><td class="dlbl">Reg No</td><td>: <span id="renderReg">REG-001</span></td></tr>
                                 <tr><td class="dlbl">DOB</td><td>: <span id="renderDob">01/01/2000</span></td></tr>
@@ -632,41 +371,41 @@ body {
                         </div>
 
                         <!-- 6. Badge -->
-                        <div class="draggable el-badge" data-id="badge" id="renderBadgeWrapper" style="transform: translate(15px, 305px); background:#1e3a8a; color:#fff;">
+                        <div class="drag-el el-badge" data-id="badge" id="renderBadgeWrapper" style="background:#1e3a8a; color:#fff;">
                             <span id="renderBadge">STUDENT</span>
                         </div>
 
                         <!-- 7. Signature -->
-                        <div class="draggable el-signature" data-id="sign" style="transform: translate(120px, 290px); width:80px;">
+                        <div class="drag-el el-signature" data-id="sign" style="width:80px;">
                             <img id="renderSign" src="" style="display:none;">
                             <div id="placeholderSign" style="font-size:10px; color:#cbd5e1; height:25px; display:flex; align-items:center;">Sign</div>
                             <div class="el-signature-line" id="signTextColor">Authorized Signatory</div>
                         </div>
 
                         <!-- SaaS Watermark -->
-                        <div class="saas-watermark">⚡ Powered by VPKTech Solutions</div>
+                        <div class="saas-watermark" id="watermarkFront">⚡ Powered by VPKTech Solutions</div>
                     </div>
                     
                     <!-- BACK FACE -->
                     <div class="card-face card-back" id="cardBack">
-                        <div class="draggable" data-id="b_org" style="transform: translate(10px, 20px); width:192px; text-align:center;">
+                        <div class="drag-el" data-id="b_org" style="width:200px; text-align:center;">
                             <div style="font-size:12px; font-weight:900; text-transform:uppercase;" id="renderBOrg">Institution Name</div>
                         </div>
 
-                        <div class="draggable el-terms" data-id="b_terms" style="transform: translate(15px, 50px); width:182px;">
+                        <div class="drag-el el-terms" data-id="b_terms" style="width:190px;">
                             <span id="renderTerms">Terms and conditions...</span>
                         </div>
 
-                        <div class="draggable el-qr" data-id="b_qr" id="renderQR" style="transform: translate(76px, 120px);">
+                        <div class="drag-el el-qr" data-id="b_qr" id="renderQR">
                             <div style="width:100%; height:100%; border:2px solid #cbd5e1; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; color:#cbd5e1;">QR</div>
                         </div>
 
-                        <div class="draggable el-return" data-id="b_return" id="renderReturnWrap" style="transform: translate(15px, 200px); width:182px;">
+                        <div class="drag-el el-return" data-id="b_return" id="renderReturnWrap" style="width:190px;">
                             <span id="renderReturn">If found return to...</span>
                         </div>
 
                         <!-- SaaS Watermark -->
-                        <div class="saas-watermark">⚡ Powered by VPKTech Solutions</div>
+                        <div class="saas-watermark" id="watermarkBack">⚡ Powered by VPKTech Solutions</div>
                     </div>
                     
                 </div>
@@ -676,38 +415,13 @@ body {
     </div>
 </div>
 
-<!-- TEMPLATE SELECTION MODAL -->
-<div class="modal-overlay" id="tplModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h2>📐 Choose Official Template</h2>
-            <button class="close-btn" onclick="closeModal('tplModal')">X</button>
-        </div>
-        <div class="tpl-grid">
-            <div class="tpl-card" onclick="setTemplate(1)">1. Classic Top</div>
-            <div class="tpl-card" onclick="setTemplate(2)">2. Curved Header</div>
-            <div class="tpl-card" onclick="setTemplate(3)">3. Left Bar</div>
-            <div class="tpl-card" onclick="setTemplate(4)">4. Standard White</div>
-            <div class="tpl-card" onclick="setTemplate(5)">5. Slant Split</div>
-            <div class="tpl-card" onclick="setTemplate(6)">6. Minimal Thick</div>
-            <div class="tpl-card" onclick="setTemplate(7)">7. Thin Borders</div>
-            <div class="tpl-card" onclick="setTemplate(8)">8. Elegant Double</div>
-            <div class="tpl-card" onclick="setTemplate(9)">9. Modern Ellipse</div>
-            <div class="tpl-card" onclick="setTemplate(10)">10. Full Border</div>
-            <div class="tpl-card" onclick="setTemplate(11)">11. Corporate Block</div>
-            <div class="tpl-card" onclick="setTemplate(12)">12. Simple Top</div>
-            <div class="tpl-card" onclick="setTemplate(13)">13. Side Accent</div>
-            <div class="tpl-card" onclick="setTemplate(14)">14. Angular Corner</div>
-            <div class="tpl-card" onclick="setTemplate(15)">15. Dark Header</div>
-            <div class="tpl-card" onclick="setTemplate(16)">16. Round Drop</div>
-            <div class="tpl-card" onclick="setTemplate(17)">17. Block Color</div>
-            <div class="tpl-card" onclick="setTemplate(18)">18. Underline</div>
-            <div class="tpl-card" onclick="setTemplate(19)">19. Clean Outline</div>
-            <div class="tpl-card" onclick="setTemplate(20)">20. Dynamic Slant</div>
-        </div>
-    </div>
+<!-- BOTTOM EXPORT BAR -->
+<div class="export-bar no-print">
+    <button class="export-btn btn-png" onclick="exportCard('png')">🖼️ Download HD PNG</button>
+    <button class="export-btn btn-pdf" onclick="exportCard('pdf')">📄 Download HD PDF</button>
 </div>
 
+<!-- TOAST NOTIFICATION -->
 <div class="toast" id="toastMsg">Action Successful</div>
 
 <!-- ================= VANILLA JS LOGIC ================= -->
@@ -719,58 +433,39 @@ body {
     // Global State
     window.cardState = {
         view: 'front', // front, back, both
-        orientation: 'portrait', // portrait, landscape
-        template: 1,
+        orientation: 'landscape', // portrait, landscape
         zoom: 1
     };
 
-    // Default Positions for Portrait
-    const posP = {
-        logo: {x: 15, y: 15}, orgInfo: {x: 70, y: 15}, photo: {x: 68, y: 90},
-        nameBlock: {x: 10, y: 195}, details: {x: 15, y: 230}, badge: {x: 15, y: 305},
-        sign: {x: 120, y: 290}, b_org: {x: 10, y: 20}, b_terms: {x: 15, y: 50},
-        b_qr: {x: 76, y: 120}, b_return: {x: 15, y: 200}
+    // Default Positions for Landscape (Default)
+    const posL = {
+        logo: {x: 10, y: 8}, orgInfo: {x: 60, y: 10}, photo: {x: 15, y: 75},
+        nameBlock: {x: 105, y: 75}, details: {x: 105, y: 110}, badge: {x: 15, y: 180},
+        sign: {x: 240, y: 165}, b_org: {x: 68, y: 20}, b_terms: {x: 70, y: 50},
+        b_qr: {x: 138, y: 90}, b_return: {x: 70, y: 160}
     };
     
-    // Default Positions for Landscape
-    const posL = {
-        logo: {x: 15, y: 10}, orgInfo: {x: 70, y: 10}, photo: {x: 15, y: 70},
-        nameBlock: {x: 110, y: 70}, details: {x: 110, y: 105}, badge: {x: 15, y: 180},
-        sign: {x: 240, y: 170}, b_org: {x: 10, y: 10}, b_terms: {x: 15, y: 30},
-        b_qr: {x: 138, y: 100}, b_return: {x: 15, y: 170}
+    // Default Positions for Portrait
+    const posP = {
+        logo: {x: 85, y: 10}, orgInfo: {x: 10, y: 65}, photo: {x: 70, y: 120},
+        nameBlock: {x: 10, y: 225}, details: {x: 20, y: 260}, badge: {x: 60, y: 105},
+        sign: {x: 120, y: 290}, b_org: {x: 10, y: 20}, b_terms: {x: 15, y: 60},
+        b_qr: {x: 76, y: 130}, b_return: {x: 15, y: 210}
     };
 
-    let positions = JSON.parse(JSON.stringify(posP));
+    let positions = JSON.parse(JSON.stringify(posL));
 
     // ================= INITIALIZATION =================
     document.addEventListener('DOMContentLoaded', async () => {
-        // Init form values
-        document.getElementById('inp_orgName').value = "ERP Technical Academy";
-        document.getElementById('inp_orgSub').value = "Center of Excellence";
-        document.getElementById('inp_orgAddress').value = "123 Main Street, City, State - 123456\nPh: +91 9876543210 | info@erp.com";
-        document.getElementById('inp_name').value = "Student Name";
-        document.getElementById('inp_course').value = "Diploma in Engineering";
-        document.getElementById('inp_reg').value = "REG-0001";
-        document.getElementById('inp_phone').value = "+91 9000000000";
-        document.getElementById('inp_dob').value = "01/01/2000";
-        document.getElementById('inp_blood').value = "O+";
-        document.getElementById('inp_validity').value = "2026 - 2027";
-        
         applySaaSControls();
         autoLoadStudent();
         initDragAndDrop();
         updateCard();
         updateCardStyle();
-        setResponsiveZoom();
+        
+        // Initial zoom based on screen
+        if(window.innerWidth < 600) { changeZoom(-0.2); }
     });
-
-    window.addEventListener('resize', setResponsiveZoom);
-
-    function setResponsiveZoom() {
-        const wrapper = document.getElementById('zoomWrapper');
-        if(window.innerWidth < 500) { window.cardState.zoom = 0.8; wrapper.style.transform = 'scale(0.8)'; }
-        else { window.cardState.zoom = 1; wrapper.style.transform = 'scale(1)'; }
-    }
 
     // ================= SAAS CONTROLS & AUTOFILL =================
     async function applySaaSControls() {
@@ -820,21 +515,29 @@ body {
     }
 
     // ================= TOOLBAR & UI LOGIC =================
-    window.toggleMasterToolbar = function() {
-        document.getElementById('masterToolbar').classList.toggle('hidden-mode');
-        document.getElementById('pocketToggle').classList.toggle('active-mode');
+    window.toggleToolbar = function() {
+        const tb = document.getElementById('topToolbar');
+        const btn = document.getElementById('showToolsBtn');
+        const ws = document.getElementById('workspaceArea');
+        
+        tb.classList.toggle('hidden-mode');
+        
+        if (tb.classList.contains('hidden-mode')) {
+            btn.classList.add('active');
+            ws.classList.add('expanded');
+        } else {
+            btn.classList.remove('active');
+            ws.classList.remove('expanded');
+        }
     };
-    window.toggleSettingsArea = function() {
-        document.getElementById('settingsArea').classList.toggle('collapsed');
-    };
+
     window.switchTab = function(tab) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
         event.currentTarget.classList.add('active');
         document.getElementById('tab-' + tab).classList.add('active');
     };
-    window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
-    window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
+
     window.showToast = function(msg) {
         const t = document.getElementById('toastMsg'); t.innerText = msg; t.classList.add('show');
         setTimeout(() => t.classList.remove('show'), 2500);
@@ -881,18 +584,27 @@ body {
         const footerC = document.getElementById('clr_footer').value;
         const textC = document.getElementById('clr_text').value;
         
-        const idCard = document.getElementById('idCard');
-        idCard.style.backgroundColor = bg;
-        idCard.style.color = textC;
+        document.querySelectorAll('.card-face').forEach(el => {
+            el.style.backgroundColor = bg;
+            el.style.color = textC;
+        });
         
         // Colors
         document.getElementById('bgTop').style.backgroundColor = headerC;
+        document.getElementById('bgTop').style.height = document.getElementById('inp_headH').value + 'px';
+        
         document.getElementById('bgBottom').style.backgroundColor = footerC;
+        document.getElementById('bgBottom').style.height = document.getElementById('inp_footH').value + 'px';
+
         document.getElementById('renderBadgeWrapper').style.backgroundColor = headerC;
         document.getElementById('renderBadgeWrapper').style.color = getContrastText(headerC);
         
         const orgInfo = document.getElementById('renderOrgName').parentElement;
-        orgInfo.style.color = headerC === '#ffffff' ? '#0f172a' : getContrastText(headerC);
+        orgInfo.style.color = getContrastText(headerC);
+        
+        const plLogo = document.getElementById('placeholderLogo');
+        plLogo.style.color = getContrastText(headerC);
+        plLogo.style.borderColor = getContrastText(headerC);
 
         document.getElementById('signTextColor').style.borderColor = textC;
         
@@ -905,6 +617,20 @@ body {
         pEl.style.borderWidth = pw + 'px';
         pEl.style.borderRadius = pr + 'px';
         pEl.style.borderColor = pc;
+        
+        // Watermark Color Contrast
+        const wDark = getContrastText(footerC) === '#0f172a';
+        if(wDark) {
+            document.getElementById('watermarkFront').classList.add('watermark-dark');
+        } else {
+            document.getElementById('watermarkFront').classList.remove('watermark-dark');
+        }
+        const bwDark = getContrastText(bg) === '#0f172a';
+        if(bwDark) {
+            document.getElementById('watermarkBack').classList.add('watermark-dark');
+        } else {
+            document.getElementById('watermarkBack').classList.remove('watermark-dark');
+        }
     };
 
     function getContrastText(hexcolor) {
@@ -920,12 +646,10 @@ body {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Update Preview Sidebar
                 document.getElementById(targetId).src = e.target.result;
                 document.getElementById(targetId).style.display = 'block';
                 document.getElementById(targetId).nextElementSibling.style.display = 'none';
                 
-                // Update Canvas
                 let renderId = targetId === 'logoPreview' ? 'renderLogo' : (targetId === 'photoPreview' ? 'renderPhoto' : 'renderSign');
                 let placeholderId = targetId === 'logoPreview' ? 'placeholderLogo' : (targetId === 'photoPreview' ? 'placeholderPhoto' : 'placeholderSign');
                 
@@ -950,7 +674,7 @@ body {
         document.getElementById(placeholderId).style.display = 'flex';
     };
 
-    // ================= VIEW & ORIENTATION =================
+    // ================= VIEW & ORIENTATION & ZOOM =================
     window.setView = function(side) {
         window.cardState.view = side;
         document.querySelectorAll('.v-btn:not(.v-btn-outline)').forEach(b => b.classList.remove('active'));
@@ -966,34 +690,44 @@ body {
         const card = document.getElementById('idCard');
         const btn = document.getElementById('vbtn-orient');
         
-        if (window.cardState.orientation === 'portrait') {
-            window.cardState.orientation = 'landscape';
-            card.classList.remove('id-card-portrait');
-            card.classList.add('id-card-landscape');
-            btn.innerText = 'Landscape';
-            positions = JSON.parse(JSON.stringify(posL));
-        } else {
+        if (window.cardState.orientation === 'landscape') {
             window.cardState.orientation = 'portrait';
-            card.classList.remove('id-card-landscape');
-            card.classList.add('id-card-portrait');
+            card.classList.remove('landscape');
+            card.classList.add('portrait');
             btn.innerText = 'Portrait';
             positions = JSON.parse(JSON.stringify(posP));
+            
+            // Adjust alignments for portrait
+            document.getElementById('renderOrgName').parentElement.style.textAlign = 'center';
+            document.getElementById('renderName').parentElement.style.textAlign = 'center';
+            document.getElementById('renderOrgName').parentElement.style.width = '190px';
+        } else {
+            window.cardState.orientation = 'landscape';
+            card.classList.remove('portrait');
+            card.classList.add('landscape');
+            btn.innerText = 'Landscape';
+            positions = JSON.parse(JSON.stringify(posL));
+            
+            // Adjust alignments for landscape
+            document.getElementById('renderOrgName').parentElement.style.textAlign = 'left';
+            document.getElementById('renderName').parentElement.style.textAlign = 'left';
+            document.getElementById('renderOrgName').parentElement.style.width = '200px';
         }
         applyPositions();
     };
 
-    window.setTemplate = function(num) {
-        const card = document.getElementById('idCard');
-        // Remove old tpl class
-        for(let i=1; i<=20; i++) card.classList.remove('tpl-'+i);
-        card.classList.add('tpl-'+num);
-        closeModal('tplModal');
-        showToast('Template Applied');
+    window.changeZoom = function(val) {
+        let z = window.cardState.zoom + val;
+        if(z < 0.4) z = 0.4;
+        if(z > 2) z = 2;
+        window.cardState.zoom = z;
+        document.getElementById('zoomWrapper').style.transform = `scale(${z})`;
+        document.getElementById('zoomLevel').innerText = Math.round(z * 100) + '%';
     };
 
     // ================= DRAG & DROP NATIVE LOGIC =================
     function initDragAndDrop() {
-        const draggables = document.querySelectorAll('.draggable');
+        const draggables = document.querySelectorAll('.drag-el');
         let activeEl = null;
         let initX = 0, initY = 0, currentX = 0, currentY = 0;
 
@@ -1005,12 +739,15 @@ body {
             const id = activeEl.dataset.id;
             const pos = positions[id];
             
+            // Account for zoom level in mouse calculation
+            const z = window.cardState.zoom;
+            
             if (e.type === "touchstart") {
-                initX = e.touches[0].clientX - pos.x;
-                initY = e.touches[0].clientY - pos.y;
+                initX = (e.touches[0].clientX / z) - pos.x;
+                initY = (e.touches[0].clientY / z) - pos.y;
             } else {
-                initX = e.clientX - pos.x;
-                initY = e.clientY - pos.y;
+                initX = (e.clientX / z) - pos.x;
+                initY = (e.clientY / z) - pos.y;
             }
         }
 
@@ -1018,12 +755,14 @@ body {
             if (!activeEl) return;
             e.preventDefault();
             
+            const z = window.cardState.zoom;
+            
             if (e.type === "touchmove") {
-                currentX = e.touches[0].clientX - initX;
-                currentY = e.touches[0].clientY - initY;
+                currentX = (e.touches[0].clientX / z) - initX;
+                currentY = (e.touches[0].clientY / z) - initY;
             } else {
-                currentX = e.clientX - initX;
-                currentY = e.clientY - initY;
+                currentX = (e.clientX / z) - initX;
+                currentY = (e.clientY / z) - initY;
             }
 
             const id = activeEl.dataset.id;
@@ -1053,7 +792,7 @@ body {
     }
 
     function applyPositions() {
-        document.querySelectorAll('.draggable').forEach(el => {
+        document.querySelectorAll('.drag-el').forEach(el => {
             const id = el.dataset.id;
             if(positions[id]) {
                 el.style.transform = `translate(${positions[id].x}px, ${positions[id].y}px)`;
@@ -1063,24 +802,29 @@ body {
 
     // ================= HIGH-RES EXPORT =================
     window.exportCard = async function(type) {
-        const btn = document.getElementById(`btn-${type}`);
+        const btn = document.querySelector(`.btn-${type}`);
         const oldText = btn.innerText;
         btn.innerText = '⏳ Processing...';
         btn.disabled = true;
 
-        // Hide drag borders
-        document.querySelectorAll('.draggable').forEach(el => el.style.border = 'none');
+        // Hide drag borders for clean print
+        document.querySelectorAll('.drag-el').forEach(el => el.style.border = 'none');
         
-        // Remove Zoom Transform temporarily
-        const wrapper = document.getElementById('printable-card-area');
-        wrapper.style.transform = 'scale(1)';
-        wrapper.style.boxShadow = 'none';
+        // Remove Zoom Transform temporarily for 1:1 HD capturing
+        const wrapper = document.getElementById('print-render-area');
+        const zoomWrapper = document.getElementById('zoomWrapper');
+        const oldZoomStr = zoomWrapper.style.transform;
+        
+        zoomWrapper.style.transform = 'scale(1)';
+
+        // Small delay for DOM to paint unzoomed state
+        await new Promise(r => setTimeout(r, 100));
 
         try {
             const canvas = await html2canvas(wrapper, {
-                scale: 4, // Super HD
+                scale: 4, // 4X Super HD Quality
                 useCORS: true,
-                backgroundColor: document.getElementById('clr_bg').value,
+                backgroundColor: null,
                 logging: false
             });
 
@@ -1094,7 +838,7 @@ body {
                 link.click();
             } else if (type === 'pdf') {
                 const isPort = window.cardState.orientation === 'portrait';
-                const w = isPort ? 54 : 86; // CR80 standards mm
+                let w = isPort ? 54 : 86; // CR80 standard mm
                 let h = isPort ? 86 : 54;
                 
                 if (window.cardState.view === 'both') {
@@ -1107,11 +851,13 @@ body {
                 pdf.addImage(imgData, 'JPEG', 0, 0, w, h, '', 'FAST');
                 pdf.save(fileName + '.pdf');
             }
+            showToast('✅ Download Complete!');
         } catch (e) {
             alert("Error exporting card.");
         } finally {
-            wrapper.style.transform = '';
-            document.querySelectorAll('.draggable').forEach(el => el.style.border = '');
+            // Restore Zoom & Borders
+            zoomWrapper.style.transform = oldZoomStr;
+            document.querySelectorAll('.drag-el').forEach(el => el.style.border = '');
             btn.innerText = oldText;
             btn.disabled = false;
         }
