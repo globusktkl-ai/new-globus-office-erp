@@ -178,6 +178,11 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- 🔥 NEW: SAAS WATERMARK FOR REPORT 🔥 -->
+            <div class="vpk-watermark" style="text-align: right; padding: 10px 15px; font-size: 11px; color: #64748b; font-weight: 800; font-family: 'Segoe UI', Tahoma, sans-serif; display: none; opacity: 0.7;">
+                ⚡ Powered by VPKTech Solutions
+            </div>
         </div>
     </main>
 
@@ -241,11 +246,28 @@
             }
         });
 
+        // 🔥 NEW: APPLY SAAS CONTROLS FOR WATERMARK 🔥
+        async function applySaaSControls() {
+            try {
+                const microFeaturesStr = localStorage.getItem('saas_micro_features');
+                if (microFeaturesStr) {
+                    const microFeatures = JSON.parse(microFeaturesStr);
+                    if (microFeatures.remove_watermark === false) {
+                        document.querySelectorAll('.vpk-watermark').forEach(el => el.style.display = 'block');
+                    } else {
+                        document.querySelectorAll('.vpk-watermark').forEach(el => el.style.display = 'none');
+                    }
+                }
+            } catch(e) { console.log("SaaS Control Error:", e); }
+        }
+
         async function initPage() {
             try {
                 const userRole = localStorage.getItem('userRole') || 'Admin';
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
+
+                await applySaaSControls(); // 🔥 Check SaaS controls
 
                 // Fetch Courses
                 const { data: cData } = await supabase.from('courses').select('id, course_name');
