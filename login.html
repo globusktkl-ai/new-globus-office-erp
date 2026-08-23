@@ -27,7 +27,6 @@
         .divider:not(:empty)::before { margin-right: .5em; }
         .divider:not(:empty)::after { margin-left: .5em; }
 
-        /* 🔥 NEW: Forgot Password Modal Styles 🔥 */
         #forgotModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.9); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); }
         .modal-content { background: #ffffff; width: 90%; max-width: 400px; padding: 30px 24px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); text-align:center; animation: sheetUp 0.3s ease; }
         @keyframes sheetUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -35,7 +34,6 @@
 </head>
 <body>
 
-    <!-- 🔥 NEW: Forgot Password Modal 🔥 -->
     <div id="forgotModal">
         <div class="modal-content">
             <div style="background:#eff6ff; color:#3b82f6; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;">
@@ -67,7 +65,6 @@
                 <input type="password" id="password" class="form-control" style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box; outline:none;" required placeholder="••••••••">
             </div>
             
-            <!-- 🔥 NEW: Forgot Password Link 🔥 -->
             <div style="text-align: right; margin-bottom: 20px; margin-top: -5px;">
                 <a href="#" onclick="openForgotModal(event)" style="color: #3b82f6; font-size: 12px; font-weight: 800; text-decoration: none; transition: 0.2s;">Forgot Password?</a>
             </div>
@@ -76,7 +73,6 @@
         </form>
 
         <div class="divider">OR</div>
-        
         <button type="button" class="btn-guest" onclick="window.guestLogin()">👀 Explore as Guest (Demo)</button>
     </div>
 
@@ -112,10 +108,9 @@
             document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
-        // 🔥 NEW: PASSWORD RECOVERY LOGIC 🔥
         window.openForgotModal = function(e) {
             e.preventDefault();
-            document.getElementById('resetEmail').value = document.getElementById('email').value; // Auto-fill if already typed
+            document.getElementById('resetEmail').value = document.getElementById('email').value; 
             document.getElementById('forgotModal').style.display = 'flex';
         };
 
@@ -132,13 +127,10 @@
             btn.innerText = 'Sending...'; btn.disabled = true;
 
             try {
-                // Request Supabase to send the recovery email
                 const { data, error } = await supabase.auth.resetPasswordForEmail(emailInput, {
                     redirectTo: window.location.origin + window.location.pathname.replace('login.html', 'settings.html'),
                 });
-
                 if (error) throw error;
-                
                 alert('✅ Password reset link has been sent! Please check your email inbox.');
                 closeForgotModal();
             } catch (err) {
@@ -148,7 +140,6 @@
             }
         };
 
-        // Check if already logged in
         const checkExistingSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             const userRole = localStorage.getItem('userRole');
@@ -161,7 +152,6 @@
         };
         checkExistingSession();
 
-        // 1. NORMAL LOGIN (Super Admin, Admin & Staff)
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('loginBtn');
@@ -170,7 +160,6 @@
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
-            // Supabase Authentication
             const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
 
             if (error) {
@@ -178,13 +167,11 @@
                 btn.textContent = 'Secure Sign In'; btn.disabled = false;
             } else {
                 const superAdminEmail = 'vpk@vpk.com'; 
-                let userRole = 'Office Staff'; // Default fallback
+                let userRole = 'Office Staff'; 
                 
-                // A. സൂപ്പർ അഡ്മിൻ ചെക്ക്
                 if (email.toLowerCase() === superAdminEmail.toLowerCase()) {
                     userRole = 'Super Admin'; 
                 } else {
-                    // B. ഡാറ്റാബേസിൽ പോയി യഥാർത്ഥ റോൾ എടുക്കുന്നു
                     const { data: staffData } = await supabase.from('staff').select('role, status').eq('email', email).single();
                     
                     if (staffData) {
@@ -197,9 +184,7 @@
                         }
                         if (staffData.role) { userRole = staffData.role; }
                     } else {
-                        // Check if it is SaaS Client Admin (SaaS ടേബിളിൽ ഉണ്ടോ എന്ന് നോക്കുന്നു)
                         const { data: saasClient } = await supabase.from('saas_clients').select('id, is_active').ilike('admin_email', email).single();
-                        
                         if (saasClient) {
                             if (!saasClient.is_active) {
                                 alert('❌ Account Suspended: Your ERP subscription is currently inactive.');
@@ -207,7 +192,7 @@
                                 btn.textContent = 'Secure Sign In'; btn.disabled = false;
                                 return;
                             }
-                            userRole = 'Admin'; // Allocate Admin role to SaaS client
+                            userRole = 'Admin'; 
                         } else {
                             alert('❌ Account Error: Profile not found in the directory.');
                             await supabase.auth.signOut();
@@ -217,12 +202,10 @@
                     }
                 }
 
-                // C. വിവരങ്ങൾ ബ്രൗസറിൽ സേവ് ചെയ്യുന്നു
                 localStorage.setItem('userRole', userRole);
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('loginTime', Date.now());
 
-                // ലോഗ് സേവ് ചെയ്യുന്നു
                 if(window.ThemeManager) {
                     await window.ThemeManager.logAction('System', 'LOGIN', `User Logged In successfully`);
                 }
@@ -231,16 +214,14 @@
             }
         });
 
-        // 2. GUEST LOGIN (Read-Only Demo)
         window.guestLogin = function() {
             localStorage.setItem('userRole', 'Guest');
             localStorage.setItem('userEmail', 'guest@demo.com');
             localStorage.setItem('guestLoginTime', Date.now()); 
-            
             window.location.replace('dashboard.html');
         };
 
-        // ഡാറ്റാബേസിൽ നിന്ന് സെറ്റിംഗ്സ് വായിച്ച് ഗസ്റ്റ് ബട്ടൺ നിയന്ത്രിക്കുന്നു
+        // 🔥 THE MAGIC FIX: ROBUST BOOLEAN CHECK 🔥
         async function applySystemSettings() {
             try {
                 const { data } = await supabase.from('institute_settings').select('theme_color, guest_login_enabled').eq('id', 1).single();
@@ -248,13 +229,21 @@
                     if (data.theme_color) {
                         document.documentElement.style.setProperty('--primary-dark', data.theme_color);
                     }
+                    
                     const guestBtn = document.querySelector('.btn-guest');
                     const divider = document.querySelector('.divider');
+                    
                     if (guestBtn && divider) {
-                        if (data.guest_login_enabled === false) {
-                            guestBtn.style.display = 'none'; divider.style.display = 'none';
+                        // Data from database might be true, false, "true", "false", 1 or 0.
+                        const isEnabled = data.guest_login_enabled;
+                        
+                        // If it is explicitly set to false (or text "false")
+                        if (isEnabled === false || isEnabled === 'false' || isEnabled === 0 || isEnabled === '0') {
+                            guestBtn.style.display = 'none'; 
+                            divider.style.display = 'none';
                         } else {
-                            guestBtn.style.display = 'block'; divider.style.display = 'flex';
+                            guestBtn.style.display = 'block'; 
+                            divider.style.display = 'flex';
                         }
                     }
                 }
