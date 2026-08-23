@@ -153,8 +153,24 @@
         </div>
     </div>
 
+    <!-- SUPABASE CDN IMPORT (Independent Connection) -->
     <script type="module">
-        import { supabase } from './assets/js/supabase-config.js';
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // =========================================================================
+        // 🔴 ATTENTION: താങ്കളുടെ യഥാർത്ഥ വിവരങ്ങൾ ഇവിടെ നൽകുക!
+        // =========================================================================
+        
+        // 1. ഇവിടെ vpk@vpk.com എന്നതിന് പകരം താങ്കളുടെ യഥാർത്ഥ സൂപ്പർ അഡ്മിൻ ഇമെയിൽ നൽകുക
+        const MY_REAL_SUPER_ADMIN_EMAIL = 'YOUR_REAL_EMAIL_HERE'; 
+
+        // 2. ഇവിടെ താങ്കളുടെ യഥാർത്ഥ Supabase URL ഉം Key ഉം നൽകുക
+        const SUPABASE_URL = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
+
+        // =========================================================================
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // MAGIC ALERT FUNCTION
         window.alert = function(msg) {
@@ -176,13 +192,26 @@
         let clientsData = [];
 
         async function authenticateMaster() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session || session.user.email.toLowerCase() !== 'vpk@vpk.com') {
+            // Check if URL and Key are replaced
+            if(SUPABASE_URL === 'YOUR_SUPABASE_URL_HERE' || MY_REAL_SUPER_ADMIN_EMAIL === 'YOUR_REAL_EMAIL_HERE') {
                 document.body.innerHTML = `
-                    <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; color: #ef4444; flex-direction: column; font-family: monospace;">
+                    <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; color: #f59e0b; flex-direction: column; font-family: monospace; text-align: center; padding: 20px;">
+                        <h1 style="font-size: 60px; margin: 0;">⚠️ CONFIG MISSING</h1>
+                        <h2>Please enter your real Email, Supabase URL & Key in the code!</h2>
+                    </div>`;
+                return;
+            }
+
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            // STRICT EMAIL CHECK USING THE NEW VARIABLE
+            if (!session || session.user.email.toLowerCase() !== MY_REAL_SUPER_ADMIN_EMAIL.toLowerCase()) {
+                document.body.innerHTML = `
+                    <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; color: #ef4444; flex-direction: column; font-family: monospace; text-align: center;">
                         <h1 style="font-size: 60px; margin: 0;">⛔ FATAL ERROR</h1>
                         <h2>ACCESS DENIED. THIS ATTEMPT HAS BEEN LOGGED.</h2>
                     </div>`;
+                // Try to redirect them back to client app if possible
                 setTimeout(() => { window.location.href = 'login.html'; }, 3000);
                 return;
             }
@@ -197,7 +226,8 @@
                 clientsData = data || [];
                 renderTable();
             } catch (err) {
-                alert("❌ Database Connection Failed! Did you run the SQL to disable RLS?");
+                alert("❌ Database Connection Failed! Did you put the correct URL and KEY?");
+                console.error(err);
             }
         }
 
