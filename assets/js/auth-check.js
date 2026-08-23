@@ -34,6 +34,60 @@ function showCustomAlert(message, redirectUrl) {
     }
 }
 
+// ========================================================
+// NEW: SaaS SECURITY BRIDGE (Kill Switch & Expiry Warning)
+// ========================================================
+async function verifySaaSStatus() {
+    try {
+        const { data: client, error } = await supabase.from('saas_clients').select('*').limit(1).single();
+        if (error || !client) return;
+
+        // 1. THE MASTER KILL SWITCH
+        if (client.is_active === false) {
+            document.body.innerHTML = `
+                <div style="height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: #0f172a; color: #f8fafc; flex-direction: column; font-family: 'Segoe UI', Tahoma, sans-serif; text-align: center; padding: 20px; position: fixed; top: 0; left: 0; z-index: 9999999;">
+                    <div style="font-size: 60px; margin-bottom: 10px; animation: pulse 2s infinite;">⛔</div>
+                    <h1 style="font-size: 32px; margin: 0; color: #ef4444; font-weight: 900; letter-spacing: 1px;">ACCOUNT SUSPENDED</h1>
+                    <p style="color: #94a3b8; font-size: 15px; max-width: 450px; margin-top: 15px; line-height: 1.6;">
+                        Your ERP software subscription has been suspended or your license has expired. Access to the system is permanently locked.
+                    </p>
+                    <div style="margin-top: 30px; background: #1e293b; padding: 15px 25px; border: 1px dashed #334155; border-radius: 12px; color: #cbd5e1; font-size: 14px;">
+                        To restore access, contact your provider:<br>
+                        <strong style="color: #3b82f6; font-size: 16px; display: inline-block; margin-top: 8px;">vpktechsolutions@gmail.com</strong>
+                    </div>
+                </div>
+            `;
+            throw new Error("SYSTEM_LOCKED_BY_MASTER");
+        }
+
+        // 2. EXPIRY WARNING SYSTEM (Only for Admins)
+        const userRole = localStorage.getItem('userRole');
+        if (client.valid_until && (userRole === 'Super Admin' || userRole === 'Admin')) {
+            const expiryDate = new Date(client.valid_until);
+            const today = new Date();
+            const diffTime = expiryDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays <= 15 && diffDays >= 0) {
+                const banner = document.createElement('div');
+                banner.style.cssText = "background: linear-gradient(135deg, #f59e0b, #d97706); color: white; text-align: center; padding: 10px 15px; font-size: 12px; font-weight: 800; z-index: 999999; position: sticky; top: 0; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); letter-spacing: 0.5px;";
+                const formattedDate = expiryDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                banner.innerHTML = `⚠️ URGENT: Your ERP Subscription expires in ${diffDays} days (on ${formattedDate}). Please contact VPKTech to renew and avoid system lock.`;
+                document.body.prepend(banner);
+            } 
+            else if (diffDays < 0) {
+                const banner = document.createElement('div');
+                banner.style.cssText = "background: #ef4444; color: white; text-align: center; padding: 10px 15px; font-size: 12px; font-weight: 800; z-index: 999999; position: sticky; top: 0; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); letter-spacing: 0.5px;";
+                banner.innerHTML = `🚨 CRITICAL: Your ERP Subscription has EXPIRED. The system will be locked shortly. Please renew immediately.`;
+                document.body.prepend(banner);
+            }
+        }
+    } catch(e) {
+        if(e.message === "SYSTEM_LOCKED_BY_MASTER") throw e;
+        console.error("SaaS Check Error:", e);
+    }
+}
+
 // 1. Basic Session Check
 async function enforceSecurity() {
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
@@ -46,6 +100,9 @@ async function enforceSecurity() {
         window.location.replace('login.html');
         return;
     }
+
+    // 🔴 RUN THE SAAS MASTER CHECK HERE ON EVERY PAGE LOAD!
+    await verifySaaSStatus();
 }
 
 // 2. DYNAMIC ACCESS CHECKER (THE MASTER GUARD)
