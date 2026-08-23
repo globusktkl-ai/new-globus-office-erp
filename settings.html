@@ -21,10 +21,9 @@
             .page-title { font-size: 15px; }
         }
 
-        /* TABS STYLING - MOBILE OPTIMIZED */
-        .settings-tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; -ms-overflow-style: none; }
-        .settings-tabs::-webkit-scrollbar { display: none; }
-        .tab-btn { flex: 1; min-width: 130px; padding: 12px 10px; background: #fff; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 13px; font-weight: 800; color: #475569; cursor: pointer; text-align: center; transition: 0.2s; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        /* TABS STYLING - PERFECTLY MOBILE OPTIMIZED */
+        .settings-tabs { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; box-sizing: border-box; }
+        .tab-btn { flex: 1; padding: 10px 5px; background: #fff; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 13px; font-weight: 800; color: #475569; cursor: pointer; text-align: center; transition: 0.2s; white-space: normal; line-height: 1.25; word-wrap: break-word; display: flex; align-items: center; justify-content: center; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); min-height: 48px; }
         .tab-btn.active { background: #1e3a8a; color: #fff; border-color: #1e3a8a; box-shadow: 0 4px 12px rgba(30,58,138,.25); }
         .tab-panel { display: none; animation: fadeUp 0.3s ease; }
         .tab-panel.active { display: block; }
@@ -85,7 +84,7 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
         .vpk-contact { font-size: 13px; font-weight: 600; color: #94a3b8; display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .vpk-contact strong { color: #f1f5f9; font-weight: 500; font-size: 14px;} /* Lighter weight for email */
+        .vpk-contact strong { color: #f1f5f9; font-weight: 500; font-size: 14px;} 
 
         .support-btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; position: relative; z-index: 10; }
         .btn-backup { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1.5px solid rgba(16, 185, 129, 0.5); padding: 14px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; }
@@ -99,6 +98,10 @@
         @media (max-width: 500px) {
             .add-role-flex { flex-direction: column; }
             .support-btn-grid { grid-template-columns: 1fr; }
+            /* Extra mobile fixes for tabs */
+            .settings-tabs { gap: 5px; }
+            .tab-btn { font-size: 11px; padding: 8px 4px; border-radius: 8px; }
+            .settings-card { padding: 20px 15px; }
         }
     </style>
 </head>
@@ -116,7 +119,7 @@
         <div class="settings-tabs">
             <button class="tab-btn active" onclick="switchTab('institute')">Institution Info</button>
             <button class="tab-btn" onclick="switchTab('roles')">Role Permissions</button>
-            <button class="tab-btn" id="tabBilling" onclick="switchTab('billing')" style="display:none; border-color:#3b82f6; color:#3b82f6;">💎 Support & Billing</button>
+            <button class="tab-btn" id="tabBilling" onclick="switchTab('billing')" style="display:none; border-color:#3b82f6; color:#3b82f6;">💎 Support<br>& Billing</button>
         </div>
 
         <!-- SECTION 1: INSTITUTE PROFILE -->
@@ -132,7 +135,6 @@
                 <form id="instituteForm">
                     <div class="form-group">
                         <label class="form-label">Institute Logo</label>
-                        <!-- NEW SLEEK UPLOAD ZONE -->
                         <div class="logo-upload-zone" onclick="document.getElementById('logoUpload').click()">
                             <img id="logoPreview" src="" alt="Logo">
                             <div class="logo-upload-placeholder" id="logoPlaceholder">
@@ -515,7 +517,6 @@
             try {
                 const { data, error } = await supabase.from('saas_clients').select('valid_until, promo_message, is_active').eq('admin_email', adminEmail).single();
                 if(data) {
-                    // DATE FORMATTING FIX: Clean format like "31 Dec 2027"
                     if (data.valid_until) {
                         const dateObj = new Date(data.valid_until);
                         const formattedDate = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -568,7 +569,6 @@
                 document.getElementById('bugDesc').value = '';
                 document.getElementById('bugReportSection').style.display = 'none';
             } catch(e) { 
-                // DETAILED ERROR CATCH TO DEBUG PERMISSION ISSUES
                 alert('❌ Failed to send report: ' + e.message); 
             } 
             finally { btn.innerText = '📨 Send to VPKTech'; btn.disabled = false; }
