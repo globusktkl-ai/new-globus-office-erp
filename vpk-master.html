@@ -3,46 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VPKTech Master Console</title>
+    <title>VPKTech Master Console Pro</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #0f172a; color: #f1f5f9; margin: 0; padding: 20px; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e293b; padding-bottom: 20px; margin-bottom: 30px; }
         .logo-area { display: flex; align-items: center; gap: 15px; }
-        .logo-icon { background: linear-gradient(135deg, #3b82f6, #8b5cf6); width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); flex-shrink: 0;}
+        .logo-icon { background: linear-gradient(135deg, #3b82f6, #8b5cf6); width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
         .title-text h1 { margin: 0; font-size: 20px; color: #f8fafc; font-weight: 900; letter-spacing: 1px; }
         .title-text p { margin: 0; font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
         
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; display: flex; flex-direction: column; }
-        .stat-val { font-size: 32px; font-weight: 900; color: #fff; margin-bottom: 5px; }
-        .stat-label { font-size: 12px; color: #94a3b8; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
-        .text-green { color: #10b981; } .text-red { color: #ef4444; } .text-blue { color: #3b82f6; }
+        /* OVERVIEW BANNER STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: linear-gradient(145deg, #1e293b, #0f172a); padding: 20px; border-radius: 16px; border: 1px solid #334155; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .stat-val { font-size: 32px; font-weight: 900; margin-bottom: 5px; z-index: 2; position: relative; }
+        .stat-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; z-index: 2; position: relative; }
+        .stat-icon { position: absolute; right: -10px; bottom: -20px; font-size: 80px; opacity: 0.05; z-index: 1; }
+        .text-green { color: #10b981; } .text-red { color: #ef4444; } .text-blue { color: #3b82f6; } .text-orange { color: #f59e0b; }
+
+        /* TABS */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 12px 25px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 14px; }
+        .tab-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { background: #1e293b; border-radius: 16px; border: 1px solid #334155; padding: 25px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .card-title { margin-top: 0; margin-bottom: 20px; font-size: 18px; font-weight: 800; color: #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+        .card-title { margin-top: 0; margin-bottom: 20px; font-size: 16px; font-weight: 900; color: #e2e8f0; display: flex; align-items: center; justify-content: space-between; text-transform: uppercase; letter-spacing: 1px; }
         
-        .form-row { display: grid; grid-template-columns: repeat(5, 1fr) auto; gap: 15px; align-items: end; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; }
         .form-group { display: flex; flex-direction: column; gap: 8px; width: 100%;}
-        .form-group label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-        .form-control { width: 100%; background: #0f172a; border: 1px solid #475569; padding: 12px 15px; border-radius: 8px; color: #f1f5f9; font-size: 13px; outline: none; transition: 0.2s; box-sizing: border-box;}
+        .form-group label { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .form-control { width: 100%; background: #0f172a; border: 1px solid #475569; padding: 12px 15px; border-radius: 8px; color: #f1f5f9; font-size: 14px; font-weight: 600; outline: none; transition: 0.2s; box-sizing: border-box;}
         .form-control:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+        select.form-control { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; cursor: pointer; }
+        select.form-control option { background: #1e293b; color: #fff; }
         
         .btn { padding: 12px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .btn:active { transform: scale(0.95); }
         .btn-primary { background: #3b82f6; color: white; } .btn-primary:hover { background: #2563eb; }
         .btn-danger { background: #ef4444; color: white; } .btn-danger:hover { background: #dc2626; }
-        .btn-update { background: #10b981; color: white; padding: 6px 12px; font-size: 12px; }
-        .btn-offer { background: #f59e0b; color: white; padding: 6px 12px; font-size: 12px; }
+        .btn-success { background: #10b981; color: white; } .btn-success:hover { background: #059669; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; font-size: 14px; }
-        th { color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; background: #0f172a; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; font-size: 13px; }
+        th { color: #94a3b8; font-weight: 800; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; background: #0f172a; }
         td { color: #e2e8f0; font-weight: 600; }
         
-        .editable-input { width: 80px; background: #0f172a; border: 1px solid #475569; color: #10b981; font-weight: bold; padding: 6px; border-radius: 4px; text-align: center; }
-        .date-input { background: #0f172a; border: 1px solid #475569; color: #f59e0b; font-weight: bold; padding: 6px; border-radius: 4px; }
-
         .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ef4444; transition: .4s; border-radius: 34px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
@@ -53,9 +61,11 @@
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
         .bg-green { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
         .bg-red { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+        .bg-orange { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+        .bg-blue { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid #3b82f6; }
 
         #customAlertBox { z-index: 99999; }
-        @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; gap: 10px; } }
+        @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
     </style>
 </head>
 <body>
@@ -70,84 +80,152 @@
             <div class="logo-icon">V</div>
             <div class="title-text">
                 <h1>VPKTECH MASTER CONSOLE</h1>
-                <p>SaaS Control Center • Strictly Confidential</p>
+                <p>Global SaaS Control Center</p>
             </div>
         </div>
-        <div>
-            <button class="btn btn-danger" style="border-radius: 8px;" onclick="logoutMaster()">Secure Logout</button>
-        </div>
+        <div><button class="btn btn-danger" onclick="logoutMaster()">Secure Logout</button></div>
     </div>
 
+    <!-- GLOBAL OVERVIEW BANNER -->
     <div class="stats-grid">
         <div class="stat-card">
+            <div class="stat-icon">🏢</div>
             <div class="stat-val text-blue" id="totClients">0</div>
-            <div class="stat-label">Total Subscriptions</div>
+            <div class="stat-label">Total Tenants</div>
         </div>
         <div class="stat-card">
+            <div class="stat-icon">🟢</div>
             <div class="stat-val text-green" id="actClients">0</div>
-            <div class="stat-label">Active Clients</div>
+            <div class="stat-label">Active Licenses</div>
         </div>
         <div class="stat-card">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-val text-orange" id="expClients">0</div>
+            <div class="stat-label">Expiring Soon (< 15 Days)</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⛔</div>
             <div class="stat-val text-red" id="blkClients">0</div>
-            <div class="stat-label">Expired / Paused</div>
+            <div class="stat-label">Suspended / Expired</div>
         </div>
     </div>
 
-    <!-- PROVISION NEW CLIENT WITH PASSWORD FIELD -->
-    <div class="card">
-        <div class="card-title">➕ Provision New Tenant (Client)</div>
-        <form id="addClientForm" onsubmit="addClient(event)">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Institute Name</label>
-                    <input type="text" id="cName" class="form-control" placeholder="e.g. Oxford Academy" required>
-                </div>
-                <div class="form-group">
-                    <label>Super Admin Email</label>
-                    <input type="email" id="cEmail" class="form-control" placeholder="admin@oxford.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Create Password</label>
-                    <input type="text" id="cPassword" class="form-control" placeholder="Min 6 chars" minlength="6" required>
-                </div>
-                <div class="form-group">
-                    <label>Admission Limit</label>
-                    <input type="number" id="cLimit" class="form-control" value="100" min="1" required>
-                </div>
-                <div class="form-group">
-                    <label>Expiry Date</label>
-                    <input type="date" id="cDate" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-primary" id="saveBtn">Create</button>
-            </div>
-        </form>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('clients')">🏢 Client Matrix</button>
+        <button class="tab-btn" onclick="switchTab('studio')">💎 Subscription Studio</button>
     </div>
 
-    <!-- CLIENT LIST & OFFER STUDIO -->
-    <div class="card">
-        <div class="card-title">⚙️ Client Management Matrix & Offer Studio</div>
-        <div style="overflow-x: auto;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Institute Details</th>
-                        <th style="text-align: center;">Master Status</th>
-                        <th>Adm. Limit</th>
-                        <th>Valid Until</th>
-                        <th>Offer Studio</th>
-                        <th style="text-align: right;">Danger Zone</th>
-                    </tr>
-                </thead>
-                <tbody id="clientsTableBody">
-                    <tr><td colspan="6" style="text-align:center;">Loading clients data...</td></tr>
-                </tbody>
-            </table>
+    <!-- TAB 1: CLIENT MATRIX -->
+    <div id="tab-clients" class="tab-content active">
+        <div class="card">
+            <div class="card-title">➕ Provision New Tenant</div>
+            <form id="addClientForm" onsubmit="addClient(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Institute Name</label>
+                        <input type="text" id="cName" class="form-control" placeholder="e.g. Oxford Academy" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Super Admin Email</label>
+                        <input type="email" id="cEmail" class="form-control" placeholder="admin@oxford.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Create Password</label>
+                        <input type="text" id="cPassword" class="form-control" placeholder="Min 6 chars" minlength="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Assign Plan</label>
+                        <select id="cPlanSelect" class="form-control" required>
+                            <option value="">Loading Plans...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="date" id="cDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" id="saveBtn" style="height: 44px; margin-bottom: 2px;">Deploy Tenant</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-title">⚙️ Global Client Matrix</div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Institute Details</th>
+                            <th>Active Plan</th>
+                            <th style="text-align: center;">Master Status</th>
+                            <th>Valid Until</th>
+                            <th>Promo Offer</th>
+                            <th style="text-align: right;">Danger Zone</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTableBody">
+                        <tr><td colspan="6" style="text-align:center; padding: 30px;">Loading clients data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: SUBSCRIPTION STUDIO -->
+    <div id="tab-studio" class="tab-content">
+        <div class="card">
+            <div class="card-title" style="color: #f59e0b;">💎 Create New Plan</div>
+            <form onsubmit="addPlan(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Plan Name (e.g., VIP Pro)</label>
+                        <input type="text" id="pName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Price Per Year (₹)</label>
+                        <input type="number" id="pPrice" class="form-control" value="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Admission Limit</label>
+                        <input type="number" id="pLimit" class="form-control" value="100" required>
+                    </div>
+                    <div class="form-group" style="align-items: flex-start; justify-content: center; gap: 15px; flex-direction: row; padding-bottom: 10px;">
+                        <label style="display:flex; align-items:center; gap:5px; color:#e2e8f0; font-size:13px;"><input type="checkbox" id="fIdCard" checked> ID Card</label>
+                        <label style="display:flex; align-items:center; gap:5px; color:#e2e8f0; font-size:13px;"><input type="checkbox" id="fSms" checked> SMS Alerts</label>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success" style="height: 44px;">Create Plan</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-title">📋 Active Subscription Plans</div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plan Name</th>
+                            <th>Price / Year</th>
+                            <th>Max Admissions</th>
+                            <th>Features Allowed</th>
+                            <th style="text-align: right;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="plansTableBody">
+                        <tr><td colspan="5" style="text-align:center;">Loading plans...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
+        // ⚠️ YOUR CREDENTIALS HERE
         const MY_REAL_SUPER_ADMIN_EMAIL = 'vpk@vpk.com'; 
         const SUPABASE_URL = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
@@ -162,215 +240,222 @@
             box.innerText = msg; document.body.appendChild(box); setTimeout(() => box.remove(), 4000);
         };
 
-        window.magicPrompt = function(msg, defaultVal = '') {
-            return new Promise((resolve) => {
-                const promptVal = window.prompt(msg, defaultVal);
-                resolve(promptVal);
-            });
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
         };
 
         let clientsData = [];
+        let plansData = [];
 
-        async function authenticateMaster() {
-            const { data: { session }, error } = await supabase.auth.getSession();
+        async function initMaster() {
+            const { data: { session } } = await supabase.auth.getSession();
             if (!session || session.user.email.toLowerCase() !== MY_REAL_SUPER_ADMIN_EMAIL.toLowerCase()) {
-                document.body.innerHTML = `
-                    <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; color: #ef4444; flex-direction: column; font-family: monospace; text-align: center;">
-                        <h1 style="font-size: 60px; margin: 0;">⛔ FATAL ERROR</h1>
-                        <h2>ACCESS DENIED. THIS ATTEMPT HAS BEEN LOGGED.</h2>
-                    </div>`;
+                document.body.innerHTML = `<div style="height:100vh; display:flex; align-items:center; justify-content:center; background:#000; color:#ef4444; flex-direction:column; font-family:monospace; text-align:center;"><h1 style="font-size:60px; margin:0;">⛔ FATAL ERROR</h1><h2>ACCESS DENIED.</h2></div>`;
                 setTimeout(() => { window.location.href = 'login.html'; }, 3000);
                 return;
             }
             document.getElementById('securityLock').style.display = 'none';
-            fetchClients();
+            await fetchPlans();
+            await fetchClients();
         }
 
+        // ==========================================
+        // PLAN MANAGEMENT (SUBSCRIPTION STUDIO)
+        // ==========================================
+        async function fetchPlans() {
+            try {
+                const { data, error } = await supabase.from('subscription_plans').select('*').order('price_per_year', { ascending: true });
+                if (error) throw error;
+                plansData = data || [];
+                
+                // Populate Dropdown
+                const select = document.getElementById('cPlanSelect');
+                select.innerHTML = '<option value="">-- Select a Plan --</option>' + plansData.map(p => `<option value="${p.plan_name}">${p.plan_name} (Limit: ${p.max_admission_limit})</option>`).join('');
+
+                // Populate Studio Table
+                document.getElementById('plansTableBody').innerHTML = plansData.map(p => {
+                    const feats = p.allowed_features || {};
+                    const badges = Object.keys(feats).filter(k => feats[k]).map(k => `<span class="badge bg-blue" style="margin-right:3px;">${k}</span>`).join('');
+                    return `<tr>
+                        <td><strong style="color:#f59e0b;">${p.plan_name}</strong></td>
+                        <td>₹${p.price_per_year}</td>
+                        <td>${p.max_admission_limit} Students</td>
+                        <td>${badges || '<span style="color:#64748b; font-size:12px;">Basic Only</span>'}</td>
+                        <td style="text-align: right;"><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deletePlan('${p.id}')">Delete</button></td>
+                    </tr>`;
+                }).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        window.addPlan = async function(e) {
+            e.preventDefault();
+            const plan = {
+                plan_name: document.getElementById('pName').value,
+                price_per_year: document.getElementById('pPrice').value,
+                max_admission_limit: document.getElementById('pLimit').value,
+                allowed_features: { id_card: document.getElementById('fIdCard').checked, sms: document.getElementById('fSms').checked }
+            };
+            try {
+                const { error } = await supabase.from('subscription_plans').insert([plan]);
+                if(error) throw error;
+                alert("✅ New Plan Created Successfully!");
+                e.target.reset();
+                fetchPlans();
+            } catch(err) { alert("❌ Error: Plan name might already exist."); }
+        };
+
+        window.deletePlan = async function(id) {
+            if(confirm("Are you sure? This will not affect existing clients, but removes it from future options.")) {
+                await supabase.from('subscription_plans').delete().eq('id', id);
+                fetchPlans();
+            }
+        };
+
+        // ==========================================
+        // CLIENT MATRIX (TENANT MANAGEMENT)
+        // ==========================================
         async function fetchClients() {
             try {
                 const { data, error } = await supabase.from('saas_clients').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
                 clientsData = data || [];
-                renderTable();
+                renderClientTable();
             } catch (err) { alert("❌ Database Connection Failed!"); }
         }
 
-        function renderTable() {
+        function renderClientTable() {
             const tbody = document.getElementById('clientsTableBody');
-            let active = 0, blocked = 0;
+            let active = 0, blocked = 0, expiring = 0;
+            const today = new Date();
 
-            if (clientsData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No clients provisioned yet.</td></tr>';
-            } else {
-                tbody.innerHTML = clientsData.map(c => {
-                    if(c.is_active) active++; else blocked++;
-                    const statusBadge = c.is_active ? `<span class="badge bg-green">Live</span>` : `<span class="badge bg-red">Expired</span>`;
-                    const hasOffer = (c.promo_message && c.promo_message.trim() !== '') ? '🎁 Active' : '+ Add';
+            tbody.innerHTML = clientsData.map(c => {
+                // Determine Status & Calculate Expiry
+                let isExpiringSoon = false;
+                let daysLeft = 0;
+                let statusBadge = `<span class="badge bg-red">Suspended</span>`;
+
+                if(c.is_active && c.valid_until) {
+                    const expDate = new Date(c.valid_until);
+                    daysLeft = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
                     
-                    return `
-                    <tr>
-                        <td>
-                            <div style="font-weight: 900; font-size: 15px; color: #fff;">${c.institute_name} ${statusBadge}</div>
-                            <div style="font-size: 12px; color: #94a3b8; font-family: monospace; margin-top: 5px;">✉️ ${c.admin_email}</div>
-                        </td>
-                        <td style="text-align: center;">
-                            <label class="switch" title="Toggle System Access">
-                                <input type="checkbox" ${c.is_active ? 'checked' : ''} onchange="toggleKillSwitch('${c.id}', this.checked)">
-                                <span class="slider"></span>
-                            </label>
-                        </td>
-                        <td>
-                            <div style="display: flex; gap: 5px; align-items: center;">
-                                <input type="number" id="lmt_${c.id}" class="editable-input" value="${c.admission_limit}">
-                                <button class="btn btn-update" onclick="updateLimit('${c.id}')">Save</button>
-                            </div>
-                        </td>
-                        <td>
-                            <div style="display: flex; gap: 5px; align-items: center;">
-                                <input type="date" id="dt_${c.id}" class="date-input" value="${c.valid_until}">
-                                <button class="btn btn-update" onclick="updateValidity('${c.id}')">Save</button>
-                            </div>
-                        </td>
-                        <td>
-                            <button class="btn btn-offer" onclick="editPromo('${c.id}', '${c.promo_message || ''}')">${hasOffer}</button>
-                        </td>
-                        <td style="text-align: right;">
-                            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteClient('${c.id}', '${c.institute_name}')">
-                                🗑️ Terminate
-                            </button>
-                        </td>
-                    </tr>`;
-                }).join('');
-            }
+                    if (daysLeft < 0) {
+                        statusBadge = `<span class="badge bg-red">Expired</span>`;
+                        blocked++;
+                    } else if (daysLeft <= 15) {
+                        statusBadge = `<span class="badge bg-orange">Expiring (${daysLeft}d)</span>`;
+                        isExpiringSoon = true;
+                        active++; expiring++;
+                    } else {
+                        statusBadge = `<span class="badge bg-green">Active</span>`;
+                        active++;
+                    }
+                } else if (!c.is_active) {
+                    blocked++;
+                }
 
+                // Promo logic
+                const hasOffer = (c.promo_message && c.promo_message.trim() !== '') ? `<span style="color:#10b981; font-size:11px;">🎁 Active</span>` : `<span style="color:#64748b; font-size:11px;">No Offer</span>`;
+
+                return `
+                <tr style="${isExpiringSoon ? 'background: rgba(245, 158, 11, 0.05);' : ''}">
+                    <td>
+                        <div style="font-weight: 900; font-size: 15px; color: #fff;">${c.institute_name} ${statusBadge}</div>
+                        <div style="font-size: 11px; color: #94a3b8; font-family: monospace; margin-top: 5px;">✉️ ${c.admin_email}</div>
+                    </td>
+                    <td><span class="badge bg-blue">${c.plan_name || 'Free'}</span></td>
+                    <td style="text-align: center;">
+                        <label class="switch">
+                            <input type="checkbox" ${c.is_active ? 'checked' : ''} onchange="toggleKillSwitch('${c.id}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <div style="color:${daysLeft <= 15 ? '#f59e0b' : '#e2e8f0'}; font-weight:800; font-size: 13px;">
+                            ${c.valid_until ? new Date(c.valid_until).toLocaleDateString('en-GB') : 'N/A'}
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn" style="background:#334155; color:#fff; padding:6px 12px; font-size:11px;" onclick="setOffer('${c.id}')">Edit Promo</button><br>
+                        ${hasOffer}
+                    </td>
+                    <td style="text-align: right;">
+                        <button class="btn btn-danger" style="padding: 6px 12px; font-size: 11px;" onclick="deleteClient('${c.id}', '${c.institute_name}')">🗑️ Terminate</button>
+                    </td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="6" style="text-align:center;">No clients found.</td></tr>';
+
+            // UPDATE BANNER STATS
             document.getElementById('totClients').innerText = clientsData.length;
             document.getElementById('actClients').innerText = active;
+            document.getElementById('expClients').innerText = expiring;
             document.getElementById('blkClients').innerText = blocked;
         }
 
-        // ==========================================
-        // PROVISIONING WITH VALIDATION & PASSWORD
-        // ==========================================
         window.addClient = async function(e) {
             e.preventDefault();
-            const emailInput = document.getElementById('cEmail').value.trim();
-            const passInput = document.getElementById('cPassword').value.trim();
             const btn = document.getElementById('saveBtn');
+            const email = document.getElementById('cEmail').value.trim();
+            const pass = document.getElementById('cPassword').value.trim();
+            const planName = document.getElementById('cPlanSelect').value;
 
-            // VALIDATION: Check if email already exists
-            const existingClient = clientsData.find(c => c.admin_email.toLowerCase() === emailInput.toLowerCase());
-            if (existingClient) {
-                alert("❌ Validation Failed: This Email is already registered to a Client!");
-                return;
-            }
+            if(!planName) return alert("⚠️ Please select a Subscription Plan!");
 
-            btn.innerText = 'Creating...'; btn.disabled = true;
+            // Find selected plan to get limit limits
+            const selectedPlan = plansData.find(p => p.plan_name === planName);
+
+            btn.innerText = 'Deploying...'; btn.disabled = true;
 
             try {
-                // 1. Create User in Supabase Auth (Creates Password)
-                const { data: authData, error: authErr } = await supabase.auth.signUp({
-                    email: emailInput,
-                    password: passInput
-                });
-                
-                if (authErr) {
-                    alert("❌ Auth Error: " + authErr.message);
-                    btn.innerText = 'Create'; btn.disabled = false;
-                    return;
-                }
+                // 1. Auth Signup
+                const { error: authErr } = await supabase.auth.signUp({ email: email, password: pass });
+                if (authErr) throw authErr;
 
-                // 2. Insert into saas_clients Table
-                const newClient = {
+                // 2. Insert DB
+                const { error: dbErr } = await supabase.from('saas_clients').insert([{
                     institute_name: document.getElementById('cName').value,
-                    admin_email: emailInput,
-                    admission_limit: parseInt(document.getElementById('cLimit').value),
+                    admin_email: email,
+                    plan_name: planName,
+                    admission_limit: selectedPlan.max_admission_limit,
                     valid_until: document.getElementById('cDate').value,
                     is_active: true
-                };
-
-                const { error: dbErr } = await supabase.from('saas_clients').insert([newClient]);
+                }]);
                 if (dbErr) throw dbErr;
                 
-                // Supabase signUp automatically logs in the new user, which breaks the Master session.
-                // We MUST explicitly log out and ask Master to log back in.
-                document.body.innerHTML = `
-                    <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #0f172a; color: #10b981; flex-direction: column; text-align: center;">
-                        <h1 style="font-size: 50px; margin: 0;">✅ TENANT CREATED!</h1>
-                        <h2 style="color: #f1f5f9; margin-top:10px;">The password was securely generated.</h2>
-                        <p style="color: #94a3b8; font-size: 14px;">To secure your Master Session, the system is restarting...</p>
-                    </div>`;
-                
+                // Reboot to protect master session
+                document.body.innerHTML = `<div style="height:100vh; display:flex; align-items:center; justify-content:center; background:#0f172a; flex-direction:column; text-align:center;"><h1 style="font-size:40px; color:#10b981;">✅ TENANT PROVISIONED!</h1><p style="color:#94a3b8;">Rebooting Master Console for Security...</p></div>`;
                 await supabase.auth.signOut();
-                setTimeout(() => { window.location.href = 'login.html'; }, 3000);
+                setTimeout(() => { window.location.href = 'login.html'; }, 2000);
 
-            } catch (err) {
-                alert("❌ Error adding client: " + err.message);
-                btn.innerText = 'Create'; btn.disabled = false;
-            }
-        };
-
-        // ==========================================
-        // OFFER STUDIO LOGIC
-        // ==========================================
-        window.editPromo = async function(id, currentMsg) {
-            const newPromo = await magicPrompt("Offer Studio: Type the Seasonal Offer for this client (Leave blank to remove):", currentMsg);
-            if (newPromo !== null) {
-                try {
-                    const { error } = await supabase.from('saas_clients').update({ promo_message: newPromo }).eq('id', id);
-                    if (error) throw error;
-                    alert(newPromo.trim() === '' ? "✅ Offer Removed." : "🎉 Seasonal Offer Updated!");
-                    fetchClients();
-                } catch(e) { alert("Error saving offer."); }
-            }
+            } catch (err) { alert("❌ Error: " + err.message); btn.innerText = 'Deploy Tenant'; btn.disabled = false; }
         };
 
         window.toggleKillSwitch = async function(id, isActive) {
-            try {
-                const { error } = await supabase.from('saas_clients').update({ is_active: isActive }).eq('id', id);
-                if (error) throw error;
-                alert(isActive ? "✅ Client Unblocked (System Active)" : "⚠️ Client Expired! (System Locked)");
+            await supabase.from('saas_clients').update({ is_active: isActive }).eq('id', id);
+            fetchClients();
+        };
+
+        window.setOffer = async function(id) {
+            const msg = prompt("Enter Promo Offer for this client (Leave blank to remove):");
+            if(msg !== null) {
+                await supabase.from('saas_clients').update({ promo_message: msg }).eq('id', id);
                 fetchClients();
-            } catch(e) { alert("Error toggling status."); }
-        };
-
-        window.updateLimit = async function(id) {
-            const newLimit = parseInt(document.getElementById(`lmt_${id}`).value);
-            try {
-                const { error } = await supabase.from('saas_clients').update({ admission_limit: newLimit }).eq('id', id);
-                if (error) throw error;
-                alert("✅ Admission limit updated!");
-            } catch(e) { alert("Error updating limit."); }
-        };
-
-        window.updateValidity = async function(id) {
-            const newDate = document.getElementById(`dt_${id}`).value;
-            try {
-                const { error } = await supabase.from('saas_clients').update({ valid_until: newDate }).eq('id', id);
-                if (error) throw error;
-                alert("✅ Expiry date updated!");
-            } catch(e) { alert("Error updating date."); }
-        };
-
-        window.deleteClient = async function(id, name) {
-            const code = prompt(`DANGER ZONE: You are about to permanently delete the client "${name}". Type 'TERMINATE' to confirm:`);
-            if (code === 'TERMINATE') {
-                try {
-                    const { error } = await supabase.from('saas_clients').delete().eq('id', id);
-                    if (error) throw error;
-                    alert("✅ Client Terminated Forever!");
-                    fetchClients();
-                } catch(e) { alert("Error deleting client."); }
-            } else if (code !== null) {
-                alert("❌ Wrong code. Deletion cancelled.");
             }
         };
 
-        window.logoutMaster = async function() {
-            await supabase.auth.signOut();
-            window.location.href = 'login.html';
+        window.deleteClient = async function(id, name) {
+            const code = prompt(`TYPE 'TERMINATE' TO DELETE ${name}:`);
+            if (code === 'TERMINATE') {
+                await supabase.from('saas_clients').delete().eq('id', id);
+                fetchClients();
+            }
         };
 
-        authenticateMaster();
+        window.logoutMaster = async function() { await supabase.auth.signOut(); window.location.href = 'login.html'; };
+
+        initMaster();
     </script>
 </body>
 </html>
