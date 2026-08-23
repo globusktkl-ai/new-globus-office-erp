@@ -15,7 +15,7 @@
 body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: #334155; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
 
 /* ================= 3D BACK BUTTON & HEADER ================= */
-.top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #ffffff; border-bottom: 2px solid #cbd5e1; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; height: 50px; }
+.top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #ffffff; border-bottom: 1px solid #cbd5e1; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; height: 50px; }
 .btn-back-3d { position: absolute; left: 15px; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 36px; background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%); border: 1px solid #cbd5e1; border-bottom: 3px solid #94a3b8; border-radius: 10px; transition: all 0.1s; z-index: 2001; cursor: pointer; text-decoration: none; }
 .btn-back-3d:active { transform: translateY(2px); border-bottom: 1px solid #94a3b8; }
 .btn-back-3d svg { width: 20px; height: 20px; stroke: #4c1d95; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
@@ -24,50 +24,46 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .btn-toggle-settings { position: absolute; right: 15px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
 .btn-toggle-settings.active { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
 
-/* ================= HORIZONTAL SLIDING SETTINGS (Right to Left) ================= */
-.settings-slider { position: fixed; top: 50px; left: 0; right: 0; height: 130px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-bottom: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1500; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px 15px; gap: 15px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); align-items: stretch; }
+/* ================= HORIZONTAL SLIDING SETTINGS ================= */
+.settings-slider { position: fixed; top: 50px; left: 0; right: 0; height: 110px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-bottom: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1500; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px 15px; gap: 15px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .settings-slider::-webkit-scrollbar { display: none; }
 .settings-slider.hidden { transform: translateY(-120%); }
 
-.tool-group { flex-shrink: 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; gap: 5px; min-width: 250px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+.tool-group { flex-shrink: 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; gap: 5px; min-width: 240px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
 .tool-group-title { font-size: 10px; text-transform: uppercase; color: #1e3a8a; font-weight: 900; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 2px; }
 
 .frm-row { display: flex; gap: 6px; align-items: center; width: 100%; }
 .frm-input, .frm-select { width: 100%; padding: 6px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 11px; font-weight: 700; outline: none; }
 .frm-input:focus, .frm-select:focus { border-color: #3b82f6; }
-.color-picker { width: 35px; height: 26px; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; padding: 0; background: transparent; }
+.frm-label { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; }
+.color-picker { width: 100%; height: 26px; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; padding: 0; background: transparent; }
 .upload-btn { background: #e0f2fe; color: #0284c7; border: 1px dashed #7dd3fc; padding: 6px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; width: 100%; text-align: center; display: block; margin: 0; transition: 0.2s; }
-.upload-btn.active { background: #3b82f6; color: white; border-color: #2563eb; }
 
-/* Photo/Logo D-Pad Controls */
+/* Photo D-Pad Controls */
 .media-ctrl-panel { display: flex; align-items: center; justify-content: space-between; background: #e2e8f0; padding: 6px; border-radius: 8px; gap: 10px; }
 .mini-dpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; width: 70px; margin: 0 auto; }
 .mini-btn { background: #ffffff; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold; color: #1e3a8a; display: flex; align-items: center; justify-content: center; transition: 0.1s;}
 .mini-btn:active { background: #cbd5e1; transform: scale(0.9); }
 .mini-btn.up { grid-column: 2; } .mini-btn.left { grid-column: 1; } .mini-btn.right { grid-column: 3; } .mini-btn.down { grid-column: 2; }
-.zoom-col { display: flex; flex-direction: column; gap: 4px; }
-
-/* Local Save Slots */
-.save-slot-row { display: flex; gap: 4px; align-items: center; background: #ffffff; border: 1px solid #cbd5e1; padding: 4px; border-radius: 6px; }
 
 /* ================= WORKSPACE (FREE PANNING CANVAS) ================= */
-.workspace { position: fixed; top: 180px; bottom: 50px; left: 0; right: 0; overflow: hidden; background: #e2e8f0; touch-action: none; transition: top 0.3s; }
+.workspace { position: fixed; top: 160px; bottom: 60px; left: 0; right: 0; overflow: hidden; background: #e2e8f0; touch-action: none; transition: top 0.3s; }
 .workspace.expanded { top: 50px; }
 .workspace.locked { cursor: grab; }
 .workspace.locked:active { cursor: grabbing; }
 
 .canvas-wrapper { position: absolute; transform-origin: 0 0; transition: transform 0.1s; }
 
-/* ================= LEFT SIDE POCKET (ARROW ONLY) ================= */
+/* ================= LEFT SIDE POCKET (VIEWS) ================= */
 .left-pocket { position: fixed; left: 0; top: 50%; transform: translateY(-50%) translateX(-100%); z-index: 1200; display: flex; align-items: center; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .left-pocket.open { transform: translateY(-50%) translateX(0); }
-.pocket-handle { position: absolute; right: -24px; background: #1e3a8a; color: white; width: 24px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 0 8px 8px 0; font-size: 14px; font-weight: 900; cursor: pointer; box-shadow: 2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-left: none; }
+.pocket-handle { position: absolute; right: -24px; background: #1e3a8a; color: white; width: 24px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 0 8px 8px 0; font-size: 12px; font-weight: 900; cursor: pointer; box-shadow: 2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-left: none; }
 .pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 4px 4px 15px rgba(0,0,0,0.05); }
 .pocket-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #334155; cursor: pointer; transition: 0.2s; white-space: nowrap; }
 .pocket-btn.active { background: #3b82f6; color: white; border-color: #2563eb; }
 
-/* ================= FLOATING CONTROLS (LOCK & ZOOM) ================= */
-.float-lock { position: fixed; bottom: 60px; right: 15px; width: 40px; height: 40px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.3); z-index: 1200; transition: 0.3s; }
+/* ================= FLOATING LOCK BUTTON ================= */
+.float-lock { position: fixed; bottom: 70px; right: 15px; width: 42px; height: 42px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.3); z-index: 1200; transition: 0.3s; }
 .float-lock.locked { background: #ef4444; color: white; border-color: #dc2626; box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
 
 /* ================= ID CARD STYLES ================= */
@@ -79,7 +75,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .id-card.show-both.landscape { height: 440px; }
 .id-card.show-both.portrait { width: 440px; height: 336px; }
 
-.card-face { position: absolute; width: 100%; height: 100%; background-color: #ffffff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; background-color: var(--c-bg, #ffffff); font-family: var(--c-font, 'Segoe UI'); }
+.card-face { position: absolute; width: 100%; height: 100%; background-color: #ffffff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; background-color: var(--c-bg, #ffffff); font-family: 'Segoe UI', Tahoma, sans-serif; }
 
 .id-card.show-both.landscape .card-front { top: 0; height: 212px; }
 .id-card.show-both.landscape .card-back { top: 228px; height: 212px; display: block !important; }
@@ -92,7 +88,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .card-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; border-radius: 10px; overflow: hidden; }
 .bg-header, .bg-footer { position: absolute; left: 0; right: 0; }
 
-/* 10 PLAIN LIGHT TEMPLATES (No black) */
+/* 10 DYNAMIC TEMPLATES USING CSS CLIP-PATHS */
 .tpl-1 .bg-header { height: 60px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); }
 .tpl-1 .bg-footer { height: 25px; bottom: 0; background: linear-gradient(135deg, var(--f1), var(--f2)); }
 
@@ -114,31 +110,30 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .tpl-7 .bg-header { height: 50px; top: 0; background: var(--h1); border-bottom: 4px solid var(--h2); }
 .tpl-7 .bg-footer { display: none; }
 
-.tpl-8 .bg-header { height: 55px; top: 0; background: transparent; border-bottom: 3px double var(--h1); }
-.tpl-8 .bg-footer { height: 25px; bottom: 0; background: transparent; border-top: 2px dashed var(--f1); }
+.tpl-8 .bg-header { height: 60px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%); }
+.tpl-8 .bg-footer { height: 25px; bottom: 0; background: var(--f1); }
 
 .tpl-9 .bg-header { height: 100%; width: 25px; top: 0; right: 0; left: auto; background: linear-gradient(180deg, var(--h1), var(--h2)); }
 .tpl-9 .bg-footer { display: none; }
 
-.tpl-10 .bg-header { height: 60px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); clip-path: ellipse(80% 100% at 50% 0%); }
-.tpl-10 .bg-footer { height: 20px; bottom: 0; background: var(--f1); }
+.tpl-10 .bg-header { height: 15px; top: 0; background: var(--h1); }
+.tpl-10 .bg-footer { height: 15px; bottom: 0; background: var(--f1); }
 
-/* Draggables Layer (Visible Overflow to prevent losing items) */
+/* Draggables Layer */
 .card-drag-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
 .drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; border: 1px dashed transparent; padding: 2px; transition: border 0.2s; }
 .drag-el.selected { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); z-index: 10; }
-.drag-el:active { cursor: grabbing; }
 
 /* Elements */
-.el-logo { width: 45px; height: 45px; border-radius: 50%; position: relative; overflow: hidden; }
-.el-logo img { position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; transform-origin: center; }
-.el-logo.empty { border: 2px dashed #94a3b8; background-color: rgba(255,255,255,0.2); }
+.el-logo { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; }
+.el-logo img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; transform-origin: center; }
+.el-logo.empty { border: 2px dashed #94a3b8; color: #94a3b8; font-size: 10px; font-weight: bold; background-color: rgba(255,255,255,0.2); }
 
 .el-org { line-height: 1.2; color: var(--c-txt, #0f172a); }
 .el-org .name { font-size: 14px; font-weight: 900; text-transform: uppercase; }
 .el-org .sub { font-size: 8px; font-weight: 700; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* Proper Image Fix for html2canvas */
+/* Background image fixes html2canvas bug */
 .el-photo { width: 75px; height: 95px; background-color: #f1f5f9; border: 2px solid #cbd5e1; border-radius: 8px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .el-photo img { position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; transform-origin: center; }
 .el-photo.empty { color: #94a3b8; font-size: 24px; }
@@ -148,7 +143,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .el-details .s-course { font-size: 9px; font-weight: 800; color: #b91c1c; text-transform: uppercase; margin-bottom: 4px; }
 .el-details table { width: 100%; font-size: 9px; font-weight: 700; border-collapse: collapse; }
 .el-details td { padding: 1px 0; vertical-align: top; }
-.el-details .lbl { width: 45px; opacity: 0.8; }
+.el-details .lbl { width: 55px; opacity: 0.8; }
 
 .el-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-block; background: var(--h1, #1e3a8a); color: white; }
 
@@ -160,18 +155,19 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .el-return { font-size: 9px; font-weight: 800; color: #b91c1c; text-align: center; line-height: 1.3; border: 1px dashed #fca5a5; padding: 4px; border-radius: 4px; background: #fef2f2; }
 
 /* Watermark */
-.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(0,0,0,0.5); z-index: 20; pointer-events: none; display: none; }
+.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(255,255,255,0.7); z-index: 20; pointer-events: none; display: none; }
+.watermark-dark { color: rgba(0,0,0,0.5); }
 
 /* ================= COMPACT EXPORT BAR ================= */
-.export-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #cbd5e1; padding: 6px 15px; display: flex; justify-content: center; gap: 10px; z-index: 1500; height: 45px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-.export-btn { flex: 1; max-width: 140px; padding: 8px; border: none; border-radius: 6px; font-size: 11px; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+.export-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #cbd5e1; padding: 8px 15px; display: flex; justify-content: center; gap: 10px; z-index: 1500; height: 50px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+.export-btn { flex: 1; max-width: 160px; padding: 8px; border: none; border-radius: 8px; font-size: 12px; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .export-btn:active { transform: scale(0.95); }
 .btn-png { background: linear-gradient(135deg, #10b981, #059669); }
 .btn-pdf { background: linear-gradient(135deg, #ef4444, #dc2626); }
 
 /* Toast */
 .toast { position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 3000; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-.toast.show { bottom: 55px; }
+.toast.show { bottom: 65px; }
 
 @media print {
     body * { visibility: hidden; }
@@ -193,51 +189,24 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     <button class="btn-toggle-settings" id="btnToggleSettings" onclick="toggleSettingsSlider()">⚙️ Settings</button>
 </div>
 
-<!-- HORIZONTAL SETTINGS SLIDER (Swipeable Right to Left) -->
+<!-- HORIZONTAL SETTINGS SLIDER (Right to Left) -->
 <div class="settings-slider no-print" id="settingsSlider">
     
-    <!-- 1. Theme & Design -->
+    <!-- 1. Student Info -->
     <div class="tool-group">
-        <div class="tool-group-title">1. Theme & Font</div>
-        <div class="frm-row">
-            <select id="sel_template" class="frm-select" onchange="updateStyle()">
-                <option value="1">1. Classic Top</option><option value="2">2. Curved</option><option value="3">3. Left Sidebar</option><option value="4">4. Slant Cut</option><option value="5">5. Thin Header</option>
-                <option value="6">6. Frame</option><option value="7">7. Header Border</option><option value="8">8. Plain & Dashed</option><option value="9">9. RightBar</option><option value="10">10. Mini Drop</option>
-            </select>
-            <select id="sel_font" class="frm-select" onchange="updateStyle()">
-                <option value="'Segoe UI', Tahoma, sans-serif">Standard Font</option>
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="'Times New Roman', serif">Times Roman</option>
-                <option value="'Courier New', monospace">Courier</option>
-            </select>
-        </div>
-        <div class="frm-row" style="margin-top:2px;">
-            <input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" title="Header Grad 1" oninput="updateStyle()">
-            <input type="color" id="clr_h2" class="color-picker" value="#3b82f6" title="Header Grad 2" oninput="updateStyle()">
-            <input type="color" id="clr_bg" class="color-picker" value="#ffffff" title="Card BG" oninput="updateStyle()">
-            <input type="color" id="clr_text" class="color-picker" value="#0f172a" title="Text Color" oninput="updateStyle()">
-        </div>
-    </div>
-
-    <!-- 2. Card Holder (Role) -->
-    <div class="tool-group">
-        <div class="tool-group-title">2. Card Holder Details</div>
-        <div class="frm-row">
-            <select id="inp_role_select" class="frm-select" onchange="handleRoleChange()" style="flex:1;">
-                <option value="STUDENT">Student</option><option value="STAFF">Staff</option><option value="EMPLOYEE">Employee</option><option value="Custom">Custom Role</option>
-            </select>
-            <input type="text" id="inp_custom_role" class="frm-input" placeholder="Type role..." style="display:none; flex:1;" oninput="updateContent()">
-        </div>
+        <div class="tool-group-title">1. Student Details</div>
         <div class="frm-row">
             <input type="text" id="inp_name" class="frm-input" placeholder="Full Name" value="Student Name" oninput="updateContent()">
-            <input type="text" id="inp_reg" class="frm-input" placeholder="Reg/ID No" value="REG-01" style="width:70px;" oninput="updateContent()">
+            <input type="text" id="inp_reg" class="frm-input" placeholder="Reg No" value="REG-01" style="width:70px;" oninput="updateContent()">
+        </div>
+        <div class="frm-row">
+            <input type="text" id="inp_course" class="frm-input" placeholder="Course" value="Diploma in Engineering" oninput="updateContent()">
         </div>
     </div>
 
-    <!-- 3. Extra Details -->
+    <!-- 2. More Info -->
     <div class="tool-group">
-        <div class="tool-group-title">3. Extra Info</div>
-        <div class="frm-row"><input type="text" id="inp_course" class="frm-input" placeholder="Designation / Course" value="Diploma in Engineering" oninput="updateContent()"></div>
+        <div class="tool-group-title">2. Additional Info</div>
         <div class="frm-row">
             <input type="text" id="inp_dob" class="frm-input" placeholder="DOB" value="01/01/2000" oninput="updateContent()">
             <input type="text" id="inp_blood" class="frm-input" placeholder="Blood" value="O+" style="width:50px;" oninput="updateContent()">
@@ -248,18 +217,20 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         </div>
     </div>
 
-    <!-- 4. Org Details -->
+    <!-- 3. Org Details -->
     <div class="tool-group">
-        <div class="tool-group-title">4. Organization Info</div>
-        <div class="frm-row"><input type="text" id="inp_orgName" class="frm-input" placeholder="Org Name" value="ERP Technical Academy" oninput="updateContent()"></div>
-        <div class="frm-row"><input type="text" id="inp_orgSub" class="frm-input" placeholder="Tagline" value="Center of Excellence" oninput="updateContent()"></div>
-        <div class="frm-row"><input type="text" id="inp_orgAddr" class="frm-input" placeholder="City & Contact" value="City, State - 123456" oninput="updateContent()"></div>
+        <div class="tool-group-title">3. Organization</div>
+        <div class="frm-row">
+            <input type="text" id="inp_orgName" class="frm-input" placeholder="Org Name" value="ERP Technical Academy" oninput="updateContent()">
+        </div>
+        <div class="frm-row">
+            <input type="text" id="inp_orgSub" class="frm-input" placeholder="Tagline" value="Center of Excellence" oninput="updateContent()">
+        </div>
     </div>
 
-    <!-- 5. Media & Seal (With D-Pad Fix) -->
-    <div class="tool-group" style="min-width: 320px;">
-        <div class="tool-group-title">5. Photo, Logo & Adjust</div>
-        
+    <!-- 4. Photo & Logo -->
+    <div class="tool-group" style="min-width: 300px;">
+        <div class="tool-group-title">4. Photo, Logo & Seal</div>
         <div class="frm-row" style="margin-bottom: 5px;">
             <div id="sel_photo_btn" onclick="setActiveMedia('photo')" style="flex:1; border:1px solid #3b82f6; background:#eff6ff; padding:4px; border-radius:6px; cursor:pointer;">
                 <label class="upload-btn" style="margin:0; background:transparent; border:none;">📷 Photo <input type="file" id="file_photo" style="display:none" accept="image/*" onchange="loadMedia(this, 'imgPhoto', 'ph_photo', 'photo')"></label>
@@ -268,45 +239,52 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                 <label class="upload-btn" style="margin:0; background:transparent; border:none; color:#475569;">🏢 Logo <input type="file" id="file_logo" style="display:none" accept="image/*" onchange="loadMedia(this, 'imgLogo', 'ph_logo', 'logo')"></label>
             </div>
         </div>
-
         <div class="media-ctrl-panel">
-            <div style="font-size:10px; font-weight:800; color:#475569; width:45px; line-height:1.2;">Move<br><span id="txtActiveMedia" style="color:#1e3a8a;">Photo</span></div>
             <div class="mini-dpad">
                 <button class="mini-btn up" onclick="adjustMedia(0, -5)">▲</button>
                 <button class="mini-btn left" onclick="adjustMedia(-5, 0)">◀</button>
                 <button class="mini-btn right" onclick="adjustMedia(5, 0)">▶</button>
                 <button class="mini-btn down" onclick="adjustMedia(0, 5)">▼</button>
             </div>
-            <div class="zoom-col">
-                <button class="mini-btn" onclick="zoomMedia(0.1)">Zoom +</button>
-                <button class="mini-btn" onclick="zoomMedia(-0.1)">Zoom -</button>
-            </div>
         </div>
-
-        <div class="frm-row" style="margin-top:5px;">
+        <div class="frm-row" style="margin-top:2px;">
             <select id="sel_pShape" class="frm-select" onchange="updateStyle()"><option value="8px">Round Edge</option><option value="50%">Circle</option><option value="0px">Square</option></select>
             <select id="sel_pBorder" class="frm-select" onchange="updateStyle()"><option value="solid">Solid Bdr</option><option value="dashed">Dashed Bdr</option><option value="none">No Bdr</option></select>
         </div>
     </div>
 
-    <!-- 6. Back Side -->
-    <div class="tool-group" id="group-back">
-        <div class="tool-group-title">6. Back Side Details</div>
+    <!-- 5. Design & Colors (RESTORED) -->
+    <div class="tool-group" style="min-width: 320px;">
+        <div class="tool-group-title">5. Theme Colors & Design</div>
         <div class="frm-row">
-            <select id="sel_sealShape" class="frm-select" onchange="updateSeal()"><option value="round">Round Seal</option><option value="oval">Oval Seal</option></select>
-            <input type="color" id="clr_seal" class="color-picker" value="#16a34a" oninput="updateSeal()">
+            <div style="flex:1;"><label class="frm-label" style="margin:0;">H-Grad 1</label><input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" oninput="updateStyle()"></div>
+            <div style="flex:1;"><label class="frm-label" style="margin:0;">H-Grad 2</label><input type="color" id="clr_h2" class="color-picker" value="#3b82f6" oninput="updateStyle()"></div>
+            <div style="flex:1;"><label class="frm-label" style="margin:0;">F-Grad 1</label><input type="color" id="clr_f1" class="color-picker" value="#1e3a8a" oninput="updateStyle()"></div>
+            <div style="flex:1;"><label class="frm-label" style="margin:0;">F-Grad 2</label><input type="color" id="clr_f2" class="color-picker" value="#3b82f6" oninput="updateStyle()"></div>
         </div>
-        <div class="frm-row" style="margin-top:6px;">
-            <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_qr" checked onchange="updateContent()"> Show QR</label>
-            <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_return" checked onchange="updateContent()"> Return Addr</label>
+        <div class="frm-row" style="margin-top: 5px;">
+            <div style="flex:1;"><label class="frm-label" style="margin:0;">Card BG</label><input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateStyle()"></div>
+            <div style="flex:1;"><label class="frm-label" style="margin:0;">Text</label><input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateStyle()"></div>
+            <div style="flex:2;">
+                <label class="frm-label" style="margin:0;">Template</label>
+                <select id="sel_template" class="frm-select" onchange="changeTemplate()">
+                    <option value="1">1. Classic</option><option value="2">2. Curved</option><option value="3">3. Sidebar</option><option value="4">4. Borders</option><option value="5">5. TopThin</option>
+                    <option value="6">6. Frame</option><option value="7">7. ThickHead</option><option value="8">8. Dashed</option><option value="9">9. RightBar</option><option value="10">10. MinBlock</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <!-- 7. Save Slots -->
+    <!-- 6. Back Side & QR -->
     <div class="tool-group">
-        <div class="tool-group-title">7. Saved Cards (Local)</div>
-        <div id="saved-slots-container" style="display:flex; flex-direction:column; gap:4px; max-height:80px; overflow-y:auto; padding-right:5px;">
-            <!-- Generated via JS -->
+        <div class="tool-group-title">6. Back Side & Seal</div>
+        <div class="frm-row">
+            <input type="text" id="inp_role" class="frm-input" placeholder="Badge" value="STUDENT" style="width:70px;" oninput="updateContent()">
+            <select id="inp_showBadge" class="frm-select" onchange="updateContent()"><option value="true">Badge ON</option><option value="false">Badge OFF</option></select>
+        </div>
+        <div class="frm-row" style="margin-top:5px;">
+            <select id="sel_sealShape" class="frm-select" onchange="updateSeal()"><option value="round">Round Seal</option><option value="oval">Oval Seal</option></select>
+            <input type="color" id="clr_seal" class="color-picker" value="#16a34a" oninput="updateSeal()">
         </div>
     </div>
 </div>
@@ -389,7 +367,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                     <div class="card-drag-layer">
                         <div class="drag-el el-org" data-id="borg" id="box_borg" style="width:200px; text-align:center;">
                             <div class="name" id="txt_borgName" style="font-size:12px; color:#0f172a;">Institution Name</div>
-                            <div class="addr" id="txt_orgAddrBack" style="font-size:8px; color:#475569; margin-top:2px;">Address</div>
                         </div>
                         <div class="drag-el el-terms" data-id="terms" id="box_terms" style="width:200px;"><span id="txt_terms">Terms...</span></div>
                         <div class="drag-el el-qr" data-id="qr" id="box_qr">QR</div>
@@ -436,12 +413,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     const posL = {
         logo: {x: 10, y: 8, scale: 1}, org: {x: 60, y: 10, scale: 1}, photo: {x: 15, y: 75, scale: 1},
         details: {x: 105, y: 75, scale: 1}, badge: {x: 15, y: 180, scale: 1}, seal: {x: 240, y: 130, scale: 1},
-        borg: {x: 68, y: 15, scale: 1}, terms: {x: 68, y: 55, scale: 1}, qr: {x: 138, y: 90, scale: 1}, return: {x: 68, y: 165, scale: 1}
+        borg: {x: 68, y: 20, scale: 1}, terms: {x: 68, y: 45, scale: 1}, qr: {x: 138, y: 90, scale: 1}, return: {x: 68, y: 165, scale: 1}
     };
     const posP = {
         logo: {x: 83, y: 5, scale: 1}, org: {x: 6, y: 55, scale: 1}, photo: {x: 68, y: 105, scale: 1},
         details: {x: 6, y: 210, scale: 1}, badge: {x: 61, y: 310, scale: 1}, seal: {x: 120, y: 240, scale: 1},
-        borg: {x: 6, y: 15, scale: 1}, terms: {x: 6, y: 55, scale: 1}, qr: {x: 76, y: 120, scale: 1}, return: {x: 6, y: 190, scale: 1}
+        borg: {x: 6, y: 20, scale: 1}, terms: {x: 6, y: 50, scale: 1}, qr: {x: 76, y: 120, scale: 1}, return: {x: 6, y: 190, scale: 1}
     };
 
     let positions = JSON.parse(JSON.stringify(posL));
@@ -452,12 +429,10 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         autoLoadStudent();
         initDragAndDrop();
         initCanvasPan();
-        handleRoleChange(); 
         updateContent();
         updateStyle();
         updateSeal();
         applyPositions();
-        renderSaveSlots();
         loadAutoSave();
         
         document.querySelectorAll('input, textarea, select').forEach(el => {
@@ -477,10 +452,10 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         
         if (slider.classList.contains('hidden')) {
             btn.classList.remove('active'); btn.innerText = '⚙️ Settings';
-            ws.classList.remove('expanded');
+            ws.classList.add('expanded');
         } else {
             btn.classList.add('active'); btn.innerText = '🔼 Hide';
-            ws.classList.add('expanded');
+            ws.classList.remove('expanded');
         }
     }
     
@@ -502,7 +477,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         if(window.appState.isFrozen) {
             btn.classList.add('locked'); btn.innerText = '🔒';
             ws.classList.add('locked');
-            showToast("Card Locked. You can pan and zoom the screen.");
+            showToast("Card Locked. You can now use two fingers to zoom/pan the canvas.");
         } else {
             btn.classList.remove('locked'); btn.innerText = '🔓';
             ws.classList.remove('locked');
@@ -532,7 +507,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         document.getElementById('sel_logo_btn').style.background = type === 'logo' ? '#eff6ff' : 'transparent';
         
         document.querySelector('#sel_logo_btn label').style.color = type === 'logo' ? '#0284c7' : '#475569';
-        document.getElementById('txtActiveMedia').innerText = type === 'photo' ? 'Photo' : 'Logo';
     }
 
     window.adjustMedia = function(dx, dy) {
@@ -542,6 +516,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         autoSave();
     }
     
+    // Zoom logic for media
     window.zoomMedia = function(dz) {
         const st = window.appState.media[window.activeMedia];
         st.z = Math.max(0.1, st.z + dz);
@@ -566,15 +541,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const c = document.getElementById('idCard');
         if(v === 'front') { 
             c.classList.remove('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='none'; 
-            document.getElementById('group-back').style.display = 'none'; // Contextual hide
         }
         else if(v === 'back') { 
             c.classList.remove('show-both'); document.getElementById('cardFront').style.display='none'; document.getElementById('cardBack').style.display='block'; 
-            document.getElementById('group-back').style.display = 'flex'; // Contextual show
         }
         else { 
             c.classList.add('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='block'; 
-            document.getElementById('group-back').style.display = 'flex'; // Contextual show
         }
         setTimeout(centerCanvas, 300);
     }
@@ -637,7 +609,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
         document.getElementById('txt_orgName').innerText = document.getElementById('inp_orgName').value;
         document.getElementById('txt_orgSub').innerText = document.getElementById('inp_orgSub').value;
-        document.getElementById('txt_orgAddr').innerHTML = document.getElementById('inp_orgAddr').value.replace(/\n/g, '<br>');
         
         document.getElementById('txt_name').innerText = document.getElementById('inp_name').value;
         document.getElementById('txt_course').innerText = document.getElementById('inp_course').value;
@@ -649,17 +620,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         
         document.getElementById('box_badge').style.display = document.getElementById('inp_showBadge').value === 'true' ? 'inline-block' : 'none';
 
-        // Back
         document.getElementById('txt_borgName').innerText = document.getElementById('inp_orgName').value;
-        document.getElementById('txt_orgAddrBack').innerHTML = document.getElementById('inp_orgAddr').value.replace(/\n/g, '<br>');
-        document.getElementById('txt_terms').innerHTML = document.getElementById('inp_terms').value.replace(/\n/g, '<br>');
-        
-        if(document.getElementById('chk_return').checked) {
-            document.getElementById('box_return').style.display = 'block';
-            document.getElementById('txt_return').innerHTML = document.getElementById('inp_return').value.replace(/\n/g, '<br>');
-        } else { document.getElementById('box_return').style.display = 'none'; }
-        
-        document.getElementById('box_qr').style.display = document.getElementById('chk_qr').checked ? 'flex' : 'none';
     }
 
     window.updateStyle = function() {
@@ -669,7 +630,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const f2 = document.getElementById('clr_f2').value;
         const bg = document.getElementById('clr_bg').value;
         const tx = document.getElementById('clr_text').value;
-        const font = document.getElementById('sel_font').value;
 
         // Apply CSS Variables so templates can use them dynamically
         const idCard = document.getElementById('idCard');
@@ -679,15 +639,13 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         idCard.style.setProperty('--f2', f2);
         idCard.style.setProperty('--c-bg', bg);
         idCard.style.setProperty('--c-txt', tx);
-        idCard.style.setProperty('--c-font', font);
 
-        document.getElementById('box_badge').style.background = h1;
+        document.getElementById('box_badge').style.background = `linear-gradient(135deg, ${h1}, ${h2})`;
         document.getElementById('box_badge').style.color = getContrast(h1);
         
         const orgInfo = document.getElementById('txt_orgName').parentElement;
         const tpl = document.getElementById('sel_template').value;
         
-        // Some templates have white backgrounds for header, so text needs to be main color
         if(['4','6','8','10'].includes(tpl)) {
             orgInfo.style.color = tx; document.getElementById('ph_logo').style.color = tx;
         } else {
@@ -710,7 +668,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         return (r*299 + g*587 + b*114)/1000 > 128 ? '#0f172a' : '#ffffff';
     }
 
-    // ================= MEDIA UPLOAD (THE HTML2CANVAS FIX) =================
+    // ================= MEDIA UPLOAD =================
     window.loadMedia = function(input, imgId, phId, type) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -751,79 +709,13 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         document.getElementById('box_seal').innerHTML = svg;
     }
 
-    // ================= LOCAL SAVE SLOTS =================
-    window.renderSaveSlots = function() {
-        const container = document.getElementById('saved-slots-container');
-        let html = '';
-        for(let i=1; i<=5; i++) {
-            const saved = localStorage.getItem('vpk_saved_card_' + i);
-            const name = saved ? JSON.parse(saved).name : `Slot ${i}`;
-            html += `
-            <div class="save-slot-row">
-                <input type="text" id="slot_name_${i}" value="${name}" class="frm-input" style="padding:4px; font-size:10px;">
-                <button class="mini-btn" style="background:#10b981; color:white; border-color:#059669;" onclick="saveToSlot(${i})">Save</button>
-                <button class="mini-btn" style="background:#3b82f6; color:white; border-color:#2563eb;" onclick="loadFromSlot(${i})" ${!saved?'disabled':''}>Load</button>
-                <button class="mini-btn" style="background:#ef4444; color:white; border-color:#dc2626;" onclick="resetSlot(${i})" ${!saved?'disabled':''}>X</button>
-            </div>`;
-        }
-        container.innerHTML = html;
-    }
-
-    window.saveToSlot = function(i) {
-        const name = document.getElementById('slot_name_'+i).value || `Slot ${i}`;
-        const data = {};
-        document.querySelectorAll('.frm-input, .frm-select, .frm-textarea, .color-picker').forEach(el => {
-            if(el.id && !el.id.startsWith('slot_name')) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
-        });
-        
-        const saveData = {
-            name: name,
-            inputs: data,
-            positions: positions,
-            state: window.appState
-        };
-        localStorage.setItem('vpk_saved_card_' + i, JSON.stringify(saveData));
-        renderSaveSlots();
-        showToast(`Saved to Slot ${i}`);
-    }
-
-    window.loadFromSlot = function(i) {
-        const saved = localStorage.getItem('vpk_saved_card_' + i);
-        if(saved) {
-            const data = JSON.parse(saved);
-            if(data.inputs) {
-                Object.keys(data.inputs).forEach(key => {
-                    const el = document.getElementById(key);
-                    if(el) { if(el.type === 'checkbox') el.checked = data.inputs[key]; else el.value = data.inputs[key]; }
-                });
-            }
-            if(data.positions) positions = data.positions;
-            if(data.state) {
-                window.appState.media = data.state.media || {photo: {x:0,y:0,z:1}, logo: {x:0,y:0,z:1}};
-                applyMediaTransform();
-                if(window.appState.orientation !== data.state.orientation) toggleOrient();
-            }
-            updateContent(); updateStyle(); updateSeal(); applyPositions();
-            showToast(`Loaded Slot ${i}`);
-        }
-    }
-
-    window.resetSlot = function(i) {
-        if(confirm(`Clear Slot ${i}?`)) {
-            localStorage.removeItem('vpk_saved_card_' + i);
-            renderSaveSlots();
-            showToast(`Slot ${i} Cleared`);
-        }
-    }
-
-    // ================= CANVAS PANNING =================
-   // ================= CANVAS PANNING & PINCH ZOOM =================
+    // ================= CANVAS PANNING & PINCH ZOOM =================
     function initCanvasPan() {
         const workspace = document.querySelector('.workspace');
         let isDown = false, startX, startY;
         let initialPinchDist = null;
 
-        // 1. Mouse Events (For Computer Panning)
+        // 1. Mouse Events
         workspace.addEventListener('mousedown', (e) => {
             if(!window.appState.isFrozen) return; // Only pan if Locked (🔒)
             if(e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
@@ -843,17 +735,15 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
         // 2. Touch Events (For Mobile Pan & Pinch-to-Zoom)
         workspace.addEventListener('touchstart', (e) => {
-            if(!window.appState.isFrozen) return; // Only work if Locked (🔒)
+            if(!window.appState.isFrozen) return; 
             if(e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
 
             if (e.touches.length === 1) {
-                // One finger: Panning
                 isDown = true;
                 initialPinchDist = null;
                 startX = e.touches[0].pageX - window.appState.panX; 
                 startY = e.touches[0].pageY - window.appState.panY;
             } else if (e.touches.length === 2) {
-                // Two fingers: Pinch to Zoom
                 isDown = false;
                 initialPinchDist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
@@ -869,16 +759,14 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
         workspace.addEventListener('touchmove', (e) => {
             if(!window.appState.isFrozen) return;
-            e.preventDefault(); // Prevent screen scrolling
+            e.preventDefault(); 
 
             if (e.touches.length === 1 && isDown) {
-                // Handle Panning
                 window.appState.panX = e.touches[0].pageX - startX; 
                 window.appState.panY = e.touches[0].pageY - startY;
                 applyCanvasTransform();
             } 
             else if (e.touches.length === 2 && initialPinchDist) {
-                // Handle Pinch-to-Zoom
                 const currentDist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
                     e.touches[0].pageY - e.touches[1].pageY
@@ -887,18 +775,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                 const scaleDelta = currentDist / initialPinchDist;
                 let newZoom = window.appState.zoom * scaleDelta;
 
-                // Zoom Limits (Min 0.4x, Max 3x)
                 if (newZoom < 0.4) newZoom = 0.4;
                 if (newZoom > 3) newZoom = 3;
 
                 window.appState.zoom = newZoom;
-                initialPinchDist = currentDist; // Reset for continuous zoom
-                
+                initialPinchDist = currentDist; 
                 applyCanvasTransform();
-
-                // Update text if zoom text element still exists
-                const zoomTxt = document.getElementById('zoomTxt');
-                if (zoomTxt) zoomTxt.innerText = Math.round(newZoom * 100) + '%';
             }
         }, {passive: false});
     }
@@ -909,12 +791,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             wrapper.style.transform = `translate(${window.appState.panX}px, ${window.appState.panY}px) scale(${window.appState.zoom})`;
         }
     }
-    // ================= DRAG & DROP ELEMENTS (FLYING FIX & SELECTION) =================
+
+    // ================= DRAG & DROP ELEMENTS =================
     function initDragAndDrop() {
         const draggables = document.querySelectorAll('.drag-el');
         let activeEl = null; let initX = 0, initY = 0;
 
-        // Deselect when clicking empty space
         document.getElementById('workspaceArea').addEventListener('mousedown', (e) => {
             if (!e.target.closest('.drag-el') && !window.appState.isFrozen) {
                 document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
@@ -923,10 +805,9 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         });
 
         function dragStart(e) {
-            if(window.appState.isFrozen) return; // Block dragging if locked
+            if(window.appState.isFrozen) return; 
             if (e.target.tagName === 'INPUT') return;
             
-            // Selection logic
             document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
             activeEl = e.currentTarget; 
             activeEl.classList.add('selected');
@@ -936,7 +817,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             const pos = positions[id] || {x:0, y:0, scale:1}; 
             const z = window.appState.zoom;
             
-            // Critical fix: Account for zoom scale when calculating start point
             if (e.type === "touchstart") { initX = (e.touches[0].clientX / z) - pos.x; initY = (e.touches[0].clientY / z) - pos.y; } 
             else { initX = (e.clientX / z) - pos.x; initY = (e.clientY / z) - pos.y; }
         }
@@ -946,7 +826,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             e.preventDefault();
             const z = window.appState.zoom; let curX, curY;
             
-            // Critical fix: Divide mouse movement by zoom scale so items don't fly away
             if (e.type === "touchmove") { curX = (e.touches[0].clientX / z) - initX; curY = (e.touches[0].clientY / z) - initY; } 
             else { curX = (e.clientX / z) - initX; curY = (e.clientY / z) - initY; }
 
@@ -979,26 +858,24 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         });
     }
 
-    // ================= EXPORT (Bulletproof Logic) =================
+    // ================= EXPORT =================
     window.exportCard = async function(type) {
         const btn = document.querySelector(`.btn-${type}`);
         const oldText = btn.innerText; btn.innerText = '⏳ Processing...'; btn.disabled = true;
 
-        // Hide borders and selection
         document.querySelectorAll('.drag-el').forEach(el => { el.style.border = 'none'; el.classList.remove('selected'); });
         window.appState.selectedId = null;
         
-        // Reset transform for 1:1 HD capturing
         const wrapper = document.getElementById('print-render-area');
         const cWrapper = document.getElementById('canvasWrapper');
         const oldTrans = cWrapper.style.transform;
         cWrapper.style.transform = 'translate(0px, 0px) scale(1)';
         
-        await new Promise(r => setTimeout(r, 150)); // Paint delay
+        await new Promise(r => setTimeout(r, 150)); 
 
         try {
             const canvas = await html2canvas(wrapper, {
-                scale: 4, // 4X Super HD Quality
+                scale: 4, 
                 useCORS: true,
                 backgroundColor: null,
                 logging: false,
@@ -1031,7 +908,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     // ================= AUTO SAVE & LOAD =================
     function autoSave() {
         const data = {};
-        document.querySelectorAll('.frm-input, .frm-select, .frm-textarea, .color-picker').forEach(el => {
+        document.querySelectorAll('.frm-input, .frm-select, .color-picker').forEach(el => {
             if(el.id && !el.id.startsWith('slot_name')) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
         });
         const saveData = { inputs: data, positions: positions, state: window.appState };
@@ -1070,7 +947,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                     document.getElementById('inp_name').value = stu.full_name || '';
                     document.getElementById('inp_reg').value = stu.register_number || '';
                     document.getElementById('inp_phone').value = stu.phone_number || '';
-                    document.getElementById('inp_blood').value = stu.blood_group || '';
                     if(stu.dob) {
                         const d = new Date(stu.dob);
                         document.getElementById('inp_dob').value = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
@@ -1080,8 +956,9 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                         if(cData) document.getElementById('inp_course').value = cData.course_name;
                     }
                     if(stu.photo_url) {
-                        document.getElementById('imgPhoto').src = stu.photo_url;
-                        document.getElementById('imgPhoto').style.display = 'block';
+                        const img = document.getElementById('imgPhoto');
+                        img.src = stu.photo_url;
+                        img.style.display = 'block';
                         document.getElementById('ph_photo').style.display = 'none';
                     }
                     updateContent(); autoSave(); showToast("✅ Student Auto-Loaded!");
