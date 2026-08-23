@@ -12,66 +12,75 @@
 <style>
 /* ================= GLOBAL STYLES ================= */
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: #334155; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: #334155; overflow: hidden; height: 100vh; width: 100vw; display: flex; flex-direction: column; }
 
 /* ================= 3D BACK BUTTON & HEADER ================= */
-.top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #ffffff; border-bottom: 1px solid #cbd5e1; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; height: 50px; }
+.top-nav { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #ffffff; border-bottom: 2px solid #cbd5e1; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; height: 50px; }
 .btn-back-3d { position: absolute; left: 15px; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 36px; background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%); border: 1px solid #cbd5e1; border-bottom: 3px solid #94a3b8; border-radius: 10px; transition: all 0.1s; z-index: 2001; cursor: pointer; text-decoration: none; }
 .btn-back-3d:active { transform: translateY(2px); border-bottom: 1px solid #94a3b8; }
 .btn-back-3d svg { width: 20px; height: 20px; stroke: #4c1d95; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .page-title { font-size: 16px; font-weight: 900; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
+.btn-settings-toggle { position: absolute; right: 15px; background: #1e3a8a; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.btn-settings-toggle:active { transform: scale(0.95); }
 
-.btn-toggle-settings { position: absolute; right: 15px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-.btn-toggle-settings.active { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+/* ================= RIGHT-TO-LEFT SETTINGS SIDEBAR ================= */
+.settings-sidebar { position: fixed; top: 50px; right: -320px; width: 320px; max-width: 85vw; height: calc(100vh - 50px); background: #ffffff; border-left: 1px solid #cbd5e1; box-shadow: -5px 0 25px rgba(0,0,0,0.1); z-index: 1500; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
+.settings-sidebar.open { right: 0; }
 
-/* ================= HORIZONTAL SLIDING SETTINGS (Right to Left) ================= */
-.settings-slider { position: fixed; top: 50px; left: 0; right: 0; height: 120px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-bottom: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1500; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px 15px; gap: 15px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-.settings-slider::-webkit-scrollbar { display: none; }
-.settings-slider.hidden { transform: translateY(-130%); }
+.tool-group { flex-shrink: 0; border-bottom: 1px solid #e2e8f0; padding: 12px 15px; display: flex; flex-direction: column; gap: 8px; background: #f8fafc; }
+.tool-group-title { font-size: 11px; text-transform: uppercase; color: #1e3a8a; font-weight: 900; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 2px; display: flex; justify-content: space-between; align-items: center; }
 
-.tool-group { flex-shrink: 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 240px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-.tool-group-title { font-size: 10px; text-transform: uppercase; color: #1e3a8a; font-weight: 900; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 2px; }
+.frm-row { display: flex; gap: 8px; align-items: center; width: 100%; }
+.frm-input, .frm-select, .frm-textarea { width: 100%; padding: 8px 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 12px; font-weight: 700; outline: none; transition: 0.2s; }
+.frm-input:focus, .frm-select:focus, .frm-textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+.frm-textarea { height: 45px; resize: none; }
+.color-picker { width: 100%; height: 32px; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; padding: 0; background: transparent; }
+.upload-btn { background: #e0f2fe; color: #0284c7; border: 1px dashed #7dd3fc; padding: 8px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; width: 100%; text-align: center; display: block; transition: 0.2s; }
+.upload-btn:hover { background: #bae6fd; }
+.action-btn { background: #3b82f6; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.action-btn:active { transform: scale(0.95); }
 
-.frm-row { display: flex; gap: 6px; align-items: center; width: 100%; }
-.frm-input, .frm-select { width: 100%; padding: 6px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 11px; font-weight: 700; outline: none; }
-.frm-input:focus, .frm-select:focus { border-color: #3b82f6; }
-.color-picker { width: 35px; height: 26px; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; padding: 0; background: transparent; }
-.upload-btn { background: #e0f2fe; color: #0284c7; border: 1px dashed #7dd3fc; padding: 6px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; width: 100%; text-align: center; display: block; }
+/* Media D-Pad Controls */
+.media-ctrl-panel { background: #e2e8f0; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid #cbd5e1; }
+.d-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; width: 80px; }
+.d-pad-btn { background: #ffffff; border: 1px solid #cbd5e1; padding: 6px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold; color: #1e3a8a; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.d-pad-btn:active { background: #e2e8f0; transform: scale(0.95); }
+.d-pad-btn.up { grid-column: 2; }
+.d-pad-btn.left { grid-column: 1; }
+.d-pad-btn.right { grid-column: 3; }
+.d-pad-btn.down { grid-column: 2; }
 
 /* ================= WORKSPACE (FREE PANNING CANVAS) ================= */
-.workspace { position: fixed; top: 170px; bottom: 60px; left: 0; right: 0; overflow: hidden; background: #e2e8f0; touch-action: none; transition: top 0.3s; }
-.workspace.expanded { top: 50px; }
+.workspace { position: fixed; top: 50px; bottom: 60px; left: 0; right: 0; overflow: hidden; background: #e2e8f0; touch-action: none; cursor: default; }
 .workspace.locked { cursor: grab; }
 .workspace.locked:active { cursor: grabbing; }
 
 .canvas-wrapper { position: absolute; transform-origin: 0 0; transition: transform 0.1s; }
 
-/* ================= LEFT SIDE POCKET (ARROW ONLY) ================= */
+/* ================= LEFT SIDE POCKET (TINY ARROW) ================= */
 .left-pocket { position: fixed; left: 0; top: 50%; transform: translateY(-50%) translateX(-100%); z-index: 1200; display: flex; align-items: center; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .left-pocket.open { transform: translateY(-50%) translateX(0); }
-.pocket-handle { position: absolute; right: -24px; background: #1e3a8a; color: white; width: 24px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 0 8px 8px 0; font-size: 12px; font-weight: 900; cursor: pointer; box-shadow: 2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-left: none; }
-.pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: 4px 4px 15px rgba(0,0,0,0.05); }
-.pocket-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #334155; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+.pocket-handle { position: absolute; right: -25px; background: #1e3a8a; color: white; width: 25px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 0 8px 8px 0; font-size: 12px; font-weight: 900; cursor: pointer; box-shadow: 2px 0 5px rgba(0,0,0,0.1); border: 1px solid #1e40af; border-left: none; }
+.pocket-menu { background: rgba(255,255,255,0.98); backdrop-filter: blur(5px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: 4px 4px 15px rgba(0,0,0,0.05); }
+.pocket-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px 15px; border-radius: 8px; font-size: 12px; font-weight: 800; color: #334155; cursor: pointer; transition: 0.2s; white-space: nowrap; text-align: left; }
 .pocket-btn.active { background: #3b82f6; color: white; border-color: #2563eb; }
 
 /* ================= FLOATING CONTROLS (ZOOM & LOCK) ================= */
-.zoom-panel { position: fixed; bottom: 70px; left: 15px; background: white; border-radius: 8px; padding: 4px; display: flex; gap: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; z-index: 1200; }
-.z-btn { background: #f8fafc; border: 1px solid #e2e8f0; width: 32px; height: 32px; border-radius: 6px; font-weight: bold; font-size: 18px; cursor: pointer; color: #1e3a8a; display: flex; align-items: center; justify-content: center;}
-.z-btn:active { background: #e2e8f0; }
+.zoom-panel { position: fixed; bottom: 70px; left: 15px; background: white; border-radius: 10px; padding: 5px; display: flex; gap: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; z-index: 1200; }
+.z-btn { background: #f8fafc; border: 1px solid #e2e8f0; width: 36px; height: 36px; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; color: #1e3a8a; display: flex; align-items: center; justify-content: center;}
+.z-btn:active { background: #e2e8f0; transform: scale(0.95); }
 
-.float-lock { position: fixed; bottom: 70px; right: 15px; width: 42px; height: 42px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.3); z-index: 1200; transition: 0.3s; }
-.float-lock.locked { background: #ef4444; color: white; border-color: #dc2626; box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
+.float-lock { position: fixed; bottom: 70px; right: 15px; width: 46px; height: 46px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.3); z-index: 1200; transition: 0.3s; }
+.float-lock.locked { background: #ef4444; color: white; border-color: #dc2626; box-shadow: 0 4px 15px rgba(239,68,68,0.3); }
 
 /* ================= ID CARD STYLES ================= */
 .id-card { position: relative; background: transparent; }
 .id-card.landscape { width: 336px; height: 212px; }
 .id-card.portrait { width: 212px; height: 336px; }
-
-/* Double sided setup */
 .id-card.show-both.landscape { height: 440px; }
 .id-card.show-both.portrait { width: 440px; height: 336px; }
 
-.card-face { position: absolute; width: 100%; height: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; background-color: var(--c-bg, #ffffff); font-family: var(--c-font, 'Segoe UI'); }
+.card-face { position: absolute; width: 100%; height: 100%; background-color: #ffffff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; }
 
 .id-card.show-both.landscape .card-front { top: 0; height: 212px; }
 .id-card.show-both.landscape .card-back { top: 228px; height: 212px; display: block !important; }
@@ -80,7 +89,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
 .card-back { display: none; }
 
-/* Backgrounds Layer (Using CSS Variables for Real-time Gradient Update) */
+/* Backgrounds Layer */
 .card-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; border-radius: 10px; overflow: hidden; }
 .bg-header, .bg-footer { position: absolute; left: 0; right: 0; }
 
@@ -117,12 +126,13 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
 /* Draggables Layer (Visible Overflow to prevent losing items) */
 .card-drag-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
-.drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; border: 1px dashed transparent; padding: 2px; transition: border 0.2s; }
-.drag-el.selected { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); z-index: 10; }
+.drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; border: 1px dashed transparent; padding: 2px; transition: border 0.2s; transform-origin: top left; }
+.drag-el.selected { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); z-index: 10; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); }
 .drag-el:active { cursor: grabbing; }
 
 /* Elements */
-.el-logo { width: 45px; height: 45px; background-size: contain; background-position: center; background-repeat: no-repeat; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+/* BUG FIX: Background image instead of img tag prevents html2canvas cutting issue */
+.el-logo { width: 45px; height: 45px; background-size: 100%; background-position: center; background-repeat: no-repeat; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden;}
 .el-logo.empty { border: 2px dashed #94a3b8; color: #94a3b8; font-size: 10px; font-weight: bold; background-color: rgba(255,255,255,0.2); }
 
 .el-org { line-height: 1.2; color: var(--c-txt, #0f172a); }
@@ -130,8 +140,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .el-org .sub { font-size: 8px; font-weight: 700; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
 .el-org .addr { font-size: 7px; font-weight: 600; opacity: 0.8; }
 
-/* Background image fixes html2canvas bug */
-.el-photo { width: 75px; height: 95px; background-color: #f1f5f9; border: 2px solid #cbd5e1; border-radius: 8px; background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; }
+.el-photo { width: 75px; height: 95px; background-color: #f1f5f9; border: 2px solid #cbd5e1; border-radius: 8px; background-size: 100%; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; justify-content: center; overflow: hidden;}
 .el-photo.empty { color: #94a3b8; font-size: 24px; }
 
 .el-details { line-height: 1.3; color: var(--c-txt, #0f172a); }
@@ -151,18 +160,23 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 .el-return { font-size: 9px; font-weight: 800; color: #b91c1c; text-align: center; line-height: 1.3; border: 1px dashed #fca5a5; padding: 4px; border-radius: 4px; background: #fef2f2; }
 
 /* Watermark */
-.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(0,0,0,0.5); z-index: 20; pointer-events: none; display: none; }
+.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(255,255,255,0.7); z-index: 20; pointer-events: none; display: none; }
+.watermark-dark { color: rgba(0,0,0,0.5); }
 
 /* ================= COMPACT EXPORT BAR ================= */
-.export-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #cbd5e1; padding: 8px 15px; display: flex; justify-content: center; gap: 10px; z-index: 1500; height: 50px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-.export-btn { flex: 1; max-width: 160px; padding: 8px; border: none; border-radius: 8px; font-size: 12px; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.export-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #cbd5e1; padding: 10px 15px; display: flex; justify-content: center; gap: 15px; z-index: 1500; height: 60px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+.export-btn { flex: 1; max-width: 200px; padding: 10px; border: none; border-radius: 8px; font-size: 13px; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
 .export-btn:active { transform: scale(0.95); }
 .btn-png { background: linear-gradient(135deg, #10b981, #059669); }
 .btn-pdf { background: linear-gradient(135deg, #ef4444, #dc2626); }
 
 /* Toast */
-.toast { position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 3000; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-.toast.show { bottom: 65px; }
+.toast { position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 24px; border-radius: 20px; font-size: 13px; font-weight: bold; z-index: 3000; transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+.toast.show { bottom: 75px; }
+
+/* Saved Templates List */
+.save-item { background: #ffffff; border: 1px solid #cbd5e1; padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
+.save-item-name { font-size: 11px; font-weight: 800; color: #1e3a8a; }
 
 @media print {
     body * { visibility: hidden; }
@@ -181,56 +195,31 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
     </a>
     <h1 class="page-title">ID Card Studio</h1>
-    <button class="btn-settings-toggle" id="btnToggleSettings" onclick="toggleSettingsSlider()">⚙️ Settings</button>
+    <button class="btn-settings-toggle" id="btnToggleSettings" onclick="toggleSidebar()">⚙️ Settings</button>
 </div>
 
-<!-- HORIZONTAL SETTINGS SLIDER (Swipeable Right to Left) -->
-<div class="settings-slider no-print" id="settingsSlider">
-    
-    <!-- 1. Theme & Design -->
-    <div class="tool-group">
-        <div class="tool-group-title">1. Theme & Design</div>
-        <div class="frm-row">
-            <select id="sel_template" class="frm-select" onchange="updateStyle()">
-                <option value="1">1. Classic</option><option value="2">2. Curved</option><option value="3">3. Sidebar</option><option value="4">4. Slant Cut</option><option value="5">5. Ellipse</option>
-                <option value="6">6. Frame</option><option value="7">7. Header Border</option><option value="8">8. Edge Cut</option><option value="9">9. RightBar</option><option value="10">10. Mini</option>
-            </select>
-            <select id="sel_font" class="frm-select" onchange="updateStyle()">
-                <option value="'Segoe UI', Tahoma, sans-serif">Standard Font</option>
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="'Times New Roman', serif">Times Roman</option>
-                <option value="'Courier New', monospace">Courier</option>
-            </select>
-        </div>
-        <div class="frm-row" style="margin-top:2px;">
-            <input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" title="Header 1" oninput="updateStyle()">
-            <input type="color" id="clr_h2" class="color-picker" value="#3b82f6" title="Header 2" oninput="updateStyle()">
-            <input type="color" id="clr_bg" class="color-picker" value="#ffffff" title="Card BG" oninput="updateStyle()">
-            <input type="color" id="clr_text" class="color-picker" value="#0f172a" title="Text Color" oninput="updateStyle()">
-        </div>
+<!-- RIGHT-TO-LEFT SETTINGS SIDEBAR -->
+<div class="settings-sidebar no-print" id="settingsSidebar">
+    <div class="sidebar-header">
+        <h2>Card Settings</h2>
+        <button class="btn-close-sidebar" onclick="toggleSidebar()">✖</button>
     </div>
-
-    <!-- 2. Card Holder (Role) -->
+    
+    <!-- 1. Student Info -->
     <div class="tool-group">
-        <div class="tool-group-title">2. Card Holder Info</div>
-        <div class="frm-row">
-            <select id="inp_role_select" class="frm-select" onchange="handleRoleChange()" style="flex:1;">
-                <option value="STUDENT">Student</option><option value="STAFF">Staff</option><option value="EMPLOYEE">Employee</option><option value="Custom">Custom Role</option>
-            </select>
-            <input type="text" id="inp_custom_role" class="frm-input" placeholder="Type role..." style="display:none; flex:1;" oninput="updateContent()">
-        </div>
+        <div class="tool-group-title">1. Student Details</div>
         <div class="frm-row">
             <input type="text" id="inp_name" class="frm-input" placeholder="Full Name" value="Student Name" oninput="updateContent()">
-            <input type="text" id="inp_reg" class="frm-input" placeholder="Reg/ID No" value="REG-01" style="width:70px;" oninput="updateContent()">
+            <input type="text" id="inp_reg" class="frm-input" placeholder="Reg No" value="REG-01" style="width:70px;" oninput="updateContent()">
         </div>
         <div class="frm-row">
-            <input type="text" id="inp_course" class="frm-input" placeholder="Designation / Course" value="Diploma in Engineering" oninput="updateContent()">
+            <input type="text" id="inp_course" class="frm-input" placeholder="Course" value="Diploma in Engineering" oninput="updateContent()">
         </div>
     </div>
 
-    <!-- 3. Extra Details -->
+    <!-- 2. More Info -->
     <div class="tool-group">
-        <div class="tool-group-title">3. Extra Details</div>
+        <div class="tool-group-title">2. Additional Info</div>
         <div class="frm-row">
             <input type="text" id="inp_dob" class="frm-input" placeholder="DOB" value="01/01/2000" oninput="updateContent()">
             <input type="text" id="inp_blood" class="frm-input" placeholder="Blood" value="O+" style="width:50px;" oninput="updateContent()">
@@ -241,43 +230,109 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         </div>
     </div>
 
-    <!-- 4. Org Details -->
+    <!-- 3. Org Details & Back settings -->
     <div class="tool-group">
-        <div class="tool-group-title">4. Org Details</div>
-        <div class="frm-row"><input type="text" id="inp_orgName" class="frm-input" placeholder="Org Name" value="ERP Technical Academy" oninput="updateContent()"></div>
-        <div class="frm-row"><input type="text" id="inp_orgSub" class="frm-input" placeholder="Tagline" value="Center of Excellence" oninput="updateContent()"></div>
-        <div class="frm-row"><input type="text" id="inp_orgAddr" class="frm-input" placeholder="City & Contact" value="City, State - 123456" oninput="updateContent()"></div>
-    </div>
-
-    <!-- 5. Media & Seal -->
-    <div class="tool-group">
-        <div class="tool-group-title">5. Media & Seal</div>
+        <div class="tool-group-title">3. Organization & Back</div>
         <div class="frm-row">
-            <label class="upload-btn">📷 Photo <input type="file" id="file_photo" style="display:none" accept="image/*" onchange="loadMedia(this, 'el-photo', 'ph_photo')"></label>
-            <label class="upload-btn">🏢 Logo <input type="file" id="file_logo" style="display:none" accept="image/*" onchange="loadMedia(this, 'el-logo', 'ph_logo')"></label>
+            <input type="text" id="inp_orgName" class="frm-input" placeholder="Org Name" value="ERP Technical Academy" oninput="updateContent()">
         </div>
-        <div class="frm-row" style="margin-top:2px;">
-            <select id="sel_pShape" class="frm-select" onchange="updateStyle()"><option value="8px">Round Edge</option><option value="50%">Circle</option><option value="0px">Square</option></select>
-            <select id="sel_pBorder" class="frm-select" onchange="updateStyle()"><option value="solid">Solid Bdr</option><option value="dashed">Dashed Bdr</option><option value="none">No Bdr</option></select>
+        <div class="frm-row">
+            <input type="text" id="inp_orgSub" class="frm-input" placeholder="Tagline" value="Center of Excellence" oninput="updateContent()">
+        </div>
+        <div id="backSettingsDiv">
+            <hr style="border:0; border-top:1px dashed #cbd5e1; margin:8px 0;">
+            <textarea id="inp_orgAddr" class="frm-textarea" placeholder="City & Contact" oninput="updateContent()">City, State - 123456</textarea>
+            <label style="font-size:10px; font-weight:bold; display:flex; align-items:center; gap:5px; margin: 5px 0;">
+                <input type="checkbox" id="chk_return" checked onchange="updateContent()"> Show Return Addr
+            </label>
+            <textarea id="inp_return" class="frm-textarea" oninput="updateContent()">If found, return to: ERP Academy</textarea>
         </div>
     </div>
 
-    <!-- 6. Back Side -->
+    <!-- 4. Photo, Logo & Seal (Central D-Pad) -->
     <div class="tool-group">
-        <div class="tool-group-title">6. Back Side & QR</div>
-        <div class="frm-row">
-            <select id="sel_sealShape" class="frm-select" onchange="updateSeal()"><option value="round">Round Seal</option><option value="oval">Oval Seal</option></select>
-            <input type="color" id="clr_seal" class="color-picker" value="#16a34a" oninput="updateSeal()">
+        <div class="tool-group-title">4. Photo, Logo & Seal</div>
+        <div style="display:flex; gap:10px;">
+            <!-- Left: Photo -->
+            <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
+                <label class="upload-btn">📷 Photo <input type="file" id="file_photo" style="display:none" accept="image/*" onchange="loadMedia(this, 'el-photo')"></label>
+                <select id="sel_pShape" class="frm-select" onchange="updateStyle()"><option value="8px">Round</option><option value="50%">Circle</option><option value="0px">Square</option></select>
+                <select id="sel_pBorder" class="frm-select" onchange="updateStyle()"><option value="solid">Solid Bdr</option><option value="dashed">Dashed Bdr</option><option value="none">No Bdr</option></select>
+            </div>
+            
+            <!-- Middle: D-Pad controls selected media -->
+            <div class="media-ctrl-panel" style="flex:1.2;">
+                <div style="font-size:9px; font-weight:bold; display:flex; gap:5px; margin-bottom:5px;">
+                    <label><input type="radio" name="mediaCtrl" value="photo" checked> Photo</label>
+                    <label><input type="radio" name="mediaCtrl" value="logo"> Logo</label>
+                </div>
+                <div class="d-pad">
+                    <button class="d-pad-btn up" onclick="panMedia(0,-5)">▲</button>
+                    <button class="d-pad-btn left" onclick="panMedia(-5,0)">◀</button>
+                    <button class="d-pad-btn right" onclick="panMedia(5,0)">▶</button>
+                    <button class="d-pad-btn down" onclick="panMedia(0,5)">▼</button>
+                </div>
+                <div style="display:flex; gap:5px; margin-top:5px;">
+                    <button class="action-btn" style="padding:4px 8px; flex:1;" onclick="zoomMedia(-10)">-</button>
+                    <span style="font-size:9px; font-weight:bold; align-self:center;">Zoom</span>
+                    <button class="action-btn" style="padding:4px 8px; flex:1;" onclick="zoomMedia(10)">+</button>
+                </div>
+            </div>
+
+            <!-- Right: Logo & Seal -->
+            <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
+                <label class="upload-btn">🏢 Logo <input type="file" id="file_logo" style="display:none" accept="image/*" onchange="loadMedia(this, 'el-logo')"></label>
+                <select id="sel_sealShape" class="frm-select" onchange="updateSeal()"><option value="round">Round Seal</option><option value="oval">Oval Seal</option></select>
+                <input type="color" id="clr_seal" class="color-picker" value="#b91c1c" oninput="updateSeal()">
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Design & Colors -->
+    <div class="tool-group">
+        <div class="tool-group-title">5. Theme & Design</div>
+        <div class="frm-row" style="margin-bottom:5px;">
+            <select id="sel_template" class="frm-select" onchange="changeTemplate()" style="flex:1.5;">
+                <option value="1">1. Classic</option><option value="2">2. Curved</option><option value="3">3. Sidebar</option><option value="4">4. Slant Cut</option><option value="5">5. Ellipse</option>
+                <option value="6">6. Frame</option><option value="7">7. Header Border</option><option value="8">8. Edge Cut</option><option value="9">9. RightBar</option><option value="10">10. Mini</option>
+            </select>
+            <select id="sel_font" class="frm-select" onchange="updateStyle()" style="flex:1;">
+                <option value="'Segoe UI', Tahoma, sans-serif">Standard</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Times New Roman', serif">Times</option>
+            </select>
         </div>
         <div class="frm-row">
-            <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_qr" checked onchange="updateContent()"> Show QR</label>
-            <label style="font-size:9px; font-weight:bold; display:flex; align-items:center; gap:5px;"><input type="checkbox" id="chk_return" checked onchange="updateContent()"> Return Addr</label>
+            <div style="flex:1;text-align:center;"><label class="frm-label">H-Bg 1</label><input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" oninput="updateStyle()"></div>
+            <div style="flex:1;text-align:center;"><label class="frm-label">H-Bg 2</label><input type="color" id="clr_h2" class="color-picker" value="#3b82f6" oninput="updateStyle()"></div>
+            <div style="flex:1;text-align:center;"><label class="frm-label">F-Bg</label><input type="color" id="clr_f1" class="color-picker" value="#1e3a8a" oninput="updateStyle()"></div>
+            <div style="flex:1;text-align:center;"><label class="frm-label">Card</label><input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateStyle()"></div>
+            <div style="flex:1;text-align:center;"><label class="frm-label">Text</label><input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateStyle()"></div>
+        </div>
+    </div>
+
+    <!-- 6. Role & Save -->
+    <div class="tool-group">
+        <div class="tool-group-title">6. Card Holder & Save</div>
+        <div class="frm-row">
+            <select id="inp_role_select" class="frm-select" onchange="handleRoleChange()" style="flex:1;">
+                <option value="STUDENT">Student</option><option value="STAFF">Staff</option><option value="EMPLOYEE">Employee</option><option value="Custom">Custom Role</option>
+            </select>
+            <input type="text" id="inp_custom_role" class="frm-input" placeholder="Type role..." style="display:none; flex:1;" oninput="updateContent()">
+            <select id="inp_showBadge" class="frm-select" onchange="updateContent()" style="width:70px;"><option value="true">Show</option><option value="false">Hide</option></select>
+        </div>
+        <div class="frm-row" style="margin-top:10px;">
+            <input type="text" id="tpl_name" class="frm-input" placeholder="Save as (e.g. Staff Design)">
+            <button class="action-btn" onclick="saveLocalTemplate()" style="background:#10b981;">Save</button>
+        </div>
+        <div id="savedTemplatesList" style="display:flex; flex-direction:column; gap:5px; margin-top:10px;">
+            <!-- Rendered by JS -->
         </div>
     </div>
 </div>
 
 <!-- ================= FREE CANVAS WORKSPACE ================= -->
-<div class="workspace" id="workspaceArea">
+<div class="workspace locked" id="workspaceArea">
     
     <!-- LEFT POCKET (TINY ARROW) -->
     <div class="left-pocket" id="leftPocket">
@@ -294,12 +349,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     <!-- ZOOM CONTROLS (+ / -) -->
     <div class="zoom-panel no-print">
         <button class="z-btn" onclick="changeWorkspaceZoom(-0.1)">-</button>
-        <span style="display:flex; align-items:center; font-size:11px; font-weight:800; width:35px; justify-content:center;" id="zoomTxt">100%</span>
+        <span style="display:flex; align-items:center; font-size:12px; font-weight:900; width:45px; justify-content:center; color:#1e3a8a;" id="zoomTxt">100%</span>
         <button class="z-btn" onclick="changeWorkspaceZoom(0.1)">+</button>
     </div>
 
     <!-- FREEZE BUTTON (LOCK/UNLOCK) -->
-    <div class="float-lock no-print" id="btnLock" onclick="toggleLock()" title="Lock/Unlock Card">🔓</div>
+    <div class="float-lock locked no-print" id="btnLock" onclick="toggleLock()" title="Lock/Unlock Card">🔒</div>
 
     <!-- THE CANVAS -->
     <div class="canvas-wrapper" id="canvasWrapper">
@@ -324,7 +379,6 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                         <div class="drag-el el-org" data-id="org" id="box_org" style="width:200px;">
                             <div class="name" id="txt_orgName">Institution Name</div>
                             <div class="sub" id="txt_orgSub">Sub Title</div>
-                            <div class="addr" id="txt_orgAddr">Address</div>
                         </div>
 
                         <div class="drag-el el-photo empty" data-id="photo" id="box_photo">
@@ -368,7 +422,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     </div>
 </div>
 
-<!-- ================= BOTTOM COMPACT EXPORT BAR ================= -->
+<!-- ================= COMPACT EXPORT BAR ================= -->
 <div class="export-bar no-print">
     <button class="export-btn btn-png" onclick="exportCard('png')">🖼️ HD PNG</button>
     <button class="export-btn btn-pdf" onclick="exportCard('pdf')">📄 HD PDF</button>
@@ -386,13 +440,17 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     window.appState = {
         view: 'front', 
         orientation: 'landscape',
-        isFrozen: false,
+        isFrozen: true, // Default to true (Locked for scrolling)
         zoom: 1,
         panX: 0, panY: 0, 
-        selectedId: null 
+        selectedId: null,
+        mediaState: {
+            photo: { px: 50, py: 50, scale: 100 },
+            logo: { px: 50, py: 50, scale: 100 }
+        }
     };
 
-    // Default Positions (Includes Scale)
+    // Default Positions (Includes Scale for zoom)
     const posL = {
         logo: {x: 10, y: 8, scale: 1}, org: {x: 60, y: 10, scale: 1}, photo: {x: 15, y: 75, scale: 1},
         details: {x: 105, y: 75, scale: 1}, badge: {x: 15, y: 180, scale: 1}, seal: {x: 240, y: 130, scale: 1},
@@ -405,6 +463,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     };
 
     let positions = JSON.parse(JSON.stringify(posL));
+    let savedTemplates = [];
 
     // ================= INIT =================
     document.addEventListener('DOMContentLoaded', () => {
@@ -412,11 +471,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         autoLoadStudent();
         initDragAndDrop();
         initCanvasPan();
-        handleRoleChange(); // Init role
+        handleRoleChange();
         updateContent();
         updateStyle();
         updateSeal();
         applyPositions();
+        loadSavedTemplatesList();
         loadAutoSave();
         
         document.querySelectorAll('input, textarea, select').forEach(el => {
@@ -425,21 +485,21 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         });
 
         setTimeout(centerCanvas, 100);
+        
+        // Mobile zoom adjust
+        if(window.innerWidth < 600) { window.appState.zoom = 0.8; applyCanvasTransform(); document.getElementById('zoomTxt').innerText = '80%'; }
     });
 
     // ================= UI CONTROLS =================
-    window.toggleSettingsSlider = function() { 
-        const slider = document.getElementById('settingsSlider');
+    window.toggleSidebar = function() { 
+        const sidebar = document.getElementById('settingsSidebar');
         const btn = document.getElementById('btnToggleSettings');
-        const ws = document.getElementById('workspaceArea');
-        slider.classList.toggle('hidden'); 
+        sidebar.classList.toggle('open'); 
         
-        if (slider.classList.contains('hidden')) {
-            btn.classList.remove('active'); btn.innerText = '⚙️ Settings';
-            ws.classList.remove('expanded');
+        if (sidebar.classList.contains('open')) {
+            btn.classList.add('active'); btn.innerText = '✖ Close Settings';
         } else {
-            btn.classList.add('active'); btn.innerText = '🔼 Hide';
-            ws.classList.add('expanded');
+            btn.classList.remove('active'); btn.innerText = '⚙️ Settings';
         }
     }
     
@@ -455,17 +515,18 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const btn = document.getElementById('btnLock');
         const ws = document.getElementById('workspaceArea');
         
+        // Clear selection
         window.appState.selectedId = null;
         document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
 
         if(window.appState.isFrozen) {
             btn.classList.add('locked'); btn.innerText = '🔒';
             ws.classList.add('locked');
-            showToast("Card Locked. Pan and zoom the canvas.");
+            showToast("Canvas Locked! You can now Pan and Zoom the screen.");
         } else {
             btn.classList.remove('locked'); btn.innerText = '🔓';
             ws.classList.remove('locked');
-            showToast("Unlocked. Select an element to move/zoom.");
+            showToast("Unlocked! Select any element to Move or Zoom it.");
         }
     }
     
@@ -478,7 +539,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const ws = document.querySelector('.workspace');
         const cWrap = document.getElementById('canvasWrapper');
         window.appState.panX = (ws.clientWidth - (336 * window.appState.zoom)) / 2;
-        window.appState.panY = 20; 
+        window.appState.panY = 30; // top padding
         applyCanvasTransform();
     }
 
@@ -492,10 +553,11 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             if(positions[id].scale < 0.2) positions[id].scale = 0.2;
             if(positions[id].scale > 5) positions[id].scale = 5;
             applyPositions();
+            autoSave();
         } else {
             // Zoom canvas
             let z = window.appState.zoom + val;
-            if(z < 0.4) z = 0.4; if(z > 3) z = 3;
+            if(z < 0.3) z = 0.3; if(z > 3) z = 3;
             window.appState.zoom = z;
             applyCanvasTransform();
             document.getElementById('zoomTxt').innerText = Math.round(z * 100) + '%';
@@ -507,19 +569,34 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         window.appState.view = v;
         document.querySelectorAll('.pocket-btn:not(#vbtn-orient)').forEach(b => b.classList.remove('active'));
         document.getElementById('vbtn-' + v).classList.add('active');
-        togglePocket(); // Auto close
+        document.getElementById('leftPocket').classList.remove('open'); // Auto close
+        document.getElementById('pocketHandle').innerText = '▶';
 
         const c = document.getElementById('idCard');
-        if(v === 'front') { c.classList.remove('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='none'; }
-        else if(v === 'back') { c.classList.remove('show-both'); document.getElementById('cardFront').style.display='none'; document.getElementById('cardBack').style.display='block'; }
-        else { c.classList.add('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='block'; }
-        setTimeout(centerCanvas, 300);
+        if(v === 'front') { 
+            c.classList.remove('show-both'); 
+            document.getElementById('cardFront').style.display='block'; 
+            document.getElementById('cardBack').style.display='none'; 
+            document.getElementById('backSettingsDiv').style.display='none'; // Hide back settings
+        } else if(v === 'back') { 
+            c.classList.remove('show-both'); 
+            document.getElementById('cardFront').style.display='none'; 
+            document.getElementById('cardBack').style.display='block'; 
+            document.getElementById('backSettingsDiv').style.display='block';
+        } else { 
+            c.classList.add('show-both'); 
+            document.getElementById('cardFront').style.display='block'; 
+            document.getElementById('cardBack').style.display='block'; 
+            document.getElementById('backSettingsDiv').style.display='block';
+        }
+        setTimeout(centerCanvas, 200);
     }
 
     window.toggleOrient = function() {
         const c = document.getElementById('idCard');
         const b = document.getElementById('vbtn-orient');
-        togglePocket(); 
+        document.getElementById('leftPocket').classList.remove('open');
+        document.getElementById('pocketHandle').innerText = '▶';
         
         if(window.appState.orientation === 'landscape') {
             window.appState.orientation = 'portrait';
@@ -537,7 +614,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             document.getElementById('box_details').style.textAlign = 'left'; document.getElementById('box_details').style.width = '200px';
         }
         applyPositions();
-        setTimeout(centerCanvas, 300);
+        setTimeout(centerCanvas, 200);
     }
 
     window.changeTemplate = function() {
@@ -551,11 +628,8 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     window.handleRoleChange = function() {
         const sel = document.getElementById('inp_role_select').value;
         const cInput = document.getElementById('inp_custom_role');
-        if (sel === 'Custom') {
-            cInput.style.display = 'block';
-        } else {
-            cInput.style.display = 'none';
-        }
+        if (sel === 'Custom') { cInput.style.display = 'block'; } 
+        else { cInput.style.display = 'none'; }
         updateContent();
     }
 
@@ -631,6 +705,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
 
         const wms = document.querySelectorAll('.saas-watermark');
         wms.forEach(w => { if(getContrast(bg) === '#0f172a') w.classList.add('watermark-dark'); else w.classList.remove('watermark-dark'); });
+        
+        // Fix for Template borders color
+        if(tpl === '6' || tpl === '10' || tpl === '7' || tpl === '19' || tpl === '20') {
+             document.getElementById('bgHeader').style.borderColor = h1;
+             document.getElementById('bgFooter').style.borderColor = f1;
+        }
     }
 
     function getContrast(hex) {
@@ -639,7 +719,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         return (r*299 + g*587 + b*114)/1000 > 128 ? '#0f172a' : '#ffffff';
     }
 
-    // ================= MEDIA UPLOAD (HTML2CANVAS BUG FIX) =================
+    // ================= MEDIA UPLOAD & BACKGROUND PANNING (D-PAD) =================
     window.loadMedia = function(input, targetClass, placeholderId) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -648,10 +728,38 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                 el.style.backgroundImage = `url('${e.target.result}')`;
                 el.classList.remove('empty');
                 document.getElementById(placeholderId).style.display = 'none';
+                
+                // Reset bg state
+                const type = targetClass === 'el-photo' ? 'photo' : 'logo';
+                window.appState.mediaState[type] = { px: 50, py: 50, scale: 100 };
+                applyMediaBgTransform(type);
                 autoSave();
             };
             reader.readAsDataURL(input.files[0]);
         }
+    }
+
+    window.panMedia = function(dx, dy) {
+        const target = document.querySelector('input[name="mediaCtrl"]:checked').value;
+        window.appState.mediaState[target].px += dx;
+        window.appState.mediaState[target].py += dy;
+        applyMediaBgTransform(target);
+    }
+    
+    window.zoomMedia = function(dz) {
+        const target = document.querySelector('input[name="mediaCtrl"]:checked').value;
+        window.appState.mediaState[target].scale += dz;
+        if(window.appState.mediaState[target].scale < 50) window.appState.mediaState[target].scale = 50;
+        applyMediaBgTransform(target);
+    }
+
+    function applyMediaBgTransform(type) {
+        const el = document.querySelector('.el-' + type);
+        if(!el) return;
+        const st = window.appState.mediaState[type];
+        el.style.backgroundSize = `${st.scale}%`;
+        el.style.backgroundPosition = `${st.px}% ${st.py}%`;
+        autoSave();
     }
 
     window.updateSeal = function() {
@@ -681,14 +789,15 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         const workspace = document.querySelector('.workspace');
         let isDown = false, startX, startY;
 
+        // Mouse Events
         workspace.addEventListener('mousedown', (e) => {
-            if(!window.appState.isFrozen) return; 
+            if(!window.appState.isFrozen) return; // Only pan if locked
             if(e.target.closest('.zoom-panel') || e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
-            isDown = true;
+            isDown = true; workspace.classList.add('dragging');
             startX = e.pageX - window.appState.panX; startY = e.pageY - window.appState.panY;
         });
-        workspace.addEventListener('mouseleave', () => { isDown = false; });
-        workspace.addEventListener('mouseup', () => { isDown = false; });
+        workspace.addEventListener('mouseleave', () => { isDown = false; workspace.classList.remove('dragging'); });
+        workspace.addEventListener('mouseup', () => { isDown = false; workspace.classList.remove('dragging'); });
         workspace.addEventListener('mousemove', (e) => {
             if(!isDown || !window.appState.isFrozen) return;
             e.preventDefault();
@@ -696,7 +805,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             applyCanvasTransform();
         });
 
-        // Touch Pan
+        // Touch Events
         workspace.addEventListener('touchstart', (e) => {
             if(!window.appState.isFrozen || e.touches.length !== 1) return;
             if(e.target.closest('.zoom-panel') || e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
@@ -717,11 +826,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         wrapper.style.transform = `translate(${window.appState.panX}px, ${window.appState.panY}px) scale(${window.appState.zoom})`;
     }
 
-    // ================= DRAG & DROP ELEMENTS (FLYING FIX) =================
+    // ================= DRAG & DROP ELEMENTS (FLYING FIX & SELECTION) =================
     function initDragAndDrop() {
         const draggables = document.querySelectorAll('.drag-el');
         let activeEl = null; let initX = 0, initY = 0;
 
+        // Deselect when clicking empty space
         document.getElementById('workspaceArea').addEventListener('mousedown', (e) => {
             if (!e.target.closest('.drag-el') && !window.appState.isFrozen) {
                 document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
@@ -730,9 +840,10 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         });
 
         function dragStart(e) {
-            if(window.appState.isFrozen) return; 
+            if(window.appState.isFrozen) return; // Block dragging if locked
             if (e.target.tagName === 'INPUT') return;
             
+            // Selection logic
             document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
             activeEl = e.currentTarget; 
             activeEl.classList.add('selected');
@@ -742,7 +853,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             const pos = positions[id] || {x:0, y:0, scale:1}; 
             const z = window.appState.zoom;
             
-            // Critical fix: Divide by zoom scale
+            // Critical fix: Account for zoom scale when calculating start point
             if (e.type === "touchstart") { initX = (e.touches[0].clientX / z) - pos.x; initY = (e.touches[0].clientY / z) - pos.y; } 
             else { initX = (e.clientX / z) - pos.x; initY = (e.clientY / z) - pos.y; }
         }
@@ -752,6 +863,7 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
             e.preventDefault();
             const z = window.appState.zoom; let curX, curY;
             
+            // Critical fix: Divide mouse movement by zoom scale so items don't fly away
             if (e.type === "touchmove") { curX = (e.touches[0].clientX / z) - initX; curY = (e.touches[0].clientY / z) - initY; } 
             else { curX = (e.clientX / z) - initX; curY = (e.clientY / z) - initY; }
 
@@ -784,14 +896,130 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
         });
     }
 
-    // ================= EXPORT =================
+    // ================= LOCAL TEMPLATE SAVE / LOAD =================
+    function loadSavedTemplatesList() {
+        const container = document.getElementById('savedTemplatesList');
+        if(!container) return;
+        container.innerHTML = '';
+        savedTemplates = JSON.parse(localStorage.getItem('vpk_id_templates_v1') || '[]');
+        
+        if(savedTemplates.length === 0) {
+            container.innerHTML = '<div style="font-size:10px; color:#94a3b8; text-align:center; padding:5px;">No saved templates yet.</div>';
+            return;
+        }
+
+        savedTemplates.forEach((t, i) => {
+            const div = document.createElement('div');
+            div.className = 'save-item';
+            div.innerHTML = `
+                <span class="save-item-name">${t.name}</span>
+                <div style="display:flex; gap:5px;">
+                    <button class="action-btn" style="padding:4px 8px; font-size:9px;" onclick="loadLocalTemplate(${i})">Load</button>
+                    <button class="action-btn" style="background:#ef4444; padding:4px 8px; font-size:9px;" onclick="deleteLocalTemplate(${i})">X</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    window.saveLocalTemplate = function() {
+        const name = document.getElementById('tpl_name').value.trim();
+        if(!name) { alert("Please enter a name for the template"); return; }
+        if(savedTemplates.length >= 5) { alert("Maximum 5 templates allowed. Please delete one."); return; }
+
+        const data = {};
+        document.querySelectorAll('.frm-input, .frm-select, .frm-textarea, .color-picker').forEach(el => {
+            if(el.id && el.id !== 'tpl_name') data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+        });
+
+        // Save background images as dataURL (if they exist)
+        const photoBg = document.querySelector('.el-photo').style.backgroundImage;
+        const logoBg = document.querySelector('.el-logo').style.backgroundImage;
+
+        const newTpl = {
+            name: name,
+            inputs: data,
+            positions: positions,
+            state: window.appState,
+            photoUrl: photoBg,
+            logoUrl: logoBg
+        };
+
+        savedTemplates.push(newTpl);
+        localStorage.setItem('vpk_id_templates_v1', JSON.stringify(savedTemplates));
+        document.getElementById('tpl_name').value = '';
+        loadSavedTemplatesList();
+        showToast("✅ Template Saved Locally!");
+    }
+
+    window.loadLocalTemplate = function(index) {
+        if(confirm("Load this template? Current unsaved work will be replaced.")) {
+            const t = savedTemplates[index];
+            if(t.inputs) {
+                Object.keys(t.inputs).forEach(key => {
+                    const el = document.getElementById(key);
+                    if(el) { if(el.type === 'checkbox') el.checked = t.inputs[key]; else el.value = t.inputs[key]; }
+                });
+            }
+            if(t.positions) positions = t.positions;
+            if(t.state) {
+                window.appState.view = t.state.view || 'front';
+                window.appState.orientation = t.state.orientation || 'landscape';
+                window.appState.mediaState = t.state.mediaState || { photo: {px:50,py:50,scale:100}, logo: {px:50,py:50,scale:100} };
+            }
+            
+            if(t.photoUrl && t.photoUrl !== 'none') {
+                document.querySelector('.el-photo').style.backgroundImage = t.photoUrl;
+                document.querySelector('.el-photo').classList.remove('empty');
+                document.getElementById('ph_photo').style.display = 'none';
+            }
+            if(t.logoUrl && t.logoUrl !== 'none') {
+                document.querySelector('.el-logo').style.backgroundImage = t.logoUrl;
+                document.querySelector('.el-logo').classList.remove('empty');
+                document.getElementById('ph_logo').style.display = 'none';
+            }
+
+            // Re-apply everything
+            setView(window.appState.view);
+            const b = document.getElementById('vbtn-orient');
+            const c = document.getElementById('idCard');
+            if(window.appState.orientation === 'portrait') {
+                c.classList.remove('landscape'); c.classList.add('portrait');
+                b.innerText = 'Portrait';
+                document.getElementById('box_org').style.textAlign = 'center'; document.getElementById('box_org').style.width = '190px';
+                document.getElementById('box_details').style.textAlign = 'center'; document.getElementById('box_details').style.width = '190px';
+            } else {
+                c.classList.remove('portrait'); c.classList.add('landscape');
+                b.innerText = 'Landscape';
+                document.getElementById('box_org').style.textAlign = 'left'; document.getElementById('box_org').style.width = '200px';
+                document.getElementById('box_details').style.textAlign = 'left'; document.getElementById('box_details').style.width = '200px';
+            }
+
+            updateContent(); updateStyle(); updateSeal(); applyPositions(); 
+            applyMediaBgTransform('photo'); applyMediaBgTransform('logo');
+            showToast(`Loaded Template: ${t.name}`);
+        }
+    }
+
+    window.deleteLocalTemplate = function(index) {
+        if(confirm("Delete this template permanently?")) {
+            savedTemplates.splice(index, 1);
+            localStorage.setItem('vpk_id_templates_v1', JSON.stringify(savedTemplates));
+            loadSavedTemplatesList();
+            showToast("Template Deleted.");
+        }
+    }
+
+    // ================= EXPORT (Bulletproof Logic) =================
     window.exportCard = async function(type) {
         const btn = document.querySelector(`.btn-${type}`);
         const oldText = btn.innerText; btn.innerText = '⏳ Processing...'; btn.disabled = true;
 
+        // Hide borders and selection
         document.querySelectorAll('.drag-el').forEach(el => { el.style.border = 'none'; el.classList.remove('selected'); });
         window.appState.selectedId = null;
         
+        // Reset transform for 1:1 HD capturing
         const wrapper = document.getElementById('print-render-area');
         const cWrapper = document.getElementById('canvasWrapper');
         const oldTrans = cWrapper.style.transform;
@@ -835,9 +1063,12 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     function autoSave() {
         const data = {};
         document.querySelectorAll('.frm-input, .frm-select, .frm-textarea, .color-picker').forEach(el => {
-            if(el.id) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+            if(el.id && el.id !== 'tpl_name') data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
         });
-        const saveData = { inputs: data, positions: positions, state: window.appState };
+        const photoBg = document.querySelector('.el-photo').style.backgroundImage;
+        const logoBg = document.querySelector('.el-logo').style.backgroundImage;
+
+        const saveData = { inputs: data, positions: positions, state: window.appState, photoUrl: photoBg, logoUrl: logoBg };
         localStorage.setItem('vpk_id_studio_v5', JSON.stringify(saveData));
     }
 
@@ -853,6 +1084,24 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
                     });
                 }
                 if(data.positions) positions = data.positions;
+                if(data.state) {
+                    window.appState.photoState = data.state.photoState || {x:0,y:0,z:1};
+                    window.appState.logoState = data.state.logoState || {x:0,y:0,z:1};
+                    window.appState.mediaState = data.state.mediaState || { photo: {px:50,py:50,scale:100}, logo: {px:50,py:50,scale:100} };
+                    applyMediaBgTransform('photo'); applyMediaBgTransform('logo');
+                }
+                
+                if(data.photoUrl && data.photoUrl !== 'none') {
+                    document.querySelector('.el-photo').style.backgroundImage = data.photoUrl;
+                    document.querySelector('.el-photo').classList.remove('empty');
+                    document.getElementById('ph_photo').style.display = 'none';
+                }
+                if(data.logoUrl && data.logoUrl !== 'none') {
+                    document.querySelector('.el-logo').style.backgroundImage = data.logoUrl;
+                    document.querySelector('.el-logo').classList.remove('empty');
+                    document.getElementById('ph_logo').style.display = 'none';
+                }
+
                 updateContent(); updateStyle(); updateSeal(); applyPositions();
             }
         } catch(e) {}
