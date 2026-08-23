@@ -226,6 +226,9 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
+        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
+        window.enqPerms = { view: true, add: false, edit: false, delete: false };
+
         // ==========================================
         // NEW MAGIC ALERT OVERRIDE FOR ALL WARNINGS AND ERRORS
         // ==========================================
@@ -237,7 +240,7 @@
             
             let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
             
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed')) {
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Denied')) {
                 iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
             } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successfully') || msg.includes('Added') || msg.includes('deleted')) {
                 iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
@@ -296,6 +299,31 @@
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) { window.location.href = 'login.html'; return; }
             
+            // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
+            const userRole = localStorage.getItem('userRole') || 'Admin';
+            if (userRole === 'Super Admin' || userRole === 'Admin') {
+                window.enqPerms = { view: true, add: true, edit: true, delete: true };
+            } else if (userRole !== 'Guest') {
+                const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).single();
+                if (data && data.permissions && data.permissions['Enquiry']) {
+                    window.enqPerms = data.permissions['Enquiry'];
+                }
+            }
+
+            // Hide Add Tab if no add permission
+            if (!window.enqPerms.add && userRole !== 'Guest') {
+                const addTabBtn = document.querySelector('.btab[onclick="switchTab(\\\'add\\\')"]');
+                if(addTabBtn) addTabBtn.style.display = 'none';
+                
+                document.getElementById('panel-add').innerHTML = `
+                    <div style="text-align:center; padding: 40px 20px; background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px; margin-top:20px;">
+                        <svg viewBox="0 0 24 24" width="40" height="40" stroke="#64748b" stroke-width="2.5" fill="none" style="margin-bottom:10px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <h3 style="color:#475569; font-size:16px; font-weight:900; margin:0 0 5px 0;">ACCESS RESTRICTED</h3>
+                        <p style="color:#64748b; font-size:12px; font-weight:700; margin:0;">You don't have permission to add new enquiries.</p>
+                    </div>`;
+            }
+            // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
+
             await fetchData();
         }
 
@@ -311,10 +339,12 @@
                 
                 // Populate Courses Dropdown
                 const cSelect = document.getElementById('leadCourse');
-                cSelect.innerHTML = '<option value="">-- Select Course --</option>';
-                coursesData.forEach(c => {
-                    cSelect.add(new Option(c.course_name, c.course_name));
-                });
+                if(cSelect) {
+                    cSelect.innerHTML = '<option value="">-- Select Course --</option>';
+                    coursesData.forEach(c => {
+                        cSelect.add(new Option(c.course_name, c.course_name));
+                    });
+                }
                 
                 updateSummary();
                 renderLeads();
@@ -374,6 +404,16 @@
             let followText = lead.status === 'Follow-up' && lead.follow_up_date ? ` • Follow-up: ${new Date(lead.follow_up_date).toLocaleDateString('en-IN')}` : '';
             let dateStr = new Date(lead.created_at).toLocaleDateString('en-IN', {day:'numeric', month:'short'});
             
+            // --- 🔒 DYNAMIC ACTION BUTTONS BASED ON PERMISSION ---
+            let editBtn = window.enqPerms.edit ? `<button onclick="openModal('${lead.id}')" class="act-btn act-edit">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Edit
+            </button>` : '';
+
+            let deleteBtn = window.enqPerms.delete ? `<button onclick="deleteLead('${lead.id}')" class="act-btn" style="background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; max-width: 40px;" title="Delete">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>` : '';
+            // -----------------------------------------------------
+
             return `
             <div class="enq-card">
                 <div class="enq-header">
@@ -396,12 +436,8 @@
                     <a href="tel:${lead.phone}" class="act-btn act-call">
                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Call
                     </a>
-                    <button onclick="openModal('${lead.id}')" class="act-btn act-edit">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Edit
-                    </button>
-                    <button onclick="deleteLead('${lead.id}')" class="act-btn" style="background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; max-width: 40px;" title="Delete">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                    </button>
+                    ${editBtn}
+                    ${deleteBtn}
                 </div>
             </div>`;
         }
@@ -445,6 +481,7 @@
         window.handleAddLead = async function(e) {
             e.preventDefault();
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode. You cannot add new enquiries."); return; }
+            if (!window.enqPerms.add) { alert("⛔ Permission Denied: You do not have access to add new enquiries."); return; }
 
             const btn = document.getElementById('addBtn');
             btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
@@ -478,6 +515,7 @@
 
         window.deleteLead = async function(id) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.enqPerms.delete) { alert("⛔ Permission Denied: You do not have access to delete enquiries."); return; }
             
             let n1 = Math.floor(Math.random() * 10) + 1;
             let n2 = Math.floor(Math.random() * 10) + 1;
@@ -529,6 +567,7 @@
         window.handleStatusUpdate = async function(e) {
             e.preventDefault();
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.enqPerms.edit) { alert("⛔ Permission Denied: You do not have access to edit enquiries."); return; }
 
             const id = document.getElementById('modalLeadId').value;
             const status = document.getElementById('modalStatus').value;
