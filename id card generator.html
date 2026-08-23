@@ -1,2279 +1,564 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>Pro ID Card Generator</title>
-
-<!-- External Libraries for Exporting PNG & PDF smoothly -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-:root {
-  --primary: #6C5CE7;
-  --secondary: #00CEC9;
-  --accent: #FD79A8;
-  --dark: #2D3436;
-  --light: #DFE6E9;
-  --bg: #0F0F1A;
-  --card-bg: #1A1A2E;
-  --tool-bg: #16213E;
-  --success: #00B894;
-  --warning: #FDCB6E;
-  --danger: #E17055;
-  --glass: rgba(255,255,255,0.08);
-  --glass-border: rgba(255,255,255,0.12);
-}
-
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: #fff;
-  overflow-x: hidden;
-  min-height: 100vh;
-  position: relative;
-}
-
-/* ============ TOOLBAR AREA ============ */
-.toolbar-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 180px; 
-  z-index: 1000;
-  background: linear-gradient(180deg, #0a0a1a 0%, #16213E 100%);
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow: 0 4px 30px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
-}
-
-body.toolbar-collapsed .toolbar-container {
-  height: 46px; 
-}
-
-body.toolbar-collapsed .tab-nav,
-body.toolbar-collapsed .tool-panels {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.toolbar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 12px;
-  background: rgba(0,0,0,0.3);
-  border-bottom: 1px solid var(--glass-border);
-  min-height: 46px;
-}
-
-.toolbar-header h1 {
-  font-size: 13px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-
-.header-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.header-actions button {
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 10px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 600;
-}
-
-.header-actions button:active {
-  transform: scale(0.95);
-}
-
-.header-actions .btn-back {
-  background: #3b82f6;
-  color: #fff;
-  border: 1px solid #2563eb;
-}
-
-#btnToggleTools {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: #fff;
-  border: none;
-  box-shadow: 0 2px 10px rgba(108,92,231,0.3);
-}
-
-/* Tab Navigation */
-.tab-nav {
-  display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
-  scrollbar-width: none;
-  padding: 5px 8px;
-  gap: 6px;
-  background: rgba(0,0,0,0.2);
-  width: 100%;
-  transition: opacity 0.2s;
-}
-
-.tab-nav::-webkit-scrollbar { display: none; }
-
-.tab-btn {
-  flex-shrink: 0;
-  padding: 5px 12px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: #aaa;
-  font-size: 10px;
-  cursor: pointer;
-  transition: all 0.3s;
-  white-space: nowrap;
-  font-weight: 700;
-}
-
-.tab-btn.active {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  color: #fff;
-  box-shadow: 0 2px 10px rgba(108,92,231,0.4);
-}
-
-/* Tool Panels Container */
-.tool-panels {
-  flex: 1;
-  position: relative;
-  width: 100%;
-  transition: opacity 0.2s;
-}
-
-.tool-panel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 6px 8px;
-  overflow-x: auto;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  display: none;
-  align-items: flex-start;
-  gap: 8px;
-  scrollbar-width: thin;
-}
-
-.tool-panel::-webkit-scrollbar { height: 4px; width: 4px; }
-.tool-panel::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
-.tool-panel.active { display: flex; }
-
-.tool-group {
-  flex-shrink: 0;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  border-radius: 10px;
-  padding: 6px 8px;
-  min-width: 130px;
-}
-
-.tool-group-title {
-  font-size: 9px;
-  text-transform: uppercase;
-  color: var(--secondary);
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-  font-weight: 800;
-}
-
-.tool-group label {
-  display: block;
-  font-size: 9px;
-  color: #999;
-  margin-bottom: 2px;
-  margin-top: 4px;
-  text-align: center;
-}
-
-.tool-group input[type="text"],
-.tool-group input[type="number"],
-.tool-group input[type="tel"],
-.tool-group input[type="email"],
-.tool-group textarea,
-.tool-group select {
-  width: 100%;
-  padding: 4px 6px;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--glass-border);
-  border-radius: 4px;
-  color: #fff;
-  font-size: 11px;
-  outline: none;
-  transition: border-color 0.3s;
-}
-
-.tool-group input:focus,
-.tool-group select:focus,
-.tool-group textarea:focus { border-color: var(--primary); }
-.tool-group textarea { height: 35px; resize: none; }
-.tool-group input[type="color"] { width: 30px; height: 24px; border: none; border-radius: 4px; padding:0; background: transparent; cursor: pointer; }
-
-.color-row { display: flex; gap: 4px; align-items: center; justify-content: center; }
-
-/* Custom Stepper & Directional Pad */
-.step-control {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--glass-border);
-  border-radius: 6px;
-  padding: 2px 4px;
-  margin-top: 2px;
-  margin-bottom: 4px;
-}
-.step-control button {
-  background: var(--glass);
-  border: 1px solid transparent;
-  color: var(--secondary);
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 900;
-  transition: all 0.2s;
-}
-.step-control button:active { 
-  background: var(--primary); 
-  color: #fff; 
-  transform: scale(0.9);
-}
-.step-control span { 
-  font-size: 11px; 
-  color: #fff; 
-  font-weight: bold; 
-  min-width: 24px;
-  text-align: center;
-}
-
-.d-pad-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 5px;
-  gap: 2px;
-}
-.d-pad-row {
-  display: flex;
-  gap: 2px;
-}
-.d-pad-btn {
-  width: 30px;
-  height: 25px;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  color: #fff;
-  border-radius: 4px;
-  font-size: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.d-pad-btn:active { background: var(--primary); transform: scale(0.9); }
-
-.mini-btn {
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--glass-border);
-  background: var(--glass);
-  color: #fff;
-  font-size: 9px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 600;
-}
-.mini-btn:active { background: var(--primary); transform: scale(0.95); }
-.btn-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; justify-content: center; }
-
-/* Upload area - Enlarged size */
-.photo-upload-area {
-  width: 90px;
-  height: 110px;
-  border: 2px dashed var(--glass-border);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  overflow: hidden;
-  position: relative;
-  margin: 4px auto;
-  touch-action: none; 
-}
-.photo-upload-area img { width: 100%; height: 100%; object-fit: cover; transform-origin: center center; }
-.photo-upload-area span { font-size: 24px; color: #555; }
-
-/* ============ MAIN CANVAS AREA ============ */
-.main-area {
-  margin-top: 185px; 
-  padding: 10px 10px 130px 10px; 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: calc(100vh - 185px);
-  width: 100%;
-  transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body.toolbar-collapsed .main-area {
-  margin-top: 46px;
-  padding-bottom: 20px; 
-  min-height: calc(100vh - 46px);
-}
-
-.controls-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  width: 100%;
-  transition: opacity 0.3s ease;
-}
-
-body.toolbar-collapsed .controls-wrapper {
-  display: none !important;
-}
-
-.side-toggle {
-  display: flex;
-  gap: 4px;
-  background: rgba(0,0,0,0.3);
-  padding: 4px;
-  border-radius: 10px;
-  border: 1px solid var(--glass-border);
-}
-
-.side-toggle button {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: #aaa;
-  font-size: 10px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.3s;
-  white-space: nowrap;
-}
-
-.side-toggle button.active {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: #fff;
-  box-shadow: 0 2px 10px rgba(108,92,231,0.4);
-}
-
-.side-toggle button.orientation-btn {
-  background: rgba(255,255,255,0.08);
-  color: var(--secondary);
-  border: 1px solid var(--glass-border);
-}
-
-/* Scroll Container */
-.preview-scroll-container {
-  width: 100%;
-  max-width: 100vw;
-  overflow: visible; 
-  touch-action: pan-x pan-y; 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 5px;
-  min-height: 380px;
-}
-
-.card-zoom-wrapper {
-  transition: transform 0.1s ease-out; 
-  transform-origin: center center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.card-preview-wrapper {
-  position: relative;
-  perspective: 1000px;
-}
-
-/* ID Card Dimensions & Layout */
-.id-card {
-  width: 324px;
-  height: 204px;
-  position: relative;
-  transition: width 0.3s, height 0.3s;
-  transform-style: preserve-3d;
-}
-
-.id-card.portrait { width: 204px; height: 324px; }
-.id-card-inner { width: 100%; height: 100%; position: relative; }
-
-.card-front, .card-back {
-  width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-  border-radius: 12px; overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
-  background-color: var(--card-bg);
-}
-
-.card-back { display: none; }
-
-.id-card.show-both { height: 420px; }
-.id-card.show-both .card-front { display: block; height: 204px; top: 0; }
-.id-card.show-both .card-back { display: block; height: 204px; top: 216px; }
-
-.id-card.show-both.portrait { width: 420px; height: 324px; }
-.id-card.show-both.portrait .card-front { width: 204px; height: 324px; top: 0; left: 0; }
-.id-card.show-both.portrait .card-back { width: 204px; height: 324px; top: 0; left: 216px; }
-
-/* Portrait Layout Adjustments */
-.id-card.portrait .card-body { flex-direction: column; align-items: center; text-align: center; padding: 6px 8px; }
-.id-card.portrait .card-photo { margin: 0 auto 4px auto; }
-.id-card.portrait .card-info { text-align: center; width: 100%; }
-
-/* Common card elements & Auto-fit Image Styling */
-.card-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
-.card-photo .placeholder-icon { width: 100%; height: 100%; background: rgba(128,128,128,0.2); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #666; }
-.header-content { display: flex; flex-direction: column; }
-.card-logo { width: 35px; height: 35px; border-radius: 50%; overflow: hidden; flex-shrink: 0; margin-right: 8px; display: flex; align-items: center; justify-content: center; }
-.card-logo img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
-
-/* 🔥 SAAS WATERMARK 🔥 */
-.saas-watermark {
-    position: absolute;
-    bottom: 4px;
-    right: 8px;
-    font-size: 6px;
-    color: rgba(255, 255, 255, 0.6);
-    font-weight: 800;
-    z-index: 100;
-    display: none;
-    letter-spacing: 0.5px;
-    pointer-events: none;
-}
-.tpl-5 .saas-watermark, .tpl-7 .saas-watermark, .tpl-9 .saas-watermark, .tpl-11 .saas-watermark, .tpl-13 .saas-watermark, .tpl-16 .saas-watermark {
-    color: rgba(0, 0, 0, 0.4);
-}
-
-/* ============ TEMPLATE STYLES ============ */
-.tpl-1 .card-front { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
-.tpl-1 .card-header { height: 65px; background: linear-gradient(135deg, #e94560, #0f3460); clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 0 100%); display: flex; align-items: center; padding: 0 15px; }
-.tpl-1 .card-header .org-name { color: #fff; font-size: 14px; font-weight: 800; letter-spacing: 1px; }
-.tpl-1 .card-header .designation { color: rgba(255,255,255,0.8); font-size: 9px; font-weight: 600; }
-.tpl-1 .card-body { display: flex; padding: 8px 12px; gap: 10px; }
-.tpl-1 .card-photo { width: 70px; height: 85px; border-radius: 8px; border: 2px solid #e94560; overflow: hidden; flex-shrink: 0; }
-.tpl-1 .card-info { flex: 1; }
-.tpl-1 .card-info .name { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 3px; }
-.tpl-1 .card-info .detail { font-size: 8px; color: rgba(255,255,255,0.7); margin-bottom: 1px; }
-.tpl-1 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 22px; background: linear-gradient(90deg, #e94560, #0f3460); display: flex; align-items: center; justify-content: center; }
-.tpl-1 .card-footer span { color: rgba(255,255,255,0.8); font-size: 7px; letter-spacing: 1px; }
-
-.tpl-2 .card-front { background: linear-gradient(160deg, #232526 0%, #414345 100%); }
-.tpl-2 .card-header { height: 60px; background: linear-gradient(135deg, #11998e, #38ef7d); clip-path: ellipse(80% 100% at 50% 0%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 5px; }
-.tpl-2 .card-header .org-name { color: #fff; font-size: 13px; font-weight: 800; }
-.tpl-2 .card-header .designation { color: rgba(255,255,255,0.9); font-size: 8px; background: rgba(0,0,0,0.2); padding: 1px 10px; border-radius: 10px; margin-top: 2px; }
-.tpl-2 .card-body { display: flex; padding: 8px 12px; gap: 10px; }
-.tpl-2 .card-photo { width: 65px; height: 80px; border-radius: 50% 50% 8px 8px; border: 2px solid #38ef7d; overflow: hidden; flex-shrink: 0; }
-.tpl-2 .card-info .name { font-size: 13px; font-weight: 800; color: #38ef7d; }
-.tpl-2 .card-info .detail { font-size: 8px; color: rgba(255,255,255,0.7); margin-top: 1px; }
-.tpl-2 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 18px; background: linear-gradient(90deg, #11998e, #38ef7d); display: flex; align-items: center; justify-content: center; }
-.tpl-2 .card-footer span { color: #fff; font-size: 7px; }
-
-.tpl-3 .card-front { background: #1a1a2e; }
-.tpl-3 .card-header { height: 70px; background: linear-gradient(135deg, #6C5CE7, #a29bfe); clip-path: polygon(0 0, 100% 0, 100% 50%, 0 100%); display: flex; align-items: flex-start; padding: 10px 15px; }
-.tpl-3 .card-header .org-name { color: #fff; font-size: 14px; font-weight: 900; }
-.tpl-3 .card-header .designation { color: rgba(255,255,255,0.8); font-size: 8px; }
-.tpl-3 .card-body { display: flex; padding: 0 12px; gap: 10px; margin-top: -5px; }
-.tpl-3 .card-photo { width: 68px; height: 82px; border-radius: 10px; border: 3px solid #6C5CE7; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 15px rgba(108,92,231,0.4); }
-.tpl-3 .card-info .name { font-size: 13px; font-weight: 800; color: #a29bfe; margin-top: 8px; }
-.tpl-3 .card-info .detail { font-size: 8px; color: rgba(255,255,255,0.6); margin-top: 2px; }
-.tpl-3 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 20px; background: linear-gradient(90deg, #6C5CE7, #a29bfe); clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 100%); }
-
-.tpl-4 .card-front { background: linear-gradient(180deg, #0c0c1d 0%, #1b1b3a 100%); }
-.tpl-4 .card-header { height: 55px; background: linear-gradient(135deg, #ff6b6b, #ee5a24); border-radius: 0 0 50% 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.tpl-4 .card-header .org-name { color: #fff; font-size: 12px; font-weight: 800; }
-.tpl-4 .card-header .designation { color: rgba(255,255,255,0.9); font-size: 8px; }
-.tpl-4 .card-body { display: flex; flex-direction: column; align-items: center; padding: 5px; }
-.tpl-4 .card-photo { width: 55px; height: 55px; border-radius: 50%; border: 3px solid #ff6b6b; overflow: hidden; margin-top: -10px; z-index: 2; }
-.tpl-4 .card-info { text-align: center; margin-top: 3px; }
-.tpl-4 .card-info .name { font-size: 12px; font-weight: 800; color: #ff6b6b; }
-.tpl-4 .card-info .detail { font-size: 7px; color: rgba(255,255,255,0.6); }
-.tpl-4 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 18px; background: linear-gradient(90deg, #ff6b6b, #ee5a24); border-radius: 50% 50% 0 0; display: flex; align-items: center; justify-content: center; }
-.tpl-4 .card-footer span { color: #fff; font-size: 7px; }
-
-.tpl-5 .card-front { background: #f5f6fa; display: flex; }
-.tpl-5 .card-left { width: 90px; background: linear-gradient(180deg, #2c3e50, #3498db); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px; }
-.tpl-5 .card-left .org-name { color: #fff; font-size: 10px; font-weight: 800; writing-mode: vertical-rl; text-orientation: mixed; letter-spacing: 2px; }
-.tpl-5 .card-right { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; }
-.tpl-5 .card-photo { width: 55px; height: 65px; border-radius: 8px; border: 2px solid #3498db; overflow: hidden; margin-bottom: 5px; }
-.tpl-5 .card-info .name { font-size: 13px; font-weight: 800; color: #2c3e50; }
-.tpl-5 .card-info .designation-text { font-size: 9px; color: #3498db; font-weight: 700; }
-.tpl-5 .card-info .detail { font-size: 8px; color: #555; margin-top: 1px; }
-
-.tpl-6 .card-front { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
-.tpl-6 .card-header { height: 50px; background: linear-gradient(90deg, #f12711, #f5af19); clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%); display: flex; align-items: center; justify-content: center; flex-direction: column; }
-.tpl-6 .card-header .org-name { color: #fff; font-size: 13px; font-weight: 900; }
-.tpl-6 .card-header .designation { color: rgba(255,255,255,0.9); font-size: 8px; }
-.tpl-6 .card-body { display: flex; padding: 8px 15px; gap: 10px; }
-.tpl-6 .card-photo { width: 65px; height: 75px; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); overflow: hidden; flex-shrink: 0; }
-.tpl-6 .card-info .name { font-size: 13px; font-weight: 800; color: #f5af19; }
-.tpl-6 .card-info .detail { font-size: 8px; color: rgba(255,255,255,0.7); margin-top: 2px; }
-.tpl-6 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 18px; background: linear-gradient(90deg, #f12711, #f5af19); clip-path: polygon(5% 0, 95% 0, 100% 100%, 0 100%); }
-
-.tpl-7 .card-front { background: #ffffff; border: 1px solid #e0e0e0; }
-.tpl-7 .card-header { height: 8px; background: linear-gradient(90deg, #667eea, #764ba2); }
-.tpl-7 .card-body { display: flex; padding: 12px 15px; gap: 12px; }
-.tpl-7 .card-photo { width: 70px; height: 85px; border-radius: 5px; border: 1px solid #ddd; overflow: hidden; flex-shrink: 0; }
-.tpl-7 .card-info .org-name { font-size: 11px; font-weight: 800; color: #667eea; margin-bottom: 3px; }
-.tpl-7 .card-info .name { font-size: 14px; font-weight: 900; color: #222; }
-.tpl-7 .card-info .designation-text { font-size: 9px; color: #764ba2; font-weight: 600; }
-.tpl-7 .card-info .detail { font-size: 8px; color: #666; margin-top: 2px; }
-.tpl-7 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 8px; background: linear-gradient(90deg, #667eea, #764ba2); }
-
-.tpl-8 .card-front { background: #0a0a0a; border: 1px solid #00ff88; box-shadow: inset 0 0 30px rgba(0,255,136,0.05); }
-.tpl-8 .card-header { height: 55px; border-bottom: 2px solid #00ff88; display: flex; align-items: center; padding: 0 15px; gap: 10px; }
-.tpl-8 .card-header .org-name { color: #00ff88; font-size: 14px; font-weight: 900; text-shadow: 0 0 10px rgba(0,255,136,0.5); }
-.tpl-8 .card-header .designation { color: #00ff88; font-size: 8px; border: 1px solid #00ff88; padding: 1px 8px; border-radius: 10px; }
-.tpl-8 .card-body { display: flex; padding: 8px 15px; gap: 10px; }
-.tpl-8 .card-photo { width: 65px; height: 80px; border: 2px solid #00ff88; border-radius: 5px; overflow: hidden; flex-shrink: 0; box-shadow: 0 0 15px rgba(0,255,136,0.3); }
-.tpl-8 .card-info .name { font-size: 13px; font-weight: 800; color: #fff; }
-.tpl-8 .card-info .detail { font-size: 8px; color: #00ff88; margin-top: 2px; }
-.tpl-8 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: #00ff88; box-shadow: 0 0 10px #00ff88; }
-
-.tpl-9 .card-front { background: linear-gradient(180deg, #ece9e6, #ffffff); }
-.tpl-9 .card-header { height: 58px; background: linear-gradient(135deg, #c0392b, #e74c3c); clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 8px; }
-.tpl-9 .card-header .org-name { color: #fff; font-size: 12px; font-weight: 800; }
-.tpl-9 .card-header .designation { color: rgba(255,255,255,0.9); font-size: 8px; }
-.tpl-9 .card-body { display: flex; padding: 5px 12px; gap: 10px; margin-top: -8px; }
-.tpl-9 .card-photo { width: 65px; height: 78px; border-radius: 8px; border: 3px solid #c0392b; overflow: hidden; flex-shrink: 0; }
-.tpl-9 .card-info .name { font-size: 13px; font-weight: 800; color: #c0392b; margin-top: 10px; }
-.tpl-9 .card-info .detail { font-size: 8px; color: #555; margin-top: 2px; }
-.tpl-9 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 20px; background: linear-gradient(90deg, #c0392b, #e74c3c); display: flex; align-items: center; justify-content: center; }
-.tpl-9 .card-footer span { color: #fff; font-size: 7px; }
-
-.tpl-10 .card-front { background: #1B1464; }
-.tpl-10 .card-header { height: 55px; background: linear-gradient(135deg, #F97F51, #1B1464); clip-path: polygon(0 0, 100% 0, 80% 100%, 0 80%); display: flex; align-items: flex-start; padding: 10px 12px; }
-.tpl-10 .card-header .org-name { color: #fff; font-size: 12px; font-weight: 800; }
-.tpl-10 .card-header .designation { color: rgba(255,255,255,0.8); font-size: 8px; }
-.tpl-10 .card-body { display: flex; padding: 2px 12px; gap: 10px; }
-.tpl-10 .card-photo { width: 62px; height: 75px; border-radius: 0 15px 0 15px; border: 2px solid #F97F51; overflow: hidden; flex-shrink: 0; }
-.tpl-10 .card-info .name { font-size: 13px; font-weight: 800; color: #F97F51; }
-.tpl-10 .card-info .detail { font-size: 8px; color: rgba(255,255,255,0.7); margin-top: 2px; }
-.tpl-10 .card-footer { position: absolute; bottom: 0; right: 0; width: 120px; height: 25px; background: #F97F51; clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%); }
-
-.tpl-11 .card-front { background: #fafafa; }
-.tpl-11 .card-header { height: 52px; background: #2c3e50; border-bottom: 4px solid #e67e22; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.tpl-11 .card-header .org-name { color: #fff; font-size: 13px; font-weight: 800; }
-.tpl-11 .card-header .designation { color: #e67e22; font-size: 9px; font-weight: 700; }
-.tpl-11 .card-body { display: flex; padding: 8px 12px; gap: 10px; }
-.tpl-11 .card-photo { width: 65px; height: 80px; border: 2px solid #2c3e50; overflow: hidden; flex-shrink: 0; }
-.tpl-11 .card-info .name { font-size: 13px; font-weight: 800; color: #2c3e50; }
-.tpl-11 .card-info .detail { font-size: 8px; color: #555; margin-top: 1px; }
-.tpl-11 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 5px; background: #e67e22; }
-
-.tpl-12 .card-front { background: linear-gradient(180deg, #200122, #6f0000); }
-.tpl-12 .card-header { height: 60px; background: rgba(255,255,255,0.1); border-bottom: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; padding: 0 15px; }
-.tpl-12 .card-header .org-name { color: #fff; font-size: 14px; font-weight: 900; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-.tpl-12 .card-header .designation { color: rgba(255,255,255,0.7); font-size: 8px; }
-.tpl-12 .card-body { display: flex; padding: 8px 15px; gap: 10px; }
-.tpl-12 .card-photo { width: 65px; height: 78px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.3); overflow: hidden; flex-shrink: 0; }
-.tpl-12 .card-info .name { font-size: 13px; font-weight: 800; color: #fff; }
-.tpl-12 .card-info .detail { font-size: 8px; color: rgba(255,255,255,0.6); margin-top: 2px; }
-.tpl-12 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 20px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; }
-.tpl-12 .card-footer span { color: rgba(255,255,255,0.5); font-size: 7px; }
-
-.tpl-13 .card-front { background: #ecf0f1; }
-.tpl-13 .card-header { height: 52px; background: linear-gradient(135deg, #6c5ce7, #a29bfe); clip-path: polygon(0 0, 100% 0, 100% 70%, 90% 100%, 80% 70%, 70% 100%, 60% 70%, 50% 100%, 40% 70%, 30% 100%, 20% 70%, 10% 100%, 0 70%); display: flex; align-items: flex-start; justify-content: center; padding-top: 8px; }
-.tpl-13 .card-header .org-name { color: #fff; font-size: 12px; font-weight: 800; }
-.tpl-13 .card-body { display: flex; padding: 5px 12px; gap: 10px; }
-.tpl-13 .card-photo { width: 65px; height: 78px; border-radius: 5px; border: 2px solid #6c5ce7; overflow: hidden; flex-shrink: 0; }
-.tpl-13 .card-info .name { font-size: 13px; font-weight: 800; color: #6c5ce7; }
-.tpl-13 .card-info .designation-text { font-size: 9px; color: #a29bfe; font-weight: 600; }
-.tpl-13 .card-info .detail { font-size: 8px; color: #555; margin-top: 1px; }
-.tpl-13 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #6c5ce7, #a29bfe); }
-
-.tpl-14 .card-front { background: #1e272e; }
-.tpl-14 .card-header { height: 60px; background: linear-gradient(90deg, #0abde3, #48dbfb); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 70%); display: flex; align-items: flex-start; padding: 8px 15px; }
-.tpl-14 .card-header .org-name { color: #1e272e; font-size: 13px; font-weight: 900; }
-.tpl-14 .card-header .designation { color: rgba(0,0,0,0.6); font-size: 8px; }
-.tpl-14 .card-body { display: flex; padding: 5px 12px; gap: 10px; }
-.tpl-14 .card-photo { width: 65px; height: 78px; border-radius: 0 20px 0 20px; border: 2px solid #0abde3; overflow: hidden; flex-shrink: 0; }
-.tpl-14 .card-info .name { font-size: 13px; font-weight: 800; color: #48dbfb; }
-.tpl-14 .card-info .detail { font-size: 8px; color: rgba(255,255,255,0.6); margin-top: 2px; }
-.tpl-14 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 18px; background: linear-gradient(90deg, #0abde3, #48dbfb); clip-path: polygon(0 0, 100% 40%, 100% 100%, 0 100%); }
-
-.tpl-15 .card-front { background: linear-gradient(180deg, #1e3c72, #2a5298); }
-.tpl-15 .card-header { height: 45px; display: flex; align-items: center; justify-content: center; flex-direction: column; border-bottom: 2px solid rgba(255,255,255,0.2); }
-.tpl-15 .card-header .org-name { color: #ffd700; font-size: 13px; font-weight: 900; letter-spacing: 2px; }
-.tpl-15 .card-header .designation { color: rgba(255,255,255,0.8); font-size: 8px; letter-spacing: 3px; }
-.tpl-15 .card-body { display: flex; padding: 10px 15px; gap: 12px; }
-.tpl-15 .card-photo { width: 60px; height: 75px; border: 2px solid #ffd700; overflow: hidden; flex-shrink: 0; }
-.tpl-15 .card-info .name { font-size: 12px; font-weight: 700; color: #ffd700; }
-.tpl-15 .card-info .detail { font-size: 8px; color: rgba(255,255,255,0.7); margin-top: 2px; }
-.tpl-15 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 22px; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; border-top: 1px solid rgba(255,215,0,0.3); }
-.tpl-15 .card-footer span { color: rgba(255,255,255,0.5); font-size: 6px; letter-spacing: 2px; font-family: monospace; }
-
-.tpl-16 .card-front { background: #ffecd2; }
-.tpl-16 .card-header { height: 55px; background: linear-gradient(135deg, #fcb045, #fd1d1d, #833ab4); border-radius: 0 0 30px 30px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-.tpl-16 .card-header .org-name { color: #fff; font-size: 13px; font-weight: 800; }
-.tpl-16 .card-header .designation { color: rgba(255,255,255,0.9); font-size: 8px; }
-.tpl-16 .card-body { display: flex; padding: 8px 12px; gap: 10px; }
-.tpl-16 .card-photo { width: 60px; height: 72px; border-radius: 15px; border: 3px solid #833ab4; overflow: hidden; flex-shrink: 0; }
-.tpl-16 .card-info .name { font-size: 13px; font-weight: 800; color: #833ab4; }
-.tpl-16 .card-info .detail { font-size: 8px; color: #555; margin-top: 1px; }
-.tpl-16 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 18px; background: linear-gradient(90deg, #fcb045, #fd1d1d, #833ab4); border-radius: 20px 20px 12px 12px; }
-
-.tpl-17 .card-front { background: #0a0a0a; background-image: linear-gradient(rgba(0,255,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,0,0.03) 1px, transparent 1px); background-size: 20px 20px; }
-.tpl-17 .card-header { height: 50px; border-bottom: 1px solid #00ff00; display: flex; align-items: center; padding: 0 15px; }
-.tpl-17 .card-header .org-name { color: #00ff00; font-size: 13px; font-weight: 900; font-family: monospace; }
-.tpl-17 .card-header .designation { color: rgba(0,255,0,0.6); font-size: 8px; font-family: monospace; }
-.tpl-17 .card-body { display: flex; padding: 8px 15px; gap: 10px; }
-.tpl-17 .card-photo { width: 65px; height: 78px; border: 1px solid #00ff00; overflow: hidden; flex-shrink: 0; }
-.tpl-17 .card-info .name { font-size: 12px; font-weight: 700; color: #00ff00; font-family: monospace; }
-.tpl-17 .card-info .detail { font-size: 8px; color: rgba(0,255,0,0.6); font-family: monospace; margin-top: 2px; }
-.tpl-17 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: #00ff00; }
-
-.tpl-18 .card-front { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.tpl-18 .card-header { height: 50px; background: rgba(255,255,255,0.15); backdrop-filter: blur(5px); display: flex; align-items: center; padding: 0 15px; flex-direction: column; justify-content: center; }
-.tpl-18 .card-header .org-name { color: #fff; font-size: 14px; font-weight: 900; }
-.tpl-18 .card-header .designation { color: rgba(255,255,255,0.8); font-size: 8px; }
-.tpl-18 .card-body { display: flex; padding: 8px 12px; gap: 10px; }
-.tpl-18 .card-photo { width: 65px; height: 78px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.5); overflow: hidden; flex-shrink: 0; }
-.tpl-18 .card-info .name { font-size: 13px; font-weight: 800; color: #fff; }
-.tpl-18 .card-info .detail { font-size: 8px; color: rgba(255,255,255,0.7); margin-top: 2px; }
-.tpl-18 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 18px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; }
-.tpl-18 .card-footer span { color: rgba(255,255,255,0.6); font-size: 7px; }
-
-.tpl-19 .card-front { background: #f5f0e1; border: 2px solid #333; }
-.tpl-19 .card-header { height: 48px; border-bottom: 3px double #333; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-.tpl-19 .card-header .org-name { color: #222; font-size: 15px; font-weight: 900; font-family: Georgia, serif; }
-.tpl-19 .card-header .designation { color: #555; font-size: 8px; font-family: Georgia, serif; font-style: italic; }
-.tpl-19 .card-body { display: flex; padding: 8px 12px; gap: 10px; }
-.tpl-19 .card-photo { width: 65px; height: 78px; border: 1px solid #333; overflow: hidden; flex-shrink: 0; }
-.tpl-19 .card-info .name { font-size: 13px; font-weight: 700; color: #222; font-family: Georgia, serif; }
-.tpl-19 .card-info .detail { font-size: 8px; color: #555; font-family: Georgia, serif; margin-top: 2px; }
-.tpl-19 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 16px; border-top: 3px double #333; display: flex; align-items: center; justify-content: center; }
-.tpl-19 .card-footer span { color: #333; font-size: 6px; font-family: Georgia, serif; }
-
-.tpl-20 .card-front { background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%); border: 1px solid rgba(0,188,212,0.3); }
-.tpl-20 .card-header { height: 55px; border-bottom: 1px solid rgba(0,188,212,0.3); display: flex; align-items: center; padding: 0 15px; position: relative; }
-.tpl-20 .card-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #00bcd4, transparent); }
-.tpl-20 .card-header .org-name { color: #00bcd4; font-size: 13px; font-weight: 800; letter-spacing: 2px; }
-.tpl-20 .card-header .designation { color: rgba(0,188,212,0.6); font-size: 8px; letter-spacing: 1px; }
-.tpl-20 .card-body { display: flex; padding: 8px 15px; gap: 10px; }
-.tpl-20 .card-photo { width: 65px; height: 78px; border: 1px solid rgba(0,188,212,0.5); border-radius: 3px; overflow: hidden; flex-shrink: 0; box-shadow: 0 0 15px rgba(0,255,136,0.3); }
-.tpl-20 .card-info .name { font-size: 13px; font-weight: 700; color: #fff; }
-.tpl-20 .card-info .detail { font-size: 8px; color: rgba(0,188,212,0.7); margin-top: 2px; }
-.tpl-20 .card-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: #00bcd4; box-shadow: 0 0 10px #00ff88; }
-
-/* Back Card Templates */
-.back-tpl { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; }
-.back-tpl .back-org { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
-.back-tpl .back-addr { font-size: 8px; text-align: center; line-height: 1.4; margin-bottom: 6px; }
-.back-tpl .back-qr { width: 50px; height: 50px; border: 2px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 8px; margin-bottom: 6px; opacity: 0.7; }
-.back-tpl .back-terms { font-size: 6px; text-align: center; opacity: 0.6; line-height: 1.3; }
-.back-tpl .back-sign-area { margin-top: 6px; width: 80px; border-top: 1px solid currentColor; padding-top: 2px; font-size: 7px; text-align: center; opacity: 0.7; }
-
-/* ============ BOTTOM ACTION BUTTONS COMPACT ============ */
-.bottom-actions-wrapper {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
-  background: rgba(10, 10, 26, 0.95);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid var(--glass-border);
-  padding: 6px 10px 12px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* Hide actions wrapper completely when toolbar is collapsed to avoid scroll block */
-body.toolbar-collapsed .bottom-actions-wrapper {
-  display: none !important;
-}
-
-.save-control-bar {
-  display: flex;
-  gap: 6px;
-}
-
-.btn-autosave { 
-  background: #2d3436; 
-  color: #fff; 
-  border: 1px solid var(--glass-border); 
-  border-radius: 6px; 
-  padding: 6px; 
-  flex: 1; 
-  font-size: 10px; 
-  font-weight: bold; 
-  cursor: pointer;
-  transition: 0.3s;
-}
-.btn-autosave.active { background: var(--success); }
-
-.btn-quicksave { 
-  background: var(--primary); 
-  color: #fff; 
-  border: 1px solid var(--glass-border); 
-  border-radius: 6px; 
-  padding: 6px; 
-  flex: 2; 
-  font-size: 11px; 
-  font-weight: bold; 
-  cursor: pointer;
-}
-
-.bottom-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.action-btn {
-  flex: 1;
-  padding: 6px;
-  border: none;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-}
-.action-btn:active { transform: scale(0.95); }
-.action-btn.print-btn { background: linear-gradient(135deg, #6C5CE7, #a29bfe); color: #fff; }
-.action-btn.png-btn { background: linear-gradient(135deg, #00B894, #55efc4); color: #fff; }
-.action-btn.pdf-btn { background: linear-gradient(135deg, #E17055, #fab1a0); color: #fff; }
-.action-btn .btn-icon { font-size: 13px; }
-
-/* ============ MODALS ============ */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.85);
-  z-index: 2000;
-  display: none;
-  overflow-y: auto;
-  padding: 20px 10px;
-}
-.modal-overlay.active { display: block; }
-
-.modal-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 15px; position: sticky; top: 0;
-  background: rgba(0,0,0,0.9); padding: 10px; border-radius: 12px; z-index: 1;
-}
-.modal-header h2 { font-size: 16px; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.modal-close { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--glass-border); background: var(--glass); color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-.template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.template-thumb { border-radius: 10px; overflow: hidden; border: 2px solid transparent; cursor: pointer; transition: all 0.3s; background: var(--card-bg); padding: 5px; }
-.template-thumb.selected { border-color: var(--primary); box-shadow: 0 0 20px rgba(108,92,231,0.4); }
-.template-thumb:active { transform: scale(0.97); }
-.thumb-container { width: 100%; height: 100px; overflow: hidden; border-radius: 6px; position: relative; }
-.template-thumb .thumb-preview { width: 324px; height: 204px; transform: scale(0.45); transform-origin: top left; pointer-events: none; }
-.template-thumb .tpl-name { text-align: center; font-size: 10px; color: #aaa; padding: 4px; font-weight: 600; }
-
-/* SAVED SLOTS MODAL */
-.saved-slots { display: flex; flex-direction: column; gap: 10px; }
-.save-slot { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
-.save-slot .slot-info { flex: 1; }
-.save-slot .slot-name { font-size: 13px; font-weight: 700; color: var(--secondary); }
-.save-slot .slot-desc { font-size: 10px; color: #666; margin-top: 2px; }
-.save-slot .slot-actions { display: flex; gap: 6px; }
-.slot-btn { padding: 6px 12px; border-radius: 8px; border: none; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-.slot-btn.load { background: var(--primary); color: #fff; }
-.slot-btn.save { background: var(--success); color: #fff; }
-.slot-btn.del { background: var(--danger); color: #fff; }
-
-/* ============ PRINT STYLES ============ */
-@media print {
-  * { margin: 0 !important; padding: 0 !important; }
-  body { background: transparent !important; margin: 0 !important; padding: 0 !important; }
-  .toolbar-container, .bottom-actions-wrapper, .controls-wrapper, .modal-overlay, .no-print { display: none !important; }
-  .main-area { margin-top: 0 !important; padding: 0 !important; display: block !important; min-height: auto !important; }
-  .preview-scroll-container { padding: 0 !important; margin: 0 !important; }
-  .card-zoom-wrapper { transform: none !important; }
-  .id-card { box-shadow: none !important; border-radius: 0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; margin: 0 !important; }
-  @page { size: auto; margin: 0mm; }
-}
-
-/* TOAST */
-.toast {
-  position: fixed;
-  bottom: -100px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--card-bg);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  z-index: 3000;
-  transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid var(--glass-border);
-  white-space: nowrap;
-}
-.toast.show { bottom: 90px; }
-body.toolbar-collapsed .toast.show { bottom: 30px; }
-
-/* U-Turn Back Button */
-.btn-back {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.2s;
-    margin-right: 10px;
-}
-.btn-back:active { transform: scale(0.95); }
-.btn-back svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-right: 5px;}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pro ID Card Studio - Drag & Drop Builder</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- html-to-image & jsPDF for Bulletproof HD Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f1f5f9; overflow-x: hidden; }
+        * { box-sizing: border-box; }
+
+        /* Top Navigation */
+        .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: white; border-bottom: 2px solid #e2e8f0; position: sticky; top: 0; z-index: 50; }
+        .btn-back-dashboard { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s; cursor: pointer; }
+        .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-back-dashboard svg { width: 20px; height: 20px; stroke: #4c1d95; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .top-title { font-size: 18px; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
+        
+        .main-layout { display: flex; flex-direction: row; height: calc(100vh - 65px); width: 100%; }
+        
+        /* Left Sidebar - Settings */
+        .sidebar { width: 350px; background: white; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow-y: auto; }
+        .sidebar-section { padding: 15px; border-bottom: 1px solid #e2e8f0; }
+        .section-title { font-size: 13px; font-weight: 900; color: #1e3a8a; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        
+        .frm-label { font-size: 11px; font-weight: 800; color: #475569; margin-bottom: 4px; display: block; text-transform: uppercase; }
+        .frm-input, .frm-select, .frm-textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #f8fafc; margin-bottom: 10px; transition: 0.2s; }
+        .frm-input:focus, .frm-select:focus, .frm-textarea:focus { border-color: #3b82f6; background: white; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .frm-textarea { resize: vertical; min-height: 60px; }
+        
+        .color-picker-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .color-input { width: 35px; height: 35px; border: none; border-radius: 8px; cursor: pointer; padding: 0; background: transparent; }
+
+        .btn-upload { background: #e0f2fe; color: #0284c7; border: 1px dashed #7dd3fc; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; width: 100%; text-align: center; display: block; margin-bottom: 10px; transition: 0.2s; }
+        .btn-upload:hover { background: #bae6fd; }
+
+        /* Right Area - Canvas */
+        .canvas-area { flex: 1; display: flex; flex-direction: column; background: #e2e8f0; position: relative; overflow: hidden; }
+        .canvas-toolbar { display: flex; justify-content: center; gap: 10px; padding: 15px; background: white; border-bottom: 1px solid #cbd5e1; box-shadow: 0 4px 6px rgba(0,0,0,0.02); z-index: 10; }
+        
+        .btn-action { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-action:active { transform: scale(0.95); }
+        .btn-png { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .btn-pdf { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+        .btn-layout { background: #475569; color: white; }
+
+        .workspace { flex: 1; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 20px; }
+        
+        /* The Actual ID Card Render Area */
+        .id-card-wrapper { background: white; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: width 0.3s, height 0.3s; transform-origin: center center; border: 1px solid #cbd5e1;}
+        .id-card-portrait { width: 250px; height: 390px; border-radius: 12px; }
+        .id-card-landscape { width: 390px; height: 250px; border-radius: 12px; }
+
+        /* Draggable Element Styles */
+        .drag-element { position: absolute; cursor: move; user-select: none; touch-action: none; padding: 2px; border: 1px dashed transparent; transition: border 0.2s; }
+        .drag-element:hover { border-color: rgba(59,130,246,0.5); }
+        .drag-element:active { cursor: grabbing; }
+
+        /* Block Styles */
+        .block-header-bg { position: absolute; top: 0; left: 0; right: 0; z-index: 1; }
+        .block-footer-bg { position: absolute; bottom: 0; left: 0; right: 0; z-index: 1; }
+        .block-content { position: relative; z-index: 10; display: flex; flex-direction: column; line-height: 1.3; }
+
+        /* Watermark */
+        .saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 7px; color: rgba(255,255,255,0.7); font-weight: 800; z-index: 100; pointer-events: none; }
+        .watermark-dark { color: rgba(0,0,0,0.5); }
+
+        @media (max-width: 768px) {
+            .main-layout { flex-direction: column; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 2px solid #cbd5e1; }
+            .canvas-area { min-height: 500px; }
+            .top-title { font-size: 15px; }
+            .btn-back-dashboard span { display: none; }
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printable-card-area, #printable-card-area * { visibility: visible; }
+            #printable-card-area { position: absolute; left: 0; top: 0; margin: 0; padding: 0; transform: none !important; box-shadow: none !important; }
+            .drag-element { border: none !important; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- ============ TOOLBAR ============ -->
-<div class="toolbar-container">
-  <div class="toolbar-header">
-    <div style="display: flex; align-items: center;">
-        <a href="dashboard.html" class="btn-back">
+    <!-- Top Navigation -->
+    <div class="top-bar no-print">
+        <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
             <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
-            Back
+            <span>Dashboard</span>
         </a>
-        <h1>🪪 PRO ID MAKER</h1>
+        <h1 class="top-title">Plain Drag & Drop ID Maker</h1>
+        <div style="width: 40px;"></div> <!-- Spacer -->
     </div>
-    <div class="header-actions">
-      <button onclick="openModal('templateModal')">📐 Tpl</button>
-      <button onclick="openModal('savedModal')">💾 Saved</button>
-      <button id="btnToggleTools" onclick="toggleToolbar()">🔼 Hide Tool</button>
-    </div>
-  </div>
-  
-  <div class="tab-nav" id="tabNav">
-    <button class="tab-btn active" data-tab="info">📝 Info</button>
-    <button class="tab-btn" data-tab="org">🏢 Org</button>
-    <button class="tab-btn" data-tab="photo">📷 Photo</button>
-    <button class="tab-btn" data-tab="design">🎨 Design</button>
-    <button class="tab-btn" data-tab="font">🔤 Font</button>
-    <button class="tab-btn" data-tab="back">🔙 Back</button>
-    <button class="tab-btn" data-tab="extra">⚙️ Extra</button>
-  </div>
-  
-  <div class="tool-panels">
-    <!-- INFO TAB -->
-    <div class="tool-panel active" id="panel-info">
-      <div class="tool-group" style="min-width:140px">
-        <div class="tool-group-title">Personal</div>
-        <label>Full Name</label>
-        <input type="text" id="inp_name" placeholder="Enter name" oninput="updateCard()">
-        <label>Designation / Course</label>
-        <input type="text" id="inp_designation" placeholder="Title/Course" oninput="updateCard()">
-        <label>ID / Reg Number</label>
-        <input type="text" id="inp_idno" placeholder="ID-001" oninput="updateCard()">
-      </div>
-      <div class="tool-group" style="min-width:140px">
-        <div class="tool-group-title">Contact</div>
-        <label>Phone</label>
-        <input type="tel" id="inp_phone" placeholder="+91..." oninput="updateCard()">
-        <label>Email</label>
-        <input type="email" id="inp_email" placeholder="email" oninput="updateCard()">
-        <label>Blood Group</label>
-        <select id="inp_blood" onchange="updateCard()">
-          <option value="">Select</option>
-          <option>A+</option><option>A-</option>
-          <option>B+</option><option>B-</option>
-          <option>AB+</option><option>AB-</option>
-          <option>O+</option><option>O-</option>
-        </select>
-      </div>
-      <div class="tool-group" style="min-width:140px">
-        <div class="tool-group-title">Additional</div>
-        <label>Department</label>
-        <input type="text" id="inp_dept" placeholder="Dept" oninput="updateCard()">
-        <label>Join Date</label>
-        <input type="text" id="inp_joindate" placeholder="01/01/2024" oninput="updateCard()">
-        <label>Validity</label>
-        <input type="text" id="inp_validity" placeholder="31/12/2025" oninput="updateCard()">
-      </div>
-      <div class="tool-group" style="min-width:150px">
-        <div class="tool-group-title">Address</div>
-        <label>Address Line</label>
-        <textarea id="inp_address" placeholder="Address..." oninput="updateCard()"></textarea>
-        <label>Emergency Contact</label>
-        <input type="tel" id="inp_emergency" placeholder="+91..." oninput="updateCard()">
-      </div>
-    </div>
-    
-    <!-- ORG TAB -->
-    <div class="tool-panel" id="panel-org">
-      <div class="tool-group" style="min-width:150px">
-        <div class="tool-group-title">Organization</div>
-        <label>Org Name</label>
-        <input type="text" id="inp_org" placeholder="Company Name" oninput="updateCard()">
-        <label>Tagline</label>
-        <input type="text" id="inp_tagline" placeholder="Tagline" oninput="updateCard()">
-        <label>Website</label>
-        <input type="text" id="inp_website" placeholder="www.example.com" oninput="updateCard()">
-      </div>
-      <div class="tool-group" style="min-width:140px">
-        <div class="tool-group-title">Logo Upload & Adjust</div>
-        <div class="photo-upload-area" id="logoUploadBox" onclick="if(!window.isDraggingImg) document.getElementById('logoInput').click()">
-          <img id="logoPreview" style="display:none">
-          <span id="logoPlaceholder">🏢</span>
-        </div>
-        <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="handleLogo(this)">
-        <div class="btn-row">
-          <button class="mini-btn" onclick="document.getElementById('logoInput').click()">📷 Upload</button>
-          <button class="mini-btn" onclick="clearLogo()">✕ Clear</button>
-        </div>
-        
-        <label>Move & Scale Logo</label>
-        <div class="d-pad-container">
-          <div class="d-pad-row">
-            <button class="d-pad-btn" onclick="panMedia('logo', 0, -5)">▲</button>
-          </div>
-          <div class="d-pad-row">
-            <button class="d-pad-btn" onclick="panMedia('logo', -5, 0)">◀</button>
-            <button class="d-pad-btn" onclick="panMedia('logo', 0, 5)">▼</button>
-            <button class="d-pad-btn" onclick="panMedia('logo', 5, 0)">▶</button>
-          </div>
-        </div>
-        <div class="step-control">
-          <button type="button" onclick="zoomMedia('logo', -0.1)">➖</button>
-          <span style="font-size:9px">ZOOM</span>
-          <button type="button" onclick="zoomMedia('logo', 0.1)">➕</button>
-        </div>
-      </div>
-      <div class="tool-group" style="min-width:140px">
-        <div class="tool-group-title">Card Type</div>
-        <label>Category</label>
-        <select id="inp_cardtype" onchange="updateCard()">
-          <option value="STUDENT">Student ID</option>
-          <option value="STAFF">Staff ID</option>
-          <option value="VISITOR">Visitor Pass</option>
-          <option value="MEMBER">Membership</option>
-          <option value="EMPLOYEE">Employee ID</option>
-          <option value="PRESS">Press Card</option>
-          <option value="VIP">VIP Pass</option>
-          <option value="">Custom</option>
-        </select>
-        <label>Card Side</label>
-        <select id="inp_cardside" onchange="updateCard()">
-          <option value="single">One Side</option>
-          <option value="double">Two Side</option>
-        </select>
-      </div>
-    </div>
-    
-    <!-- PHOTO TAB -->
-    <div class="tool-panel" id="panel-photo">
-      <div class="tool-group" style="min-width:140px">
-        <div class="tool-group-title">Photo Upload & Adjust</div>
-        <div class="photo-upload-area" id="photoUploadBox" onclick="if(!window.isDraggingImg) document.getElementById('photoInput').click()">
-          <img id="photoPreview" style="display:none">
-          <span id="photoPlaceholder">👤</span>
-        </div>
-        <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(this)">
-        <div class="btn-row">
-          <button class="mini-btn" onclick="document.getElementById('photoInput').click()">📷 Upload</button>
-          <button class="mini-btn" onclick="clearPhoto()">✕ Clear</button>
-        </div>
-        
-        <label>Move & Scale Photo</label>
-        <div class="d-pad-container">
-          <div class="d-pad-row">
-            <button class="d-pad-btn" onclick="panMedia('photo', 0, -5)">▲</button>
-          </div>
-          <div class="d-pad-row">
-            <button class="d-pad-btn" onclick="panMedia('photo', -5, 0)">◀</button>
-            <button class="d-pad-btn" onclick="panMedia('photo', 0, 5)">▼</button>
-            <button class="d-pad-btn" onclick="panMedia('photo', 5, 0)">▶</button>
-          </div>
-        </div>
-        <div class="step-control">
-          <button type="button" onclick="zoomMedia('photo', -0.1)">➖</button>
-          <span style="font-size:9px">ZOOM</span>
-          <button type="button" onclick="zoomMedia('photo', 0.1)">➕</button>
-        </div>
-      </div>
-      <div class="tool-group" style="min-width:140px">
-        <div class="tool-group-title">Photo Style</div>
-        
-        <label>Border Radius</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('photoRadius', -1, 0, 50)">◀</button>
-          <span id="val_photoRadius">8</span>
-          <button type="button" onclick="changeStyleVal('photoRadius', 1, 0, 50)">▶</button>
-        </div>
-        <input type="hidden" id="photoRadius" value="8">
 
-        <label>Border Width</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('photoBorder', -1, 0, 10)">◀</button>
-          <span id="val_photoBorder">2</span>
-          <button type="button" onclick="changeStyleVal('photoBorder', 1, 0, 10)">▶</button>
-        </div>
-        <input type="hidden" id="photoBorder" value="2">
+    <!-- React Root -->
+    <div id="root"></div>
 
-        <label>Border Color</label>
-        <input type="color" id="photoBorderColor" value="#e94560" oninput="updateCardStyle()">
-      </div>
-      <div class="tool-group" style="min-width:130px">
-        <div class="tool-group-title">Signature</div>
-        <div class="photo-upload-area" id="signUploadBox" style="height:40px; width:70px;" onclick="document.getElementById('signInput').click()">
-          <img id="signPreview" style="display:none">
-          <span id="signPlaceholder">✍️</span>
-        </div>
-        <input type="file" id="signInput" accept="image/*" style="display:none" onchange="handleSign(this)">
-        <button class="mini-btn" style="width:100%;margin-top:2px" onclick="clearSign()">✕ Clear Signature</button>
-      </div>
-    </div>
-    
-    <!-- DESIGN TAB -->
-    <div class="tool-panel" id="panel-design">
-      <div class="tool-group" style="min-width:140px">
-        <div class="tool-group-title">Colors</div>
-        <label>Header BG</label>
-        <div class="color-row">
-          <input type="color" id="clr_headerBg1" value="#e94560" oninput="updateCardStyle()">
-          <input type="color" id="clr_headerBg2" value="#0f3460" oninput="updateCardStyle()">
-          <span style="font-size:8px;color:#888">Grad</span>
-        </div>
-        <label>Card BG</label>
-        <input type="color" id="clr_cardBg" value="#1a1a2e" oninput="updateCardStyle()">
-        <label>Footer BG</label>
-        <div class="color-row">
-          <input type="color" id="clr_footerBg1" value="#e94560" oninput="updateCardStyle()">
-          <input type="color" id="clr_footerBg2" value="#0f3460" oninput="updateCardStyle()">
-        </div>
-        <label>Text Color</label>
-        <input type="color" id="clr_text" value="#ffffff" oninput="updateCardStyle()">
-      </div>
-      <div class="tool-group" style="min-width:140px">
-        <div class="tool-group-title">Header Style</div>
-        <label>Shape</label>
-        <select id="headerShape" onchange="updateCardStyle()">
-          <option value="straight">Straight</option>
-          <option value="wave">Wave</option>
-          <option value="diagonal">Diagonal</option>
-          <option value="arrow">Arrow</option>
-          <option value="round">Rounded</option>
-          <option value="zigzag">Zigzag</option>
-        </select>
-        
-        <label>Height</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('headerHeight', -2, 20, 150)">◀</button>
-          <span id="val_headerHeight">65</span>
-          <button type="button" onclick="changeStyleVal('headerHeight', 2, 20, 150)">▶</button>
-        </div>
-        <input type="hidden" id="headerHeight" value="65">
-        
-        <label>Opacity (%)</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('headerOpacity', -5, 0, 100)">◀</button>
-          <span id="val_headerOpacity">100</span>
-          <button type="button" onclick="changeStyleVal('headerOpacity', 5, 0, 100)">▶</button>
-        </div>
-        <input type="hidden" id="headerOpacity" value="100">
-      </div>
-      <div class="tool-group" style="min-width:130px">
-        <div class="tool-group-title">Card</div>
-        
-        <label>Border Radius</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('cardRadius', -1, 0, 50)">◀</button>
-          <span id="val_cardRadius">12</span>
-          <button type="button" onclick="changeStyleVal('cardRadius', 1, 0, 50)">▶</button>
-        </div>
-        <input type="hidden" id="cardRadius" value="12">
-        
-        <label>Shadow</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('cardShadow', -2, 0, 100)">◀</button>
-          <span id="val_cardShadow">10</span>
-          <button type="button" onclick="changeStyleVal('cardShadow', 2, 0, 100)">▶</button>
-        </div>
-        <input type="hidden" id="cardShadow" value="10">
-      </div>
-    </div>
-    
-    <!-- FONT TAB -->
-    <div class="tool-panel" id="panel-font">
-      <div class="tool-group" style="min-width:140px">
-        <div class="tool-group-title">Name Font</div>
-        <label>Font Family</label>
-        <select id="font_name" onchange="updateCardStyle()">
-          <option value="'Segoe UI', sans-serif" style="font-family:'Segoe UI', sans-serif;">Segoe UI</option>
-          <option value="Arial, sans-serif" style="font-family:Arial, sans-serif;">Arial</option>
-          <option value="Georgia, serif" style="font-family:Georgia, serif;">Georgia</option>
-          <option value="'Courier New', monospace" style="font-family:'Courier New', monospace;">Courier</option>
-          <option value="'Times New Roman', serif" style="font-family:'Times New Roman', serif;">Times</option>
-        </select>
-        
-        <label>Size</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('fontSize_name', -1, 8, 30)">◀</button>
-          <span id="val_fontSize_name">13</span>
-          <button type="button" onclick="changeStyleVal('fontSize_name', 1, 8, 30)">▶</button>
-        </div>
-        <input type="hidden" id="fontSize_name" value="13">
-        
-        <label>Weight</label>
-        <select id="fontWeight_name" onchange="updateCardStyle()">
-          <option value="400">Normal</option>
-          <option value="600">Semi Bold</option>
-          <option value="700">Bold</option>
-          <option value="800" selected>Extra Bold</option>
-          <option value="900">Black</option>
-        </select>
-      </div>
-      <div class="tool-group" style="min-width:130px">
-        <div class="tool-group-title">Org Name Font</div>
-        
-        <label>Size</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('fontSize_org', -1, 6, 30)">◀</button>
-          <span id="val_fontSize_org">14</span>
-          <button type="button" onclick="changeStyleVal('fontSize_org', 1, 6, 30)">▶</button>
-        </div>
-        <input type="hidden" id="fontSize_org" value="14">
-        
-        <label>Weight</label>
-        <select id="fontWeight_org" onchange="updateCardStyle()">
-          <option value="600">Semi Bold</option>
-          <option value="700">Bold</option>
-          <option value="800" selected>Extra Bold</option>
-          <option value="900">Black</option>
-        </select>
-        
-        <label>Letter Spacing</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('letterSpacing_org', -0.5, 0, 10, true)">◀</button>
-          <span id="val_letterSpacing_org">1</span>
-          <button type="button" onclick="changeStyleVal('letterSpacing_org', 0.5, 0, 10, true)">▶</button>
-        </div>
-        <input type="hidden" id="letterSpacing_org" value="1">
-      </div>
-      <div class="tool-group" style="min-width:130px">
-        <div class="tool-group-title">Detail Font</div>
-        
-        <label>Size</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('fontSize_detail', -1, 4, 20)">◀</button>
-          <span id="val_fontSize_detail">8</span>
-          <button type="button" onclick="changeStyleVal('fontSize_detail', 1, 4, 20)">▶</button>
-        </div>
-        <input type="hidden" id="fontSize_detail" value="8">
-        
-        <label>Color</label>
-        <input type="color" id="clr_detail" value="#b2bec3" oninput="updateCardStyle()">
-      </div>
-    </div>
-    
-    <!-- BACK TAB -->
-    <div class="tool-panel" id="panel-back">
-      <div class="tool-group" style="min-width:150px">
-        <div class="tool-group-title">Back Side Info</div>
-        <label>Org Address</label>
-        <textarea id="inp_backAddr" placeholder="Full address..." oninput="updateCard()"></textarea>
-        
-        <label style="display:flex; align-items:center; gap:5px; margin-top:8px;">
-          <input type="checkbox" id="inp_showReturn" onchange="updateCard()">
-          <span style="font-size: 10px; color: #fff; margin:0;">Show "If found return to"</span>
-        </label>
-        <input type="tel" id="inp_returnPhone" placeholder="Return Phone No. (+91...)" oninput="updateCard()" style="margin-top:4px;">
-        
-        <label style="margin-top:8px;">Terms & Conditions</label>
-        <textarea id="inp_terms" placeholder="Terms..." oninput="updateCard()"></textarea>
-      </div>
-      <div class="tool-group" style="min-width:130px">
-        <div class="tool-group-title">Back Design</div>
-        <label>BG Color</label>
-        <input type="color" id="clr_backBg" value="#1a1a2e" oninput="updateCardStyle()">
-        <label>Text Color</label>
-        <input type="color" id="clr_backText" value="#ffffff" oninput="updateCardStyle()">
-        <label>Show Placeholders</label>
-        <div class="btn-row">
-          <button class="mini-btn" id="btnQr" onclick="toggleQR()">QR: ON</button>
-          <button class="mini-btn" id="btnSignBack" onclick="toggleSignBack()">Sign: ON</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- EXTRA TAB -->
-    <div class="tool-panel" id="panel-extra">
-      <div class="tool-group" style="min-width:130px">
-        <div class="tool-group-title">Watermark</div>
-        <label>Text</label>
-        <input type="text" id="inp_watermark" placeholder="Watermark" oninput="updateCard()">
-        
-        <label>Opacity (%)</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('watermarkOpacity', -1, 0, 100)">◀</button>
-          <span id="val_watermarkOpacity">5</span>
-          <button type="button" onclick="changeStyleVal('watermarkOpacity', 1, 0, 100)">▶</button>
-        </div>
-        <input type="hidden" id="watermarkOpacity" value="5">
-      </div>
-      <div class="tool-group" style="min-width:130px">
-        <div class="tool-group-title">Footer</div>
-        <label>Footer Text</label>
-        <input type="text" id="inp_footer" placeholder="Footer text" oninput="updateCard()">
-        
-        <label>Footer Height</label>
-        <div class="step-control">
-          <button type="button" onclick="changeStyleVal('footerHeight', -1, 0, 100)">◀</button>
-          <span id="val_footerHeight">20</span>
-          <button type="button" onclick="changeStyleVal('footerHeight', 1, 0, 100)">▶</button>
-        </div>
-        <input type="hidden" id="footerHeight" value="20">
-      </div>
-      <div class="tool-group" style="min-width:120px">
-        <div class="tool-group-title">Layout</div>
-        <label>Photo Position</label>
-        <select id="photoPosition" onchange="updateCardStyle()">
-          <option value="left">Left</option>
-          <option value="right">Right</option>
-          <option value="center">Center</option>
-        </select>
-        <label>Info Alignment</label>
-        <select id="infoAlign" onchange="updateCardStyle()">
-          <option value="left">Left</option>
-          <option value="center">Center</option>
-          <option value="right">Right</option>
-        </select>
-      </div>
-    </div>
-  </div>
-</div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-<!-- ============ MAIN AREA ============ -->
-<div class="main-area">
-  <div class="controls-wrapper no-print">
-    <!-- FRONT / BACK / BOTH / PORTRAIT CONTROLS -->
-    <div class="side-toggle">
-      <button class="active" id="btnFront" onclick="showSide('front')">FRONT</button>
-      <button id="btnBack" onclick="showSide('back')">BACK</button>
-      <button id="btnBoth" onclick="showSide('both')">BOTH</button>
-      <button class="orientation-btn" id="btnOrientation" onclick="toggleOrientation()">PORTRAIT</button>
-    </div>
-  </div>
-  
-  <!-- SCROLLABLE PREVIEW CONTAINER -->
-  <div class="preview-scroll-container" id="cardZoomArea">
-    <div class="card-zoom-wrapper" id="cardZoomWrapper">
-      <div class="card-preview-wrapper">
-        <div class="id-card" id="idCard">
-          <div class="id-card-inner" id="cardInner">
-            <!-- FRONT -->
-            <div class="card-front" id="cardFront">
-              <!-- Dynamic content rendered by JS -->
-            </div>
-            
-            <!-- BACK -->
-            <div class="card-back" id="cardBack">
-              <!-- Dynamic content rendered by JS -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+        // Custom Draggable Wrapper Component
+        const DraggableBlock = ({ id, pos, setPos, children, style }) => {
+            const handlePointerDown = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Get starting mouse position relative to the element's top-left corner
+                const startX = e.clientX - pos.x;
+                const startY = e.clientY - pos.y;
+                
+                const handlePointerMove = (moveEvent) => {
+                    setPos(id, {
+                        x: moveEvent.clientX - startX,
+                        y: moveEvent.clientY - startY
+                    });
+                };
+                
+                const handlePointerUp = () => {
+                    document.removeEventListener('pointermove', handlePointerMove);
+                    document.removeEventListener('pointerup', handlePointerUp);
+                };
+                
+                document.addEventListener('pointermove', handlePointerMove);
+                document.addEventListener('pointerup', handlePointerUp);
+            };
 
-<!-- ============ BOTTOM BUTTONS COMPACT ============ -->
-<div class="bottom-actions-wrapper">
-  <div class="save-control-bar">
-    <button class="btn-autosave active" id="btnAutoSave" onclick="toggleAutoSave()">Auto Save: ON</button>
-    <button class="btn-quicksave" onclick="quickSave()">💾 Quick Save</button>
-  </div>
-  
-  <div class="bottom-actions">
-    <button class="action-btn print-btn" onclick="printCard()">
-      <span class="btn-icon">🖨️</span> PDF Print
-    </button>
-    <button class="action-btn png-btn" onclick="sharePNG()">
-      <span class="btn-icon">🖼️</span> HD PNG
-    </button>
-    <button class="action-btn pdf-btn" onclick="sharePDF()">
-      <span class="btn-icon">📄</span> HD PDF
-    </button>
-  </div>
-</div>
+            return (
+                <div 
+                    className="drag-element"
+                    style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, ...style }}
+                    onPointerDown={handlePointerDown}
+                >
+                    {children}
+                </div>
+            );
+        };
 
-<!-- ============ TEMPLATE MODAL ============ -->
-<div class="modal-overlay" id="templateModal">
-  <div class="modal-header">
-    <h2>📐 Choose Template</h2>
-    <button class="modal-close" onclick="closeModal('templateModal')">✕</button>
-  </div>
-  <div class="template-grid" id="templateGrid">
-    <!-- Generated by JS -->
-  </div>
-</div>
+        function IDCardApp() {
+            // Data States
+            const [data, setData] = useState({
+                orgName: 'ERP Technical Academy',
+                orgSub: 'Center of Excellence',
+                orgAddress: '123 Main Street, City, State - 123456',
+                orgPhone: 'Ph: +91 9876543210 | Email: info@erp.com',
+                stuName: 'Student Name',
+                stuReg: 'REG-0001',
+                stuCourse: 'Diploma in Engineering',
+                stuPhone: '+91 9000000000',
+                stuDob: '01/01/2000',
+                stuBlood: 'O+',
+                stuValidity: '2026 - 2027',
+                showReturn: true,
+                returnText: 'If found, please return to:',
+                returnPhone: 'ERP Academy: +91 9876543210'
+            });
 
-<!-- ============ SAVED TEMPLATES MODAL ============ -->
-<div class="modal-overlay" id="savedModal">
-  <div class="modal-header">
-    <h2>💾 Saved Templates (10 Slots)</h2>
-    <button class="modal-close" onclick="closeModal('savedModal')">✕</button>
-  </div>
-  <div class="saved-slots" id="savedSlots">
-    <!-- Generated by JS -->
-  </div>
-</div>
+            const [images, setImages] = useState({
+                logo: null,
+                photo: null,
+                sign: null
+            });
 
-<!-- TOAST NOTIFICATION -->
-<div class="toast" id="toast"></div>
+            const [design, setDesign] = useState({
+                orientation: 'portrait', // portrait | landscape
+                bgColor: '#ffffff',
+                headerColor: '#1e3a8a',
+                footerColor: '#1e3a8a',
+                textColor: '#0f172a',
+                headerTextColor: '#ffffff',
+                photoRadius: 8,
+                photoBorderWidth: 2,
+                photoBorderColor: '#cbd5e1'
+            });
 
-<!-- ============ CUSTOM SAAS STYLES ============ -->
-<style>
-/* SAAS WATERMARK */
-.saas-watermark {
-    position: absolute;
-    bottom: 4px;
-    right: 8px;
-    font-size: 6px;
-    color: rgba(255, 255, 255, 0.6);
-    font-weight: 800;
-    z-index: 1000;
-    display: none;
-    letter-spacing: 0.5px;
-}
-.tpl-5 .saas-watermark, .tpl-7 .saas-watermark, .tpl-9 .saas-watermark, .tpl-11 .saas-watermark, .tpl-13 .saas-watermark, .tpl-16 .saas-watermark {
-    color: rgba(0, 0, 0, 0.5);
-}
-</style>
+            // Element Positions State
+            const defaultPosPortrait = {
+                headerBg: { h: 70 },
+                footerBg: { h: 35 },
+                logo: { x: 10, y: 10, w: 45, h: 45 },
+                orgInfo: { x: 60, y: 10, align: 'left', w: 180 },
+                photo: { x: 75, y: 80, w: 90, h: 110 },
+                stuName: { x: 10, y: 200, align: 'center', w: 230 },
+                stuDetails: { x: 15, y: 225, align: 'left', w: 220 },
+                sign: { x: 150, y: 315, w: 80, h: 30 },
+                returnInfo: { x: 10, y: 360, align: 'center', w: 230 }
+            };
 
-<script type="module">
-// ============ IMPORTS FOR SUPABASE AUTO-FILL & SECURITY ============
-import { supabase } from './assets/js/supabase-config.js';
-import './assets/js/theme-manager.js';
-import './assets/js/auth-check.js';
+            const defaultPosLandscape = {
+                headerBg: { h: 60 },
+                footerBg: { h: 30 },
+                logo: { x: 10, y: 10, w: 40, h: 40 },
+                orgInfo: { x: 55, y: 10, align: 'left', w: 300 },
+                photo: { x: 15, y: 70, w: 80, h: 100 },
+                stuName: { x: 110, y: 75, align: 'left', w: 270 },
+                stuDetails: { x: 110, y: 105, align: 'left', w: 270 },
+                sign: { x: 280, y: 175, w: 80, h: 30 },
+                returnInfo: { x: 10, y: 225, align: 'center', w: 370 }
+            };
 
-// Apply Dynamic Access and SaaS Limits
-window.checkDynamicAccess('IDCardStudio');
-window.saasWatermarkLocked = true;
+            const [positions, setPositions] = useState(defaultPosPortrait);
+            const [watermarkLocked, setWatermarkLocked] = useState(false);
+            const [zoom, setZoom] = useState(1);
 
-async function applySaaSControls() {
-    try {
-        const microFeaturesStr = localStorage.getItem('saas_micro_features');
-        if (microFeaturesStr) {
-            const microFeatures = JSON.parse(microFeaturesStr);
-            if (microFeatures.remove_watermark === false) {
-                window.saasWatermarkLocked = true;
-            } else {
-                window.saasWatermarkLocked = false;
+            const cardRef = useRef(null);
+
+            // Fetch Student Data & SaaS Watermark via Custom Events
+            useEffect(() => {
+                const handleStudentLoad = (e) => {
+                    const s = e.detail;
+                    setData(prev => ({
+                        ...prev,
+                        stuName: s.full_name || prev.stuName,
+                        stuReg: s.register_number || prev.stuReg,
+                        stuPhone: s.phone_number || prev.stuPhone,
+                        stuDob: s.dob || prev.stuDob,
+                        stuBlood: s.blood_group || prev.stuBlood,
+                        stuCourse: s.course_name_display || s.course_name || prev.stuCourse
+                    }));
+                    if (s.photo_url) setImages(prev => ({...prev, photo: s.photo_url}));
+                };
+                
+                const handleWatermark = (e) => {
+                    setWatermarkLocked(e.detail.locked);
+                };
+
+                window.addEventListener('studentDataLoaded', handleStudentLoad);
+                window.addEventListener('watermarkStateLoaded', handleWatermark);
+                
+                // Trigger global init function defined in module script
+                if (window.initIDCardBackend) window.initIDCardBackend();
+
+                // Responsive Zoom
+                if (window.innerWidth < 600) setZoom(0.8);
+
+                return () => {
+                    window.removeEventListener('studentDataLoaded', handleStudentLoad);
+                    window.removeEventListener('watermarkStateLoaded', handleWatermark);
+                };
+            }, []);
+
+            const updatePos = (id, newPos) => {
+                setPositions(prev => ({
+                    ...prev,
+                    [id]: { ...prev[id], ...newPos }
+                }));
+            };
+
+            const handleChange = (e, field) => {
+                setData({...data, [field]: e.target.value});
+            };
+
+            const handleDesignChange = (e, field) => {
+                setDesign({...design, [field]: e.target.value});
+            };
+
+            const handleImageUpload = (e, field) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => setImages({...images, [field]: reader.result});
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const toggleOrientation = () => {
+                const newOr = design.orientation === 'portrait' ? 'landscape' : 'portrait';
+                setDesign({...design, orientation: newOr});
+                setPositions(newOr === 'portrait' ? defaultPosPortrait : defaultPosLandscape);
+            };
+
+            // High-Resolution Bulletproof Export
+            const exportCard = async (type) => {
+                const btnText = document.getElementById(`btn-${type}`).innerText;
+                document.getElementById(`btn-${type}`).innerText = '⏳ Processing...';
+                
+                // Hide drag borders for clean print
+                const dragElements = document.querySelectorAll('.drag-element');
+                dragElements.forEach(el => el.style.border = 'none');
+                
+                // Temporarily remove transform scale from wrapper to get 1:1 crisp render
+                const wrapper = document.getElementById('printable-card-area');
+                const oldTransform = wrapper.style.transform;
+                wrapper.style.transform = 'scale(1)';
+
+                try {
+                    const canvas = await html2canvas(wrapper, {
+                        scale: 4, // 4X Super HD Quality
+                        useCORS: true,
+                        backgroundColor: design.bgColor,
+                        logging: false
+                    });
+
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    
+                    if (type === 'png') {
+                        const link = document.createElement('a');
+                        link.download = `ID_Card_${data.stuName.replace(/ /g, '_')}.jpg`;
+                        link.href = imgData;
+                        link.click();
+                    } else if (type === 'pdf') {
+                        const isPort = design.orientation === 'portrait';
+                        // Standard CR80 Size in mm (approx 54x86mm)
+                        const w = isPort ? 54 : 86;
+                        const h = isPort ? 86 : 54;
+                        
+                        const pdf = new window.jspdf.jsPDF({ orientation: isPort ? 'p' : 'l', unit: 'mm', format: [w, h] });
+                        pdf.addImage(imgData, 'JPEG', 0, 0, w, h, '', 'FAST');
+                        pdf.save(`ID_Card_${data.stuName.replace(/ /g, '_')}.pdf`);
+                    }
+                } catch (error) {
+                    alert("Error exporting card. Please try again.");
+                    console.error(error);
+                } finally {
+                    wrapper.style.transform = oldTransform;
+                    dragElements.forEach(el => el.style.border = '');
+                    document.getElementById(`btn-${type}`).innerText = btnText;
+                }
+            };
+
+            const isPortrait = design.orientation === 'portrait';
+            const cardClass = isPortrait ? 'id-card-portrait' : 'id-card-landscape';
+            const watermarkClass = getContrastText(design.footerColor) === '#ffffff' ? '' : 'watermark-dark';
+
+            // Utility to calculate contrast text
+            function getContrastText(hexcolor) {
+                if(!hexcolor) return '#ffffff';
+                const r = parseInt(hexcolor.substr(1,2),16);
+                const g = parseInt(hexcolor.substr(3,2),16);
+                const b = parseInt(hexcolor.substr(5,2),16);
+                return (r * 299 + g * 587 + b * 114) / 1000 > 128 ? '#0f172a' : '#ffffff';
             }
-            window.toggleWatermark();
+
+            return (
+                <div className="main-layout">
+                    {/* LEFT SIDEBAR - CONTROLS */}
+                    <div className="sidebar no-print">
+                        <div className="sidebar-section">
+                            <h3 className="section-title"><span>📐</span> Layout & Colors</h3>
+                            <button className="btn-action btn-layout" onClick={toggleOrientation} style={{ width: '100%', justifyContent: 'center', marginBottom: '15px' }}>
+                                🔄 Switch to {isPortrait ? 'Landscape' : 'Portrait'}
+                            </button>
+                            
+                            <div className="color-picker-row">
+                                <div style={{flex:1}}><label className="frm-label">Card BG</label><input type="color" className="color-input" value={design.bgColor} onChange={e=>handleDesignChange(e,'bgColor')}/></div>
+                                <div style={{flex:1}}><label className="frm-label">Header BG</label><input type="color" className="color-input" value={design.headerColor} onChange={e=>handleDesignChange(e,'headerColor')}/></div>
+                                <div style={{flex:1}}><label className="frm-label">Footer BG</label><input type="color" className="color-input" value={design.footerColor} onChange={e=>handleDesignChange(e,'footerColor')}/></div>
+                            </div>
+                            <div className="color-picker-row">
+                                <div style={{flex:1}}><label className="frm-label">Text Color</label><input type="color" className="color-input" value={design.textColor} onChange={e=>handleDesignChange(e,'textColor')}/></div>
+                                <div style={{flex:1}}><label className="frm-label">Header Text</label><input type="color" className="color-input" value={design.headerTextColor} onChange={e=>handleDesignChange(e,'headerTextColor')}/></div>
+                            </div>
+                        </div>
+
+                        <div className="sidebar-section">
+                            <h3 className="section-title"><span>🏢</span> Organization Info</h3>
+                            <label className="frm-label">Institution Name</label><input type="text" className="frm-input" value={data.orgName} onChange={e=>handleChange(e,'orgName')}/>
+                            <label className="frm-label">Sub Title / Tagline</label><input type="text" className="frm-input" value={data.orgSub} onChange={e=>handleChange(e,'orgSub')}/>
+                            <label className="frm-label">Address</label><textarea className="frm-textarea" value={data.orgAddress} onChange={e=>handleChange(e,'orgAddress')}></textarea>
+                            <label className="frm-label">Contact Details</label><input type="text" className="frm-input" value={data.orgPhone} onChange={e=>handleChange(e,'orgPhone')}/>
+                            
+                            <label className="btn-upload">📷 Upload Logo <input type="file" style={{display:'none'}} accept="image/*" onChange={e=>handleImageUpload(e,'logo')}/></label>
+                        </div>
+
+                        <div className="sidebar-section">
+                            <h3 className="section-title"><span>👤</span> Student Details</h3>
+                            <label className="frm-label">Full Name</label><input type="text" className="frm-input" value={data.stuName} onChange={e=>handleChange(e,'stuName')}/>
+                            <label className="frm-label">Register No</label><input type="text" className="frm-input" value={data.stuReg} onChange={e=>handleChange(e,'stuReg')}/>
+                            <label className="frm-label">Course</label><input type="text" className="frm-input" value={data.stuCourse} onChange={e=>handleChange(e,'stuCourse')}/>
+                            
+                            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
+                                <div><label className="frm-label">DOB</label><input type="text" className="frm-input" value={data.stuDob} onChange={e=>handleChange(e,'stuDob')}/></div>
+                                <div><label className="frm-label">Blood Grp</label><input type="text" className="frm-input" value={data.stuBlood} onChange={e=>handleChange(e,'stuBlood')}/></div>
+                            </div>
+                            
+                            <label className="frm-label">Phone No</label><input type="text" className="frm-input" value={data.stuPhone} onChange={e=>handleChange(e,'stuPhone')}/>
+                            <label className="frm-label">Validity Period</label><input type="text" className="frm-input" value={data.stuValidity} onChange={e=>handleChange(e,'stuValidity')}/>
+                            
+                            <label className="btn-upload">👤 Upload Photo <input type="file" style={{display:'none'}} accept="image/*" onChange={e=>handleImageUpload(e,'photo')}/></label>
+                            
+                            <div className="color-picker-row mt-2">
+                                <div style={{flex:1}}><label className="frm-label">Border Rad</label><input type="number" className="frm-input" style={{padding:'6px'}} value={design.photoRadius} onChange={e=>handleDesignChange(e,'photoRadius')}/></div>
+                                <div style={{flex:1}}><label className="frm-label">Border Wt</label><input type="number" className="frm-input" style={{padding:'6px'}} value={design.photoBorderWidth} onChange={e=>handleDesignChange(e,'photoBorderWidth')}/></div>
+                                <div style={{flex:1}}><label className="frm-label">Photo Brdr</label><input type="color" className="color-input" value={design.photoBorderColor} onChange={e=>handleDesignChange(e,'photoBorderColor')}/></div>
+                            </div>
+                        </div>
+
+                        <div className="sidebar-section">
+                            <h3 className="section-title"><span>📝</span> Extra Settings</h3>
+                            <label className="btn-upload" style={{borderColor:'#10b981', color:'#059669', background:'#d1fae5'}}>✍️ Upload Signature <input type="file" style={{display:'none'}} accept="image/*" onChange={e=>handleImageUpload(e,'sign')}/></label>
+                            
+                            <label style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'10px', fontSize:'13px', fontWeight:'700', color:'#1e293b'}}>
+                                <input type="checkbox" checked={data.showReturn} onChange={e=>setData({...data, showReturn: e.target.checked})} style={{width:'18px', height:'18px', accentColor:'#3b82f6'}}/>
+                                Show "Return to Address" on Card
+                            </label>
+                            {data.showReturn && (
+                                <div>
+                                    <input type="text" className="frm-input" value={data.returnText} onChange={e=>handleChange(e,'returnText')} placeholder="If found return to:"/>
+                                    <input type="text" className="frm-input" value={data.returnPhone} onChange={e=>handleChange(e,'returnPhone')} placeholder="Phone / Address details"/>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* RIGHT CANVAS AREA */}
+                    <div className="canvas-area">
+                        <div className="canvas-toolbar no-print">
+                            <button id="btn-png" className="btn-action btn-png" onClick={() => exportCard('png')}>🖼️ Download HD Image</button>
+                            <button id="btn-pdf" className="btn-action btn-pdf" onClick={() => exportCard('pdf')}>📄 Download HD PDF</button>
+                            
+                            <div style={{display:'flex', alignItems:'center', gap:'10px', marginLeft:'auto', fontWeight:'bold', color:'#475569'}}>
+                                Zoom: 
+                                <button onClick={()=>setZoom(z=>Math.max(0.5, z-0.1))} style={{background:'white', border:'1px solid #cbd5e1', padding:'2px 8px', borderRadius:'6px', cursor:'pointer'}}>-</button>
+                                <button onClick={()=>setZoom(z=>Math.min(1.5, z+0.1))} style={{background:'white', border:'1px solid #cbd5e1', padding:'2px 8px', borderRadius:'6px', cursor:'pointer'}}>+</button>
+                            </div>
+                        </div>
+                        
+                        <div className="workspace">
+                            {/* Drag Instruction */}
+                            <div className="no-print" style={{position:'absolute', top:'80px', background:'rgba(255,255,255,0.8)', padding:'8px 15px', borderRadius:'20px', fontSize:'12px', fontWeight:'800', color:'#3b82f6', boxShadow:'0 2px 10px rgba(0,0,0,0.1)', zIndex:20}}>
+                                💡 Tip: Click and drag any element inside the card to reposition it perfectly!
+                            </div>
+
+                            <div style={{ transform: `scale(${zoom})`, transition: 'transform 0.2s', transformOrigin: 'center center' }}>
+                                {/* THE ACTUAL RENDER AREA FOR html2canvas */}
+                                <div id="printable-card-area" className={`id-card-wrapper ${cardClass}`} style={{ backgroundColor: design.bgColor, color: design.textColor, fontFamily: design.fontFamily }}>
+                                    
+                                    {/* 1. Static Background Blocks (Can be resized via state if needed, keeping simple here) */}
+                                    <div className="block-header-bg" style={{ height: `${positions.headerBg.h}px`, backgroundColor: design.headerColor }}></div>
+                                    <div className="block-footer-bg" style={{ height: `${positions.footerBg.h}px`, backgroundColor: design.footerColor }}></div>
+
+                                    {/* 2. Draggable Logo */}
+                                    <DraggableBlock id="logo" pos={positions.logo} setPos={updatePos} style={{ width: `${positions.logo.w}px`, height: `${positions.logo.h}px` }}>
+                                        {images.logo ? (
+                                            <img src={images.logo} style={{ width: '100%', height: '100%', objectFit: 'contain' }} alt="Logo" />
+                                        ) : (
+                                            <div style={{ width:'100%', height:'100%', background:'rgba(255,255,255,0.2)', border:'1px dashed rgba(255,255,255,0.5)', display:'flex', alignItems:'center', justifyContent:'center', borderRadius:'50%', fontSize:'10px', color:design.headerTextColor }}>LOGO</div>
+                                        )}
+                                    </DraggableBlock>
+
+                                    {/* 3. Draggable Org Info */}
+                                    <DraggableBlock id="orgInfo" pos={positions.orgInfo} setPos={updatePos} style={{ width: `${positions.orgInfo.w}px`, textAlign: positions.orgInfo.align, color: design.headerTextColor }}>
+                                        <div style={{ fontSize: '13px', fontWeight: '900', textTransform: 'uppercase', lineHeight: '1.1' }}>{data.orgName}</div>
+                                        <div style={{ fontSize: '8px', fontWeight: '700', textTransform: 'uppercase', marginTop: '2px', opacity: 0.9 }}>{data.orgSub}</div>
+                                        <div style={{ fontSize: '7px', fontWeight: '600', marginTop: '2px', opacity: 0.8 }}>{data.orgAddress}</div>
+                                        <div style={{ fontSize: '7px', fontWeight: '600', opacity: 0.8 }}>{data.orgPhone}</div>
+                                    </DraggableBlock>
+
+                                    {/* 4. Draggable Photo */}
+                                    <DraggableBlock id="photo" pos={positions.photo} setPos={updatePos} style={{ width: `${positions.photo.w}px`, height: `${positions.photo.h}px`, borderRadius: `${design.photoRadius}px`, border: `${design.photoBorderWidth}px solid ${design.photoBorderColor}`, overflow: 'hidden', background: '#f8fafc', zIndex: 5 }}>
+                                        {images.photo ? (
+                                            <img src={images.photo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Photo" draggable="false" />
+                                        ) : (
+                                            <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'30px', color:'#cbd5e1' }}>👤</div>
+                                        )}
+                                    </DraggableBlock>
+
+                                    {/* 5. Draggable Student Name & Course */}
+                                    <DraggableBlock id="stuName" pos={positions.stuName} setPos={updatePos} style={{ width: `${positions.stuName.w}px`, textAlign: positions.stuName.align, zIndex: 6 }}>
+                                        <div style={{ fontSize: '14px', fontWeight: '900', textTransform: 'uppercase', color: design.textColor, marginBottom: '2px' }}>{data.stuName}</div>
+                                        <div style={{ fontSize: '10px', fontWeight: '800', color: design.headerColor, textTransform: 'uppercase' }}>{data.stuCourse}</div>
+                                    </DraggableBlock>
+
+                                    {/* 6. Draggable Student Details Table/List */}
+                                    <DraggableBlock id="stuDetails" pos={positions.stuDetails} setPos={updatePos} style={{ width: `${positions.stuDetails.w}px`, textAlign: positions.stuDetails.align, zIndex: 6 }}>
+                                        <table style={{ width: '100%', fontSize: '9.5px', fontWeight: '700', lineHeight: '1.4', color: design.textColor }}>
+                                            <tbody>
+                                                <tr><td style={{width:'40%', color:'#64748b'}}>Reg No</td><td>: {data.stuReg}</td></tr>
+                                                <tr><td style={{color:'#64748b'}}>DOB</td><td>: {data.stuDob}</td></tr>
+                                                <tr><td style={{color:'#64748b'}}>Blood Group</td><td>: <span style={{color:'#dc2626'}}>{data.stuBlood}</span></td></tr>
+                                                <tr><td style={{color:'#64748b'}}>Phone</td><td>: {data.stuPhone}</td></tr>
+                                                <tr><td style={{color:'#64748b'}}>Validity</td><td>: {data.stuValidity}</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </DraggableBlock>
+
+                                    {/* 7. Draggable Signature */}
+                                    <DraggableBlock id="sign" pos={positions.sign} setPos={updatePos} style={{ width: `${positions.sign.w}px`, height: `${positions.sign.h}px`, zIndex: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end' }}>
+                                        {images.sign && <img src={images.sign} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', marginBottom: '2px' }} alt="Sign" draggable="false" />}
+                                        <div style={{ fontSize: '6px', fontWeight: '700', borderTop: `1px solid ${design.textColor}`, width: '100%', textAlign: 'center', paddingTop: '2px' }}>Auth Signatory</div>
+                                    </DraggableBlock>
+
+                                    {/* 8. Draggable Return Info (Footer) */}
+                                    {data.showReturn && (
+                                        <DraggableBlock id="returnInfo" pos={positions.returnInfo} setPos={updatePos} style={{ width: `${positions.returnInfo.w}px`, textAlign: positions.returnInfo.align, zIndex: 10 }}>
+                                            <div style={{ fontSize: '7.5px', fontWeight: '700', color: getContrastText(design.footerColor) }}>
+                                                {data.returnText} <br/> {data.returnPhone}
+                                            </div>
+                                        </DraggableBlock>
+                                    )}
+
+                                    {/* 🔥 SAAS WATERMARK (Fixed at bottom right) 🔥 */}
+                                    {watermarkLocked && (
+                                        <div className={`saas-watermark ${watermarkClass}`}>
+                                            ⚡ Powered by VPKTech Solutions
+                                        </div>
+                                    )}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
         }
-    } catch(e) {}
-}
 
-async function autoLoadStudentData() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const stuId = urlParams.get('student_id');
-    if(stuId) {
-        try {
-            const { data: stu } = await supabase.from('students').select('*').eq('id', stuId).single();
-            if(stu) {
-                document.getElementById('inp_name').value = stu.full_name || '';
-                document.getElementById('inp_idno').value = stu.register_number || '';
-                document.getElementById('inp_phone').value = stu.phone_number || '';
-                document.getElementById('inp_email').value = stu.email || '';
-                document.getElementById('inp_blood').value = stu.blood_group || '';
-                
-                if(stu.course_id) {
-                    const { data: cData } = await supabase.from('courses').select('course_name').eq('id', stu.course_id).single();
-                    if(cData) document.getElementById('inp_designation').value = cData.course_name;
-                } else {
-                    document.getElementById('inp_designation').value = stu.course_name || '';
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<IDCardApp />);
+    </script>
+
+    <!-- BACKEND SCRIPT TO FETCH SUPABASE DATA -->
+    <script type="module">
+        import { supabase } from './assets/js/supabase-config.js';
+        import './assets/js/auth-check.js';
+        
+        // Define global init function for React to trigger
+        window.initIDCardBackend = async function() {
+            // Check SaaS Watermark Config
+            try {
+                const microFeaturesStr = localStorage.getItem('saas_micro_features');
+                let locked = true;
+                if (microFeaturesStr) {
+                    const microFeatures = JSON.parse(microFeaturesStr);
+                    if (microFeatures.remove_watermark !== false) {
+                        locked = false;
+                    }
                 }
-                
-                if(stu.photo_url) {
-                    window.state.photoData = stu.photo_url;
-                    document.getElementById('photoPreview').src = stu.photo_url;
-                    document.getElementById('photoPreview').style.display = 'block';
-                    document.getElementById('photoPlaceholder').style.display = 'none';
-                }
-                window.updateCard();
-                window.showToast('✅ Student data auto-loaded from directory!');
+                // Dispatch event to React
+                window.dispatchEvent(new CustomEvent('watermarkStateLoaded', { detail: { locked: locked } }));
+            } catch(e) {}
+
+            // Load Student Data if ID passed in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const stuId = urlParams.get('student_id');
+            if(stuId) {
+                try {
+                    const { data: stu } = await supabase.from('students').select('*').eq('id', stuId).single();
+                    if(stu) {
+                        if(stu.course_id) {
+                            const { data: cData } = await supabase.from('courses').select('course_name').eq('id', stu.course_id).single();
+                            if(cData) stu.course_name_display = cData.course_name;
+                        }
+                        // Dispatch event to React
+                        window.dispatchEvent(new CustomEvent('studentDataLoaded', { detail: stu }));
+                    }
+                } catch(e) { console.error("Error auto-loading student:", e); }
             }
-        } catch(e) { console.error("Error auto-loading student:", e); }
-    }
-}
-
-async function checkAuthAndInit() {
-    const userRole = localStorage.getItem('userRole') || 'Guest';
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
-    
-    await applySaaSControls();
-    await autoLoadStudentData();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuthAndInit();
-});
-</script>
-
-<script>
-// ============ STATE ============
-window.state = {
-  template: 1,
-  side: 'front', 
-  orientation: 'landscape',
-  zoom: 1.0,
-  panX: 0,
-  panY: 0,
-  showQR: true,
-  showSignBack: true,
-  photoData: null,
-  logoData: null,
-  signData: null,
-  cardSide: 'single',
-  
-  isAutoSaveOn: true,
-  activeSlot: 1,
-  photoImgX: 0, photoImgY: 0, photoImgZoom: 1,
-  logoImgX: 0, logoImgY: 0, logoImgZoom: 1
-};
-
-const templateNames = [
-  'Corporate Elite', 'Modern Wave', 'Diagonal Slash', 'Circular Top',
-  'Split Vertical', 'Hexagonal', 'Minimal White', 'Neon Glow',
-  'Curved Ribbon', 'Geometric', 'Double Line', 'Arc Design',
-  'Zigzag', 'Angular Cut', 'Passport Style', 'Rounded Bubble',
-  'Tech Grid', 'Gradient Mesh', 'Newspaper', 'Futuristic'
-];
-
-// ============ INIT ============
-document.addEventListener('DOMContentLoaded', () => {
-  initTabs();
-  initTemplateGrid();
-  initSavedSlots();
-  loadAutoSave();
-  updateCard();
-});
-
-// ============ UI TOGGLE ============
-function toggleToolbar() {
-  document.body.classList.toggle('toolbar-collapsed');
-  const btn = document.getElementById('btnToggleTools');
-  if (document.body.classList.contains('toolbar-collapsed')) {
-    btn.textContent = '🔽 Edit Tool';
-  } else {
-    btn.textContent = '🔼 Hide Tool';
-  }
-}
-
-// ============ TABS ============
-function initTabs() {
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
-    });
-  });
-}
-
-// ============ ARROW CONTROLS (STEPPERS) ============
-function changeStyleVal(id, step, min, max, isFloat = false) {
-  const input = document.getElementById(id);
-  const display = document.getElementById('val_' + id);
-  
-  let val = isFloat ? parseFloat(input.value) : parseInt(input.value);
-  val += step;
-  
-  if (val < min) val = min;
-  if (val > max) val = max;
-  
-  if (isFloat) val = parseFloat(val.toFixed(1)); // clean floating points
-  
-  input.value = val;
-  display.textContent = val;
-  
-  updateCardStyle();
-}
-
-// ============ MEDIA PAN & ZOOM (PHOTO/LOGO) ============
-window.panMedia = function(type, dx, dy) {
-  if(type === 'photo') { window.state.photoImgX += dx; window.state.photoImgY += dy; }
-  if(type === 'logo') { window.state.logoImgX += dx; window.state.logoImgY += dy; }
-  updateCard();
-}
-window.zoomMedia = function(type, dz) {
-  if(type === 'photo') { window.state.photoImgZoom = Math.max(0.1, window.state.photoImgZoom + dz); }
-  if(type === 'logo') { window.state.logoImgZoom = Math.max(0.1, window.state.logoImgZoom + dz); }
-  updateCard();
-}
-
-// ============ TEMPLATE GRID ============
-function initTemplateGrid() {
-  const grid = document.getElementById('templateGrid');
-  grid.innerHTML = '';
-  for(let i = 1; i <= 20; i++) {
-    const thumb = document.createElement('div');
-    thumb.className = 'template-thumb' + (i === window.state.template ? ' selected' : '');
-    thumb.innerHTML = `
-      <div class="thumb-container">
-        <div class="thumb-preview tpl-${i}">
-          <div class="card-front">
-            ${getTemplateHTML(i, true)}
-          </div>
-        </div>
-      </div>
-      <div class="tpl-name">${i}. ${templateNames[i-1]}</div>
-    `;
-    thumb.onclick = () => selectTemplate(i);
-    grid.appendChild(thumb);
-  }
-}
-
-function selectTemplate(n) {
-  window.state.template = n;
-  document.querySelectorAll('.template-thumb').forEach((t,i) => {
-    t.classList.toggle('selected', i+1 === n);
-  });
-  updateCard();
-  closeModal('templateModal');
-  showToast(`Template: ${templateNames[n-1]}`);
-}
-
-// ============ GET TEMPLATE HTML ============
-function getTemplateHTML(tpl, isThumbnail = false) {
-  const name = getValue('inp_name') || 'John Doe';
-  const org = getValue('inp_org') || 'Organization Name';
-  const designation = getValue('inp_designation') || 'Designation';
-  const idno = getValue('inp_idno') || 'ID-001';
-  const phone = getValue('inp_phone') || '+91 9876543210';
-  const email = getValue('inp_email') || 'email@org.com';
-  const dept = getValue('inp_dept') || 'Department';
-  const blood = getValue('inp_blood') || 'B+';
-  const cardtype = getValue('inp_cardtype') || 'STAFF';
-  const footer = getValue('inp_footer') || org;
-  const validity = getValue('inp_validity') || '12/2025';
-
-  const photoSrc = window.state.photoData;
-  const logoSrc = window.state.logoData;
-  
-  const pz = window.state.photoImgZoom || 1;
-  const px = window.state.photoImgX || 0;
-  const py = window.state.photoImgY || 0;
-  
-  const lz = window.state.logoImgZoom || 1;
-  const lx = window.state.logoImgX || 0;
-  const ly = window.state.logoImgY || 0;
-  
-  const photoHTML = photoSrc 
-    ? `<img src="${photoSrc}" alt="Photo" style="transform: scale(${pz}) translate(${px}px, ${py}px);">` 
-    : `<div class="placeholder-icon">👤</div>`;
-  
-  const logoHTML = logoSrc 
-    ? `<div class="card-logo"><img src="${logoSrc}" alt="Logo" style="transform: scale(${lz}) translate(${lx}px, ${ly}px);"></div>` 
-    : '';
-
-  const watermarkHTML = `<div class="saas-watermark">⚡ Powered by VPKTech Solutions</div>`;
-
-  if(tpl === 5) {
-    return `
-      <div class="card-left">
-        ${logoHTML}
-        <div class="org-name">${org}</div>
-      </div>
-      <div class="card-right">
-        <div class="card-photo">${photoHTML}</div>
-        <div class="card-info">
-          <div class="name">${name}</div>
-          <div class="designation-text">${designation}</div>
-          <div class="detail">ID: ${idno}</div>
-          <div class="detail">📞 ${phone}</div>
-          <div class="detail">🩸 ${blood}</div>
-        </div>
-      </div>
-      ${watermarkHTML}
-    `;
-  }
-
-  let headerContent = `
-    <div class="header-content">
-      <div class="org-name">${org}</div>
-      <div class="designation">${cardtype} ${designation ? '• ' + designation : ''}</div>
-    </div>
-  `;
-
-  if([1,8,10,14,17,20].includes(tpl)) {
-    headerContent = `
-      ${logoHTML}
-      <div class="header-content">
-        <div class="org-name">${org}</div>
-        <div class="designation">${cardtype} ${designation ? '• ' + designation : ''}</div>
-      </div>
-    `;
-  }
-
-  let bodyHTML = `
-    <div class="card-photo">${photoHTML}</div>
-    <div class="card-info">
-      ${[7,13].includes(tpl) ? `<div class="org-name">${org}</div>` : ''}
-      <div class="name">${name}</div>
-      ${[7,13].includes(tpl) ? `<div class="designation-text">${designation}</div>` : ''}
-      <div class="detail">ID: ${idno} ${dept ? '| ' + dept : ''}</div>
-      <div class="detail">📞 ${phone}</div>
-      ${email ? `<div class="detail">✉ ${email}</div>` : ''}
-      <div class="detail">🩸 ${blood} | Valid: ${validity}</div>
-    </div>
-  `;
-
-  if(tpl === 4) {
-    bodyHTML = `
-      <div class="card-photo">${photoHTML}</div>
-      <div class="card-info">
-        <div class="name">${name}</div>
-        <div class="detail">${designation} | ${dept}</div>
-        <div class="detail">ID: ${idno} | 🩸 ${blood}</div>
-        <div class="detail">📞 ${phone}</div>
-      </div>
-    `;
-  }
-
-  return `
-    ${[7,13].includes(tpl) ? '' : `<div class="card-header">${headerContent}</div>`}
-    ${tpl === 7 ? '<div class="card-header"></div>' : ''}
-    ${tpl === 13 ? '<div class="card-header"><div class="org-name">' + org + '</div></div>' : ''}
-    <div class="card-body">${bodyHTML}</div>
-    <div class="card-footer"><span>${footer}</span></div>
-    ${watermarkHTML}
-  `;
-}
-
-// ============ GET BACK HTML ============
-function getBackHTML() {
-  const org = getValue('inp_org') || 'Organization Name';
-  const addr = getValue('inp_backAddr') || 'Address Line 1\nCity, State - PIN';
-  const terms = getValue('inp_terms') || 'This card is the property of the organization.\nIf found, please return to the above address.';
-  const website = getValue('inp_website') || 'www.example.com';
-  const backBg = getValue('clr_backBg') || '#1a1a2e';
-  const backText = getValue('clr_backText') || '#ffffff';
-  
-  const showReturn = document.getElementById('inp_showReturn') && document.getElementById('inp_showReturn').checked;
-  const returnPhone = getValue('inp_returnPhone');
-  let returnHTML = '';
-  if(showReturn) {
-      returnHTML = `<div style="font-size:7px; text-align:center; margin-top:4px; font-weight:bold; color:var(--accent);">If found, please return to:<br>${returnPhone || 'Institution'}</div>`;
-  }
-
-  const signHTML = window.state.signData 
-    ? `<div class="back-sign-area"><img src="${window.state.signData}" style="height:22px;display:block;margin:0 auto;object-fit:contain"><div>Authorized Signatory</div></div>`
-    : (window.state.showSignBack ? '<div class="back-sign-area">Authorized Signatory</div>' : '');
-  
-  const watermarkHTML = `<div class="saas-watermark">⚡ Powered by VPKTech Solutions</div>`;
-
-  return `
-    <div class="back-tpl" style="background:${backBg};color:${backText};border-radius:12px;">
-      <div class="back-org">${org}</div>
-      <div class="back-addr">${addr.replace(/\n/g,'<br>')}</div>
-      ${window.state.showQR ? '<div class="back-qr">QR CODE</div>' : ''}
-      <div class="back-terms">${terms.replace(/\n/g,'<br>')}</div>
-      ${returnHTML}
-      <div style="font-size:7px;opacity:0.5;margin-top:4px">🌐 ${website}</div>
-      ${signHTML}
-    </div>
-    ${watermarkHTML}
-  `;
-}
-
-// ============ UPDATE CARD ============
-window.updateCard = function() {
-  const tpl = window.state.template;
-  const front = document.getElementById('cardFront');
-  const back = document.getElementById('cardBack');
-  const cardInner = document.getElementById('cardInner');
-  
-  cardInner.className = 'id-card-inner tpl-' + tpl;
-  
-  front.innerHTML = getTemplateHTML(tpl);
-  back.innerHTML = getBackHTML();
-  
-  window.state.cardSide = getValue('inp_cardside') || 'single';
-
-  const fontName = getValue('font_name') || "'Segoe UI', sans-serif";
-  const nameElems = document.querySelectorAll('.card-info .name');
-  nameElems.forEach(el => {
-    el.style.fontFamily = fontName;
-  });
-
-  updateUploadPreviews();
-  updateCardStyle();
-  autoSave();
-  window.toggleWatermark();
-}
-
-window.toggleWatermark = function() {
-    document.querySelectorAll('.saas-watermark').forEach(el => {
-        el.style.display = window.saasWatermarkLocked ? 'block' : 'none';
-    });
-}
-
-function updateUploadPreviews() {
-  const pPreview = document.getElementById('photoPreview');
-  if(pPreview) pPreview.style.transform = `scale(${window.state.photoImgZoom}) translate(${window.state.photoImgX}px, ${window.state.photoImgY}px)`;
-  
-  const lPreview = document.getElementById('logoPreview');
-  if(lPreview) lPreview.style.transform = `scale(${window.state.logoImgZoom}) translate(${window.state.logoImgX}px, ${window.state.logoImgY}px)`;
-}
-
-function updateCardStyle() {
-  const radius = getValue('cardRadius') || 12;
-  const shadow = getValue('cardShadow') || 10;
-  
-  document.querySelectorAll('.card-front, .card-back').forEach(el => {
-    el.style.borderRadius = radius + 'px';
-    el.style.boxShadow = `0 ${shadow}px ${shadow*4}px rgba(0,0,0,0.5)`;
-  });
-
-  const photoRadius = getValue('photoRadius') || 8;
-  const photoBorder = getValue('photoBorder') || 2;
-  const photoBorderColor = getValue('photoBorderColor') || '#e94560';
-  document.querySelectorAll('.card-photo').forEach(p => {
-    p.style.borderRadius = photoRadius + 'px';
-    p.style.border = `${photoBorder}px solid ${photoBorderColor}`;
-  });
-}
-
-// ============ REAL-TIME AUTO SAVE & RESTORE ============
-function getCurrentCardData() {
-  const inputs = {};
-  document.querySelectorAll('input, select, textarea').forEach(el => {
-    if (el.id) inputs[el.id] = (el.type === 'checkbox') ? el.checked : el.value;
-  });
-
-  return {
-    inputs: inputs,
-    state: {
-      template: window.state.template,
-      orientation: window.state.orientation,
-      showQR: window.state.showQR,
-      showSignBack: window.state.showSignBack,
-      photoData: window.state.photoData,
-      logoData: window.state.logoData,
-      signData: window.state.signData,
-      cardSide: window.state.cardSide,
-      photoImgX: window.state.photoImgX, photoImgY: window.state.photoImgY, photoImgZoom: window.state.photoImgZoom,
-      logoImgX: window.state.logoImgX, logoImgY: window.state.logoImgY, logoImgZoom: window.state.logoImgZoom
-    }
-  };
-}
-
-function autoSave() {
-  if (!window.state.isAutoSaveOn) return;
-  try {
-    const data = getCurrentCardData();
-    localStorage.setItem('pro_id_card_autosave', JSON.stringify(data));
-  } catch(e) {}
-}
-
-function toggleAutoSave() {
-  window.state.isAutoSaveOn = !window.state.isAutoSaveOn;
-  const btn = document.getElementById('btnAutoSave');
-  btn.textContent = window.state.isAutoSaveOn ? 'Auto Save: ON' : 'Auto Save: OFF';
-  btn.classList.toggle('active', window.state.isAutoSaveOn);
-  if(window.state.isAutoSaveOn) autoSave();
-}
-
-function quickSave() {
-  saveSlot(window.state.activeSlot);
-  window.showToast(`Quick Saved to Slot ${window.state.activeSlot}`);
-}
-
-function loadAutoSave() {
-  try {
-    const dataStr = localStorage.getItem('pro_id_card_autosave');
-    if (!dataStr) return;
-    const data = JSON.parse(dataStr);
-    restoreCardData(data);
-  } catch(e) {}
-}
-
-function restoreCardData(data) {
-  if (data.inputs) {
-    Object.keys(data.inputs).forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-          if (el.type === 'checkbox') { el.checked = data.inputs[id]; }
-          else { el.value = data.inputs[id]; }
-      }
-      const display = document.getElementById('val_' + id);
-      if (display) display.textContent = data.inputs[id];
-    });
-  }
-  if (data.state) {
-    window.state.template = data.state.template || 1;
-    window.state.orientation = data.state.orientation || 'landscape';
-    window.state.showQR = data.state.showQR !== undefined ? data.state.showQR : true;
-    window.state.showSignBack = data.state.showSignBack !== undefined ? data.state.showSignBack : true;
-    window.state.photoData = data.state.photoData || null;
-    window.state.logoData = data.state.logoData || null;
-    window.state.signData = data.state.signData || null;
-    window.state.cardSide = data.state.cardSide || 'single';
-    
-    window.state.photoImgX = data.state.photoImgX || 0;
-    window.state.photoImgY = data.state.photoImgY || 0;
-    window.state.photoImgZoom = data.state.photoImgZoom || 1;
-    
-    window.state.logoImgX = data.state.logoImgX || 0;
-    window.state.logoImgY = data.state.logoImgY || 0;
-    window.state.logoImgZoom = data.state.logoImgZoom || 1;
-
-    if (window.state.orientation === 'portrait') {
-      document.getElementById('btnOrientation').textContent = 'LANDSCAPE';
-      document.getElementById('idCard').classList.add('portrait');
-    } else {
-      document.getElementById('btnOrientation').textContent = 'PORTRAIT';
-      document.getElementById('idCard').classList.remove('portrait');
-    }
-
-    if (window.state.photoData) {
-      document.getElementById('photoPreview').src = window.state.photoData;
-      document.getElementById('photoPreview').style.display = 'block';
-      document.getElementById('photoPlaceholder').style.display = 'none';
-    }
-    if (window.state.logoData) {
-      document.getElementById('logoPreview').src = window.state.logoData;
-      document.getElementById('logoPreview').style.display = 'block';
-      document.getElementById('logoPlaceholder').style.display = 'none';
-    }
-    if (window.state.signData) {
-      document.getElementById('signPreview').src = window.state.signData;
-      document.getElementById('signPreview').style.display = 'block';
-      document.getElementById('signPlaceholder').style.display = 'none';
-    }
-  }
-  updateCard();
-  applyTransform();
-}
-
-// ============ TOUCH PAN & ZOOM ============
-window.isDraggingImg = false; 
-
-function addTouchGestures(element, onMove, onPinch) {
-  if (!element) return;
-  let initialDist = null;
-  let lastX = 0, lastY = 0;
-
-  element.addEventListener('touchstart', (e) => {
-    window.isDraggingImg = false;
-    if (e.touches.length === 1) {
-      lastX = e.touches[0].clientX;
-      lastY = e.touches[0].clientY;
-    } else if (e.touches.length === 2) {
-      initialDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-    }
-  }, { passive: false });
-
-  element.addEventListener('touchmove', (e) => {
-    e.preventDefault(); 
-    window.isDraggingImg = true;
-    if (e.touches.length === 1) {
-      let dx = e.touches[0].clientX - lastX;
-      let dy = e.touches[0].clientY - lastY;
-      lastX = e.touches[0].clientX;
-      lastY = e.touches[0].clientY;
-      onMove(dx, dy);
-    } else if (e.touches.length === 2 && initialDist) {
-      let currentDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      let scaleDelta = currentDist / initialDist;
-      initialDist = currentDist;
-      onPinch(scaleDelta);
-    }
-  }, { passive: false });
-
-  element.addEventListener('touchend', (e) => {
-    initialDist = null;
-    setTimeout(() => window.isDraggingImg = false, 100);
-  });
-}
-
-function applyTransform() {
-  const wrapper = document.getElementById('cardZoomWrapper');
-  if (wrapper) {
-    wrapper.style.transform = `scale(${window.state.zoom}) translate(${window.state.panX}px, ${window.state.panY}px)`;
-  }
-}
-
-// Initialization of Gestures
-setTimeout(() => {
-  const cardArea = document.getElementById('cardZoomArea');
-  addTouchGestures(cardArea,
-    (dx, dy) => { window.state.panX += dx; window.state.panY += dy; applyTransform(); },
-    (scaleDelta) => {
-      let newZoom = window.state.zoom * scaleDelta;
-      window.state.zoom = Math.min(Math.max(0.3, newZoom), 4.0);
-      applyTransform();
-    }
-  );
-
-  const pBox = document.getElementById('photoUploadBox');
-  if(pBox) addTouchGestures(pBox,
-      (dx, dy) => { window.state.photoImgX += dx; window.state.photoImgY += dy; updateCard(); },
-      (sDelta) => { window.state.photoImgZoom *= sDelta; updateCard(); }
-  );
-  
-  const lBox = document.getElementById('logoUploadBox');
-  if(lBox) addTouchGestures(lBox,
-      (dx, dy) => { window.state.logoImgX += dx; window.state.logoImgY += dy; updateCard(); },
-      (sDelta) => { window.state.logoImgZoom *= sDelta; updateCard(); }
-  );
-}, 300);
-
-// ============ VIEW SIDE / BOTH TOGGLE ============
-function showSide(side) {
-  window.state.side = side;
-  document.getElementById('btnFront').classList.toggle('active', side === 'front');
-  document.getElementById('btnBack').classList.toggle('active', side === 'back');
-  document.getElementById('btnBoth').classList.toggle('active', side === 'both');
-
-  const cardFront = document.getElementById('cardFront');
-  const cardBack = document.getElementById('cardBack');
-  const idCard = document.getElementById('idCard');
-
-  if (side === 'front') {
-    cardFront.style.display = 'block';
-    cardBack.style.display = 'none';
-    idCard.classList.remove('show-both');
-  } else if (side === 'back') {
-    cardFront.style.display = 'none';
-    cardBack.style.display = 'block';
-    idCard.classList.remove('show-both');
-  } else if (side === 'both') {
-    cardFront.style.display = 'block';
-    cardBack.style.display = 'block';
-    idCard.classList.add('show-both');
-  }
-  
-  window.state.zoom = (side === 'both' ? 0.7 : 1.0);
-  window.state.panX = 0; window.state.panY = 0;
-  applyTransform();
-}
-
-function toggleOrientation() {
-  const btn = document.getElementById('btnOrientation');
-  const card = document.getElementById('idCard');
-  
-  if (window.state.orientation === 'landscape') {
-    window.state.orientation = 'portrait';
-    btn.textContent = 'LANDSCAPE';
-    card.classList.add('portrait');
-    window.showToast('Switched to Portrait');
-  } else {
-    window.state.orientation = 'landscape';
-    btn.textContent = 'PORTRAIT';
-    card.classList.remove('portrait');
-    window.showToast('Switched to Landscape');
-  }
-  updateCard();
-}
-
-// ============ HELPER FUNCTIONS ============
-function getValue(id) {
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : '';
-}
-function toggleQR() { window.state.showQR = !window.state.showQR; const btn = document.getElementById('btnQr'); if (btn) btn.textContent = `QR: ${window.state.showQR ? 'ON' : 'OFF'}`; updateCard(); }
-function toggleSignBack() { window.state.showSignBack = !window.state.showSignBack; const btn = document.getElementById('btnSignBack'); if (btn) btn.textContent = `Sign: ${window.state.showSignBack ? 'ON' : 'OFF'}`; updateCard(); }
-
-function handlePhoto(input) {
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      window.state.photoData = e.target.result;
-      window.state.photoImgX = 0; window.state.photoImgY = 0; window.state.photoImgZoom = 1;
-      document.getElementById('photoPreview').src = e.target.result;
-      document.getElementById('photoPreview').style.display = 'block';
-      document.getElementById('photoPlaceholder').style.display = 'none';
-      updateCard();
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
-}
-function clearPhoto() {
-  window.state.photoData = null; window.state.photoImgX = 0; window.state.photoImgY = 0; window.state.photoImgZoom = 1;
-  document.getElementById('photoInput').value = ''; document.getElementById('photoPreview').style.display = 'none'; document.getElementById('photoPlaceholder').style.display = 'inline'; updateCard();
-}
-
-function handleLogo(input) {
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      window.state.logoData = e.target.result;
-      window.state.logoImgX = 0; window.state.logoImgY = 0; window.state.logoImgZoom = 1;
-      document.getElementById('logoPreview').src = e.target.result;
-      document.getElementById('logoPreview').style.display = 'block';
-      document.getElementById('logoPlaceholder').style.display = 'none';
-      updateCard();
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
-}
-function clearLogo() {
-  window.state.logoData = null; window.state.logoImgX = 0; window.state.logoImgY = 0; window.state.logoImgZoom = 1;
-  document.getElementById('logoInput').value = ''; document.getElementById('logoPreview').style.display = 'none'; document.getElementById('logoPlaceholder').style.display = 'inline'; updateCard();
-}
-
-function handleSign(input) {
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      window.state.signData = e.target.result;
-      document.getElementById('signPreview').src = e.target.result;
-      document.getElementById('signPreview').style.display = 'block';
-      document.getElementById('signPlaceholder').style.display = 'none';
-      updateCard();
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
-}
-function clearSign() {
-  window.state.signData = null;
-  document.getElementById('signInput').value = ''; document.getElementById('signPreview').style.display = 'none'; document.getElementById('signPlaceholder').style.display = 'inline'; updateCard();
-}
-
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-window.showToast = function(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg; toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2500);
-}
-
-function resetAll() {
-  if (confirm('Are you sure you want to reset all inputs?')) {
-    localStorage.removeItem('pro_id_card_autosave');
-    document.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"], textarea').forEach(i => i.value = '');
-    document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
-    clearPhoto(); clearLogo(); clearSign();
-    window.state.template = 1; window.state.orientation = 'landscape'; showSide('front');
-    window.state.zoom = 1.0; window.state.panX = 0; window.state.panY = 0;
-    document.getElementById('btnOrientation').textContent = 'PORTRAIT';
-    document.getElementById('idCard').classList.remove('portrait');
-    applyTransform(); updateCard(); showToast('Reset Complete!');
-  }
-}
-
-// LocalStorage Saved Slots
-function initSavedSlots() {
-  const container = document.getElementById('savedSlots');
-  if (!container) return;
-  container.innerHTML = '';
-  for (let i = 1; i <= 10; i++) {
-    const slotData = localStorage.getItem('id_card_slot_' + i);
-    const parsed = slotData ? JSON.parse(slotData) : null;
-    
-    const div = document.createElement('div');
-    div.className = 'save-slot';
-    div.innerHTML = `
-      <div class="slot-info">
-        <div class="slot-name">Slot ${i}: ${parsed ? (parsed.inputs.inp_name || 'Saved Card') : 'Empty Slot'}</div>
-        <div class="slot-desc">${parsed ? `Template ${parsed.state.template} | Org: ${parsed.inputs.inp_org || 'N/A'}` : 'No saved data'}</div>
-      </div>
-      <div class="slot-actions">
-        ${parsed ? `<button class="slot-btn load" onclick="loadSlot(${i})">Load</button>` : ''}
-        <button class="slot-btn save" onclick="saveSlot(${i})">Save</button>
-        ${parsed ? `<button class="slot-btn del" onclick="deleteSlot(${i})">Delete</button>` : ''}
-      </div>
-    `;
-    container.appendChild(div);
-  }
-}
-
-function saveSlot(i) {
-  const data = getCurrentCardData();
-  localStorage.setItem('id_card_slot_' + i, JSON.stringify(data));
-  window.state.activeSlot = i;
-  initSavedSlots();
-  window.showToast(`Saved to Slot ${i}`);
-}
-
-function loadSlot(i) {
-  const slotData = localStorage.getItem('id_card_slot_' + i);
-  if (slotData) {
-    const parsed = JSON.parse(slotData);
-    restoreCardData(parsed);
-    window.state.activeSlot = i;
-    closeModal('savedModal');
-    window.showToast(`Loaded Slot ${i}`);
-  }
-}
-
-function deleteSlot(i) {
-  if (confirm(`Delete Slot ${i}?`)) {
-    localStorage.removeItem('id_card_slot_' + i);
-    initSavedSlots();
-    window.showToast(`Slot ${i} Cleared`);
-  }
-}
-
-// ============ EXPORT & PRINT FUNCTIONS (FIXED BULLETPROOF ENGINE) ============
-async function getExportElement() {
-  if(window.state.side === 'both') return document.getElementById('idCard');
-  if(window.state.side === 'back') return document.getElementById('cardBack');
-  return document.getElementById('cardFront');
-}
-
-// 💥 THE MAGIC FIX: Flatten 3D & Clip Paths safely before capturing
-async function getSafeCanvas() {
-  const activeElement = await getExportElement();
-  
-  const wrapper = document.createElement('div');
-  wrapper.style.position = 'fixed';
-  wrapper.style.top = '-9999px';
-  wrapper.style.left = '-9999px';
-  
-  const clone = activeElement.cloneNode(true);
-  
-  // Strip 3D transforms to fix slicing issues in html2canvas
-  clone.style.transform = 'none';
-  clone.style.transformStyle = 'flat';
-  clone.style.boxShadow = 'none';
-  clone.style.margin = '0';
-  
-  wrapper.appendChild(clone);
-  document.body.appendChild(wrapper);
-  
-  // Small delay to ensure browser renders the clone perfectly
-  await new Promise(r => setTimeout(r, 150));
-  
-  const canvas = await html2canvas(clone, { 
-      scale: 4, // 4X Super HD Quality
-      useCORS: true, 
-      backgroundColor: null,
-      logging: false,
-      allowTaint: true
-  });
-  
-  document.body.removeChild(wrapper);
-  return canvas;
-}
-
-async function printCard() {
-  window.showToast('Preparing High-Res Print...');
-  const canvas = await getSafeCanvas();
-  const imgData = canvas.toDataURL('image/png', 1.0);
-  
-  let imgWidth = window.state.orientation === 'portrait' ? '204px' : '324px';
-  let imgHeight = window.state.orientation === 'portrait' ? '324px' : '204px';
-  
-  if (window.state.side === 'both') {
-     imgWidth = window.state.orientation === 'portrait' ? '420px' : '324px';
-     imgHeight = window.state.orientation === 'portrait' ? '324px' : '420px';
-  }
-
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Print ID Card</title>
-        <style>
-          @page { margin: 0; size: auto; }
-          body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: transparent; }
-          img { width: ${imgWidth}; height: ${imgHeight}; display: block; border-radius: 12px; }
-        </style>
-      </head>
-      <body>
-        <img src="${imgData}" onload="window.print(); window.close();" />
-      </body>
-    </html>
-  `);
-  printWindow.document.close();
-}
-
-async function sharePNG() {
-  window.showToast('Generating HD PNG...');
-  const canvas = await getSafeCanvas();
-  const link = document.createElement('a');
-  link.download = `ID_Card_${getValue('inp_name') || 'Export'}.png`;
-  link.href = canvas.toDataURL('image/png', 1.0);
-  link.click();
-}
-
-async function sharePDF() {
-  window.showToast('Generating HD PDF...');
-  const canvas = await getSafeCanvas();
-  const imgData = canvas.toDataURL('image/png', 1.0);
-  
-  let finalW = window.state.orientation === 'portrait' ? 53.98 : 85.6;
-  let finalH = window.state.orientation === 'portrait' ? 85.6 : 53.98;
-  
-  if (window.state.side === 'both') {
-     finalW = window.state.orientation === 'portrait' ? 111.13 : 85.6;
-     finalH = window.state.orientation === 'portrait' ? 85.6 : 111.13;
-  }
-  
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF({
-    orientation: (finalW > finalH) ? 'l' : 'p',
-    unit: 'mm',
-    format: [finalW, finalH]
-  });
-  
-  pdf.addImage(imgData, 'PNG', 0, 0, finalW, finalH, '', 'FAST');
-  pdf.save(`ID_Card_${getValue('inp_name') || 'Export'}.pdf`);
-}
-</script>
+        };
+    </script>
 </body>
 </html>
