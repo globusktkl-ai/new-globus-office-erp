@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPKTech Master Console</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0f172a; color: #f1f5f9; margin: 0; padding: 20px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e293b; padding-bottom: 20px; margin-bottom: 30px; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { background: linear-gradient(135deg, #3b82f6, #8b5cf6); width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        .title-text h1 { margin: 0; font-size: 24px; color: #f8fafc; font-weight: 900; letter-spacing: 1px; }
+        .title-text p { margin: 0; font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; display: flex; flex-direction: column; }
+        .stat-val { font-size: 32px; font-weight: 900; color: #fff; margin-bottom: 5px; }
+        .stat-label { font-size: 12px; color: #94a3b8; text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        .text-green { color: #10b981; } .text-red { color: #ef4444; } .text-blue { color: #3b82f6; }
+
+        .card { background: #1e293b; border-radius: 16px; border: 1px solid #334155; padding: 25px; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card-title { margin-top: 0; margin-bottom: 20px; font-size: 18px; font-weight: 800; color: #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+        
+        .form-row { display: grid; grid-template-columns: 2fr 2fr 1fr 1fr auto; gap: 15px; align-items: end; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .form-control { background: #0f172a; border: 1px solid #475569; padding: 12px 15px; border-radius: 8px; color: #f1f5f9; font-size: 14px; outline: none; transition: 0.2s; }
+        .form-control:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+        
+        .btn { padding: 12px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background: #3b82f6; color: white; } .btn-primary:hover { background: #2563eb; }
+        .btn-danger { background: #ef4444; color: white; } .btn-danger:hover { background: #dc2626; }
+        .btn-update { background: #10b981; color: white; padding: 6px 12px; font-size: 12px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; font-size: 14px; }
+        th { color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; background: #0f172a; }
+        td { color: #e2e8f0; font-weight: 600; }
+        tr:hover td { background: #1a2235; }
+        
+        .editable-input { width: 80px; background: #0f172a; border: 1px solid #475569; color: #10b981; font-weight: bold; padding: 6px; border-radius: 4px; text-align: center; }
+        .date-input { background: #0f172a; border: 1px solid #475569; color: #f59e0b; font-weight: bold; padding: 6px; border-radius: 4px; }
+
+        /* Master Kill Switch Toggle */
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ef4444; transition: .4s; border-radius: 34px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #10b981; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+        .bg-green { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+        .bg-red { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+
+        /* Danger Zone Area */
+        .danger-zone-row { background: rgba(239, 68, 68, 0.05); border: 1px dashed #ef4444; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        
+        #customAlertBox { z-index: 99999; }
+    </style>
+</head>
+<body>
+
+    <!-- LOCK SCREEN OVERLAY -->
+    <div id="securityLock" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 100000; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <div style="font-size: 50px; animation: pulse 2s infinite;">🔒</div>
+        <h2 style="color: white; font-family: sans-serif; letter-spacing: 2px;">AUTHENTICATING MASTER...</h2>
+    </div>
+
+    <div class="header">
+        <div class="logo-area">
+            <div class="logo-icon">V</div>
+            <div class="title-text">
+                <h1>VPKTECH MASTER CONSOLE</h1>
+                <p>SaaS Control Center • Strictly Confidential</p>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-danger" onclick="logoutMaster()">Secure Logout</button>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-val text-blue" id="totClients">0</div>
+            <div class="stat-label">Total Subscriptions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val text-green" id="actClients">0</div>
+            <div class="stat-label">Active Clients</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val text-red" id="blkClients">0</div>
+            <div class="stat-label">Blocked / Expired</div>
+        </div>
+    </div>
+
+    <!-- ADD NEW CLIENT -->
+    <div class="card">
+        <div class="card-title">➕ Provision New Tenant (Client)</div>
+        <form id="addClientForm" onsubmit="addClient(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Institute Name</label>
+                    <input type="text" id="cName" class="form-control" placeholder="e.g. Oxford Academy" required>
+                </div>
+                <div class="form-group">
+                    <label>Super Admin Email (Client's Login)</label>
+                    <input type="email" id="cEmail" class="form-control" placeholder="admin@oxford.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Admission Limit</label>
+                    <input type="number" id="cLimit" class="form-control" value="100" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Validity (Expiry Date)</label>
+                    <input type="date" id="cDate" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="saveBtn">Create Client</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- CLIENT LIST & CONTROLS -->
+    <div class="card">
+        <div class="card-title">⚙️ Client Management Matrix</div>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Institute Details</th>
+                        <th style="text-align: center;">Master Kill Switch</th>
+                        <th>Adm. Limit</th>
+                        <th>Valid Until</th>
+                        <th style="text-align: right;">Danger Zone</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsTableBody">
+                    <tr><td colspan="5" style="text-align:center;">Loading clients data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import existing config
+        import { supabase } from './assets/js/supabase-config.js';
+
+        // MAGIC ALERT FUNCTION
+        window.alert = function(msg) {
+            const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
+            const box = document.createElement('div'); box.id = 'customAlertBox';
+            let bg = '#10b981'; if(msg.includes('❌') || msg.includes('⚠️')) bg = '#ef4444';
+            box.style.cssText = `position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: ${bg}; color: white; padding: 15px 25px; border-radius: 8px; font-weight: bold; z-index: 99999; box-shadow: 0 10px 30px rgba(0,0,0,0.5);`;
+            box.innerText = msg; document.body.appendChild(box);
+            setTimeout(() => box.remove(), 3000);
+        };
+
+        // MAGIC PROMPT FUNCTION
+        window.magicPrompt = function(msg) {
+            return new Promise((resolve) => {
+                const promptVal = window.prompt(msg);
+                resolve(promptVal);
+            });
+        };
+
+        let clientsData = [];
+
+        // ==========================================
+        // 1. THE ULTIMATE SECURITY LOCK (HARD CHECK)
+        // ==========================================
+        async function authenticateMaster() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            // IF NO SESSION OR EMAIL IS NOT VPK@VPK.COM, BAN THEM FOREVER!
+            if (!session || session.user.email.toLowerCase() !== 'vpk@vpk.com') {
+                document.body.innerHTML = `
+                    <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; color: #ef4444; flex-direction: column; font-family: monospace;">
+                        <h1 style="font-size: 60px; margin: 0;">⛔ FATAL ERROR</h1>
+                        <h2>ACCESS DENIED. THIS ATTEMPT HAS BEEN LOGGED.</h2>
+                    </div>`;
+                setTimeout(() => { window.location.href = 'login.html'; }, 3000);
+                return;
+            }
+
+            // If passed, remove lock screen
+            document.getElementById('securityLock').style.display = 'none';
+            fetchClients();
+        }
+
+        // ==========================================
+        // 2. FETCH AND RENDER CLIENTS
+        // ==========================================
+        async function fetchClients() {
+            try {
+                const { data, error } = await supabase.from('saas_clients').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                clientsData = data || [];
+                renderTable();
+            } catch (err) {
+                alert("❌ Database Connection Failed!");
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('clientsTableBody');
+            
+            let active = 0, blocked = 0;
+
+            if (clientsData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">No clients provisioned yet.</td></tr>';
+            } else {
+                tbody.innerHTML = clientsData.map(c => {
+                    if(c.is_active) active++; else blocked++;
+                    
+                    const statusBadge = c.is_active ? `<span class="badge bg-green">Live</span>` : `<span class="badge bg-red">Blocked</span>`;
+                    
+                    return `
+                    <tr>
+                        <td>
+                            <div style="font-weight: 900; font-size: 15px; color: #fff;">${c.institute_name} ${statusBadge}</div>
+                            <div style="font-size: 12px; color: #94a3b8; font-family: monospace; margin-top: 5px;">✉️ ${c.admin_email}</div>
+                        </td>
+                        <td style="text-align: center;">
+                            <label class="switch" title="Toggle Kill Switch">
+                                <input type="checkbox" ${c.is_active ? 'checked' : ''} onchange="toggleKillSwitch('${c.id}', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 5px; align-items: center;">
+                                <input type="number" id="lmt_${c.id}" class="editable-input" value="${c.admission_limit}">
+                                <button class="btn btn-update" onclick="updateLimit('${c.id}')">Save</button>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 5px; align-items: center;">
+                                <input type="date" id="dt_${c.id}" class="date-input" value="${c.valid_until}">
+                                <button class="btn btn-update" onclick="updateValidity('${c.id}')">Save</button>
+                            </div>
+                        </td>
+                        <td style="text-align: right;">
+                            <button class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;" onclick="deleteClient('${c.id}', '${c.institute_name}')">
+                                🗑️ Terminate
+                            </button>
+                        </td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // Update Stats
+            document.getElementById('totClients').innerText = clientsData.length;
+            document.getElementById('actClients').innerText = active;
+            document.getElementById('blkClients').innerText = blocked;
+        }
+
+        // ==========================================
+        // 3. MASTER CONTROLS LOGIC
+        // ==========================================
+        window.addClient = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            btn.innerText = 'Creating...'; btn.disabled = true;
+
+            const newClient = {
+                institute_name: document.getElementById('cName').value,
+                admin_email: document.getElementById('cEmail').value,
+                admission_limit: parseInt(document.getElementById('cLimit').value),
+                valid_until: document.getElementById('cDate').value,
+                is_active: true
+            };
+
+            try {
+                const { error } = await supabase.from('saas_clients').insert([newClient]);
+                if (error) throw error;
+                alert("✅ New Client Provisioned Successfully!");
+                document.getElementById('addClientForm').reset();
+                fetchClients();
+            } catch (err) {
+                alert("❌ Error adding client: " + err.message);
+            } finally {
+                btn.innerText = 'Create Client'; btn.disabled = false;
+            }
+        };
+
+        window.toggleKillSwitch = async function(id, isActive) {
+            try {
+                const { error } = await supabase.from('saas_clients').update({ is_active: isActive }).eq('id', id);
+                if (error) throw error;
+                alert(isActive ? "✅ Client Unblocked (System Active)" : "❌ Client Blocked! (System Frozen)");
+                fetchClients();
+            } catch(e) { alert("Error toggling status."); }
+        };
+
+        window.updateLimit = async function(id) {
+            const newLimit = parseInt(document.getElementById(`lmt_${id}`).value);
+            try {
+                const { error } = await supabase.from('saas_clients').update({ admission_limit: newLimit }).eq('id', id);
+                if (error) throw error;
+                alert("✅ Admission limit updated!");
+            } catch(e) { alert("Error updating limit."); }
+        };
+
+        window.updateValidity = async function(id) {
+            const newDate = document.getElementById(`dt_${id}`).value;
+            try {
+                const { error } = await supabase.from('saas_clients').update({ valid_until: newDate }).eq('id', id);
+                if (error) throw error;
+                alert("✅ Expiry date updated!");
+            } catch(e) { alert("Error updating date."); }
+        };
+
+        // DANGER ZONE: TERMINATE CLIENT
+        window.deleteClient = async function(id, name) {
+            const code = prompt(`DANGER ZONE: You are about to permanently delete the client "${name}". Type 'TERMINATE' to confirm:`);
+            if (code === 'TERMINATE') {
+                try {
+                    const { error } = await supabase.from('saas_clients').delete().eq('id', id);
+                    if (error) throw error;
+                    alert("✅ Client Terminated Forever!");
+                    fetchClients();
+                } catch(e) { alert("Error deleting client."); }
+            } else if (code !== null) {
+                alert("❌ Wrong code. Deletion cancelled.");
+            }
+        };
+
+        window.logoutMaster = async function() {
+            await supabase.auth.signOut();
+            window.location.href = 'login.html';
+        };
+
+        // Initiate sequence
+        authenticateMaster();
+
+    </script>
+</body>
+</html>
