@@ -14,7 +14,6 @@
         .title-text h1 { margin: 0; font-size: 20px; color: #f8fafc; font-weight: 900; letter-spacing: 1px; }
         .title-text p { margin: 0; font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* OVERVIEW BANNER STATS */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
         .stat-card { background: linear-gradient(145deg, #1e293b, #0f172a); padding: 20px; border-radius: 16px; border: 1px solid #334155; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .stat-val { font-size: 32px; font-weight: 900; margin-bottom: 5px; z-index: 2; position: relative; }
@@ -22,7 +21,6 @@
         .stat-icon { position: absolute; right: -10px; bottom: -20px; font-size: 80px; opacity: 0.05; z-index: 1; }
         .text-green { color: #10b981; } .text-red { color: #ef4444; } .text-blue { color: #3b82f6; } .text-orange { color: #f59e0b; }
 
-        /* TABS */
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
         .tabs::-webkit-scrollbar { display: none; }
         .tab-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 12px 25px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 14px; white-space: nowrap; }
@@ -86,7 +84,6 @@
         
         #customAlertBox { z-index: 100002; }
 
-        /* 🔥 MASTER LOGIN SCREEN STYLES 🔥 */
         #masterLoginScreen { display:none; flex-direction:column; align-items:center; justify-content:center; height:100vh; background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); }
         .login-box { background: #1e293b; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid #334155; text-align: center; }
 
@@ -106,7 +103,7 @@
         <h2 style="color: white; font-family: sans-serif; letter-spacing: 2px;">AUTHENTICATING...</h2>
     </div>
 
-    <!-- 🔥 INDEPENDENT MASTER LOGIN SCREEN 🔥 -->
+    <!-- MASTER LOGIN SCREEN -->
     <div id="masterLoginScreen">
         <div class="login-box">
             <div style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; color: white; margin: 0 auto 20px; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);">V</div>
@@ -165,9 +162,11 @@
             <div class="stat-card"><div class="stat-icon">⛔</div><div class="stat-val text-red" id="blkClients">0</div><div class="stat-label">Suspended</div></div>
         </div>
 
+        <!-- 🔥 NEW: ADDED "GLOBAL SETTINGS" TAB 🔥 -->
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('clients')">🏢 Client Matrix</button>
             <button class="tab-btn" onclick="switchTab('studio')">💎 Dynamic Subscription Studio</button>
+            <button class="tab-btn" onclick="switchTab('settings')">⚙️ Global Settings</button>
         </div>
 
         <!-- TAB 1: CLIENT MATRIX -->
@@ -270,6 +269,34 @@
                 </div>
             </div>
         </div>
+
+        <!-- 🔥 NEW: TAB 3 - GLOBAL SETTINGS 🔥 -->
+        <div id="tab-settings" class="tab-content">
+            <div class="card" style="max-width: 600px; margin: 0 auto;">
+                <div class="card-title" style="color: #3b82f6;">⚙️ Global SaaS Settings (Login Screen)</div>
+                <p style="color: #94a3b8; font-size: 12px; margin-bottom: 20px;">These settings control the main login page for all your clients.</p>
+                <form onsubmit="saveGlobalSettings(event)">
+                    <div class="form-row" style="grid-template-columns: 1fr;">
+                        <div class="form-group" style="background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #334155; flex-direction: row; align-items: center; justify-content: space-between;">
+                            <label style="font-size: 14px; font-weight: 700; color: #e2e8f0; margin: 0; text-transform: none;">Show 'Explore as Guest (Demo)' Button</label>
+                            <label class="switch">
+                                <input type="checkbox" id="gGuestLogin">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="form-group" style="background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #334155;">
+                            <label style="font-size: 14px; font-weight: 700; color: #e2e8f0; margin-bottom: 10px; text-transform: none;">Login Screen Background Theme Color</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="color" id="gThemeColor" class="form-control" style="padding: 2px; height: 44px; width: 60px; cursor: pointer;">
+                                <input type="text" id="gThemeColorText" class="form-control" readonly style="color: #94a3b8; background: #1e293b; border-color: #334155;">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="saveSettingsBtn" style="width: 100%; padding: 15px; font-size: 15px; margin-top: 10px;">💾 Save Global Settings</button>
+                </form>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
@@ -280,7 +307,6 @@
         const SUPABASE_URL = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
 
-        // 🟢 MAGIC FIX: Master Console gets its own Isolated Auth Storage!
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             auth: { storageKey: 'vpk-master-secret-key' }
         });
@@ -309,29 +335,24 @@
             const { data: { session } } = await supabase.auth.getSession();
             document.getElementById('securityLock').style.display = 'none';
 
-            // 1. If no session, show Master Login Screen
             if (!session) {
                 document.getElementById('masterLoginScreen').style.display = 'flex';
                 document.getElementById('masterDashboard').style.display = 'none';
                 return;
             }
 
-            // 2. If logged in with wrong email, show FATAL ERROR
             if (session.user.email.toLowerCase() !== MY_REAL_SUPER_ADMIN_EMAIL.toLowerCase()) {
                 document.body.innerHTML = `<div style="height:100vh; display:flex; align-items:center; justify-content:center; background:#000; color:#ef4444; flex-direction:column; text-align:center;"><h1 style="font-size:60px; margin:0;">⛔ FATAL ERROR</h1><p style="color:#94a3b8;">Unauthorized Email Address</p><button onclick="logoutMaster()" style="padding:10px 20px; margin-top:20px; cursor:pointer;">Go Back</button></div>`;
                 return;
             }
             
-            // 3. Success! Show Dashboard
             document.getElementById('masterLoginScreen').style.display = 'none';
             document.getElementById('masterDashboard').style.display = 'block';
             await fetchPlans();
             await fetchClients();
+            await fetchGlobalSettings(); // 🔥 Load Global Settings
         }
 
-        // ==========================================
-        // MASTER LOGIN SYSTEM
-        // ==========================================
         window.handleMasterLogin = async function(e) {
             e.preventDefault();
             const em = document.getElementById('mLoginEmail').value.trim();
@@ -344,7 +365,51 @@
                 alert("❌ Login Failed: " + error.message);
                 btn.innerText = 'ACCESS CONSOLE'; btn.disabled = false;
             } else {
-                window.location.reload(); // Reload to run initMaster
+                window.location.reload(); 
+            }
+        };
+
+        // ==========================================
+        // 🔥 NEW: GLOBAL SETTINGS LOGIC 🔥
+        // ==========================================
+        async function fetchGlobalSettings() {
+            try {
+                // Fetching from id=1 which acts as our global config for login screen
+                const { data, error } = await supabase.from('institute_settings').select('theme_color, guest_login_enabled').eq('id', 1).single();
+                if (data) {
+                    document.getElementById('gGuestLogin').checked = data.guest_login_enabled !== false; // Default true if null
+                    const color = data.theme_color || '#1e293b';
+                    document.getElementById('gThemeColor').value = color;
+                    document.getElementById('gThemeColorText').value = color.toUpperCase();
+                }
+            } catch (e) { console.log("Error loading global settings", e); }
+        }
+
+        // Live text update for color picker
+        document.getElementById('gThemeColor').addEventListener('input', function(e) {
+            document.getElementById('gThemeColorText').value = e.target.value.toUpperCase();
+        });
+
+        window.saveGlobalSettings = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveSettingsBtn');
+            btn.innerText = 'Saving...'; btn.disabled = true;
+
+            try {
+                const isGuestEnabled = document.getElementById('gGuestLogin').checked;
+                const themeColor = document.getElementById('gThemeColor').value;
+
+                const { error } = await supabase.from('institute_settings').update({
+                    guest_login_enabled: isGuestEnabled,
+                    theme_color: themeColor
+                }).eq('id', 1);
+
+                if (error) throw error;
+                alert("✅ Global Login Settings Saved Successfully!");
+            } catch (err) {
+                alert("❌ Error saving settings: " + err.message);
+            } finally {
+                btn.innerText = '💾 Save Global Settings'; btn.disabled = false;
             }
         };
 
@@ -486,7 +551,7 @@
 
             try {
                 const selectedPlan = plansData.find(p => p.id === planId);
-                let validUntilDate = new Date(); // Start from today
+                let validUntilDate = new Date(); 
                 if(selectedPlan.duration_type === 'Days') validUntilDate.setDate(validUntilDate.getDate() + selectedPlan.duration_value);
                 else if(selectedPlan.duration_type === 'Months') validUntilDate.setMonth(validUntilDate.getMonth() + selectedPlan.duration_value);
                 else if(selectedPlan.duration_type === 'Years') validUntilDate.setFullYear(validUntilDate.getFullYear() + selectedPlan.duration_value);
@@ -537,7 +602,6 @@
                 }]);
                 if (dbErr) throw dbErr;
                 
-                // NO MORE AUTO-LOGOUT! Just refresh the table.
                 alert("✅ TENANT PROVISIONED SUCCESSFULLY!");
                 e.target.reset();
                 fetchClients();
