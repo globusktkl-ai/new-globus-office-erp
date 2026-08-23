@@ -11,7 +11,6 @@ function showCustomAlert(message, redirectUrl) {
 
     const iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
 
-    // ബാക്ക്ഗ്രൗണ്ട് നല്ല ഇരുണ്ടതാക്കി മാറ്റുന്നു (അകത്തുള്ളത് കാണാതിരിക്കാൻ)
     box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.98); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px);`;
     box.innerHTML = `
         <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
@@ -28,31 +27,46 @@ function showCustomAlert(message, redirectUrl) {
         if(redirectUrl) window.location.replace(redirectUrl);
     };
 
-    // SECURE FALLBACK: യൂസർ OK അമർത്തിയില്ലെങ്കിലും 3 സെക്കൻഡിനുള്ളിൽ തനിയെ ഡാഷ്‌ബോർഡിലേക്ക് മാറ്റും!
     if(redirectUrl) {
         setTimeout(() => { window.location.replace(redirectUrl); }, 3000);
     }
 }
 
 // ========================================================
-// NEW: SaaS SECURITY BRIDGE (Kill Switch & Expiry Warning)
+// SaaS SECURITY BRIDGE (Kill Switch, Missing License & Expiry)
 // ========================================================
 async function verifySaaSStatus() {
     try {
         const { data: client, error } = await supabase.from('saas_clients').select('*').limit(1).single();
-        if (error || !client) return;
+        
+        // 🔴 1. IF CLIENT IS DELETED (TERMINATED) OR TABLE IS EMPTY
+        if (error || !client) {
+            document.body.innerHTML = `
+                <div style="height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: #0f172a; color: #f8fafc; flex-direction: column; font-family: 'Segoe UI', Tahoma, sans-serif; text-align: center; padding: 20px; position: fixed; top: 0; left: 0; z-index: 9999999;">
+                    <div style="font-size: 60px; margin-bottom: 10px;">❌</div>
+                    <h1 style="font-size: 32px; margin: 0; color: #ef4444; font-weight: 900; letter-spacing: 1px;">LICENSE NOT FOUND</h1>
+                    <p style="color: #94a3b8; font-size: 15px; max-width: 450px; margin-top: 15px; line-height: 1.6;">
+                        This ERP application is not registered or the license has been permanently terminated by the provider.
+                    </p>
+                    <div style="margin-top: 30px; background: #1e293b; padding: 15px 25px; border: 1px dashed #334155; border-radius: 12px; color: #cbd5e1; font-size: 14px;">
+                        To resolve this issue, contact:<br>
+                        <strong style="color: #3b82f6; font-size: 16px; display: inline-block; margin-top: 8px;">vpktechsolutions@gmail.com</strong>
+                    </div>
+                </div>
+            `;
+            throw new Error("NO_LICENSE_FOUND");
+        }
 
-       // 1. THE MASTER KILL SWITCH
+        // 🔴 2. THE MASTER KILL SWITCH (SUSPENDED TEMPORARILY)
         if (client.is_active === false) {
             document.body.innerHTML = `
                 <div style="height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background: #0f172a; color: #f8fafc; flex-direction: column; font-family: 'Segoe UI', Tahoma, sans-serif; text-align: center; padding: 20px; position: fixed; top: 0; left: 0; z-index: 9999999;">
                     <div style="font-size: 60px; margin-bottom: 10px; animation: pulse 2s infinite;">⛔</div>
                     <h1 style="font-size: 32px; margin: 0; color: #ef4444; font-weight: 900; letter-spacing: 1px;">ACCOUNT SUSPENDED</h1>
                     <p style="color: #94a3b8; font-size: 15px; max-width: 450px; margin-top: 15px; line-height: 1.6;">
-                        Your ERP software subscription has been suspended or your license has expired. Access to the system is permanently locked.
+                        Your ERP software subscription has been suspended or your license has expired. Access to the system is locked.
                     </p>
                     
-                    <!-- NEW GRACE PERIOD DATA WARNING -->
                     <div style="margin-top: 20px; background: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; padding: 12px 20px; border-radius: 8px; color: #fcd34d; font-size: 13px; max-width: 450px; line-height: 1.5;">
                         ⚠️ <strong style="letter-spacing: 0.5px;">DATA RETENTION WARNING</strong><br>
                         If the subscription is not renewed, your entire institute data will be permanently deleted from our servers after <strong>60 days</strong>.
@@ -67,7 +81,7 @@ async function verifySaaSStatus() {
             throw new Error("SYSTEM_LOCKED_BY_MASTER");
         }
 
-        // 2. EXPIRY WARNING SYSTEM (Only for Admins)
+        // 🟡 3. EXPIRY WARNING SYSTEM (Only for Admins)
         const userRole = localStorage.getItem('userRole');
         if (client.valid_until && (userRole === 'Super Admin' || userRole === 'Admin')) {
             const expiryDate = new Date(client.valid_until);
@@ -90,7 +104,7 @@ async function verifySaaSStatus() {
             }
         }
     } catch(e) {
-        if(e.message === "SYSTEM_LOCKED_BY_MASTER") throw e;
+        if(e.message === "SYSTEM_LOCKED_BY_MASTER" || e.message === "NO_LICENSE_FOUND") throw e;
         console.error("SaaS Check Error:", e);
     }
 }
@@ -117,13 +131,12 @@ window.checkDynamicAccess = async function(moduleName) {
     const userRole = localStorage.getItem('userRole');
     if (!userRole) return false;
 
-    // സൂപ്പർ അഡ്മിന് എല്ലാ പേജുകളിലേക്കും നേരിട്ട് പ്രവേശനം
     if (userRole === 'Super Admin') return true; 
 
     const { data, error } = await supabase.from('role_management').select('permissions').eq('role_name', userRole).single();
 
     if (error || !data) {
-        document.body.innerHTML = ''; // SECURITY NUKE: സ്ക്രീനിലുള്ളതെല്ലാം മായ്ച്ചു കളയുന്നു!
+        document.body.innerHTML = ''; 
         showCustomAlert("⛔ Security Error: Could not verify your permissions.", 'dashboard.html');
         return false;
     }
@@ -131,9 +144,8 @@ window.checkDynamicAccess = async function(moduleName) {
     const perms = data.permissions || {};
     const modulePerms = perms[moduleName] || { view: false };
 
-    // അവർക്ക് ഈ പേജ് കാണാനുള്ള (View) ടിക്ക് നൽകിയിട്ടില്ലെങ്കിൽ പുറത്താക്കും
     if (modulePerms.view !== true) {
-        document.body.innerHTML = ''; // SECURITY NUKE: സ്ക്രീനിലുള്ളതെല്ലാം മായ്ച്ചു കളയുന്നു!
+        document.body.innerHTML = ''; 
         showCustomAlert(`ACCESS DENIED:\nYou do not have permission to view this page.`, 'dashboard.html');
         return false;
     }
