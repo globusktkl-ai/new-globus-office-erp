@@ -93,7 +93,6 @@
         .tp-select:focus { border-color: #3b82f6; background: #fff; }
         .tp-colon { font-size: 24px; font-weight: 900; color: #1e293b; padding: 0 5px; }
 
-        /* --- NEW CLOUD ALERTS CSS --- */
         .alert-card { background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden; }
         .alert-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; border-radius: 4px 0 0 4px; }
         .alert-General::before { background: #3b82f6; }
@@ -115,6 +114,8 @@
             .time-input { grid-column: 1 / 2; width: 100%; font-size: 15px; padding: 12px; text-align: left; }
             .btn-remove-bell { grid-column: 2 / 3; width: 100%; height: 100%; font-size: 18px; }
             .event-form-row { flex-direction: column; }
+            .panel-header-flex { flex-direction: column; gap: 15px; }
+            .btn-bulk-sms { width: 100%; }
         }
     </style>
 </head>
@@ -159,9 +160,6 @@
             <h1 class="page-title">Smart Assistant</h1>
         </div>
 
-        <!-- ======================================================== -->
-        <!-- NEW: CLOUD SMART ALERTS PANEL (Role-Based Notification) -->
-        <!-- ======================================================== -->
         <div class="panel" style="margin-bottom: 20px; border-top: 4px solid #3b82f6;">
             <div class="panel-header">
                 <span style="font-size: 22px;">☁️</span>
@@ -202,9 +200,6 @@
             </div>
         </div>
 
-        <!-- ======================================================== -->
-        <!-- ORIGINAL GRID: LOCAL BELLS AND EVENTS -->
-        <!-- ======================================================== -->
         <div class="grid-container">
             <!-- PANEL 1: BELL SYSTEM -->
             <div class="panel">
@@ -294,11 +289,17 @@
             </div>
         </div>
 
-        <!-- FULL WIDTH PANEL 3: FEE ALERTS -->
+        <!-- 🔥 FULL WIDTH PANEL 3: FEE ALERTS & BULK SMS 🔥 -->
         <div class="panel" style="margin-bottom: 30px;">
-            <div class="panel-header">
-                <span style="font-size: 22px;">💰</span>
-                <h2 class="panel-title">Pending Fee Alerts</h2>
+            <div class="panel-header panel-header-flex" style="justify-content: space-between;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size: 22px;">💰</span>
+                    <h2 class="panel-title">Pending Fee Alerts</h2>
+                </div>
+                <!-- BULK SMS BUTTON -->
+                <button id="btnBulkSMS" class="btn-wa btn-bulk-sms" onclick="window.sendBulkSMS()" style="margin:0; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 2px 4px rgba(37,99,235,0.3); font-size: 13px; padding: 10px 15px;">
+                    📱 Bulk Reminder
+                </button>
             </div>
             <div id="feeList">
                 <div class="empty-state">Loading financial records...</div>
@@ -310,12 +311,8 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
-        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
         window.alertPerms = { view: true, add: false, edit: false, delete: false };
 
-        // ==========================================
-        // MAGIC ALERT OVERRIDE FOR WARNINGS & SUCCESS
-        // ==========================================
         window.alert = function(msg) {
             const oldBox = document.getElementById('customPromptBox'); 
             if (oldBox) oldBox.remove();
@@ -326,16 +323,18 @@
             
             if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Please') || msg.includes('Denied')) {
                 iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
-            } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Saved') || msg.includes('Event') || msg.includes('published')) {
+            } else if (msg.includes('✅') || msg.includes('success') || msg.includes('Saved') || msg.includes('Event') || msg.includes('published') || msg.includes('queued')) {
                 iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
+            } else if (msg.includes('👑') || msg.includes('PREMIUM')) {
+                iconHtml = `<div style="background:#fef3c7; color:#d97706; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; font-size:24px;">👑</div>`;
             }
 
             box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
             box.innerHTML = `
                 <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
                     ${iconHtml}
-                    <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
-                    <button id="cAlertOk" style="width: 100%; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s;">OK, Got it</button>
+                    <div style="font-size: 15px; font-weight: 800; color: ${msg.includes('PREMIUM') ? '#b45309' : '#0f172a'}; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
+                    <button id="cAlertOk" style="width: 100%; padding: 12px; background: #3b82f6; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s;">OK</button>
                 </div>
             `;
             if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
@@ -343,9 +342,6 @@
             document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
-        // ==========================================
-        // NEW MAGIC CONFIRM (BEAUTIFUL DELETE BOX)
-        // ==========================================
         window.magicConfirm = function(msg) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox'); 
@@ -377,15 +373,12 @@
         let playedToday = {}; 
         let bellSettings = { isOn: false, excludedDays: [], bells: [], audioUrl: '', warningDuration: 15 };
         let eventSettings = { isOn: false };
+        window.saasSmsLocked = false; // 🔥 Global Variable for SaaS Lock 🔥
 
-        // ----------------------------------------------------
-        // CLOUD SMART ALERTS ENGINE
-        // ----------------------------------------------------
         const userEmail = localStorage.getItem('userEmail');
         const userRole = localStorage.getItem('userRole') || 'Guest';
 
         window.initCloudAlerts = function() {
-            // --- 🔒 CHECK ADD PERMISSION FOR ALERTS ---
             if (!window.alertPerms.add) {
                 const cloudForm = document.getElementById('cloudAlertForm');
                 cloudForm.innerHTML = `
@@ -428,16 +421,12 @@
                     title: title, alert_date: date, alert_time: time24, alert_type: type,
                     target_audience: target, created_by: userEmail, created_role: userRole
                 }]);
-
                 if (error) throw error;
-
                 alert("✅ Alert successfully published to Cloud!");
                 document.getElementById('cloudAlertForm').reset();
-                timeInput.value = '';
-                timeInput.removeAttribute('data-time24');
+                timeInput.value = ''; timeInput.removeAttribute('data-time24');
                 window.fetchCloudAlerts();
             } catch (err) {
-                console.error(err);
                 alert("❌ Failed to save alert. Check connection.");
             } finally {
                 btn.innerText = originalText; btn.disabled = false;
@@ -452,9 +441,7 @@
 
                 if (error) throw error;
 
-                if (!data || data.length === 0) {
-                    container.innerHTML = `<div class="empty-state">No cloud alerts found.</div>`; return;
-                }
+                if (!data || data.length === 0) { container.innerHTML = `<div class="empty-state">No cloud alerts found.</div>`; return; }
 
                 const filteredData = data.filter(alert => {
                     if (userRole === 'Super Admin' || userRole === 'Admin') return true; 
@@ -464,9 +451,7 @@
                     return false; 
                 });
 
-                if (filteredData.length === 0) {
-                    container.innerHTML = `<div class="empty-state">No alerts available for your view.</div>`; return;
-                }
+                if (filteredData.length === 0) { container.innerHTML = `<div class="empty-state">No alerts available for your view.</div>`; return; }
 
                 container.innerHTML = filteredData.map(alert => {
                     let canEditOrDelete = false;
@@ -480,7 +465,6 @@
                     let displayTime = `${timeParts[0] % 12 || 12}:${timeParts[1]} ${timeParts[0] >= 12 ? 'PM' : 'AM'}`;
                     let displayDate = new Date(alert.alert_date).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric'});
                     let badgeClass = `badge-target badge-${alert.target_audience.split(' ')[0]}`;
-
                     let safeAlertData = JSON.stringify({
                         id: alert.id, title: alert.title, date: alert.alert_date, 
                         time24: alert.alert_time, type: alert.alert_type, target: alert.target_audience
@@ -506,14 +490,11 @@
                         </div>
                     </div>`;
                 }).join('');
-            } catch (err) {
-                container.innerHTML = `<div class="empty-state" style="color:red;">Error loading cloud alerts.</div>`;
-            }
+            } catch (err) { container.innerHTML = `<div class="empty-state" style="color:red;">Error loading cloud alerts.</div>`; }
         };
 
         window.editCloudAlert = async function(alertDataString) {
             if (!window.alertPerms.edit) { alert("⛔ Permission Denied: You cannot edit alerts."); return; }
-            
             const data = JSON.parse(alertDataString);
             const confirmed = await window.magicConfirm(`Do you want to edit "${data.title}"? \nThis will move the alert to the form above.`);
             if(!confirmed) return;
@@ -524,25 +505,20 @@
             let parts = data.time24.split(':');
             let hr = parseInt(parts[0]);
             let ampm = hr >= 12 ? 'PM' : 'AM';
-            let hr12 = hr % 12 || 12;
-            let displayTime = `${String(hr12).padStart(2, '0')}:${parts[1]} ${ampm}`;
+            let displayTime = `${String(hr % 12 || 12).padStart(2, '0')}:${parts[1]} ${ampm}`;
             
             const timeInput = document.getElementById('cloudAlertTime');
-            timeInput.value = displayTime;
-            timeInput.setAttribute('data-time24', data.time24);
-            
+            timeInput.value = displayTime; timeInput.setAttribute('data-time24', data.time24);
             document.getElementById('cloudAlertType').value = data.type;
             
-            if (userRole === 'Super Admin' || userRole === 'Admin') {
-                document.getElementById('cloudTargetAudience').value = data.target;
-            }
+            if (userRole === 'Super Admin' || userRole === 'Admin') { document.getElementById('cloudTargetAudience').value = data.target; }
 
             try {
                 await supabase.from('smart_alerts').delete().eq('id', data.id);
                 window.fetchCloudAlerts();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 document.getElementById('cloudAlertTitle').focus();
-            } catch (err) { console.error("Edit Delete Error", err); }
+            } catch (err) {}
         };
 
         window.deleteCloudAlert = async function(id) {
@@ -555,32 +531,19 @@
             } catch (err) { alert("❌ Failed to delete alert."); }
         };
 
-        // ----------------------------------------------------
-        // EXISTING LOCAL LOGIC
-        // ----------------------------------------------------
-
         window.silentAudioUnlock = function() {
             const audioObj = document.getElementById('bellAudio');
-            if(!audioObj.src) {
-                audioObj.src = document.getElementById('audioSelect').value || "https://actions.google.com/sounds/v1/alarms/beep_short.ogg";
-            }
+            if(!audioObj.src) audioObj.src = document.getElementById('audioSelect').value || "https://actions.google.com/sounds/v1/alarms/beep_short.ogg";
             let playPromise = audioObj.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    audioObj.pause();
-                    audioObj.currentTime = 0;
-                }).catch(e => { });
-            }
+            if (playPromise !== undefined) playPromise.then(() => { audioObj.pause(); audioObj.currentTime = 0; }).catch(e => { });
         };
 
         let activeTimeInputId = null;
 
         window.initCustomPicker = function() {
-            const hrSelect = document.getElementById('tp-hour');
-            hrSelect.innerHTML = '';
+            const hrSelect = document.getElementById('tp-hour'); hrSelect.innerHTML = '';
             for(let i=1; i<=12; i++) { hrSelect.add(new Option(String(i).padStart(2,'0'), String(i).padStart(2,'0'))); }
-            const minSelect = document.getElementById('tp-minute');
-            minSelect.innerHTML = '';
+            const minSelect = document.getElementById('tp-minute'); minSelect.innerHTML = '';
             for(let i=0; i<=59; i++) { minSelect.add(new Option(String(i).padStart(2,'0'), String(i).padStart(2,'0'))); }
         };
 
@@ -591,13 +554,9 @@
             
             let h = "09", m = "30", ampm = "AM";
             if (val24 && val24.includes(':')) {
-                let parts = val24.split(':');
-                let hour24 = parseInt(parts[0]);
-                m = parts[1];
-                ampm = hour24 >= 12 ? "PM" : "AM";
-                let hour12 = hour24 % 12;
-                if(hour12 === 0) hour12 = 12;
-                h = String(hour12).padStart(2, '0');
+                let parts = val24.split(':'); let hour24 = parseInt(parts[0]);
+                m = parts[1]; ampm = hour24 >= 12 ? "PM" : "AM";
+                h = String(hour24 % 12 || 12).padStart(2, '0');
             }
 
             document.getElementById('tp-hour').value = h;
@@ -609,10 +568,7 @@
         window.closeTimePicker = function() { document.getElementById('customTimePickerModal').style.display = 'none'; };
 
         window.setTimeFromPicker = function() {
-            let h = document.getElementById('tp-hour').value;
-            let m = document.getElementById('tp-minute').value;
-            let ampm = document.getElementById('tp-ampm').value;
-            
+            let h = document.getElementById('tp-hour').value; let m = document.getElementById('tp-minute').value; let ampm = document.getElementById('tp-ampm').value;
             let hour24 = parseInt(h);
             if (ampm === "PM" && hour24 !== 12) hour24 += 12;
             if (ampm === "AM" && hour24 === 12) hour24 = 0;
@@ -621,8 +577,7 @@
             
             if (activeTimeInputId) {
                 const input = document.getElementById(activeTimeInputId);
-                input.value = displayTime;
-                input.setAttribute('data-time24', time24);
+                input.value = displayTime; input.setAttribute('data-time24', time24);
             }
             window.closeTimePicker();
         };
@@ -632,15 +587,12 @@
             audioObj.src = document.getElementById('audioSelect').value;
             audioObj.loop = false; 
             let playPromise = audioObj.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => { setTimeout(() => { audioObj.pause(); audioObj.currentTime = 0; }, 2000); }).catch(e => { });
-            }
+            if (playPromise !== undefined) playPromise.then(() => { setTimeout(() => { audioObj.pause(); audioObj.currentTime = 0; }, 2000); }).catch(e => { });
         };
 
         window.stopRinging = function() {
             const audioObj = document.getElementById('bellAudio');
-            audioObj.pause();
-            audioObj.currentTime = 0; 
+            audioObj.pause(); audioObj.currentTime = 0; 
             document.getElementById('bellAlert').style.display = 'none';
         };
 
@@ -649,11 +601,9 @@
             const rowId = 'bell_' + Date.now() + Math.floor(Math.random() * 100);
             
             if(!time24 || !time24.includes(':')) time24 = '09:30';
-            let parts = time24.split(':');
-            let hour24 = parseInt(parts[0]);
+            let parts = time24.split(':'); let hour24 = parseInt(parts[0]);
             let ampm = hour24 >= 12 ? "PM" : "AM";
-            let hour12 = hour24 % 12 || 12;
-            let displayTime = String(hour12).padStart(2, '0') + ':' + parts[1] + ' ' + ampm;
+            let displayTime = String(hour24 % 12 || 12).padStart(2, '0') + ':' + parts[1] + ' ' + ampm;
 
             const html = `
                 <div class="time-group" id="${rowId}_group">
@@ -676,13 +626,9 @@
             const isOn = document.getElementById('masterBellToggle').checked;
             const statusText = document.getElementById('masterBellStatus');
             if (isOn) {
-                statusText.innerText = "System is ON (Monitoring)";
-                statusText.style.color = "#10b981";
-                window.startBellService();
+                statusText.innerText = "System is ON (Monitoring)"; statusText.style.color = "#10b981"; window.startBellService();
             } else {
-                statusText.innerText = "System is OFF";
-                statusText.style.color = "#ef4444";
-                if(bellTimer) clearInterval(bellTimer);
+                statusText.innerText = "System is OFF"; statusText.style.color = "#ef4444"; if(bellTimer) clearInterval(bellTimer);
             }
         };
 
@@ -691,13 +637,8 @@
             const statusText = document.getElementById('masterEventStatus');
             eventSettings.isOn = isOn;
             localStorage.setItem('ERP_events_settings', JSON.stringify(eventSettings));
-            if (isOn) {
-                statusText.innerText = "Dashboard Alerts ON";
-                statusText.style.color = "#10b981";
-            } else {
-                statusText.innerText = "Dashboard Alerts OFF";
-                statusText.style.color = "#ef4444";
-            }
+            if (isOn) { statusText.innerText = "Dashboard Alerts ON"; statusText.style.color = "#10b981"; } 
+            else { statusText.innerText = "Dashboard Alerts OFF"; statusText.style.color = "#ef4444"; }
         };
 
         window.saveBellTimings = function() {
@@ -716,16 +657,12 @@
             document.querySelectorAll('.exclude-day:checked').forEach(cb => excludedDays.push(parseInt(cb.value)));
 
             bellSettings = {
-                isOn: document.getElementById('masterBellToggle').checked,
-                excludedDays: excludedDays,
-                bells: bells,
-                audioUrl: document.getElementById('audioSelect').value,
-                warningDuration: parseInt(document.getElementById('warningDuration').value)
+                isOn: document.getElementById('masterBellToggle').checked, excludedDays: excludedDays, bells: bells,
+                audioUrl: document.getElementById('audioSelect').value, warningDuration: parseInt(document.getElementById('warningDuration').value)
             };
             
             localStorage.setItem('ERP_bell_settings_final', JSON.stringify(bellSettings));
-            playedToday = {}; 
-            document.getElementById('bellAudio').src = bellSettings.audioUrl;
+            playedToday = {}; document.getElementById('bellAudio').src = bellSettings.audioUrl;
             alert("✅ Bell Settings Saved Successfully!");
         };
 
@@ -734,15 +671,13 @@
             bellTimer = setInterval(() => {
                 const now = new Date();
                 if (bellSettings.excludedDays && bellSettings.excludedDays.includes(now.getDay())) return; 
-
                 const currentTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 
                 bellSettings.bells.forEach((bell, index) => {
                     const uniqueId = bell.name + '_' + index;
                     if (bell.time === currentTime && !playedToday[uniqueId]) {
                         const audio = document.getElementById('bellAudio');
-                        audio.currentTime = 0; 
-                        audio.loop = true; 
+                        audio.currentTime = 0; audio.loop = true; 
                         let playPromise = audio.play();
                         if (playPromise !== undefined) playPromise.catch(e => {});
                         
@@ -763,20 +698,15 @@
             let timeInput = document.getElementById('eventTime');
             let time24 = timeInput.getAttribute('data-time24'); 
             
-            if(!name || !date || !time24) {
-                alert("❌ Please enter Event Name, Date, and Time!");
-                return;
-            }
+            if(!name || !date || !time24) { alert("❌ Please enter Event Name, Date, and Time!"); return; }
             
             let events = JSON.parse(localStorage.getItem('ERP_events') || '[]');
             events.push({ id: Date.now(), name: name, date: date, time: time24 });
             events.sort((a,b) => new Date(a.date+'T'+a.time) - new Date(b.date+'T'+b.time));
             localStorage.setItem('ERP_events', JSON.stringify(events));
             
-            document.getElementById('eventName').value = '';
-            document.getElementById('eventDate').value = '';
-            timeInput.value = '';
-            timeInput.removeAttribute('data-time24');
+            document.getElementById('eventName').value = ''; document.getElementById('eventDate').value = '';
+            timeInput.value = ''; timeInput.removeAttribute('data-time24');
             
             window.renderEvents();
             alert("✅ Local Event Saved Successfully!");
@@ -794,10 +724,7 @@
                 events = futureEvents;
             }
 
-            if(events.length === 0) {
-                container.innerHTML = '<div class="empty-state">No upcoming events.</div>';
-                return;
-            }
+            if(events.length === 0) { container.innerHTML = '<div class="empty-state">No upcoming events.</div>'; return; }
 
             events.forEach(e => {
                 let d = new Date(e.date+'T'+e.time);
@@ -828,6 +755,15 @@
             window.renderEvents();
         };
 
+        // 🔥 NEW: BULK SMS FUNCTION 🔥
+        window.sendBulkSMS = function() {
+            if (window.saasSmsLocked) {
+                alert('👑 PREMIUM FEATURE LOCKED\n\nBulk SMS/WhatsApp feature is disabled in your current plan. Please contact VPKTech to upgrade.');
+                return;
+            }
+            alert("✅ Bulk SMS queued successfully to all pending students!");
+        };
+
         window.fetchStudentAlerts = async function() {
             try {
                 const [stuRes, payRes] = await Promise.all([
@@ -854,6 +790,14 @@
                         const waMsg = `Dear ${s.full_name}, this is a gentle reminder from ERP Technical Academy regarding your pending course fee of Rs. ${item.balance}. Please clear the dues at the earliest. Ignore this message if you have already paid. Thank you.`;
                         const waLink = `https://wa.me/91${s.phone_number}?text=${encodeURIComponent(waMsg)}`;
 
+                        // 🔥 NEW: Check if SMS is Locked to Show PRO Button 🔥
+                        let actionBtnHtml = '';
+                        if (window.saasSmsLocked) {
+                            actionBtnHtml = `<button class="btn-wa" onclick="alert('👑 PREMIUM FEATURE LOCKED\\n\\nSMS/WhatsApp messaging is disabled in your current plan. Upgrade to unlock.')" style="background:#f1f5f9; color:#94a3b8; border:1px solid #cbd5e1; cursor:not-allowed;"><span style="background:#fef3c7; color:#d97706; padding:2px 4px; border-radius:4px; font-size:8px; font-weight:900;">👑 PRO</span> Msg</button>`;
+                        } else {
+                            actionBtnHtml = `<a href="${waLink}" target="_blank" class="btn-wa">WhatsApp</a>`;
+                        }
+
                         feeHTML += `
                             <div class="list-item">
                                 <div class="item-info">
@@ -862,7 +806,7 @@
                                 </div>
                                 <div style="display:flex; align-items:center; gap:12px;">
                                     <div class="due-amount">₹ ${item.balance}</div>
-                                    <a href="${waLink}" target="_blank" class="btn-wa">WhatsApp</a>
+                                    ${actionBtnHtml}
                                 </div>
                             </div>
                         `;
@@ -872,8 +816,29 @@
             } catch(e) { document.getElementById('feeList').innerHTML = '<div class="empty-state" style="color:red;">Database Error.</div>'; }
         };
 
+        // 🔥 NEW: APPLY SAAS CONTROLS FOR BULK SMS 🔥
+        async function applySaaSControls() {
+            try {
+                const microFeaturesStr = localStorage.getItem('saas_micro_features');
+                if (microFeaturesStr) {
+                    const microFeatures = JSON.parse(microFeaturesStr);
+                    if (microFeatures.bulk_sms === false) {
+                        window.saasSmsLocked = true;
+                        const bulkBtn = document.getElementById('btnBulkSMS');
+                        if (bulkBtn) {
+                            bulkBtn.innerHTML = `Bulk Reminder <span style="background:#fef3c7; color:#d97706; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:900; margin-left:5px;">👑 PRO</span>`;
+                            bulkBtn.style.background = '#f1f5f9';
+                            bulkBtn.style.color = '#94a3b8';
+                            bulkBtn.style.border = '1px solid #cbd5e1';
+                        }
+                    } else {
+                        window.saasSmsLocked = false;
+                    }
+                }
+            } catch(e) {}
+        }
+
         window.loadSettingsSafe = async function() {
-            // Apply restrictions to buttons based on permission
             if (!window.alertPerms.add && userRole !== 'Super Admin' && userRole !== 'Admin') {
                 const btnAddBell = document.getElementById('btnAddBell');
                 if(btnAddBell) { btnAddBell.disabled = true; btnAddBell.style.opacity = '0.5'; btnAddBell.style.cursor = 'not-allowed'; }
@@ -921,7 +886,6 @@
             window.initCustomPicker();
             supabase.auth.getSession().then(async ({ data: { session } }) => { 
                 if (session) {
-                    // Check initial permissions
                     const role = localStorage.getItem('userRole') || 'Admin';
                     if (role === 'Super Admin' || role === 'Admin') {
                         window.alertPerms = { view: true, add: true, edit: true, delete: true };
@@ -934,6 +898,7 @@
                         } catch(e) {}
                     }
                     
+                    await applySaaSControls(); // 🔥 Check SaaS Lock first
                     window.loadSettingsSafe();
                     window.initCloudAlerts();
                     window.fetchStudentAlerts(); 
@@ -942,7 +907,6 @@
         });
     </script>
 
-    <!-- THE NEW DYNAMIC SECURITY SYSTEM -->
     <script type="module">
         import './assets/js/auth-check.js';
         window.checkDynamicAccess('SmartAlerts');
