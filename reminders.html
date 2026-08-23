@@ -107,6 +107,17 @@
         .badge-Office { background: #ede9fe; color: #7c3aed; }
         .btn-delete-alert { background: #fee2e2; color: #ef4444; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 900; cursor: pointer; transition: 0.2s; }
 
+        /* 🔥 NEW: CUSTOM MESSAGE STUDIO CSS 🔥 */
+        #messageStudioModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.9); z-index: 100000; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(5px); }
+        .msg-studio-card { background: #ffffff; padding: 25px; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); animation: slideDown 0.3s ease; position: relative;}
+        .msg-studio-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; }
+        .msg-studio-title { font-size: 18px; font-weight: 900; color: #1e293b; margin: 0; }
+        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1; }
+        .tag-btn { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 900; cursor: pointer; transition: 0.2s; }
+        .tag-btn:hover { background: #bae6fd; }
+        .msg-textarea { width: 100%; height: 120px; padding: 15px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 14px; font-weight: 600; color: #334155; outline: none; resize: vertical; line-height: 1.5; font-family: inherit;}
+        .msg-textarea:focus { border-color: #3b82f6; }
+
         @media(max-width: 600px) {
             .panel { padding: 15px; }
             .time-group { display: grid; grid-template-columns: 1fr 50px; grid-template-rows: auto auto; gap: 10px; padding: 12px;}
@@ -115,11 +126,39 @@
             .btn-remove-bell { grid-column: 2 / 3; width: 100%; height: 100%; font-size: 18px; }
             .event-form-row { flex-direction: column; }
             .panel-header-flex { flex-direction: column; gap: 15px; }
-            .btn-bulk-sms { width: 100%; }
+            .btn-bulk-sms { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
+
+    <!-- 🔥 NEW: DYNAMIC MESSAGE STUDIO MODAL 🔥 -->
+    <div id="messageStudioModal">
+        <div class="msg-studio-card">
+            <div class="msg-studio-header">
+                <span style="font-size: 24px;">💬</span>
+                <div>
+                    <h2 class="msg-studio-title">Dynamic Message Studio</h2>
+                    <p style="margin: 0; font-size: 11px; color: #64748b; font-weight: 700;">Design your custom reminder template</p>
+                </div>
+            </div>
+            
+            <p style="font-size: 12px; font-weight: 800; color: #475569; margin-bottom: 8px;">Click tags to insert into message:</p>
+            <div class="tag-container">
+                <button type="button" class="tag-btn" onclick="insertSmartTag('[Name]')">[Name]</button>
+                <button type="button" class="tag-btn" onclick="insertSmartTag('[DueAmount]')">[DueAmount]</button>
+                <button type="button" class="tag-btn" onclick="insertSmartTag('[RegNo]')">[RegNo]</button>
+                <button type="button" class="tag-btn" onclick="insertSmartTag('[Phone]')">[Phone]</button>
+            </div>
+
+            <textarea id="customMsgText" class="msg-textarea"></textarea>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="closeMessageStudio()" style="flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #e2e8f0; background: white; font-weight: 800; color: #64748b; cursor: pointer;">Cancel</button>
+                <button onclick="confirmSendMessage()" style="flex: 1; padding: 12px; border-radius: 8px; border: none; background: #10b981; color: white; font-weight: 900; cursor: pointer; box-shadow: 0 4px 6px rgba(16,185,129,0.3);">🚀 Send Message</button>
+            </div>
+        </div>
+    </div>
 
     <!-- CUSTOM TIME PICKER MODAL -->
     <div id="customTimePickerModal">
@@ -289,15 +328,15 @@
             </div>
         </div>
 
-        <!-- 🔥 FULL WIDTH PANEL 3: FEE ALERTS & BULK SMS 🔥 -->
+        <!-- FULL WIDTH PANEL 3: FEE ALERTS -->
         <div class="panel" style="margin-bottom: 30px;">
             <div class="panel-header panel-header-flex" style="justify-content: space-between;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span style="font-size: 22px;">💰</span>
                     <h2 class="panel-title">Pending Fee Alerts</h2>
                 </div>
-                <!-- BULK SMS BUTTON -->
-                <button id="btnBulkSMS" class="btn-wa btn-bulk-sms" onclick="window.sendBulkSMS()" style="margin:0; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 2px 4px rgba(37,99,235,0.3); font-size: 13px; padding: 10px 15px;">
+                <!-- 🔥 MODIFIED: BULK SMS BUTTON 🔥 -->
+                <button id="btnBulkSMS" class="btn-wa btn-bulk-sms" onclick="window.openMessageStudio('bulk', null)" style="margin:0; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 2px 4px rgba(37,99,235,0.3); font-size: 13px; padding: 10px 15px;">
                     📱 Bulk Reminder
                 </button>
             </div>
@@ -373,10 +412,78 @@
         let playedToday = {}; 
         let bellSettings = { isOn: false, excludedDays: [], bells: [], audioUrl: '', warningDuration: 15 };
         let eventSettings = { isOn: false };
-        window.saasSmsLocked = false; // 🔥 Global Variable for SaaS Lock 🔥
+        
+        window.saasSmsLocked = false; 
+        window.pendingDuesList = []; // 🔥 Store fetched students data for messaging 🔥
+        window.currentMsgMode = 'bulk'; // 'bulk' or 'single'
+        window.currentMsgIndex = null;
 
         const userEmail = localStorage.getItem('userEmail');
         const userRole = localStorage.getItem('userRole') || 'Guest';
+
+        // ==========================================
+        // 🔥 NEW: DYNAMIC MESSAGE STUDIO LOGIC 🔥
+        // ==========================================
+        window.openMessageStudio = function(mode, index) {
+            if (window.saasSmsLocked) {
+                alert('👑 PREMIUM FEATURE LOCKED\n\nSMS/WhatsApp messaging is disabled in your current plan. Upgrade to unlock.');
+                return;
+            }
+
+            window.currentMsgMode = mode;
+            window.currentMsgIndex = index;
+            
+            const defaultMsg = "Dear [Name],\n\nThis is a gentle reminder from VPKTech Academy regarding your pending fee of Rs. [DueAmount]. Please clear the dues at the earliest.\n\nIgnore this message if you have already paid. Thank you.";
+            document.getElementById('customMsgText').value = defaultMsg;
+            document.getElementById('messageStudioModal').style.display = 'flex';
+        };
+
+        window.closeMessageStudio = function() {
+            document.getElementById('messageStudioModal').style.display = 'none';
+        };
+
+        window.insertSmartTag = function(tag) {
+            const textarea = document.getElementById('customMsgText');
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            const text = textarea.value;
+            
+            // Insert tag at cursor position
+            textarea.value = text.substring(0, startPos) + tag + text.substring(endPos, text.length);
+            
+            // Move cursor right after the inserted tag
+            textarea.selectionStart = startPos + tag.length;
+            textarea.selectionEnd = startPos + tag.length;
+            textarea.focus();
+        };
+
+        window.confirmSendMessage = function() {
+            const template = document.getElementById('customMsgText').value;
+            if (!template.trim()) {
+                alert("❌ Please enter a message to send.");
+                return;
+            }
+
+            if (window.currentMsgMode === 'bulk') {
+                // Bulk Simulation
+                alert("✅ Bulk SMS/WhatsApp queued successfully to all pending students using your Custom Message!");
+            } else {
+                // Single WhatsApp Redirection
+                const item = window.pendingDuesList[window.currentMsgIndex];
+                if(item && item.student) {
+                    const s = item.student;
+                    let finalMsg = template
+                        .replace(/\[Name\]/g, s.full_name || '')
+                        .replace(/\[DueAmount\]/g, item.balance || '0')
+                        .replace(/\[RegNo\]/g, s.register_number || '')
+                        .replace(/\[Phone\]/g, s.phone_number || '');
+
+                    const waLink = `https://wa.me/91${s.phone_number}?text=${encodeURIComponent(finalMsg)}`;
+                    window.open(waLink, '_blank');
+                }
+            }
+            closeMessageStudio();
+        };
 
         window.initCloudAlerts = function() {
             if (!window.alertPerms.add) {
@@ -755,15 +862,7 @@
             window.renderEvents();
         };
 
-        // 🔥 NEW: BULK SMS FUNCTION 🔥
-        window.sendBulkSMS = function() {
-            if (window.saasSmsLocked) {
-                alert('👑 PREMIUM FEATURE LOCKED\n\nBulk SMS/WhatsApp feature is disabled in your current plan. Please contact VPKTech to upgrade.');
-                return;
-            }
-            alert("✅ Bulk SMS queued successfully to all pending students!");
-        };
-
+        // 🔥 MODIFIED: INTEGRATED MESSAGE STUDIO WITH STUDENT ALERTS 🔥
         window.fetchStudentAlerts = async function() {
             try {
                 const [stuRes, payRes] = await Promise.all([
@@ -783,19 +882,21 @@
                 });
 
                 feeDuesData.sort((a, b) => b.balance - a.balance);
+                
+                // Store fetched data globally for the Message Studio
+                window.pendingDuesList = feeDuesData;
+
                 let feeHTML = '';
                 if (feeDuesData.length > 0) {
-                    feeDuesData.forEach(item => {
+                    feeDuesData.forEach((item, index) => {
                         const s = item.student;
-                        const waMsg = `Dear ${s.full_name}, this is a gentle reminder from ERP Technical Academy regarding your pending course fee of Rs. ${item.balance}. Please clear the dues at the earliest. Ignore this message if you have already paid. Thank you.`;
-                        const waLink = `https://wa.me/91${s.phone_number}?text=${encodeURIComponent(waMsg)}`;
-
-                        // 🔥 NEW: Check if SMS is Locked to Show PRO Button 🔥
+                        
                         let actionBtnHtml = '';
                         if (window.saasSmsLocked) {
                             actionBtnHtml = `<button class="btn-wa" onclick="alert('👑 PREMIUM FEATURE LOCKED\\n\\nSMS/WhatsApp messaging is disabled in your current plan. Upgrade to unlock.')" style="background:#f1f5f9; color:#94a3b8; border:1px solid #cbd5e1; cursor:not-allowed;"><span style="background:#fef3c7; color:#d97706; padding:2px 4px; border-radius:4px; font-size:8px; font-weight:900;">👑 PRO</span> Msg</button>`;
                         } else {
-                            actionBtnHtml = `<a href="${waLink}" target="_blank" class="btn-wa">WhatsApp</a>`;
+                            // Opens Custom Message Studio for single student
+                            actionBtnHtml = `<button onclick="window.openMessageStudio('single', ${index})" class="btn-wa">WhatsApp</button>`;
                         }
 
                         feeHTML += `
@@ -816,7 +917,6 @@
             } catch(e) { document.getElementById('feeList').innerHTML = '<div class="empty-state" style="color:red;">Database Error.</div>'; }
         };
 
-        // 🔥 NEW: APPLY SAAS CONTROLS FOR BULK SMS 🔥
         async function applySaaSControls() {
             try {
                 const microFeaturesStr = localStorage.getItem('saas_micro_features');
@@ -898,7 +998,7 @@
                         } catch(e) {}
                     }
                     
-                    await applySaaSControls(); // 🔥 Check SaaS Lock first
+                    await applySaaSControls();
                     window.loadSettingsSafe();
                     window.initCloudAlerts();
                     window.fetchStudentAlerts(); 
