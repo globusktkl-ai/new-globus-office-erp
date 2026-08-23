@@ -817,46 +817,98 @@ body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: 
     }
 
     // ================= CANVAS PANNING =================
+   // ================= CANVAS PANNING & PINCH ZOOM =================
     function initCanvasPan() {
         const workspace = document.querySelector('.workspace');
         let isDown = false, startX, startY;
+        let initialPinchDist = null;
 
+        // 1. Mouse Events (For Computer Panning)
         workspace.addEventListener('mousedown', (e) => {
-            if(!window.appState.isFrozen) return; // Only pan if locked
-            if(e.target.closest('.zoom-panel') || e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
+            if(!window.appState.isFrozen) return; // Only pan if Locked (🔒)
+            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
             isDown = true;
-            startX = e.pageX - window.appState.panX; startY = e.pageY - window.appState.panY;
+            startX = e.pageX - window.appState.panX; 
+            startY = e.pageY - window.appState.panY;
         });
         workspace.addEventListener('mouseleave', () => { isDown = false; });
         workspace.addEventListener('mouseup', () => { isDown = false; });
         workspace.addEventListener('mousemove', (e) => {
             if(!isDown || !window.appState.isFrozen) return;
             e.preventDefault();
-            window.appState.panX = e.pageX - startX; window.appState.panY = e.pageY - startY;
+            window.appState.panX = e.pageX - startX; 
+            window.appState.panY = e.pageY - startY;
             applyCanvasTransform();
         });
 
-        // Touch Pan
+        // 2. Touch Events (For Mobile Pan & Pinch-to-Zoom)
         workspace.addEventListener('touchstart', (e) => {
-            if(!window.appState.isFrozen || e.touches.length !== 1) return;
-            if(e.target.closest('.zoom-panel') || e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
-            isDown = true;
-            startX = e.touches[0].pageX - window.appState.panX; startY = e.touches[0].pageY - window.appState.panY;
+            if(!window.appState.isFrozen) return; // Only work if Locked (🔒)
+            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket')) return;
+
+            if (e.touches.length === 1) {
+                // One finger: Panning
+                isDown = true;
+                initialPinchDist = null;
+                startX = e.touches[0].pageX - window.appState.panX; 
+                startY = e.touches[0].pageY - window.appState.panY;
+            } else if (e.touches.length === 2) {
+                // Two fingers: Pinch to Zoom
+                isDown = false;
+                initialPinchDist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+            }
         }, {passive: false});
-        workspace.addEventListener('touchend', () => { isDown = false; });
+
+        workspace.addEventListener('touchend', (e) => { 
+            isDown = false; 
+            if (e.touches.length < 2) initialPinchDist = null;
+        });
+
         workspace.addEventListener('touchmove', (e) => {
-            if(!isDown || !window.appState.isFrozen || e.touches.length !== 1) return;
-            e.preventDefault();
-            window.appState.panX = e.touches[0].pageX - startX; window.appState.panY = e.touches[0].pageY - startY;
-            applyCanvasTransform();
+            if(!window.appState.isFrozen) return;
+            e.preventDefault(); // Prevent screen scrolling
+
+            if (e.touches.length === 1 && isDown) {
+                // Handle Panning
+                window.appState.panX = e.touches[0].pageX - startX; 
+                window.appState.panY = e.touches[0].pageY - startY;
+                applyCanvasTransform();
+            } 
+            else if (e.touches.length === 2 && initialPinchDist) {
+                // Handle Pinch-to-Zoom
+                const currentDist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+
+                const scaleDelta = currentDist / initialPinchDist;
+                let newZoom = window.appState.zoom * scaleDelta;
+
+                // Zoom Limits (Min 0.4x, Max 3x)
+                if (newZoom < 0.4) newZoom = 0.4;
+                if (newZoom > 3) newZoom = 3;
+
+                window.appState.zoom = newZoom;
+                initialPinchDist = currentDist; // Reset for continuous zoom
+                
+                applyCanvasTransform();
+
+                // Update text if zoom text element still exists
+                const zoomTxt = document.getElementById('zoomTxt');
+                if (zoomTxt) zoomTxt.innerText = Math.round(newZoom * 100) + '%';
+            }
         }, {passive: false});
     }
 
     function applyCanvasTransform() {
         const wrapper = document.getElementById('canvasWrapper');
-        wrapper.style.transform = `translate(${window.appState.panX}px, ${window.appState.panY}px) scale(${window.appState.zoom})`;
+        if (wrapper) {
+            wrapper.style.transform = `translate(${window.appState.panX}px, ${window.appState.panY}px) scale(${window.appState.zoom})`;
+        }
     }
-
     // ================= DRAG & DROP ELEMENTS (FLYING FIX & SELECTION) =================
     function initDragAndDrop() {
         const draggables = document.querySelectorAll('.drag-el');
