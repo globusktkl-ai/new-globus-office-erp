@@ -428,7 +428,7 @@
             Defaulters
         </button>
         <button class="btab" onclick="switchTab('admin')">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.32 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.32 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             Admin
         </button>
     </nav>
@@ -437,6 +437,9 @@
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
+
+        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
+        window.attPerms = { view: true, add: false, edit: false, delete: false };
 
         // ==========================================
         // NEW MAGIC ALERT OVERRIDE FOR ALL WARNINGS AND ERRORS
@@ -449,7 +452,7 @@
             
             let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
             
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Warning')) {
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('failed') || msg.includes('Warning') || msg.includes('Denied')) {
                 iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`;
             } else if (msg.includes('✅') || msg.includes('success') || msg.includes('successfully') || msg.includes('Complete')) {
                 iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`;
@@ -519,6 +522,23 @@
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session) { window.location.href = 'login.html'; return; }
                 
+                // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
+                if (userRole === 'Super Admin' || userRole === 'Admin') {
+                    window.attPerms = { view: true, add: true, edit: true, delete: true };
+                } else if (userRole !== 'Guest') {
+                    const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', userRole).single();
+                    if (data && data.permissions && data.permissions['Attendance']) {
+                        window.attPerms = data.permissions['Attendance'];
+                    }
+                }
+
+                // Hide Admin Tab for non-admins
+                if (userRole !== 'Super Admin' && userRole !== 'Admin') {
+                    const adminTabBtn = document.querySelector('.btab[onclick="switchTab(\\\'admin\\\')"]');
+                    if (adminTabBtn) adminTabBtn.style.display = 'none';
+                }
+                // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
+
                 document.getElementById('attDate').value = new Date().toISOString().split('T')[0];
                 await fetchAllData();
             } catch(e) { console.error("Init error:", e); }
@@ -706,6 +726,25 @@
             document.getElementById('attDateChip').textContent = '📅 ' + formatDateDisplay(dateVal);
             document.getElementById('attCount').textContent = students.length + ' Students';
 
+            // --- 🔒 UI LOCK FOR NEW ATTENDANCE ---
+            if (!isAlreadySaved && !window.attPerms.add) {
+                document.getElementById('attStudentsList').style.display = 'block';
+                document.getElementById('teacherAuthBox').style.display = 'none';
+                document.getElementById('attListContainer').innerHTML = `
+                    <div style="text-align:center; padding: 40px 20px; background:#f8fafc; border:2px dashed #cbd5e1; border-radius:12px; margin-bottom:20px;">
+                        <svg viewBox="0 0 24 24" width="40" height="40" stroke="#64748b" stroke-width="2.5" fill="none" style="margin-bottom:10px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <h3 style="color:#475569; font-size:16px; font-weight:900; margin:0 0 5px 0;">ACCESS RESTRICTED</h3>
+                        <p style="color:#64748b; font-size:12px; font-weight:700; margin:0;">You don't have permission to mark new attendance.</p>
+                    </div>`;
+                document.getElementById('saveActionArea').style.display = 'none';
+                document.getElementById('lockedActionArea').style.display = 'none';
+                document.getElementById('bulkBar').style.display = 'none';
+                let msgArea = document.getElementById('readonlySavedMsg');
+                if(msgArea) msgArea.style.display = 'none';
+                return;
+            }
+            // ------------------------------------
+
             document.getElementById('teacherAuthBox').style.display = 'block';
             document.getElementById('verifyPhone').value = '';
             document.getElementById('attStudentsList').style.display = 'none';
@@ -771,17 +810,50 @@
         function toggleActionAreas() {
             if (isAlreadySaved && !isEditMode) {
                 document.getElementById('saveActionArea').style.display = 'none';
-                document.getElementById('lockedActionArea').style.display = 'block';
+                
+                // --- 🔒 HIDE EDIT BUTTON IF NO EDIT PERMISSION ---
+                if (window.attPerms.edit) {
+                    document.getElementById('lockedActionArea').style.display = 'block';
+                    let msgArea = document.getElementById('readonlySavedMsg');
+                    if(msgArea) msgArea.style.display = 'none';
+                } else {
+                    document.getElementById('lockedActionArea').style.display = 'none';
+                    let msgArea = document.getElementById('readonlySavedMsg');
+                    if (!msgArea) {
+                        msgArea = document.createElement('div');
+                        msgArea.id = 'readonlySavedMsg';
+                        msgArea.style.cssText = "margin-top:14px;background:#f8fafc;border:1px solid #e2e8f0;padding:12px;border-radius:12px;text-align:center;font-size:14px;font-weight:900;color:#64748b;";
+                        msgArea.innerText = "🔒 Attendance Saved (Read Only)";
+                        document.getElementById('attStudentsList').appendChild(msgArea);
+                    }
+                    msgArea.style.display = 'block';
+                }
+                // -----------------------------------------------
             } else {
-                document.getElementById('saveActionArea').style.display = 'block';
                 document.getElementById('lockedActionArea').style.display = 'none';
-                if(isEditMode) document.getElementById('attSubmitBtn').textContent = "💾 Update Edited Attendance";
+                let msgArea = document.getElementById('readonlySavedMsg');
+                if(msgArea) msgArea.style.display = 'none';
+
+                if (isEditMode && window.attPerms.edit) {
+                    document.getElementById('saveActionArea').style.display = 'block';
+                    document.getElementById('attSubmitBtn').textContent = "💾 Update Edited Attendance";
+                } else if (!isAlreadySaved && window.attPerms.add) {
+                    document.getElementById('saveActionArea').style.display = 'block';
+                    document.getElementById('attSubmitBtn').textContent = "✅ Save Attendance";
+                } else {
+                    document.getElementById('saveActionArea').style.display = 'none';
+                }
+            }
+
+            if (!isAlreadySaved && !window.attPerms.add) {
+                 document.getElementById('bulkBar').style.display = 'none';
             }
         }
 
         window.enableEditMode = function() {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
-            
+            if (!window.attPerms.edit) { alert("⛔ Permission Denied: You cannot edit attendance."); return; }
+
             document.getElementById('teacherAuthBox').style.display = 'block';
             document.getElementById('verifyPhone').value = '';
             document.getElementById('attStudentsList').style.display = 'none';
@@ -792,6 +864,11 @@
         window.toggleStatus = function(studentId, status) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
             if(isAlreadySaved && !isEditMode) return; 
+            
+            // --- 🔒 ACTION LOCKS ---
+            if (!isAlreadySaved && !window.attPerms.add) return;
+            if (isEditMode && !window.attPerms.edit) return;
+            // -----------------------
 
             currentAttendanceMarks[studentId] = status;
             const row = document.getElementById(`att-row-${studentId}`);
@@ -815,12 +892,20 @@
         window.bulkMark = function(status) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
             if(isAlreadySaved && !isEditMode) return;
+            if (!isAlreadySaved && !window.attPerms.add) return;
+            if (isEditMode && !window.attPerms.edit) return;
+
             Object.keys(currentAttendanceMarks).forEach(sid => window.toggleStatus(sid, status));
         };
 
         window.submitAttendance = async function() {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode. You cannot mark attendance."); return; }
             
+            // --- 🔒 SUBMIT LOCKS ---
+            if (isEditMode && !window.attPerms.edit) { alert("⛔ Permission Denied: You cannot edit attendance."); return; }
+            if (!isEditMode && !window.attPerms.add) { alert("⛔ Permission Denied: You cannot add new attendance."); return; }
+            // -----------------------
+
             const moduleId = document.getElementById('attModule').value;
             const dateVal = document.getElementById('attDate').value;
             
@@ -1023,6 +1108,7 @@
 
         window.assignTeacher = async function() {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (localStorage.getItem('userRole') !== 'Super Admin' && localStorage.getItem('userRole') !== 'Admin') { alert("⛔ Permission Denied: Only Admins can assign teachers."); return; }
             
             const moduleId = document.getElementById('mapModule').value;
             const teacherId = document.getElementById('mapTeacher').value;
@@ -1080,6 +1166,7 @@
 
         window.removeAssignment = async function(assignId) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (localStorage.getItem('userRole') !== 'Super Admin' && localStorage.getItem('userRole') !== 'Admin') { alert("⛔ Permission Denied: Only Admins can remove assignments."); return; }
             
             let num1 = Math.floor(Math.random() * 10) + 1;
             let num2 = Math.floor(Math.random() * 10) + 1;
