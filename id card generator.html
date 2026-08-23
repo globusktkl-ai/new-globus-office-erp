@@ -288,11 +288,29 @@
             const [showResetModal, setShowResetModal] = useState(false);
             const [loadedSlotId, setLoadedSlotId] = useState(null);
             const [cardY, setCardY] = useState(-50);
+            
+            // 🔥 SaaS Watermark State 🔥
+            const [showWatermark, setShowWatermark] = useState(false);
 
             const cardRef = useRef(null);
             const dragStartY = useRef(null);
             const dragStartCardY = useRef(0);
             const snapshot = useRef(null);
+
+            // 🔥 Check SaaS controls on mount 🔥
+            useEffect(() => {
+                try {
+                    const microFeaturesStr = localStorage.getItem('saas_micro_features');
+                    if (microFeaturesStr) {
+                        const microFeatures = JSON.parse(microFeaturesStr);
+                        if (microFeatures.remove_watermark === false) {
+                            setShowWatermark(true);
+                        } else {
+                            setShowWatermark(false);
+                        }
+                    }
+                } catch(e) { console.log("SaaS Control Error:", e); }
+            }, []);
 
             useEffect(() => { localStorage.setItem('savedThemes', JSON.stringify(savedThemes)); }, [savedThemes]);
 
@@ -716,6 +734,14 @@
                                     </div>
                                 </div>
                                 <div className="footer-text">{data.returnPhone ? `Return to: ${data.returnPhone}` : ''}</div>
+                                
+                                {/* 🔥 SAAS WATERMARK 🔥 */}
+                                {showWatermark && (
+                                    <div style={{ position: 'absolute', bottom: '2px', right: '5px', fontSize: '7px', color: '#64748b', fontWeight: '800', fontFamily: "'Segoe UI', Tahoma, sans-serif", opacity: 0.6 }}>
+                                        ⚡ Powered by VPKTech Solutions
+                                    </div>
+                                )}
+
                             </div>
                         </div>
                     </div>
@@ -730,8 +756,8 @@
                     {showResetModal && (
                         <div style={{ position:'fixed', top:0,left:0,right:0,bottom:0, background:'rgba(0,0,0,0.5)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000 }}>
                             <div style={{ background:'white', borderRadius:12, padding:20, width:'90%', maxWidth:400 }}>
-                                <h3 style={{fontSize:18, fontWeight:'bold', marginBottom:8}}>⚠️ Reset Saved Themes</h3>
-                                <p style={{fontSize:14, color:'#4b5563', marginBottom:16}}>ഇത് സേവ് ചെയ്ത എല്ലാ തീമുകളും ഇല്ലാതാക്കും. ഉറപ്പാണോ?</p>
+                                <h3 style={{fontSize:18, fontWeight:'bold', margin:0, marginBottom:8}}>⚠️ Reset Saved Themes</h3>
+                                <p style={{fontSize:14, color:'#4b5563', margin:0, marginBottom:16}}>ഇത് സേവ് ചെയ്ത എല്ലാ തീമുകളും ഇല്ലാതാക്കും. ഉറപ്പാണോ?</p>
                                 <div style={{display:'flex', gap:10}}>
                                     <button style={{flex:1, padding:10, background:'#dc2626', color:'white', border:'none', borderRadius:8, fontWeight:'bold', cursor:'pointer'}} onClick={confirmReset}>Confirm Reset</button>
                                     <button style={{flex:1, padding:10, background:'#e5e7eb', color:'#374151', border:'none', borderRadius:8, fontWeight:'bold', cursor:'pointer'}} onClick={()=>setShowResetModal(false)}>Cancel</button>
