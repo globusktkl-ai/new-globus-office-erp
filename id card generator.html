@@ -1049,6 +1049,15 @@ body.unlocked .el:active {
 .tpl-10 .cardFooter { clip-path: polygon(0 100%, 100% 100%, 100% 40%, 62% 6%, 30% 44%, 0 10%); }
 
 /* ==========================================================
+   8b. TEXT AUTO POP-UP ALIGNMENT TOOLBAR (NEW)
+   ========================================================== */
+#textToolbar { position: fixed; display: none; background: rgba(255,255,255,0.98); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 20px rgba(20,45,80,0.18); padding: 5px; z-index: 3000; gap: 4px; align-items: center; }
+#textToolbar.show { display: flex; }
+.tt-btn { width: 32px; height: 32px; border: 1px solid var(--line); background: #f4f7fb; border-radius: 6px; cursor: pointer; font-weight: 900; color: #1d4ed8; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
+.tt-btn:active { background: #d7e0ea; transform: scale(0.92); }
+.tt-sep { width: 1px; height: 20px; background: var(--line); margin: 0 4px; }
+
+/* ==========================================================
    9. FLOATING CONTROLS
    ========================================================== */
 #lockBtn {
@@ -1512,6 +1521,16 @@ body.exporting .el.selected {
 <div id="stage">
   <div class="grid-bg"></div>
   <div id="world" class="portrait"></div>
+</div>
+
+<!-- NEW: TEXT AUTO POP-UP ALIGNMENT TOOLBAR -->
+<div id="textToolbar" class="no-print">
+  <button class="tt-btn" onclick="alignText('left')" title="Align Left">◧</button>
+  <button class="tt-btn" onclick="alignText('center')" title="Align Center">◫</button>
+  <button class="tt-btn" onclick="alignText('right')" title="Align Right">◨</button>
+  <div class="tt-sep"></div>
+  <button class="tt-btn" onclick="resizeText(-1)" title="Decrease Size">A-</button>
+  <button class="tt-btn" onclick="resizeText(1)" title="Increase Size">A+</button>
 </div>
 
 <!-- ====================== FLOATING CONTROLS ====================== -->
@@ -3064,7 +3083,7 @@ async function tryAutoLoad() {
 }
 
 /* ==================================================================
-   15. THE FIX: EXPORT — HD PNG / HD PDF (Zero-Offset rendering)
+   15. THE FIX: EXPORT — HD PNG / HD PDF (Zero-Offset & Auto-Fix)
    ================================================================== */
 function visibleCards() {
   const list = [];
@@ -3075,12 +3094,11 @@ function visibleCards() {
   return list;
 }
 
-/* THE FIX: Use BoundingRect to avoid any sub-pixel offset/shift bugs in html2canvas */
 async function snap(node) {
   const rect = node.getBoundingClientRect();
   return await html2canvas(node, {
-    scale: 4,                       /* Super HD output for print */
-    backgroundColor: '#ffffff',
+    scale: 4,                       
+    backgroundColor: null,
     useCORS: true,
     allowTaint: false,
     logging: false,
@@ -3097,40 +3115,22 @@ async function snap(node) {
 }
 
 const TPL_SVG = {
-  1:  { h: { t: 'poly', d: '0,0 100,0 100,100 0,100' },
-        f: { t: 'poly', d: '0,100 100,100 100,0 0,0' } },
-  2:  { h: { t: 'poly', d: '0,0 100,0 100,62 0,100' },
-        f: { t: 'poly', d: '0,100 100,100 100,0 0,42' } },
-  3:  { h: { t: 'poly', d: '0,0 100,0 100,100 78,74 50,92 24,70 0,88' },
-        f: { t: 'poly', d: '0,100 100,100 100,16 74,38 48,12 22,36 0,14' } },
-  4:  { h: { t: 'path', d: 'M0,0 H100 V58 Q50,108 0,58 Z' },
-        f: { t: 'path', d: 'M0,100 H100 V44 Q50,-8 0,44 Z' } },
-  5:  { h: { t: 'poly', d: '0,0 100,0 100,74 50,100 0,74' },
-        f: { t: 'poly', d: '0,100 100,100 100,28 50,0 0,28' } },
-  6:  { h: { t: 'poly', d: '0,0 100,0 100,70 87,96 75,70 62,96 50,70 37,96 25,70 12,96 0,70' },
-        f: { t: 'poly', d: '0,100 100,100 100,28 87,4 75,28 62,4 50,28 37,4 25,28 12,4 0,28' } },
-  7:  { h: { t: 'path', d: 'M0,0 H100 V66 Q50,112 0,66 Z' },
-        f: { t: 'path', d: 'M0,100 H100 V34 Q50,-12 0,34 Z' } },
-  8:  { h: { t: 'poly', d: '0,0 100,0 100,100 0,58' },
-        f: { t: 'poly', d: '0,100 100,100 100,34 0,100' } },
-  9:  { h: { t: 'poly', d: '0,0 100,0 100,100 66,100 58,66 42,66 34,100 0,100' },
-        f: { t: 'poly', d: '0,100 100,100 100,0 66,0 58,40 42,40 34,0 0,0' } },
-  10: { h: { t: 'poly', d: '0,0 100,0 100,56 62,96 30,62 0,92' },
-        f: { t: 'poly', d: '0,100 100,100 100,40 62,6 30,44 0,10' } }
+  1:  { h: { t: 'poly', d: '0,0 100,0 100,100 0,100' }, f: { t: 'poly', d: '0,100 100,100 100,0 0,0' } },
+  2:  { h: { t: 'poly', d: '0,0 100,0 100,62 0,100' }, f: { t: 'poly', d: '0,100 100,100 100,0 0,42' } },
+  3:  { h: { t: 'poly', d: '0,0 100,0 100,100 78,74 50,92 24,70 0,88' }, f: { t: 'poly', d: '0,100 100,100 100,16 74,38 48,12 22,36 0,14' } },
+  4:  { h: { t: 'path', d: 'M0,0 H100 V58 Q50,108 0,58 Z' }, f: { t: 'path', d: 'M0,100 H100 V44 Q50,-8 0,44 Z' } },
+  5:  { h: { t: 'poly', d: '0,0 100,0 100,74 50,100 0,74' }, f: { t: 'poly', d: '0,100 100,100 100,28 50,0 0,28' } },
+  6:  { h: { t: 'poly', d: '0,0 100,0 100,70 87,96 75,70 62,96 50,70 37,96 25,70 12,96 0,70' }, f: { t: 'poly', d: '0,100 100,100 100,28 87,4 75,28 62,4 50,28 37,4 25,28 12,4 0,28' } },
+  7:  { h: { t: 'path', d: 'M0,0 H100 V66 Q50,112 0,66 Z' }, f: { t: 'path', d: 'M0,100 H100 V34 Q50,-12 0,34 Z' } },
+  8:  { h: { t: 'poly', d: '0,0 100,0 100,100 0,58' }, f: { t: 'poly', d: '0,100 100,100 100,34 0,100' } },
+  9:  { h: { t: 'poly', d: '0,0 100,0 100,100 66,100 58,66 42,66 34,100 0,100' }, f: { t: 'poly', d: '0,100 100,100 100,0 66,0 58,40 42,40 34,0 0,0' } },
+  10: { h: { t: 'poly', d: '0,0 100,0 100,56 62,96 30,62 0,92' }, f: { t: 'poly', d: '0,100 100,100 100,40 62,6 30,44 0,10' } }
 };
 
 function shapeDataURI(shape, colorA, colorB) {
   const gid = 'g' + Math.random().toString(36).slice(2, 7);
-  const body = shape.t === 'poly'
-    ? '<polygon points="' + shape.d + '" fill="url(#' + gid + ')"/>'
-    : '<path d="' + shape.d + '" fill="url(#' + gid + ')"/>';
-  const svg =
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">' +
-      '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1">' +
-        '<stop offset="0%" stop-color="' + colorA + '"/>' +
-        '<stop offset="100%" stop-color="' + colorB + '"/>' +
-      '</linearGradient></defs>' + body +
-    '</svg>';
+  const body = shape.t === 'poly' ? '<polygon points="' + shape.d + '" fill="url(#' + gid + ')"/>' : '<path d="' + shape.d + '" fill="url(#' + gid + ')"/>';
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + colorA + '"/><stop offset="100%" stop-color="' + colorB + '"/></linearGradient></defs>' + body + '</svg>';
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
@@ -3145,10 +3145,7 @@ function swapShapesForExport() {
     node.style.webkitClipPath = 'none';
     node.style.borderRadius = '0';
     node.style.background = 'transparent';
-    node.style.backgroundImage = 'url("' +
-      shapeDataURI(isHeader ? tpl.h : tpl.f,
-        isHeader ? c.hdA : c.ftA,
-        isHeader ? c.hdB : c.ftB) + '")';
+    node.style.backgroundImage = 'url("' + shapeDataURI(isHeader ? tpl.h : tpl.f, isHeader ? c.hdA : c.ftA, isHeader ? c.hdB : c.ftB) + '")';
     node.style.backgroundSize = '100% 100%';
     node.style.backgroundRepeat = 'no-repeat';
   });
@@ -3157,10 +3154,24 @@ function swapShapesForExport() {
   };
 }
 
-/* THE FIX: Force zero scroll before capture to eliminate shift bugs */
 async function withCleanRender(fn) {
   const wasSelected = SELECTED;
   deselect();
+  
+  /* CSS ഇൻസെർട്ട് ചെയ്യാനുള്ള എളുപ്പവഴി */
+  let fixStyle = document.getElementById('export-fix-style');
+  if(!fixStyle) {
+      fixStyle = document.createElement('style');
+      fixStyle.id = 'export-fix-style';
+      fixStyle.innerHTML = `
+        body.exporting #stage { top: 0 !important; bottom: 0 !important; left: 0 !important; position: absolute !important; overflow: visible !important; }
+        body.exporting #world { transform: none !important; padding: 0 !important; margin: 0 !important; gap: 20px !important; }
+        body.exporting .card { box-shadow: none !important; border: none !important; border-radius: 14px !important; margin: 0 !important; transform: none !important; }
+        body.exporting .el.selected { outline: none !important; }
+      `;
+      document.head.appendChild(fixStyle);
+  }
+
   document.body.classList.add('exporting');
   const undoShapes = swapShapesForExport();
 
@@ -3168,7 +3179,6 @@ async function withCleanRender(fn) {
   const oldScrollY = window.scrollY;
   window.scrollTo(0, 0);
 
-  /* let the browser repaint before capture */
   await new Promise(function (r) { setTimeout(r, 160); });
   try {
     await fn();
@@ -3213,7 +3223,7 @@ $('#btnPdf').addEventListener('click', function () {
     const jsPDFCtor = window.jspdf.jsPDF;
     const portrait = STATE.orientation === 'portrait';
     
-    /* THE FIX: Exact CR80 standard ID Card dimensions in mm */
+    /* ഇന്റർനാഷണൽ ഐഡി കാർഡ് സൈസ് (54mm x 86mm) */
     const wmm = portrait ? 54 : 86;
     const hmm = portrait ? 86 : 54;
     
@@ -3299,6 +3309,98 @@ function boot() {
 }
 
 boot();
+     /* ================= NEW TOOLBAR LOGIC (AUTO-OVERRIDE) ================= */
+function updateToolbarPos() {
+    const tb = document.getElementById('textToolbar');
+    const ignoreIds = ['logo', 'photo', 'seal', 'bSeal', 'bCode']; 
+    if(!SELECTED || ignoreIds.indexOf(SELECTED) > -1 || LOCKED) {
+        if(tb) tb.classList.remove('show');
+        return;
+    }
+    const el = document.querySelector('.el[data-el="' + SELECTED + '"]');
+    if(el && tb) {
+        tb.classList.add('show');
+        const rect = el.getBoundingClientRect();
+        tb.style.left = rect.left + 'px';
+        tb.style.top = (rect.top - 45) + 'px'; 
+    }
+}
+
+window.alignText = function(align) {
+    if(!SELECTED) return;
+    const p = posOf(SELECTED);
+    p.align = align;
+    applyPositions();
+    autoSave();
+};
+
+window.resizeText = function(dir) {
+    if(!SELECTED) return;
+    const p = posOf(SELECTED);
+    if(!p.fs) {
+        const el = document.querySelector('.el[data-el="' + SELECTED + '"]');
+        p.fs = parseInt(window.getComputedStyle(el).fontSize) || 14;
+    }
+    p.fs += (dir * 1.5);
+    applyPositions();
+    updateToolbarPos();
+    autoSave();
+};
+
+/* Overriding existing functions safely */
+function applyPositions() {
+  $$('.el').forEach(function (el) {
+    const p = posOf(el.dataset.el);
+    el.style.left = p.x + 'px';
+    el.style.top = p.y + 'px';
+    el.style.transform = 'scale(' + p.s + ')';
+    
+    if(p.align) {
+        el.style.textAlign = p.align;
+        if(p.align === 'center') el.style.alignItems = 'center';
+        else if(p.align === 'left') el.style.alignItems = 'flex-start';
+        else if(p.align === 'right') el.style.alignItems = 'flex-end';
+    }
+    if(p.fs) {
+        el.style.fontSize = p.fs + 'px';
+        const innerTxt = el.querySelector('span, div[data-bind], .info-table, .t-org, .t-name');
+        if(innerTxt) innerTxt.style.fontSize = p.fs + 'px';
+    }
+  });
+}
+
+function selectElement(id) {
+  SELECTED = id;
+  $$('.el').forEach(function (n) { n.classList.toggle('selected', n.dataset.el === id); });
+  const isImage = (id === 'photo' || id === 'logo');
+  $('#dpad').classList.toggle('show', isImage && !LOCKED);
+  if (isImage) {
+    $('#dpadTitle').textContent = (id === 'photo' ? 'Photo' : 'Logo') + ' adjust';
+    setImgTarget(id);
+  }
+  if(typeof updateImgToolLabels === 'function') updateImgToolLabels();
+  if(typeof updateZoomLabel === 'function') updateZoomLabel();
+  updateToolbarPos();
+}
+
+function deselect() {
+  SELECTED = null;
+  $$('.el').forEach(function (n) { n.classList.remove('selected'); });
+  $('#dpad').classList.remove('show');
+  const tb = document.getElementById('textToolbar');
+  if(tb) tb.classList.remove('show');
+  if(typeof updateZoomLabel === 'function') updateZoomLabel();
+}
+
+function applyView() {
+  $('#world').style.transform = 'translate(' + VIEW.panX + 'px,' + VIEW.panY + 'px) scale(' + VIEW.zoom + ')';
+  if(typeof updateZoomLabel === 'function') updateZoomLabel();
+  updateToolbarPos();
+}
+
+document.addEventListener('pointermove', function() {
+    if(drag) updateToolbarPos();
+});
 </script>
 </body>
 </html>
