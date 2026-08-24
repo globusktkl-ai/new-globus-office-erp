@@ -3098,7 +3098,7 @@ function visibleCards() {
 async function snap(node) {
   const rect = node.getBoundingClientRect();
   const safeZone = 6; 
-  const bottomExtra = 10; /* താഴ്ഭാഗത്തേക്ക് മാത്രം ഒരു 10 പിക്സൽ (2mm) കൂടുതൽ എടുക്കുന്നു */
+  const bottomExtra = 5; /* താഴ്ഭാഗത്തേക്ക് മാത്രം ഒരു 10 പിക്സൽ (2mm) കൂടുതൽ എടുക്കുന്നു */
   
   return await html2canvas(node, {
     scale: 4,                       
