@@ -3094,26 +3094,16 @@ function visibleCards() {
   return list;
 }
 
-/* THE FINAL FIX: താഴ്ഭാഗത്തെ ആ 2mm (10 pixels) കൂടി ഉൾക്കൊള്ളാൻ */
+/* കൃത്യമായി കാർഡ് മാത്രം ഓട്ടോമാറ്റിക് ആയി മുറിച്ചെടുക്കാൻ (Auto-Crop Fix) */
 async function snap(node) {
-  const rect = node.getBoundingClientRect();
-  const safeZone = 6; 
-  const bottomExtra = 5; /* താഴ്ഭാഗത്തേക്ക് മാത്രം ഒരു 10 പിക്സൽ (2mm) കൂടുതൽ എടുക്കുന്നു */
-  
   return await html2canvas(node, {
     scale: 4,                       
     backgroundColor: null, 
     useCORS: true,
     allowTaint: false,
     logging: false,
-    x: rect.left - safeZone,
-    y: rect.top - safeZone,
-    width: rect.width + (safeZone * 2),
-    height: rect.height + (safeZone * 2) + bottomExtra, /* ഇവിടെ bottomExtra ചേർത്തിട്ടുണ്ട് */
     scrollX: 0,
-    scrollY: 0,
-    windowWidth: document.documentElement.clientWidth,
-    windowHeight: document.documentElement.clientHeight
+    scrollY: 0
   });
 }
 
