@@ -1,1085 +1,3299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Official ID Card Studio - Pro</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>ID Card Studio — VPKTech Solutions</title>
 
-<!-- Export Libraries -->
+<!-- ==========================================================
+     EXTERNAL LIBRARIES (only html2canvas + jsPDF are allowed)
+     ========================================================== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-/* ================= GLOBAL STYLES ================= */
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #e2e8f0; color: #334155; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+/* ==========================================================
+   1. GLOBAL RESET / BASE
+   ========================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
-/* ================= 3D BACK BUTTON & HEADER ================= */
-.top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; padding: 10px 15px; background: #ffffff; border-bottom: 1px solid #cbd5e1; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; height: 50px; }
-.btn-back-3d { position: absolute; left: 15px; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 36px; background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%); border: 1px solid #cbd5e1; border-bottom: 3px solid #94a3b8; border-radius: 10px; transition: all 0.1s; z-index: 2001; cursor: pointer; text-decoration: none; }
-.btn-back-3d:active { transform: translateY(2px); border-bottom: 1px solid #94a3b8; }
-.btn-back-3d svg { width: 20px; height: 20px; stroke: #4c1d95; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-.page-title { font-size: 16px; font-weight: 900; color: #1e3a8a; text-transform: uppercase; letter-spacing: 0.5px; margin: 0; }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #eef2f7;
+  color: #22303f;
+  overscroll-behavior: none;
+}
 
-.btn-toggle-settings { position: absolute; right: 15px; background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
-.btn-toggle-settings.active { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+:root {
+  --nav-h: 50px;
+  --ribbon-h: 130px;      /* strict maximum ~3cm */
+  --export-h: 52px;
+  --accent: #2563eb;
+  --accent-2: #0ea5e9;
+  --line: #d7e0ea;
+  --panel: #ffffff;
+  --soft: #f4f7fb;
+}
 
-/* ================= HORIZONTAL SLIDING SETTINGS (Right to Left) ================= */
-.settings-slider { position: fixed; top: 50px; left: 0; right: 0; height: 110px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-bottom: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 1500; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 10px 15px; gap: 15px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); align-items: stretch; }
-.settings-slider::-webkit-scrollbar { display: none; }
-.settings-slider.hidden { transform: translateY(-130%); }
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 12px;
+  color: #22303f;
+}
 
-.tool-group { flex-shrink: 0; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; gap: 5px; min-width: 240px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
-.tool-group-title { font-size: 10px; text-transform: uppercase; color: #1e3a8a; font-weight: 900; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; margin-bottom: 2px; }
+/* ==========================================================
+   2. TOP NAVIGATION BAR (fixed, 50px)
+   ========================================================== */
+#topNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  background: linear-gradient(100deg, #ffffff 0%, #f2f7ff 60%, #eaf3ff 100%);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  z-index: 2000;
+  box-shadow: 0 2px 10px rgba(20, 45, 80, 0.08);
+}
 
-.frm-row { display: flex; gap: 6px; align-items: center; width: 100%; }
-.frm-input, .frm-select { width: 100%; padding: 6px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; color: #0f172a; font-size: 11px; font-weight: 700; outline: none; }
-.frm-input:focus, .frm-select:focus { border-color: #3b82f6; }
-.frm-label { font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; text-align: center; }
-.color-picker { width: 40px; height: 26px; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; padding: 0; background: transparent; margin: 0 auto; display: block; }
-.upload-btn { background: #e0f2fe; color: #0284c7; border: 1px dashed #7dd3fc; padding: 6px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; width: 100%; text-align: center; display: block; margin: 0; transition: 0.2s; }
+.nav-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  background: linear-gradient(90deg, #1d4ed8, #0ea5e9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-/* Photo D-Pad Controls */
-.media-ctrl-panel { display: flex; align-items: center; justify-content: space-between; background: #e2e8f0; padding: 6px; border-radius: 8px; gap: 10px; }
-.mini-dpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; width: 70px; margin: 0 auto; }
-.mini-btn { background: #ffffff; border: 1px solid #cbd5e1; padding: 4px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: bold; color: #1e3a8a; display: flex; align-items: center; justify-content: center; transition: 0.1s;}
-.mini-btn:active { background: #cbd5e1; transform: scale(0.9); }
-.mini-btn.up { grid-column: 2; } .mini-btn.left { grid-column: 1; } .mini-btn.right { grid-column: 3; } .mini-btn.down { grid-column: 2; }
+.nav-title small {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  color: #7b8ca0;
+  -webkit-text-fill-color: #7b8ca0;
+}
 
-/* ================= WORKSPACE (FREE PANNING CANVAS) ================= */
-.workspace { position: fixed; top: 160px; bottom: 60px; left: 0; right: 0; overflow: hidden; background: #e2e8f0; touch-action: none; transition: top 0.3s; }
-.workspace.expanded { top: 50px; }
-.workspace.locked { cursor: grab; }
-.workspace.locked:active { cursor: grabbing; }
+/* ---- 3D U-Turn Back Button ---- */
+.uturn-wrap {
+  perspective: 420px;
+  width: 44px;
+  height: 38px;
+  flex: 0 0 auto;
+}
 
-.canvas-wrapper { position: absolute; transform-origin: 0 0; transition: transform 0.1s; }
+.uturn-btn {
+  width: 44px;
+  height: 38px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #ffffff, #dfe9f7);
+  box-shadow: 0 3px 0 #b9c9de, 0 6px 12px rgba(30, 60, 110, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  color: #1d4ed8;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.45, 1.5, 0.5, 1), box-shadow 0.3s;
+}
 
-/* ================= LEFT SIDE POCKET (OVERLAPS SETTINGS) ================= */
-/* FIXED: Z-index to 2500 and Top to 50% so it perfectly centers and overlaps */
-.left-pocket { position: fixed; left: 0; top: 50%; transform: translateY(-50%) translateX(-100%); z-index: 2500; display: flex; align-items: center; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-.left-pocket.open { transform: translateY(-50%) translateX(0); }
-.pocket-handle { position: absolute; right: -30px; top: 50%; transform: translateY(-50%); background: #1e3a8a; color: white; width: 30px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 0 10px 10px 0; font-size: 14px; font-weight: 900; cursor: pointer; box-shadow: 3px 0 10px rgba(0,0,0,0.2); border: 1px solid #1e40af; border-left: none; }
-.pocket-menu { background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border: 1px solid #cbd5e1; border-left: none; border-radius: 0 12px 12px 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 5px 5px 20px rgba(0,0,0,0.15); max-height: 85vh; overflow-y: auto; }
-.pocket-btn { background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; color: #334155; cursor: pointer; transition: 0.2s; white-space: nowrap; }
-.pocket-btn.active { background: #3b82f6; color: white; border-color: #2563eb; }
+.uturn-btn:hover {
+  transform: rotateY(-32deg) rotateX(8deg) translateZ(6px);
+}
 
-/* ================= FLOATING CONTROLS (LOCK & ZOOM) ================= */
-.zoom-panel { position: fixed; bottom: 70px; left: 15px; background: white; border-radius: 8px; padding: 4px; display: flex; gap: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #cbd5e1; z-index: 1200; }
-.z-btn { background: #f8fafc; border: 1px solid #e2e8f0; width: 32px; height: 32px; border-radius: 6px; font-weight: bold; font-size: 18px; cursor: pointer; color: #1e3a8a; display: flex; align-items: center; justify-content: center;}
-.z-btn:active { background: #e2e8f0; }
+.uturn-btn:active,
+.uturn-btn.spin {
+  transform: rotateY(-180deg) scale(0.94);
+  box-shadow: 0 1px 0 #b9c9de, 0 2px 6px rgba(30, 60, 110, 0.2);
+}
 
-.float-lock { position: fixed; bottom: 70px; right: 15px; width: 42px; height: 42px; border-radius: 50%; background: #ffffff; border: 2px solid #10b981; color: #10b981; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(16,185,129,0.3); z-index: 1200; transition: 0.3s; }
-.float-lock.locked { background: #ef4444; color: white; border-color: #dc2626; box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
+.nav-btn {
+  height: 36px;
+  min-width: 40px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e3a5f;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(30, 60, 110, 0.08);
+}
 
-/* ================= ID CARD STYLES ================= */
-.id-card { position: relative; background: transparent; }
-.id-card.landscape { width: 336px; height: 212px; }
-.id-card.portrait { width: 212px; height: 336px; }
+.nav-btn.on {
+  background: linear-gradient(140deg, #2563eb, #0ea5e9);
+  color: #fff;
+  border-color: transparent;
+}
 
-/* Double sided setup */
-.id-card.show-both.landscape { height: 440px; }
-.id-card.show-both.portrait { width: 440px; height: 336px; }
+/* ==========================================================
+   3. HORIZONTAL SETTINGS RIBBON (slides down from top)
+   ========================================================== */
+#ribbon {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  right: 0;
+  height: var(--ribbon-h);
+  max-height: 130px;
+  background: linear-gradient(180deg, #ffffff, #f6f9ff);
+  border-bottom: 1px solid var(--line);
+  z-index: 1900;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  transform: translateY(-140%);
+  transition: transform 0.35s cubic-bezier(0.3, 1, 0.4, 1);
+  box-shadow: 0 6px 14px rgba(20, 45, 80, 0.1);
+  scrollbar-width: thin;
+}
 
-.card-face { position: absolute; width: 100%; height: 100%; background-color: #ffffff; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #cbd5e1; box-sizing: border-box; overflow: hidden; background-color: var(--c-bg, #ffffff); font-family: var(--c-font, 'Segoe UI'); }
+#ribbon.open {
+  transform: translateY(0);
+}
 
-.id-card.show-both.landscape .card-front { top: 0; height: 212px; }
-.id-card.show-both.landscape .card-back { top: 228px; height: 212px; display: block !important; }
-.id-card.show-both.portrait .card-front { top: 0; left: 0; width: 212px; height: 336px; }
-.id-card.show-both.portrait .card-back { top: 0; left: 228px; width: 212px; height: 336px; display: block !important; }
+#ribbon::-webkit-scrollbar {
+  height: 5px;
+}
 
-.card-back { display: none; }
+#ribbon::-webkit-scrollbar-thumb {
+  background: #c3d3e6;
+  border-radius: 4px;
+}
 
-/* Backgrounds Layer */
-.card-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; border-radius: 10px; overflow: hidden; }
-.bg-header, .bg-footer { position: absolute; left: 0; right: 0; }
+.rb-group {
+  flex: 0 0 auto;
+  padding: 6px 10px 8px;
+  border-right: 1px dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 110px;
+}
 
-/* 10 DYNAMIC TEMPLATES */
-.tpl-1 .bg-header { height: 60px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); }
-.tpl-1 .bg-footer { height: 25px; bottom: 0; background: linear-gradient(135deg, var(--f1), var(--f2)); }
-.tpl-2 .bg-header { height: 75px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); border-radius: 0 0 50% 50%; }
-.tpl-2 .bg-footer { height: 20px; bottom: 0; background: linear-gradient(135deg, var(--f1), var(--f2)); border-radius: 50% 50% 0 0; }
-.tpl-3 .bg-header { height: 100%; width: 30%; top: 0; left: 0; background: linear-gradient(180deg, var(--h1), var(--h2)); }
-.tpl-3 .bg-footer { display: none; }
-.tpl-4 .bg-header { height: 65px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); clip-path: polygon(0 0, 100% 0, 100% 60%, 0 100%); }
-.tpl-4 .bg-footer { height: 30px; bottom: 0; background: linear-gradient(135deg, var(--f1), var(--f2)); clip-path: polygon(0 40%, 100% 0, 100% 100%, 0 100%); }
-.tpl-5 .bg-header { height: 15px; top: 0; background: var(--h1); }
-.tpl-5 .bg-footer { height: 15px; bottom: 0; background: var(--f1); }
-.tpl-6 .bg-header { height: 100%; width: 100%; top: 0; left: 0; background: transparent; border: 6px solid var(--h1); border-radius: 10px; }
-.tpl-6 .bg-footer { display: none; }
-.tpl-7 .bg-header { height: 50px; top: 0; background: var(--h1); border-bottom: 4px solid var(--h2); }
-.tpl-7 .bg-footer { display: none; }
-.tpl-8 .bg-header { height: 60px; top: 0; background: linear-gradient(135deg, var(--h1), var(--h2)); clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%); }
-.tpl-8 .bg-footer { height: 25px; bottom: 0; background: var(--f1); }
-.tpl-9 .bg-header { height: 100%; width: 25px; top: 0; right: 0; left: auto; background: linear-gradient(180deg, var(--h1), var(--h2)); }
-.tpl-9 .bg-footer { display: none; }
-.tpl-10 .bg-header { height: 15px; top: 0; background: var(--h1); }
-.tpl-10 .bg-footer { height: 15px; bottom: 0; background: var(--f1); }
+.rb-title {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #8494a8;
+}
 
-/* Draggables Layer (Visible Overflow to prevent losing items) */
-.card-drag-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; }
-.drag-el { position: absolute; cursor: move; user-select: none; touch-action: none; padding: 2px; border: 2px dashed transparent; transition: border 0.2s; }
-.drag-el.selected { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); z-index: 20; }
-.drag-el:active { cursor: grabbing; }
+.rb-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
 
-/* Elements */
-.el-logo { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; }
-.el-logo img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; transform-origin: center; }
-.el-logo.empty { border: 2px dashed #94a3b8; color: #94a3b8; font-size: 10px; font-weight: bold; background-color: rgba(255,255,255,0.2); }
+.rb-in {
+  height: 26px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0 7px;
+  background: #fff;
+  outline: none;
+  min-width: 96px;
+  max-width: 150px;
+}
 
-.el-org { line-height: 1.2; color: var(--c-txt, #0f172a); }
-.el-org .name { font-size: 14px; font-weight: 900; text-transform: uppercase; }
-.el-org .sub { font-size: 8px; font-weight: 700; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
+.rb-in:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
 
-/* Proper Image Fix for html2canvas */
-.el-photo { width: 75px; height: 95px; background-color: #f1f5f9; border: 2px solid #cbd5e1; border-radius: 8px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; z-index: 10;}
-.el-photo img { position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; transform-origin: center; }
-.el-photo.empty { color: #94a3b8; font-size: 24px; }
+.rb-btn {
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
 
-.el-details { line-height: 1.3; color: var(--c-txt, #0f172a); }
-.el-details .s-name { font-size: 15px; font-weight: 900; text-transform: uppercase; }
-.el-details .s-course { font-size: 9px; font-weight: 800; color: #b91c1c; text-transform: uppercase; margin-bottom: 4px; }
-.el-details table { width: 100%; font-size: 9px; font-weight: 700; color: #334155; border-collapse: collapse; }
-.el-details td { padding: 1px 0; vertical-align: top; }
-.el-details .lbl { width: 55px; opacity: 0.8; }
+.rb-btn:active {
+  transform: translateY(1px);
+}
 
-/* THE BADGE BUG FIX: Inner styling avoids background conflict with .selected class */
-.badge-wrapper { display: inline-flex; }
-.inner-badge { padding: 4px 15px; border-radius: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; background: var(--h1, #1e3a8a); color: white; }
+.rb-btn.primary {
+  background: linear-gradient(140deg, #2563eb, #0ea5e9);
+  border-color: transparent;
+  color: #fff;
+}
 
-.el-seal { width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; }
-.el-seal svg { width: 100%; height: 100%; pointer-events: none; }
+.rb-btn.warn {
+  background: #fff3f3;
+  border-color: #f3c7c7;
+  color: #b03636;
+}
 
-.el-qr { width: 60px; height: 60px; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #94a3b8; }
-.el-terms { font-size: 8px; font-weight: 600; line-height: 1.4; text-align: center; color: var(--c-txt, #0f172a); }
-.el-return { font-size: 9px; font-weight: 800; color: #b91c1c; text-align: center; line-height: 1.3; border: 1px dashed #fca5a5; padding: 4px; border-radius: 4px; background: #fef2f2; }
+.color-in {
+  width: 30px;
+  height: 26px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 1px;
+  background: #fff;
+  cursor: pointer;
+}
 
-/* Watermark */
-.saas-watermark { position: absolute; bottom: 4px; right: 8px; font-size: 6px; font-weight: 800; color: rgba(0,0,0,0.5); z-index: 20; pointer-events: none; display: none; }
-.watermark-dark { color: rgba(0,0,0,0.5); }
+.tpl-strip {
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  max-width: 260px;
+  padding-bottom: 3px;
+}
 
-/* ================= COMPACT EXPORT BAR ================= */
-.export-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #cbd5e1; padding: 8px 15px; display: flex; justify-content: center; gap: 10px; z-index: 1500; height: 50px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
-.export-btn { flex: 1; max-width: 160px; padding: 8px; border: none; border-radius: 8px; font-size: 12px; font-weight: 800; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.export-btn:active { transform: scale(0.95); }
-.btn-png { background: linear-gradient(135deg, #10b981, #059669); }
-.btn-pdf { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.tpl-chip {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 34px;
+  border-radius: 7px;
+  border: 2px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  font-size: 8px;
+  font-weight: 800;
+  color: #5b6c80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 2px;
+}
 
-/* Toast */
-.toast { position: fixed; bottom: -50px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 3000; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-.toast.show { bottom: 65px; }
+.tpl-chip i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background: linear-gradient(120deg, #93c5fd, #bae6fd);
+}
 
-@media print {
-    body * { visibility: hidden; }
-    #print-render-area, #print-render-area * { visibility: visible; }
-    #print-render-area { position: absolute; left: 0; top: 0; transform: none !important; margin: 0 !important; }
-    .drag-el { border: none !important; }
-    @page { margin: 0; }
+.tpl-chip.on {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+}
+
+.file-lbl {
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 7px;
+  border: 1px dashed #9dbbe6;
+  background: #f2f8ff;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1d4ed8;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.file-lbl input {
+  display: none;
+}
+
+/* ---- compact image adjust cluster (inside the ribbon) ---- */
+.mini-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e3a5f;
+  cursor: pointer;
+  padding: 0;
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.mini-btn:active {
+  transform: translateY(1px);
+  background: #eaf2ff;
+}
+
+.mini-btn.accent {
+  background: #f2f8ff;
+  border-color: #b9d4f7;
+  color: #1d4ed8;
+  font-size: 15px;
+}
+
+.mini-lbl {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #7b8ca0;
+  flex: 0 0 auto;
+}
+
+.mini-val {
+  min-width: 36px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #23405f;
+  flex: 0 0 auto;
+}
+
+.mini-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+  margin: 0 3px;
+  flex: 0 0 auto;
+}
+
+.seg.mini {
+  display: inline-flex;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.seg.mini button {
+  min-width: 44px;
+  height: 26px;
+  border: none;
+  border-radius: 0;
+  background: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0 7px;
+}
+
+.seg.mini button + button {
+  border-left: 1px solid var(--line);
+}
+
+.seg.mini button.on {
+  background: linear-gradient(140deg, #2563eb, #0ea5e9);
+  color: #fff;
+}
+
+.rb-dyn {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+}
+
+.ds-chip {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 40px;
+  border-radius: 7px;
+  border: 2px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+}
+
+.ds-chip.on { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18); }
+
+.ds-chip u {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: #cbd8e8;
+  text-decoration: none;
+}
+
+.ds-chip u:first-child { width: 60%; background: #9dc0ea; }
+.ds-chip b {
+  position: absolute;
+  right: 3px;
+  bottom: 1px;
+  font-size: 7px;
+  color: #8494a8;
+}
+
+/* field manager list inside the pocket */
+.fm-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 0;
+}
+
+.fm-row .fm-name { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.fm-pill {
+  width: 22px;
+  height: 20px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  color: #7b8ca0;
+  cursor: pointer;
+  padding: 0;
+}
+
+.fm-pill.on { background: linear-gradient(140deg, #2563eb, #0ea5e9); color: #fff; border-color: transparent; }
+
+/* ==========================================================
+   4. LEFT SIDE POCKET (z-index 2500 — overlaps everything)
+   ========================================================== */
+#pocketTab {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 62px;
+  background: linear-gradient(140deg, #2563eb, #0ea5e9);
+  color: #fff;
+  border: none;
+  border-radius: 0 12px 12px 0;
+  font-size: 12px;
+  z-index: 2600;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(20, 45, 80, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+#pocket {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translate(-104%, -50%);
+  width: 190px;
+  max-height: 76vh;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid var(--line);
+  border-left: none;
+  border-radius: 0 14px 14px 0;
+  box-shadow: 4px 6px 22px rgba(20, 45, 80, 0.25);
+  z-index: 2500;
+  padding: 10px 10px 12px;
+  transition: transform 0.32s cubic-bezier(0.3, 1, 0.4, 1);
+  -webkit-overflow-scrolling: touch;
+}
+
+#pocket.open {
+  transform: translate(0, -50%);
+}
+
+.pk-title {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: #8494a8;
+  margin: 8px 0 5px;
+}
+
+.pk-title:first-child {
+  margin-top: 0;
+}
+
+.seg {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.seg button {
+  flex: 1 1 auto;
+  min-width: 52px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.seg button.on {
+  background: linear-gradient(140deg, #2563eb, #0ea5e9);
+  color: #fff;
+  border-color: transparent;
+}
+
+.chk {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 2px;
+  border-radius: 6px;
+}
+
+.chk:active {
+  background: var(--soft);
+}
+
+.chk input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+}
+
+/* ==========================================================
+   5. STAGE / WORKSPACE (free panning canvas)
+   ========================================================== */
+#stage {
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  right: 0;
+  bottom: var(--export-h);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 22% 18%, #ffffff 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(160deg, #eef2f7 0%, #e2e9f3 100%);
+  touch-action: none;
+  z-index: 1;
+  transition: top 0.35s cubic-bezier(0.3, 1, 0.4, 1);
+}
+
+#stage.locked {
+  cursor: grab;
+}
+
+#stage.locked:active {
+  cursor: grabbing;
+}
+
+.grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(120, 150, 190, 0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 150, 190, 0.10) 1px, transparent 1px);
+  background-size: 26px 26px;
+  pointer-events: none;
+}
+
+#world {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  display: flex;
+  gap: 26px;
+  padding: 14px;
+  align-items: flex-start;
+  will-change: transform;
+}
+
+/* ==========================================================
+   6. THE CARD
+   ========================================================== */
+.card-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #7b8ca0;
+  text-transform: uppercase;
+}
+
+.card {
+  position: relative;
+  width: var(--cw);
+  height: var(--ch);
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(25, 55, 95, 0.22), 0 0 0 1px rgba(180, 200, 225, 0.7);
+  flex: 0 0 auto;
+}
+
+.portrait .card {
+  --cw: 340px;
+  --ch: 540px;
+}
+
+.landscape .card {
+  --cw: 540px;
+  --ch: 340px;
+}
+
+.cardHeader,
+.cardFooter {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cardHeader {
+  top: 0;
+  height: 104px;
+  background: linear-gradient(120deg, var(--hdA), var(--hdB));
+}
+
+.landscape .cardHeader {
+  height: 88px;
+}
+
+.cardFooter {
+  bottom: 0;
+  height: 70px;
+  background: linear-gradient(120deg, var(--ftA), var(--ftB));
+}
+
+.landscape .cardFooter {
+  height: 58px;
+}
+
+.hidden-el {
+  display: none !important;
+}
+
+/* ---- Watermark ---- */
+.wm {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 5px;
+  text-align: center;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  color: rgba(35, 60, 95, 0.72);
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* ==========================================================
+   7. DRAGGABLE ELEMENTS
+   ========================================================== */
+.el {
+  position: absolute;
+  z-index: 4;
+  transform-origin: top left;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+body.unlocked .el {
+  cursor: grab;
+}
+
+body.unlocked .el:active {
+  cursor: grabbing;
+}
+
+.el.selected {
+  outline: 2px dashed #2563eb;
+  outline-offset: 3px;
+  border-radius: 4px;
+  /* IMPORTANT: never set background/colour here — the badge keeps its own colour */
+}
+
+/* photo + logo rendered as BACKGROUND IMAGES (html2canvas print fix) */
+.photo-box {
+  width: 118px;
+  height: 140px;
+  border-radius: 10px;
+  border: 3px solid #ffffff;
+  box-shadow: 0 5px 14px rgba(25, 55, 95, 0.25);
+  background-color: #e9eef5;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50% 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #93a3b6;
+  font-weight: 700;
+  overflow: hidden;
+}
+
+.logo-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: 50% 50%;
+  box-shadow: 0 3px 8px rgba(25, 55, 95, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  color: #7b8ca0;
+}
+
+.t-org {
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  color: #12314f;
+  max-width: 240px;
+  line-height: 1.1;
+}
+
+.t-tag {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: #2c4a6b;
+  max-width: 240px;
+}
+
+.t-name {
+  font-size: 20px;
+  font-weight: 900;
+  color: #14263c;
+  letter-spacing: 0.3px;
+  text-align: center;
+  width: 300px;
+}
+
+.landscape .t-name {
+  width: 250px;
+  text-align: left;
+}
+
+/* ---- BADGE (bug fix: inner wrapper holds the colour) ---- */
+.badge-outer {
+  padding: 0;
+  background: transparent;
+}
+
+.badge-inner {
+  display: inline-block;
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, var(--bgA), var(--bgB));
+  color: var(--bgT);
+  font-size: 11.5px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  box-shadow: 0 3px 8px rgba(25, 55, 95, 0.18);
+  white-space: nowrap;
+}
+
+.info-table {
+  width: 200px;
+  font-size: 11px;
+  color: #24384f;
+}
+
+.info-row {
+  display: flex;
+  gap: 6px;
+  padding: 2.5px 0;
+  border-bottom: 1px dotted rgba(80, 110, 145, 0.35);
+}
+
+.info-row b {
+  flex: 0 0 62px;
+  font-weight: 800;
+  color: #55697f;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.info-row span {
+  font-weight: 700;
+  flex: 1 1 auto;
+  word-break: break-word;
+}
+
+.landscape .info-table { width: 210px; }
+
+/* ============ 10 DETAIL-FIELD STYLES ============ */
+
+/* ds-1 — Classic dotted rows (default) */
+
+/* ds-2 — Clean solid underline */
+.ds-2 .info-row { border-bottom: 1px solid rgba(70, 105, 145, 0.4); padding: 3px 0; }
+.ds-2 .info-row b { color: #7b8ca0; }
+
+/* ds-3 — Pill / chip labels */
+.ds-3 .info-row { border: none; padding: 2px 0; align-items: center; }
+.ds-3 .info-row b {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 2px 7px;
+  flex: 0 0 auto;
+  min-width: 54px;
+  text-align: center;
+  font-size: 8.5px;
+}
+
+/* ds-4 — Card rows */
+.ds-4 .info-row {
+  border: none;
+  background: rgba(240, 246, 255, 0.92);
+  border-radius: 7px;
+  padding: 3px 8px;
+  margin-bottom: 3px;
+  box-shadow: 0 1px 2px rgba(30, 60, 110, 0.08);
+}
+
+/* ds-5 — Stacked caption above value */
+.ds-5 .info-row {
+  flex-direction: column;
+  gap: 0;
+  border-bottom: none;
+  padding: 1px 0 3px;
+}
+.ds-5 .info-row b { flex: none; font-size: 8px; color: #93a3b6; letter-spacing: 0.8px; }
+.ds-5 .info-row span { font-size: 11.5px; font-weight: 800; color: #14263c; }
+
+/* ds-6 — Inline compact with colon */
+.ds-6 .info-row { border: none; padding: 1px 0; gap: 4px; }
+.ds-6 .info-row b { flex: 0 0 auto; text-transform: none; font-size: 10px; }
+.ds-6 .info-row b::after { content: ':'; }
+
+/* ds-7 — Striped table */
+.ds-7 .info-row { border: none; padding: 3px 6px; }
+.ds-7 .info-row:nth-child(odd) { background: rgba(37, 99, 235, 0.08); }
+.ds-7 .info-row:nth-child(even) { background: rgba(255, 255, 255, 0.6); }
+
+/* ds-8 — Left accent bar */
+.ds-8 .info-row {
+  border: none;
+  border-left: 3px solid var(--hdA, #93c5fd);
+  padding: 2px 0 2px 7px;
+  margin-bottom: 3px;
+  background: linear-gradient(90deg, rgba(147, 197, 253, 0.18), transparent 70%);
+}
+
+/* ds-9 — Boxed grid (2 columns) */
+.ds-9 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.ds-9 .info-row {
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid rgba(120, 155, 200, 0.45);
+  border-radius: 6px;
+  padding: 3px 5px;
+  background: rgba(255, 255, 255, 0.72);
+}
+.ds-9 .info-row b { flex: none; font-size: 7.5px; }
+.ds-9 .info-row span { font-size: 10px; }
+
+/* ds-10 — Typewriter / dashed */
+.ds-10 .info-row { border-bottom: 1px dashed rgba(80, 110, 145, 0.55); padding: 2.5px 0; }
+.ds-10 .info-row span { font-family: "Courier New", Courier, monospace; font-weight: 800; letter-spacing: -0.2px; }
+.ds-10 .info-row b { font-size: 9px; }
+
+/* split-mode single rows keep their own width */
+.el.fld-single { width: auto; min-width: 96px; }
+.el.fld-single.ds-9 { display: block; }
+
+.sign-box {
+  width: 120px;
+  text-align: center;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #3c526b;
+}
+
+.sign-line {
+  font-family: "Brush Script MT", "Segoe Script", cursive;
+  font-size: 20px;
+  color: #16324f;
+  border-bottom: 1.5px solid #7d92a9;
+  padding-bottom: 1px;
+  margin-bottom: 3px;
+  line-height: 1.1;
+}
+
+.seal-box {
+  width: 92px;
+  height: 92px;
+}
+
+.rules-box {
+  width: 296px;
+  font-size: 9.5px;
+  line-height: 1.5;
+  color: #33475e;
+  white-space: pre-line;
+  font-weight: 600;
+}
+
+.landscape .rules-box {
+  width: 250px;
+}
+
+.sec-title {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #12314f;
+  text-transform: uppercase;
+  border-left: 4px solid var(--hdA);
+  padding-left: 6px;
+}
+
+.barcode {
+  width: 118px;
+  text-align: center;
+}
+
+.bars {
+  height: 52px;
+  width: 118px;
+  background: repeating-linear-gradient(90deg, #16324f 0 2px, transparent 2px 4px, #16324f 4px 5px, transparent 5px 9px, #16324f 9px 12px, transparent 12px 14px);
+  border-radius: 2px;
+}
+
+.bar-txt {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #33475e;
+  margin-top: 3px;
+}
+
+/* ==========================================================
+   8. TEN LIGHT CLIP-PATH TEMPLATES
+   ========================================================== */
+.tpl-1 .cardHeader { clip-path: none; }
+.tpl-1 .cardFooter { clip-path: none; }
+
+.tpl-2 .cardHeader { clip-path: polygon(0 0, 100% 0, 100% 62%, 0 100%); }
+.tpl-2 .cardFooter { clip-path: polygon(0 100%, 100% 100%, 100% 0, 0 42%); }
+
+.tpl-3 .cardHeader { clip-path: polygon(0 0, 100% 0, 100% 100%, 78% 74%, 50% 92%, 24% 70%, 0 88%); }
+.tpl-3 .cardFooter { clip-path: polygon(0 100%, 100% 100%, 100% 16%, 74% 38%, 48% 12%, 22% 36%, 0 14%); }
+
+.tpl-4 .cardHeader { border-bottom-left-radius: 62% 40%; border-bottom-right-radius: 62% 40%; }
+.tpl-4 .cardFooter { border-top-left-radius: 62% 46%; border-top-right-radius: 62% 46%; }
+
+.tpl-5 .cardHeader { clip-path: polygon(0 0, 100% 0, 100% 74%, 50% 100%, 0 74%); }
+.tpl-5 .cardFooter { clip-path: polygon(0 100%, 100% 100%, 100% 28%, 50% 0, 0 28%); }
+
+.tpl-6 .cardHeader { clip-path: polygon(0 0, 100% 0, 100% 70%, 87% 96%, 75% 70%, 62% 96%, 50% 70%, 37% 96%, 25% 70%, 12% 96%, 0 70%); }
+.tpl-6 .cardFooter { clip-path: polygon(0 100%, 100% 100%, 100% 28%, 87% 4%, 75% 28%, 62% 4%, 50% 28%, 37% 4%, 25% 28%, 12% 4%, 0 28%); }
+
+.tpl-7 .cardHeader { clip-path: ellipse(120% 100% at 50% 0%); }
+.tpl-7 .cardFooter { clip-path: ellipse(120% 100% at 50% 100%); }
+
+.tpl-8 .cardHeader { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 58%); }
+.tpl-8 .cardFooter { clip-path: polygon(0 100%, 100% 100%, 100% 34%, 0 100%); }
+
+.tpl-9 .cardHeader { clip-path: polygon(0 0, 100% 0, 100% 100%, 66% 100%, 58% 66%, 42% 66%, 34% 100%, 0 100%); }
+.tpl-9 .cardFooter { clip-path: polygon(0 100%, 100% 100%, 100% 0, 66% 0, 58% 40%, 42% 40%, 34% 0, 0 0); }
+
+.tpl-10 .cardHeader { clip-path: polygon(0 0, 100% 0, 100% 56%, 62% 96%, 30% 62%, 0 92%); }
+.tpl-10 .cardFooter { clip-path: polygon(0 100%, 100% 100%, 100% 40%, 62% 6%, 30% 44%, 0 10%); }
+
+/* ==========================================================
+   9. FLOATING CONTROLS
+   ========================================================== */
+#lockBtn {
+  position: fixed;
+  right: 12px;
+  bottom: calc(var(--export-h) + 12px);
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  z-index: 1500;
+  background: linear-gradient(145deg, #ffffff, #e3ecf9);
+  box-shadow: 0 6px 16px rgba(25, 55, 95, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#lockBtn.unlocked {
+  background: linear-gradient(145deg, #34d399, #10b981);
+  color: #fff;
+}
+
+#zoomPanel {
+  position: fixed;
+  left: 12px;
+  bottom: calc(var(--export-h) + 12px);
+  height: 42px;
+  border-radius: 21px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 6px 16px rgba(25, 55, 95, 0.24);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 5px;
+  z-index: 1500;
+  border: 1px solid var(--line);
+}
+
+#zoomPanel button {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5fb;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1d4ed8;
+  cursor: pointer;
+}
+
+#zoomVal {
+  min-width: 58px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #23405f;
+  line-height: 1.1;
+}
+
+#zoomVal small {
+  display: block;
+  font-size: 8px;
+  color: #8494a8;
+  font-weight: 700;
+}
+
+/* D-Pad for photo / logo background nudging */
+#dpad {
+  position: fixed;
+  right: 12px;
+  bottom: calc(var(--export-h) + 76px);
+  width: 116px;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(25, 55, 95, 0.24);
+  padding: 7px;
+  z-index: 1550;
+  display: none;
+}
+
+#dpad.show {
+  display: block;
+}
+
+#dpad .dp-t {
+  font-size: 8.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8494a8;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.dp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}
+
+.dp-grid button {
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: #f6f9ff;
+  font-size: 12px;
+  font-weight: 800;
+  color: #1d4ed8;
+  cursor: pointer;
+}
+
+.dp-grid button.ghost {
+  visibility: hidden;
+}
+
+.dp-zoom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3px;
+  margin-top: 5px;
+}
+
+.dp-fit {
+  margin-top: 5px;
+  width: 100%;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* ==========================================================
+   10. EXPORT BAR
+   ========================================================== */
+#exportBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--export-h);
+  background: linear-gradient(180deg, #ffffff, #f2f6fc);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 1800;
+  padding: 0 74px;
+  box-shadow: 0 -3px 12px rgba(20, 45, 80, 0.08);
+}
+
+.ex-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #fff;
+  box-shadow: 0 3px 9px rgba(25, 55, 95, 0.2);
+}
+
+.ex-png { background: linear-gradient(140deg, #2563eb, #0ea5e9); }
+.ex-pdf { background: linear-gradient(140deg, #ef4444, #f97316); }
+.ex-fit { background: linear-gradient(140deg, #475569, #64748b); }
+
+/* ==========================================================
+   11. TOAST + BUSY OVERLAY
+   ========================================================== */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--export-h) + 74px);
+  transform: translate(-50%, 20px);
+  background: rgba(18, 40, 66, 0.94);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 9px 16px;
+  border-radius: 10px;
+  z-index: 3000;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.28s;
+  max-width: 84vw;
+  text-align: center;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+#busy {
+  position: fixed;
+  inset: 0;
+  background: rgba(240, 245, 252, 0.78);
+  backdrop-filter: blur(2px);
+  z-index: 3200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #1d4ed8;
+}
+
+#busy.show { display: flex; }
+
+.spin-ring {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 4px solid #cfe0f7;
+  border-top-color: #2563eb;
+  animation: sp 0.8s linear infinite;
+}
+
+@keyframes sp { to { transform: rotate(360deg); } }
+
+/* ==========================================================
+   THE FIX: EXPORTING STATE CSS (Neutralizes canvas & border bugs)
+   ========================================================== */
+body.exporting #world {
+  transform: none !important;
+  padding: 0 !important;
+  gap: 20px !important;
+}
+
+body.exporting .card {
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important; /* Sharp corners preferred for ID printer bleeds */
+  margin: 0 !important;
+  transform: none !important;
+}
+
+body.exporting .el.selected {
+  outline: none !important;
+}
+
+@media (max-width: 420px) {
+  #exportBar { padding: 0 68px; gap: 6px; }
+  .ex-btn { padding: 0 10px; font-size: 11px; }
+  #pocket { width: 172px; }
 }
 </style>
 </head>
-<body>
 
-<!-- TOP NAV -->
-<div class="top-nav no-print">
-    <a href="dashboard.html" class="btn-back-3d">
-        <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></svg>
-    </a>
-    <h1 class="page-title">ID Card Studio</h1>
-    <button class="btn-toggle-settings" id="btnToggleSettings" onclick="toggleSettingsSlider()">⚙️ Settings</button>
+<body class="locked">
+
+<!-- ============================ TOP NAV ============================ -->
+<nav id="topNav">
+  <div class="uturn-wrap">
+    <button class="uturn-btn" id="backBtn" title="Back">↩</button>
+  </div>
+
+  <div class="nav-title">
+    ID CARD STUDIO
+    <small>VPKTech Solutions</small>
+  </div>
+
+  <button class="nav-btn" id="settingsBtn">⚙ <span>Settings</span></button>
+</nav>
+
+<!-- ====================== HORIZONTAL SETTINGS RIBBON ====================== -->
+<div id="ribbon">
+
+  <div class="rb-group">
+    <div class="rb-title">Organisation</div>
+    <div class="rb-row"><input class="rb-in" id="f_org" placeholder="Org name" /></div>
+    <div class="rb-row"><input class="rb-in" id="f_tagline" placeholder="Tagline / Address" /></div>
+    <div class="rb-row"><input class="rb-in" id="f_sign" placeholder="Signatory" /></div>
+  </div>
+
+  <div class="rb-group">
+    <div class="rb-title">Holder</div>
+    <div class="rb-row"><input class="rb-in" id="f_name" placeholder="Full name" /></div>
+    <div class="rb-row"><input class="rb-in" id="f_role" placeholder="Badge text" /></div>
+    <div class="rb-row"><input class="rb-in" id="f_designation" placeholder="Designation" /></div>
+  </div>
+
+  <div class="rb-group">
+    <div class="rb-title">Card profile</div>
+    <div class="rb-row">
+      <select class="rb-in" id="f_profile" style="min-width:132px"></select>
+    </div>
+    <div class="rb-row">
+      <select class="rb-in" id="f_insttype" style="min-width:132px">
+        <option>College / University</option>
+        <option>Engineering College</option>
+        <option>Technical Institute</option>
+        <option>Polytechnic</option>
+        <option>Training Academy</option>
+        <option>Research Centre</option>
+        <option>Corporate / Office</option>
+        <option>School</option>
+      </select>
+    </div>
+    <div class="rb-row">
+      <button class="rb-btn primary" id="applyProfile">Apply preset</button>
+      <button class="rb-btn" id="openFieldMgr">Fields ▤</button>
+    </div>
+  </div>
+
+  <div class="rb-group" style="min-width:auto">
+    <div class="rb-title">Detail field style</div>
+    <div class="tpl-strip" id="dsStrip" style="max-width:300px"></div>
+    <div class="rb-row">
+      <label class="chk" style="font-size:10px;font-weight:700">
+        <input type="checkbox" id="splitToggle" /> Split fields (drag each row)
+      </label>
+      <button class="rb-btn" id="restackFields">⇵ Re-stack</button>
+    </div>
+  </div>
+
+  <div id="dynFieldsWrap" class="rb-dyn"></div>
+
+  <div class="rb-group">
+    <div class="rb-title">Rules / Watermark</div>
+    <div class="rb-row"><input class="rb-in" id="f_rules" placeholder="Rules (use | for new line)" style="min-width:190px;max-width:230px" /></div>
+    <div class="rb-row"><input class="rb-in" id="f_backTitle" placeholder="Back heading" /></div>
+    <div class="rb-row"><input class="rb-in" id="f_wm" placeholder="Watermark text" /></div>
+  </div>
+
+  <div class="rb-group">
+    <div class="rb-title">Templates (light)</div>
+    <div class="tpl-strip" id="tplStrip"></div>
+  </div>
+
+  <div class="rb-group">
+    <div class="rb-title">Colours</div>
+    <div class="rb-row">
+      <span style="font-size:10px;font-weight:800;color:#5b6c80;width:42px">Header</span>
+      <input type="color" class="color-in" id="c_hdA" value="#a8d5ff" />
+      <input type="color" class="color-in" id="c_hdB" value="#d9ecff" />
+    </div>
+    <div class="rb-row">
+      <span style="font-size:10px;font-weight:800;color:#5b6c80;width:42px">Footer</span>
+      <input type="color" class="color-in" id="c_ftA" value="#ffe2c2" />
+      <input type="color" class="color-in" id="c_ftB" value="#fff4e4" />
+    </div>
+    <div class="rb-row">
+      <span style="font-size:10px;font-weight:800;color:#5b6c80;width:42px">Badge</span>
+      <input type="color" class="color-in" id="c_bgA" value="#2563eb" />
+      <input type="color" class="color-in" id="c_bgB" value="#0ea5e9" />
+      <input type="color" class="color-in" id="c_bgT" value="#ffffff" />
+    </div>
+  </div>
+
+  <div class="rb-group" style="min-width:auto">
+    <div class="rb-title">Images — upload &amp; adjust</div>
+
+    <div class="rb-row">
+      <label class="file-lbl">📷 Photo<input type="file" id="up_photo" accept="image/*" /></label>
+      <label class="file-lbl">🏛 Logo<input type="file" id="up_logo" accept="image/*" /></label>
+      <div class="seg mini" id="imgTargetSeg">
+        <button data-t="photo" class="on">Photo</button>
+        <button data-t="logo">Logo</button>
+      </div>
+      <button class="rb-btn warn" id="clearImgs">Clear</button>
+    </div>
+
+    <div class="rb-row">
+      <span class="mini-lbl">Move</span>
+      <button class="mini-btn" data-nudge="left" title="Move left">◀</button>
+      <button class="mini-btn" data-nudge="up" title="Move up">▲</button>
+      <button class="mini-btn" data-nudge="down" title="Move down">▼</button>
+      <button class="mini-btn" data-nudge="right" title="Move right">▶</button>
+      <button class="mini-btn" data-nudge="reset" title="Re-center">●</button>
+
+      <span class="mini-sep"></span>
+
+      <span class="mini-lbl">Zoom</span>
+      <button class="mini-btn accent" data-izoom="-1" title="Zoom image out">−</button>
+      <span class="mini-val" id="imgZoomVal">100%</span>
+      <button class="mini-btn accent" data-izoom="1" title="Zoom image in">+</button>
+    </div>
+
+    <div class="rb-row">
+      <span class="mini-lbl">Frame</span>
+      <button class="mini-btn accent" data-isize="-1" title="Shrink frame">−</button>
+      <span class="mini-val" id="imgSizeVal">100%</span>
+      <button class="mini-btn accent" data-isize="1" title="Enlarge frame">+</button>
+
+      <span class="mini-sep"></span>
+
+      <button class="rb-btn" id="imgFitMode">Fit: COVER</button>
+      <button class="rb-btn" id="imgResetAll">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="rb-group">
+    <div class="rb-title">Save slots (local)</div>
+    <div class="rb-row">
+      <select class="rb-in" id="slotSel" style="min-width:88px">
+        <option value="1">Slot 1</option>
+        <option value="2">Slot 2</option>
+        <option value="3">Slot 3</option>
+        <option value="4">Slot 4</option>
+        <option value="5">Slot 5</option>
+      </select>
+      <button class="rb-btn primary" id="slotSave">Save</button>
+    </div>
+    <div class="rb-row">
+      <button class="rb-btn" id="slotLoad">Load</button>
+      <button class="rb-btn warn" id="slotDel">Delete</button>
+    </div>
+    <div class="rb-row">
+      <button class="rb-btn" id="resetPos">↺ Reset layout</button>
+    </div>
+  </div>
+
 </div>
 
-<!-- HORIZONTAL SETTINGS SLIDER (Right to Left) -->
-<div class="settings-slider no-print" id="settingsSlider">
-    
-    <!-- 1. Theme & Design -->
-    <div class="tool-group" style="min-width: 350px;">
-        <div class="tool-group-title">1. Theme & Colors</div>
-        <div class="frm-row">
-            <select id="sel_template" class="frm-select" onchange="updateStyle()">
-                <option value="1">1. Classic</option><option value="2">2. Curved</option><option value="3">3. Sidebar</option><option value="4">4. Slant Cut</option><option value="5">5. TopThin</option>
-                <option value="6">6. Frame</option><option value="7">7. Header Bdr</option><option value="8">8. Dashed</option><option value="9">9. RightBar</option><option value="10">10. Mini</option>
-            </select>
-            <select id="sel_font" class="frm-select" onchange="updateStyle()">
-                <option value="'Segoe UI', Tahoma, sans-serif">Standard Font</option>
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="'Times New Roman', serif">Times Roman</option>
-                <option value="'Courier New', monospace">Courier</option>
-            </select>
-        </div>
-        <div class="frm-row" style="margin-top:5px; gap:10px;">
-            <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Head 1</label>
-                <input type="color" id="clr_h1" class="color-picker" value="#1e3a8a" oninput="updateStyle()">
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Head 2</label>
-                <input type="color" id="clr_h2" class="color-picker" value="#3b82f6" oninput="updateStyle()">
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Foot 1</label>
-                <input type="color" id="clr_f1" class="color-picker" value="#1e3a8a" oninput="updateStyle()">
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Foot 2</label>
-                <input type="color" id="clr_f2" class="color-picker" value="#3b82f6" oninput="updateStyle()">
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Card BG</label>
-                <input type="color" id="clr_bg" class="color-picker" value="#ffffff" oninput="updateStyle()">
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:center;">
-                <label class="frm-label">Text</label>
-                <input type="color" id="clr_text" class="color-picker" value="#0f172a" oninput="updateStyle()">
-            </div>
-        </div>
-    </div>
+<!-- ====================== LEFT SIDE POCKET ====================== -->
+<button id="pocketTab" title="View controls">▶</button>
 
-    <!-- 2. Card Holder -->
-    <div class="tool-group">
-        <div class="tool-group-title">2. Card Holder Details</div>
-        <div class="frm-row">
-            <select id="inp_role_select" class="frm-select" onchange="handleRoleChange()" style="flex:1;">
-                <option value="STUDENT">Student</option><option value="STAFF">Staff</option><option value="EMPLOYEE">Employee</option><option value="Custom">Custom Role</option>
-            </select>
-            <input type="text" id="inp_custom_role" class="frm-input" placeholder="Type role..." style="display:none; flex:1;" oninput="updateContent()">
-        </div>
-        <div class="frm-row">
-            <input type="text" id="inp_name" class="frm-input" placeholder="Full Name" value="Student Name" oninput="updateContent()">
-            <input type="text" id="inp_reg" class="frm-input" placeholder="Reg/ID No" value="REG-01" style="width:70px;" oninput="updateContent()">
-        </div>
-    </div>
+<div id="pocket">
+  <div class="pk-title">Face view</div>
+  <div class="seg" id="viewSeg">
+    <button data-view="front" class="on">Front</button>
+    <button data-view="back">Back</button>
+    <button data-view="both">Both</button>
+  </div>
 
-    <!-- 3. Extra Details -->
-    <div class="tool-group">
-        <div class="tool-group-title">3. Extra Info</div>
-        <div class="frm-row"><input type="text" id="inp_course" class="frm-input" placeholder="Designation / Course" value="Diploma in Engineering" oninput="updateContent()"></div>
-        <div class="frm-row">
-            <input type="text" id="inp_dob" class="frm-input" placeholder="DOB" value="01/01/2000" oninput="updateContent()">
-            <input type="text" id="inp_blood" class="frm-input" placeholder="Blood" value="O+" style="width:50px;" oninput="updateContent()">
-        </div>
-        <div class="frm-row">
-            <input type="text" id="inp_phone" class="frm-input" placeholder="Phone" value="9000000000" oninput="updateContent()">
-            <input type="text" id="inp_valid" class="frm-input" placeholder="Valid" value="2026" style="width:60px;" oninput="updateContent()">
-        </div>
-    </div>
+  <div class="pk-title">Orientation</div>
+  <div class="seg" id="oriSeg">
+    <button data-ori="portrait" class="on">Portrait</button>
+    <button data-ori="landscape">Landscape</button>
+  </div>
 
-    <!-- 4. Org Details -->
-    <div class="tool-group">
-        <div class="tool-group-title">4. Organization Info</div>
-        <div class="frm-row"><input type="text" id="inp_orgName" class="frm-input" placeholder="Org Name" value="ERP Technical Academy" oninput="updateContent()"></div>
-        <div class="frm-row"><input type="text" id="inp_orgSub" class="frm-input" placeholder="Tagline" value="Center of Excellence" oninput="updateContent()"></div>
-        <div class="frm-row"><input type="text" id="inp_orgAddr" class="frm-input" placeholder="City & Contact" value="City, State - 123456" oninput="updateContent()"></div>
-    </div>
+  <div class="pk-title">Show / hide elements</div>
+  <div id="visList"></div>
 
-    <!-- 5. Media & Adjust -->
-    <div class="tool-group" style="min-width: 320px;">
-        <div class="tool-group-title">5. Photo, Logo & Adjust</div>
-        <div class="frm-row" style="margin-bottom: 5px;">
-            <div id="sel_photo_btn" onclick="setActiveMedia('photo')" style="flex:1; border:1px solid #3b82f6; background:#eff6ff; padding:4px; border-radius:6px; cursor:pointer;">
-                <label class="upload-btn" style="margin:0; background:transparent; border:none;">📷 Photo <input type="file" id="file_photo" style="display:none" accept="image/*" onchange="loadMedia(this, 'el-photo', 'ph_photo', 'photo')"></label>
-            </div>
-            <div id="sel_logo_btn" onclick="setActiveMedia('logo')" style="flex:1; border:1px solid #cbd5e1; background:transparent; padding:4px; border-radius:6px; cursor:pointer;">
-                <label class="upload-btn" style="margin:0; background:transparent; border:none; color:#475569;">🏢 Logo <input type="file" id="file_logo" style="display:none" accept="image/*" onchange="loadMedia(this, 'el-logo', 'ph_logo', 'logo')"></label>
-            </div>
-        </div>
-        <div class="media-ctrl-panel">
-            <div style="font-size:10px; font-weight:800; color:#475569; width:45px; line-height:1.2;">Move<br><span id="txtActiveMedia" style="color:#1e3a8a;">Photo</span></div>
-            <div class="mini-dpad">
-                <button class="mini-btn up" onclick="adjustMedia(0, -5)">▲</button>
-                <button class="mini-btn left" onclick="adjustMedia(-5, 0)">◀</button>
-                <button class="mini-btn right" onclick="adjustMedia(5, 0)">▶</button>
-                <button class="mini-btn down" onclick="adjustMedia(0, 5)">▼</button>
-            </div>
-        </div>
-        <div class="frm-row" style="margin-top:2px;">
-            <select id="sel_pShape" class="frm-select" onchange="updateStyle()"><option value="8px">Round Edge</option><option value="50%">Circle</option><option value="0px">Square</option></select>
-            <select id="sel_pBorder" class="frm-select" onchange="updateStyle()"><option value="solid">Solid Bdr</option><option value="dashed">Dashed Bdr</option><option value="none">No Bdr</option></select>
-        </div>
-    </div>
+  <div class="pk-title">Field manager — F = front, B = back</div>
+  <div id="fieldMgr"></div>
 
-    <!-- 6. Back Side -->
-    <div class="tool-group" id="group-back">
-        <div class="tool-group-title">6. Back Side & Seal</div>
-        <div class="frm-row">
-            <select id="sel_sealShape" class="frm-select" onchange="updateSeal()"><option value="round">Round Seal</option><option value="oval">Oval Seal</option></select>
-            <input type="color" id="clr_seal" class="color-picker" value="#16a34a" oninput="updateSeal()">
-        </div>
-    </div>
+  <div class="pk-title">Workspace</div>
+  <div class="seg">
+    <button id="pkFit">⤢ Fit</button>
+    <button id="pkCenter">◎ Center</button>
+  </div>
 </div>
 
-<!-- ================= FREE CANVAS WORKSPACE ================= -->
-<div class="workspace" id="workspaceArea">
-    
-    <!-- LEFT POCKET (ARROW ONLY & TOGGLES) -->
-    <!-- FIXED: Z-index to 2500 & Top to 50% fixed so it overlaps settings -->
-    <div class="left-pocket" id="leftPocket">
-        <div class="pocket-handle" id="pocketHandle" onclick="togglePocket()">▶</div>
-        <div class="pocket-menu">
-            <button class="pocket-btn active" id="vbtn-front" onclick="setView('front')">Front Face</button>
-            <button class="pocket-btn" id="vbtn-back" onclick="setView('back')">Back Face</button>
-            <button class="pocket-btn" id="vbtn-both" onclick="setView('both')">View Both</button>
-            <div style="height:1px; background:#cbd5e1; margin:2px 0;"></div>
-            <button class="pocket-btn" id="vbtn-orient" onclick="toggleOrient()">Portrait</button>
-            
-            <div style="height:1px; background:#cbd5e1; margin:4px 0;"></div>
-            <div style="font-size:10px; font-weight:900; color:#1e3a8a; text-align:center; margin-bottom:4px;">SHOW / HIDE</div>
-            
-            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_logo" checked onchange="toggleEl('box_logo', this)"> Logo</label>
-            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_org" checked onchange="toggleEl('box_org', this)"> Org Info</label>
-            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_photo" checked onchange="toggleEl('box_photo', this)"> Photo</label>
-            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_details" checked onchange="toggleEl('box_details', this)"> Details</label>
-            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_badge" checked onchange="toggleEl('box_badge', this)"> Badge</label>
-            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_seal" checked onchange="toggleEl('box_seal', this)"> Seal</label>
-            
-            <div style="height:1px; background:#cbd5e1; margin:4px 0;"></div>
-            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_borg" checked onchange="toggleEl('box_borg', this)"> Back Org</label>
-            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_terms" checked onchange="toggleEl('box_terms', this)"> Terms</label>
-            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_qr" checked onchange="toggleEl('box_qr', this)"> QR</label>
-            <label style="font-size:10px; font-weight:700; display:flex; align-items:center; gap:5px; color:#334155;"><input type="checkbox" id="pkt_return" checked onchange="toggleEl('box_return', this)"> Return Addr</label>
-            
-            <button class="pocket-btn" style="background:#fee2e2; color:#dc2626; border-color:#fca5a5; margin-top:4px;" onclick="resetPositions()">🔄 Reset Positions</button>
-        </div>
-    </div>
-
-    <!-- ZOOM CONTROLS (+ / -) -->
-    <div class="zoom-panel no-print" id="zoomPanel">
-        <button class="z-btn" onclick="changeWorkspaceZoom(-0.1)">-</button>
-        <span style="display:flex; align-items:center; font-size:11px; font-weight:800; width:35px; justify-content:center;" id="zoomTxt">100%</span>
-        <button class="z-btn" onclick="changeWorkspaceZoom(0.1)">+</button>
-    </div>
-
-    <!-- FREEZE BUTTON (LOCK/UNLOCK) -->
-    <div class="float-lock no-print" id="btnLock" onclick="toggleLock()" title="Lock/Unlock Card">🔓</div>
-
-    <!-- THE CANVAS -->
-    <div class="canvas-wrapper" id="canvasWrapper">
-        <div id="print-render-area" style="padding: 10px;">
-            
-            <!-- ID CARD -->
-            <div class="id-card landscape" id="idCard">
-                <!-- FRONT -->
-                <div class="card-face card-front" id="cardFront">
-                    <!-- Background Template Layer -->
-                    <div class="card-bg-layer tpl-1" id="cardBgLayer">
-                        <div class="bg-header" id="bgHeader"></div>
-                        <div class="bg-footer" id="bgFooter"></div>
-                    </div>
-
-                    <!-- Draggable Layer -->
-                    <div class="card-drag-layer">
-                        <div class="drag-el el-logo empty" data-id="logo" id="box_logo">
-                            <div style="width:100%; height:100%; overflow:hidden; border-radius:50%; position:relative;">
-                                <img id="imgLogo" src="" style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; object-fit:contain; transform-origin:center;">
-                            </div>
-                            <div id="ph_logo" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; color:#94a3b8; pointer-events:none;">LOGO</div>
-                        </div>
-
-                        <div class="drag-el el-org" data-id="org" id="box_org" style="width:200px;">
-                            <div class="name" id="txt_orgName">Institution Name</div>
-                            <div class="sub" id="txt_orgSub">Sub Title</div>
-                            <div class="addr" id="txt_orgAddr">Address</div>
-                        </div>
-
-                        <!-- Fixed Photo Setup for html2canvas -->
-                        <div class="drag-el el-photo empty" data-id="photo" id="box_photo">
-                            <div style="width:100%; height:100%; overflow:hidden; border-radius:inherit; position:relative;">
-                                <img id="imgPhoto" src="" style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; transform-origin:center;">
-                            </div>
-                            <div id="ph_photo" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:30px; color:#94a3b8; pointer-events:none;">👤</div>
-                        </div>
-
-                        <div class="drag-el el-details" data-id="details" id="box_details" style="width:200px;">
-                            <div class="s-name" id="txt_name">Student Name</div>
-                            <div class="s-course" id="txt_course">Course</div>
-                            <table>
-                                <tr><td class="lbl">Reg No</td><td>: <span id="txt_reg">REG-01</span></td></tr>
-                                <tr><td class="lbl">DOB</td><td>: <span id="txt_dob">01/01/2000</span></td></tr>
-                                <tr><td class="lbl">Blood</td><td>: <span id="txt_blood" style="color:#dc2626; font-weight:900;">O+</span></td></tr>
-                                <tr><td class="lbl">Phone</td><td>: <span id="txt_phone">9000000000</span></td></tr>
-                                <tr><td class="lbl">Valid</td><td>: <span id="txt_valid">2026</span></td></tr>
-                            </table>
-                        </div>
-
-                        <!-- FIXED: Badge Wrapper protects the background color -->
-                        <div class="drag-el badge-wrapper" data-id="badge" id="box_badge">
-                            <span id="txt_role" class="inner-badge">STUDENT</span>
-                        </div>
-
-                        <div class="drag-el el-seal" data-id="seal" id="box_seal"></div>
-                        <div class="saas-watermark" id="wmFront">⚡ Powered by VPKTech Solutions</div>
-                    </div>
-                </div>
-
-                <!-- BACK -->
-                <div class="card-face card-back" id="cardBack">
-                    <div class="card-bg-layer" id="cardBgLayerBack"></div>
-                    <div class="card-drag-layer">
-                        <div class="drag-el el-org" data-id="borg" id="box_borg" style="width:200px; text-align:center;">
-                            <div class="name" id="txt_borgName" style="font-size:12px; color:#0f172a;">Institution Name</div>
-                            <div class="addr" id="txt_orgAddrBack" style="font-size:8px; color:#475569; margin-top:2px;">Address</div>
-                        </div>
-                        <div class="drag-el el-terms" data-id="terms" id="box_terms" style="width:200px;"><span id="txt_terms">Terms...</span></div>
-                        <div class="drag-el el-qr" data-id="qr" id="box_qr">QR</div>
-                        <div class="drag-el el-return" data-id="return" id="box_return" style="width:200px;"><span id="txt_return">Return to...</span></div>
-                        <div class="saas-watermark" id="wmBack">⚡ Powered by VPKTech Solutions</div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
+<!-- ====================== STAGE ====================== -->
+<div id="stage">
+  <div class="grid-bg"></div>
+  <div id="world" class="portrait"></div>
 </div>
 
-<!-- ================= COMPACT EXPORT BAR ================= -->
-<div class="export-bar no-print">
-    <button class="export-btn btn-png" onclick="exportCard('png')">🖼️ HD PNG</button>
-    <button class="export-btn btn-pdf" onclick="exportCard('pdf')">📄 HD PDF</button>
+<!-- ====================== FLOATING CONTROLS ====================== -->
+<div id="zoomPanel">
+  <button id="zoomOut">−</button>
+  <div id="zoomVal">100%<small id="zoomMode">canvas</small></div>
+  <button id="zoomIn">+</button>
 </div>
 
-<div class="toast" id="toastMsg">Success!</div>
+<button id="lockBtn" title="Lock / Unlock canvas">🔒</button>
 
-<!-- ================= JAVASCRIPT LOGIC ================= -->
-<script type="module">
-    import { supabase } from './assets/js/supabase-config.js';
-    import './assets/js/auth-check.js';
-    window.checkDynamicAccess('IDCardStudio');
+<div id="dpad">
+  <div class="dp-t" id="dpadTitle">Photo position</div>
+  <div class="dp-grid">
+    <button class="ghost"></button>
+    <button data-dir="up">▲</button>
+    <button class="ghost"></button>
+    <button data-dir="left">◀</button>
+    <button data-dir="reset">●</button>
+    <button data-dir="right">▶</button>
+    <button class="ghost"></button>
+    <button data-dir="down">▼</button>
+    <button class="ghost"></button>
+  </div>
+  <div class="dp-zoom">
+    <button class="mini-btn accent" data-izoom="-1">−</button>
+    <span class="mini-val" id="dpZoomVal">100%</span>
+    <button class="mini-btn accent" data-izoom="1">+</button>
+  </div>
+  <div class="dp-zoom">
+    <button class="mini-btn accent" data-isize="-1">−</button>
+    <span class="mini-val" style="font-size:9px">frame</span>
+    <button class="mini-btn accent" data-isize="1">+</button>
+  </div>
+  <button class="dp-fit" id="dpFit">Mode: COVER</button>
+</div>
 
-    // ================= STATE =================
-    window.appState = {
-        view: 'front', 
-        orientation: 'landscape',
-        isFrozen: false,
-        zoom: 1,
-        panX: 0, panY: 0, 
-        selectedId: null,
-        media: {
-            photo: { x: 0, y: 0, z: 1 },
-            logo: { x: 0, y: 0, z: 1 }
-        }
-    };
-    window.activeMedia = 'photo'; 
+<!-- ====================== EXPORT BAR ====================== -->
+<div id="exportBar">
+  <button class="ex-btn ex-png" id="btnPng">🖼 HD PNG</button>
+  <button class="ex-btn ex-pdf" id="btnPdf">📄 HD PDF</button>
+  <button class="ex-btn ex-fit" id="btnFit">⤢ Fit</button>
+</div>
 
-    // Default Positions relative to Card Face (Includes Scale)
-    const posL = {
-        logo: {x: 10, y: 8, scale: 1}, org: {x: 60, y: 10, scale: 1}, photo: {x: 15, y: 75, scale: 1},
-        details: {x: 105, y: 75, scale: 1}, badge: {x: 15, y: 180, scale: 1}, seal: {x: 240, y: 130, scale: 1},
-        borg: {x: 68, y: 15, scale: 1}, terms: {x: 68, y: 55, scale: 1}, qr: {x: 138, y: 90, scale: 1}, return: {x: 68, y: 165, scale: 1}
-    };
-    const posP = {
-        logo: {x: 83, y: 5, scale: 1}, org: {x: 6, y: 55, scale: 1}, photo: {x: 68, y: 105, scale: 1},
-        details: {x: 6, y: 210, scale: 1}, badge: {x: 61, y: 310, scale: 1}, seal: {x: 120, y: 240, scale: 1},
-        borg: {x: 6, y: 20, scale: 1}, terms: {x: 6, y: 50, scale: 1}, qr: {x: 76, y: 120, scale: 1}, return: {x: 6, y: 190, scale: 1}
-    };
+<div id="toast"></div>
+<div id="busy"><div class="spin-ring"></div><div id="busyTxt">Rendering…</div></div>
 
-    let positions = JSON.parse(JSON.stringify(posL));
+<script>
+/* ==========================================================================
+   ID CARD STUDIO — Vanilla JS engine
+   Architecture:
+     STATE  -> single source of truth (persisted to localStorage)
+     RENDER -> builds card DOM once per orientation/visibility change
+     BIND   -> text/colour updates without re-render
+     INPUT  -> pointer engine (element drag  |  canvas pan/pinch)
+   ========================================================================== */
 
-    // ================= INIT =================
-    document.addEventListener('DOMContentLoaded', () => {
-        applySaaSControls();
-        autoLoadStudent();
-        initDragAndDrop();
-        initCanvasPan();
-        handleRoleChange(); 
-        updateContent();
-        updateStyle();
-        updateSeal();
-        applyPositions();
-        loadAutoSave();
-        
-        document.querySelectorAll('input, textarea, select').forEach(el => {
-            el.addEventListener('input', autoSave);
-            el.addEventListener('change', autoSave);
-        });
+/* ------------------------------------------------------------------
+   1. DEFAULT LAYOUTS  (x, y, s = scale) — per orientation
+   ------------------------------------------------------------------ */
+const DEFAULTS = {
+  portrait: {
+    logo:      { x: 16,  y: 20,  s: 1 },
+    org:       { x: 82,  y: 22,  s: 1 },
+    tagline:   { x: 82,  y: 50,  s: 1 },
+    photo:     { x: 111, y: 118, s: 1 },
+    name:      { x: 20,  y: 272, s: 1 },
+    badge:     { x: 112, y: 302, s: 1 },
+    info:      { x: 26,  y: 338, s: 1 },
+    seal:      { x: 234, y: 350, s: 1 },
+    sign:      { x: 26,  y: 442, s: 1 },
 
-        setTimeout(centerCanvas, 100);
+    bTitle:    { x: 22,  y: 118, s: 1 },
+    bRules:    { x: 22,  y: 142, s: 1 },
+    bContact:  { x: 22,  y: 286, s: 1 },
+    bCode:     { x: 111, y: 380, s: 1 },
+    bSeal:     { x: 232, y: 372, s: 1 }
+  },
+  landscape: {
+    logo:      { x: 16,  y: 14,  s: 1 },
+    org:       { x: 80,  y: 16,  s: 1 },
+    tagline:   { x: 80,  y: 44,  s: 1 },
+    photo:     { x: 26,  y: 100, s: 1 },
+    name:      { x: 162, y: 102, s: 1 },
+    badge:     { x: 162, y: 134, s: 1 },
+    info:      { x: 162, y: 168, s: 1 },
+    seal:      { x: 424, y: 172, s: 1 },
+    sign:      { x: 392, y: 96,  s: 1 },
+
+    bTitle:    { x: 24,  y: 100, s: 1 },
+    bRules:    { x: 24,  y: 126, s: 1 },
+    bContact:  { x: 300, y: 126, s: 1 },
+    bCode:     { x: 300, y: 214, s: 1 },
+    bSeal:     { x: 430, y: 196, s: 1 }
+  }
+};
+
+/* ------------------------------------------------------------------
+   1b. FIELD CATALOG — every detail field an institution may need
+   ------------------------------------------------------------------ */
+const FIELD_CATALOG = [
+  { k: 'id',            label: 'ID No',        ph: 'VPK-2026-0148' },
+  { k: 'roll',          label: 'Roll No',      ph: '21CS1042' },
+  { k: 'empid',         label: 'Emp ID',       ph: 'EMP-2019-077' },
+  { k: 'reg',           label: 'Reg No',       ph: 'REG/2026/8841' },
+  { k: 'designation',   label: 'Designation',  ph: 'Assistant Professor' },
+  { k: 'dept',          label: 'Department',   ph: 'Computer Science & Engg.' },
+  { k: 'course',        label: 'Course',       ph: 'B.E. / B.Tech' },
+  { k: 'branch',        label: 'Branch',       ph: 'CSE — Data Science' },
+  { k: 'year',          label: 'Year / Sem',   ph: 'III Year — Sem V' },
+  { k: 'batch',         label: 'Batch',        ph: '2023 — 2027' },
+  { k: 'section',       label: 'Section',      ph: 'Section B' },
+  { k: 'qualification', label: 'Qualification', ph: 'M.E., Ph.D.' },
+  { k: 'specialization', label: 'Specialization', ph: 'Machine Learning' },
+  { k: 'experience',    label: 'Experience',   ph: '12 Years' },
+  { k: 'lab',           label: 'Lab / Unit',   ph: 'Robotics Lab' },
+  { k: 'cabin',         label: 'Cabin / Room', ph: 'Block C — 214' },
+  { k: 'shift',         label: 'Shift',        ph: 'General (9–5)' },
+  { k: 'reporting',     label: 'Reports To',   ph: 'Director — Ops' },
+  { k: 'guide',         label: 'Guide',        ph: 'Dr. R. Menon' },
+  { k: 'doj',           label: 'Date of Join', ph: '01 Jul 2019' },
+  { k: 'dob',           label: 'D.O.B',        ph: '14 Mar 2005' },
+  { k: 'blood',         label: 'Blood Group',  ph: 'O+' },
+  { k: 'gender',        label: 'Gender',       ph: 'Female' },
+  { k: 'phone',         label: 'Phone',        ph: '+91 98765 43210' },
+  { k: 'email',         label: 'Email',        ph: 'name@institute.edu' },
+  { k: 'emergency',     label: 'Emergency',    ph: '+91 90000 11111' },
+  { k: 'address',       label: 'Address',      ph: '22 Anna Salai, Chennai' },
+  { k: 'hostel',        label: 'Hostel',       ph: 'Block A — 118' },
+  { k: 'transport',     label: 'Bus Route',    ph: 'Route 14 — Tambaram' },
+  { k: 'valid',         label: 'Valid Upto',   ph: '31 Mar 2027' },
+  { k: 'issued',        label: 'Issued On',    ph: '01 Apr 2026' },
+  { k: 'affiliation',   label: 'Affiliation',  ph: 'Affiliated to Anna University' },
+  { k: 'accreditation', label: 'Accreditation', ph: 'NAAC A+ | NBA | AICTE' },
+  { k: 'website',       label: 'Website',      ph: 'www.institute.edu' },
+  { k: 'access',        label: 'Access Level', ph: 'Level 2 — Labs & Library' }
+];
+
+const FIELD_BY_KEY = {};
+FIELD_CATALOG.forEach(function (f) { FIELD_BY_KEY[f.k] = f; });
+
+/* ------------------------------------------------------------------
+   1c. PROFILE PRESETS — designation driven card templates
+   ------------------------------------------------------------------ */
+const PROFILES = {
+  student: {
+    name: 'Student', badge: 'STUDENT', colors: ['#2563eb', '#0ea5e9'],
+    front: ['roll', 'course', 'branch', 'year', 'dob', 'blood'],
+    back: ['phone', 'emergency', 'address', 'hostel', 'transport', 'valid']
+  },
+  faculty: {
+    name: 'Teaching Faculty', badge: 'FACULTY', colors: ['#7c3aed', '#a855f7'],
+    front: ['empid', 'designation', 'dept', 'qualification', 'doj', 'blood'],
+    back: ['phone', 'email', 'cabin', 'specialization', 'access', 'valid']
+  },
+  hod: {
+    name: 'Head of Department', badge: 'HEAD OF DEPARTMENT', colors: ['#b45309', '#f59e0b'],
+    front: ['empid', 'designation', 'dept', 'qualification', 'experience', 'blood'],
+    back: ['phone', 'email', 'cabin', 'reporting', 'access', 'valid']
+  },
+  principal: {
+    name: 'Principal / Director', badge: 'PRINCIPAL', colors: ['#0f766e', '#14b8a6'],
+    front: ['empid', 'designation', 'qualification', 'experience', 'doj', 'blood'],
+    back: ['phone', 'email', 'cabin', 'website', 'access', 'valid']
+  },
+  manager: {
+    name: 'Manager', badge: 'MANAGER', colors: ['#1e40af', '#3b82f6'],
+    front: ['empid', 'designation', 'dept', 'reporting', 'doj', 'phone'],
+    back: ['email', 'cabin', 'shift', 'access', 'emergency', 'valid']
+  },
+  office: {
+    name: 'Office Staff', badge: 'OFFICE STAFF', colors: ['#be185d', '#f472b6'],
+    front: ['empid', 'designation', 'dept', 'shift', 'doj', 'blood'],
+    back: ['phone', 'email', 'address', 'access', 'emergency', 'valid']
+  },
+  technical: {
+    name: 'Technical / Lab Staff', badge: 'TECHNICAL STAFF', colors: ['#0369a1', '#38bdf8'],
+    front: ['empid', 'designation', 'dept', 'lab', 'shift', 'blood'],
+    back: ['phone', 'email', 'access', 'emergency', 'address', 'valid']
+  },
+  research: {
+    name: 'Research Scholar', badge: 'RESEARCH SCHOLAR', colors: ['#4338ca', '#818cf8'],
+    front: ['reg', 'dept', 'specialization', 'guide', 'batch', 'blood'],
+    back: ['phone', 'email', 'lab', 'access', 'emergency', 'valid']
+  },
+  intern: {
+    name: 'Intern / Trainee', badge: 'INTERN', colors: ['#047857', '#34d399'],
+    front: ['id', 'designation', 'dept', 'reporting', 'batch', 'blood'],
+    back: ['phone', 'email', 'issued', 'access', 'emergency', 'valid']
+  },
+  visitor: {
+    name: 'Visitor / Guest', badge: 'VISITOR', colors: ['#9a3412', '#fb923c'],
+    front: ['id', 'designation', 'dept', 'reporting', 'issued', 'phone'],
+    back: ['email', 'address', 'access', 'emergency', 'shift', 'valid']
+  }
+};
+
+const DETAIL_STYLE_NAMES = ['Dotted', 'Lined', 'Chips', 'Cards', 'Stacked',
+  'Inline', 'Striped', 'Accent', 'Grid', 'Mono'];
+
+/* Element registry: id -> {face, label, defaultVisible} */
+const ELEMENTS = [
+  { id: 'logo',     face: 'front', label: 'Logo' },
+  { id: 'org',      face: 'front', label: 'Org name' },
+  { id: 'tagline',  face: 'front', label: 'Tagline' },
+  { id: 'photo',    face: 'front', label: 'Photo' },
+  { id: 'name',     face: 'front', label: 'Name' },
+  { id: 'badge',    face: 'front', label: 'Role badge' },
+  { id: 'info',     face: 'front', label: 'Detail table' },
+  { id: 'seal',     face: 'front', label: 'Official seal' },
+  { id: 'sign',     face: 'front', label: 'Signature' },
+  { id: 'bTitle',   face: 'back',  label: 'Back title' },
+  { id: 'bRules',   face: 'back',  label: 'Rules text' },
+  { id: 'bContact', face: 'back',  label: 'Contact block' },
+  { id: 'bCode',    face: 'back',  label: 'Barcode' },
+  { id: 'bSeal',    face: 'back',  label: 'Back seal' }
+];
+
+/* ------------------------------------------------------------------
+   2. STATE
+   ------------------------------------------------------------------ */
+const AUTOSAVE_KEY = 'vpk_idcard_autosave_v1';
+const SLOT_KEY = function (n) { return 'vpk_idcard_slot_' + n; };
+
+function freshState() {
+  return {
+    orientation: 'portrait',
+    view: 'front',
+    template: 1,
+    colors: {
+      hdA: '#a8d5ff', hdB: '#d9ecff',
+      ftA: '#ffe2c2', ftB: '#fff4e4',
+      bgA: '#2563eb', bgB: '#0ea5e9', bgT: '#ffffff'
+    },
+    profile: 'student',
+    instType: 'College / University',
+    detailStyle: 1,
+    split: { front: false, back: false },
+    rows: {
+      front: PROFILES.student.front.slice(),
+      back: PROFILES.student.back.slice()
+    },
+    fields: {
+      org: 'VPK INSTITUTE OF TECHNOLOGY',
+      tagline: 'Autonomous • Affiliated to Anna University • NAAC A+',
+      name: 'ANANYA SHARMA',
+      role: 'STUDENT',
+      designation: 'Student',
+      sign: 'Principal',
+      backTitle: 'Terms & Conditions',
+      id: 'VPK-2026-0148',
+      roll: '21CS1042',
+      empid: 'EMP-2019-077',
+      reg: 'REG/2026/8841',
+      dept: 'Computer Science & Engineering',
+      course: 'B.E. / B.Tech',
+      branch: 'CSE — Data Science',
+      year: 'III Year — Sem V',
+      batch: '2023 — 2027',
+      section: 'Section B',
+      qualification: 'M.E., Ph.D.',
+      specialization: 'Machine Learning',
+      experience: '12 Years',
+      lab: 'Robotics Lab',
+      cabin: 'Block C — 214',
+      shift: 'General (9:00 — 17:00)',
+      reporting: 'Head of Department',
+      guide: 'Dr. R. Menon',
+      doj: '01 Jul 2023',
+      dob: '14 Mar 2005',
+      blood: 'O+',
+      gender: 'Female',
+      phone: '+91 98765 43210',
+      email: 'ananya@vpkit.edu.in',
+      emergency: '+91 90000 11111',
+      address: '22 Anna Salai, Chennai 600002',
+      hostel: 'Block A — Room 118',
+      transport: 'Route 14 — Tambaram',
+      valid: '31 Mar 2027',
+      issued: '01 Apr 2026',
+      affiliation: 'Affiliated to Anna University',
+      accreditation: 'NAAC A+ | NBA | AICTE Approved',
+      website: 'www.vpkit.edu.in',
+      access: 'Level 2 — Labs & Library',
+      rules: '1. This card is the property of the institution.|2. It must be worn visibly inside the campus.|3. Loss of card must be reported within 24 hours.|4. Duplicate card is issued on payment of fee.|5. Non-transferable and valid until the printed date.',
+      wm: '⚡ Powered by VPKTech Solutions'
+    },
+    images: { photo: '', logo: '' },
+    imgPos: {
+      photo: { x: 50, y: 50, mode: 'cover', zoom: 1 },
+      logo:  { x: 50, y: 50, mode: 'contain', zoom: 1 }
+    },
+    visible: {
+      header: true, footer: true, watermark: true,
+      logo: true, org: true, tagline: true, photo: true, name: true,
+      badge: true, info: true, seal: true, sign: true,
+      bTitle: true, bRules: true, bContact: true, bCode: true, bSeal: true
+    },
+    pos: {}   /* key = orientation|elementId  => {x,y,s} */
+  };
+}
+
+let STATE = freshState();
+
+/* view transform of the whole workspace */
+const VIEW = { zoom: 1, panX: 0, panY: 0 };
+
+let LOCKED = true;            /* true = canvas pan/pinch mode */
+let SELECTED = null;          /* currently selected element id */
+
+/* ------------------------------------------------------------------
+   3. SMALL HELPERS
+   ------------------------------------------------------------------ */
+const $ = function (sel) { return document.querySelector(sel); };
+const $$ = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+
+function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+
+let toastTimer = null;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.classList.remove('show'); }, 1900);
+}
+
+function busy(on, txt) {
+  $('#busyTxt').textContent = txt || 'Rendering…';
+  $('#busy').classList.toggle('show', !!on);
+}
+
+function posOf(id, def) {
+  const key = STATE.orientation + '|' + id;
+  if (!STATE.pos[key]) {
+    const d = DEFAULTS[STATE.orientation][id] || def || { x: 20, y: 20, s: 1 };
+    STATE.pos[key] = { x: d.x, y: d.y, s: d.s || 1 };
+  }
+  return STATE.pos[key];
+}
+
+function cardSize() {
+  return STATE.orientation === 'portrait'
+    ? { w: 340, h: 540 }
+    : { w: 540, h: 340 };
+}
+
+/* ------------------------------------------------------------------
+   4. DYNAMIC SVG OFFICIAL SEAL (curved org text + green verified tick)
+   ------------------------------------------------------------------ */
+function sealSVG(orgText, oval) {
+  const txt = (orgText || 'OFFICIAL SEAL').toUpperCase().slice(0, 34);
+  const rx = oval ? 46 : 40;
+  const ry = 40;
+  const uid = 'sealpath_' + Math.random().toString(36).slice(2, 8);
+  return '' +
+'<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">' +
+  '<defs>' +
+    '<path id="' + uid + '" d="M 50,50 m -' + rx + ',0 a ' + rx + ',' + ry + ' 0 1,1 ' + (rx * 2) + ',0 a ' + rx + ',' + ry + ' 0 1,1 -' + (rx * 2) + ',0" />' +
+  '</defs>' +
+  '<ellipse cx="50" cy="50" rx="' + (rx + 3) + '" ry="' + (ry + 3) + '" fill="rgba(255,255,255,0.86)" stroke="#1d4ed8" stroke-width="2"/>' +
+  '<ellipse cx="50" cy="50" rx="' + (rx - 6) + '" ry="' + (ry - 6) + '" fill="none" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="2 2"/>' +
+  '<text font-size="7.4" font-weight="bold" fill="#1d4ed8" letter-spacing="0.6" font-family="Segoe UI, Arial, sans-serif">' +
+    '<textPath href="#' + uid + '" startOffset="50%" text-anchor="middle">' + escapeXml(txt) + '</textPath>' +
+  '</text>' +
+  '<circle cx="50" cy="52" r="16" fill="#e8f9ef" stroke="#16a34a" stroke-width="1.6"/>' +
+  '<path d="M42 52.5 L47.5 58 L58 46" fill="none" stroke="#16a34a" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>' +
+  '<text x="50" y="76" font-size="5.6" font-weight="bold" fill="#16a34a" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif">VERIFIED</text>' +
+'</svg>';
+}
+
+function escapeXml(s) {
+  return String(s).replace(/[<>&'"]/g, function (c) {
+    return { '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c];
+  });
+}
+
+/* ------------------------------------------------------------------
+   5. CARD MARKUP BUILDERS
+   ------------------------------------------------------------------ */
+function frontMarkup() {
+  return '' +
+'<div class="card-shell" data-shell="front">' +
+  '<div class="card-tag">Front</div>' +
+  '<div class="card" id="cardFront">' +
+    '<div class="cardHeader" data-part="header"></div>' +
+    '<div class="cardFooter" data-part="footer"></div>' +
+
+    '<div class="el" data-el="logo"><div class="logo-box" data-img="logo">LOGO</div></div>' +
+    '<div class="el t-org" data-el="org" data-bind="org"></div>' +
+    '<div class="el t-tag" data-el="tagline" data-bind="tagline"></div>' +
+    '<div class="el" data-el="photo"><div class="photo-box" data-img="photo">PHOTO</div></div>' +
+    '<div class="el t-name" data-el="name" data-bind="name"></div>' +
+
+    /* BADGE — outer is the drag target, inner keeps the colour */
+    '<div class="el badge-outer" data-el="badge"><span class="badge-inner" data-bind="role"></span></div>' +
+
+    buildDetailBlock('front', 'info') +
+
+    '<div class="el seal-box" data-el="seal" data-seal="1"></div>' +
+
+    '<div class="el sign-box" data-el="sign">' +
+      '<div class="sign-line" data-bind="signScript"></div>' +
+      '<div data-bind="sign"></div>' +
+    '</div>' +
+
+    '<div class="wm" data-bind="wm" data-part="watermark"></div>' +
+  '</div>' +
+'</div>';
+}
+
+function backMarkup() {
+  return '' +
+'<div class="card-shell" data-shell="back">' +
+  '<div class="card-tag">Back</div>' +
+  '<div class="card" id="cardBack">' +
+    '<div class="cardHeader" data-part="header"></div>' +
+    '<div class="cardFooter" data-part="footer"></div>' +
+
+    '<div class="el sec-title" data-el="bTitle" data-bind="backTitle"></div>' +
+    '<div class="el rules-box" data-el="bRules" data-bind="rules"></div>' +
+
+    buildDetailBlock('back', 'bContact') +
+
+    '<div class="el barcode" data-el="bCode">' +
+      '<div class="bars"></div>' +
+      '<div class="bar-txt" data-bind="id"></div>' +
+    '</div>' +
+
+    '<div class="el seal-box" data-el="bSeal" data-seal="1"></div>' +
+
+    '<div class="wm" data-bind="wm" data-part="watermark"></div>' +
+  '</div>' +
+'</div>';
+}
+
+/* ------------------------------------------------------------------
+   5b. DETAIL BLOCK BUILDER
+       Grouped mode -> one draggable table.
+       Split mode   -> every field becomes its own draggable element,
+                       auto-stacked from the anchor position.
+   ------------------------------------------------------------------ */
+function rowHTML(key) {
+  const meta = FIELD_BY_KEY[key];
+  if (!meta) { return ''; }
+  return '<div class="info-row"><b>' + meta.label + '</b><span data-bind="' + key + '"></span></div>';
+}
+
+function splitId(face, key) {
+  return (face === 'front' ? 'fF_' : 'fB_') + key;
+}
+
+function buildDetailBlock(face, anchorId) {
+  const keys = (STATE.rows[face] || []).filter(function (k) { return FIELD_BY_KEY[k]; });
+  const ds = ' ds-' + STATE.detailStyle;
+
+  if (!STATE.split[face]) {
+    return '<div class="el info-table' + ds + '" data-el="' + anchorId + '">' +
+      keys.map(rowHTML).join('') + '</div>';
+  }
+
+  /* split mode — seed a default position for each new field element */
+  const anchor = posOf(anchorId);
+  const stepY = (STATE.detailStyle === 5 || STATE.detailStyle === 9) ? 30 : 21;
+  let html = '';
+  keys.forEach(function (k, i) {
+    const id = splitId(face, k);
+    posOf(id, { x: anchor.x, y: anchor.y + i * stepY, s: 1 });
+    html += '<div class="el info-table fld-single' + ds + '" data-el="' + id + '" data-fkey="' + k + '">' +
+      rowHTML(k) + '</div>';
+  });
+  return html;
+}
+
+/* stack every split field back under its anchor */
+function restackFields() {
+  ['front', 'back'].forEach(function (face) {
+    if (!STATE.split[face]) { return; }
+    const anchor = posOf(face === 'front' ? 'info' : 'bContact');
+    const stepY = (STATE.detailStyle === 5 || STATE.detailStyle === 9) ? 30 : 21;
+    (STATE.rows[face] || []).forEach(function (k, i) {
+      const p = posOf(splitId(face, k));
+      p.x = anchor.x;
+      p.y = anchor.y + i * stepY;
     });
+  });
+  applyPositions();
+  autoSave();
+  toast('⇵ Fields re-stacked');
+}
 
-    // ================= UI CONTROLS =================
-    window.toggleSettingsSlider = function() { 
-        const slider = document.getElementById('settingsSlider');
-        const btn = document.getElementById('btnToggleSettings');
-        const ws = document.getElementById('workspaceArea');
-        slider.classList.toggle('hidden'); 
-        
-        if (slider.classList.contains('hidden')) {
-            btn.classList.remove('active'); btn.innerText = '⚙️ Settings';
-            ws.classList.add('expanded');
-        } else {
-            btn.classList.add('active'); btn.innerText = '🔼 Hide';
-            ws.classList.remove('expanded');
-        }
-    }
-    
-    window.togglePocket = function() { 
-        const pkt = document.getElementById('leftPocket');
-        const handle = document.getElementById('pocketHandle');
-        pkt.classList.toggle('open'); 
-        handle.innerText = pkt.classList.contains('open') ? '◀' : '▶';
-    }
-    
-    window.toggleLock = function() {
-        window.appState.isFrozen = !window.appState.isFrozen;
-        const btn = document.getElementById('btnLock');
-        const ws = document.getElementById('workspaceArea');
-        
-        window.appState.selectedId = null;
-        document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
+/* ------------------------------------------------------------------
+   6. RENDER / BIND
+   ------------------------------------------------------------------ */
+function renderCards() {
+  const world = $('#world');
+  world.className = STATE.orientation;
 
-        if(window.appState.isFrozen) {
-            btn.classList.add('locked'); btn.innerText = '🔒';
-            ws.classList.add('locked');
-            showToast("Card Locked. Canvas zoom & pan enabled.");
-        } else {
-            btn.classList.remove('locked'); btn.innerText = '🔓';
-            ws.classList.remove('locked');
-            showToast("Unlocked. Select an element to move/zoom.");
-        }
-    }
-    
-    window.showToast = function(msg) {
-        const t = document.getElementById('toastMsg'); t.innerText = msg; t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2500);
-    }
-    
-    function centerCanvas() {
-        const ws = document.querySelector('.workspace');
-        const cWrap = document.getElementById('canvasWrapper');
-        window.appState.panX = (ws.clientWidth - (336 * window.appState.zoom)) / 2;
-        window.appState.panY = 20; 
-        applyCanvasTransform();
-    }
+  let html = '';
+  if (STATE.view === 'front' || STATE.view === 'both') { html += frontMarkup(); }
+  if (STATE.view === 'back' || STATE.view === 'both') { html += backMarkup(); }
+  world.innerHTML = html;
 
-    // ================= DYNAMIC ZOOM (CANVAS OR ELEMENT) =================
-    window.changeWorkspaceZoom = function(val) {
-        if (!window.appState.isFrozen && window.appState.selectedId) {
-            // Zoom the selected element!
-            let id = window.appState.selectedId;
-            if(!positions[id].scale) positions[id].scale = 1;
-            positions[id].scale += val;
-            if(positions[id].scale < 0.2) positions[id].scale = 0.2;
-            if(positions[id].scale > 5) positions[id].scale = 5;
-            applyPositions();
-        } else {
-            // Zoom the whole canvas
-            let z = window.appState.zoom + val;
-            if(z < 0.4) z = 0.4; if(z > 3) z = 3;
-            window.appState.zoom = z;
-            applyCanvasTransform();
-            document.getElementById('zoomTxt').innerText = Math.round(z * 100) + '%';
-        }
-    }
+  /* template class on every card */
+  $$('.card').forEach(function (c) { c.classList.add('tpl-' + STATE.template); });
 
-    // ================= MEDIA SELECTION & D-PAD =================
-    window.setActiveMedia = function(type) {
-        window.activeMedia = type;
-        document.getElementById('sel_photo_btn').style.borderColor = type === 'photo' ? '#3b82f6' : '#cbd5e1';
-        document.getElementById('sel_photo_btn').style.background = type === 'photo' ? '#eff6ff' : 'transparent';
-        document.getElementById('sel_logo_btn').style.borderColor = type === 'logo' ? '#3b82f6' : '#cbd5e1';
-        document.getElementById('sel_logo_btn').style.background = type === 'logo' ? '#eff6ff' : 'transparent';
-        
-        document.querySelector('#sel_logo_btn label').style.color = type === 'logo' ? '#0284c7' : '#475569';
-        document.getElementById('txtActiveMedia').innerText = type === 'photo' ? 'Photo' : 'Logo';
-    }
+  applyPositions();
+  applyColors();
+  applyVisibility();
+  bindText();
+  applyImages();
+  attachElementDrag();
 
-    window.adjustMedia = function(dx, dy) {
-        const st = window.appState.media[window.activeMedia];
-        st.x += dx; st.y += dy;
-        applyMediaTransform();
-        autoSave();
-    }
+  if (STATE.view === 'both' && STATE.orientation === 'landscape') {
+    world.style.flexDirection = 'column';
+  } else {
+    world.style.flexDirection = 'row';
+  }
+}
 
-    function applyMediaTransform() {
-        const p = window.appState.media.photo;
-        document.getElementById('imgPhoto').style.transform = `translate(${p.x}px, ${p.y}px) scale(${p.z})`;
-        const l = window.appState.media.logo;
-        document.getElementById('imgLogo').style.transform = `translate(${l.x}px, ${l.y}px) scale(${l.z})`;
-    }
+function applyPositions() {
+  $$('.el').forEach(function (el) {
+    const p = posOf(el.dataset.el);
+    el.style.left = p.x + 'px';
+    el.style.top = p.y + 'px';
+    el.style.transform = 'scale(' + p.s + ')';
+  });
+}
 
-    // ================= VIEW & ORIENTATION =================
-    window.setView = function(v) {
-        window.appState.view = v;
-        document.querySelectorAll('.pocket-btn:not(#vbtn-orient)').forEach(b => b.classList.remove('active'));
-        document.getElementById('vbtn-' + v).classList.add('active');
-        togglePocket(); // Auto close pocket
+function applyColors() {
+  const c = STATE.colors;
+  $$('.card').forEach(function (card) {
+    card.style.setProperty('--hdA', c.hdA);
+    card.style.setProperty('--hdB', c.hdB);
+    card.style.setProperty('--ftA', c.ftA);
+    card.style.setProperty('--ftB', c.ftB);
+    card.style.setProperty('--bgA', c.bgA);
+    card.style.setProperty('--bgB', c.bgB);
+    card.style.setProperty('--bgT', c.bgT);
+  });
+}
 
-        const c = document.getElementById('idCard');
-        if(v === 'front') { 
-            c.classList.remove('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='none'; 
-        }
-        else if(v === 'back') { 
-            c.classList.remove('show-both'); document.getElementById('cardFront').style.display='none'; document.getElementById('cardBack').style.display='block'; 
-        }
-        else { 
-            c.classList.add('show-both'); document.getElementById('cardFront').style.display='block'; document.getElementById('cardBack').style.display='block'; 
-        }
-        setTimeout(centerCanvas, 300);
-    }
+function applyVisibility() {
+  const v = STATE.visible;
+  $$('.el').forEach(function (el) {
+    el.classList.toggle('hidden-el', v[el.dataset.el] === false);
+  });
+  $$('[data-part="header"]').forEach(function (n) { n.classList.toggle('hidden-el', !v.header); });
+  $$('[data-part="footer"]').forEach(function (n) { n.classList.toggle('hidden-el', !v.footer); });
+  $$('[data-part="watermark"]').forEach(function (n) { n.classList.toggle('hidden-el', !v.watermark); });
+}
 
-    window.toggleOrient = function() {
-        const c = document.getElementById('idCard');
-        const b = document.getElementById('vbtn-orient');
-        togglePocket(); 
-        
-        if(window.appState.orientation === 'landscape') {
-            window.appState.orientation = 'portrait';
-            c.classList.remove('landscape'); c.classList.add('portrait');
-            b.innerText = 'Portrait';
-            positions = JSON.parse(JSON.stringify(posP));
-            document.getElementById('box_org').style.textAlign = 'center'; document.getElementById('box_org').style.width = '190px';
-            document.getElementById('box_details').style.textAlign = 'center'; document.getElementById('box_details').style.width = '190px';
-            document.getElementById('box_borg').style.textAlign = 'center'; document.getElementById('box_borg').style.width = '190px';
-            document.getElementById('box_terms').style.textAlign = 'center'; document.getElementById('box_terms').style.width = '190px';
-            document.getElementById('box_return').style.textAlign = 'center'; document.getElementById('box_return').style.width = '190px';
-        } else {
-            window.appState.orientation = 'landscape';
-            c.classList.remove('portrait'); c.classList.add('landscape');
-            b.innerText = 'Landscape';
-            positions = JSON.parse(JSON.stringify(posL));
-            document.getElementById('box_org').style.textAlign = 'left'; document.getElementById('box_org').style.width = '200px';
-            document.getElementById('box_details').style.textAlign = 'left'; document.getElementById('box_details').style.width = '200px';
-            document.getElementById('box_borg').style.textAlign = 'left'; document.getElementById('box_borg').style.width = '200px';
-            document.getElementById('box_terms').style.textAlign = 'left'; document.getElementById('box_terms').style.width = '200px';
-            document.getElementById('box_return').style.textAlign = 'left'; document.getElementById('box_return').style.width = '200px';
-        }
-        applyPositions();
-        setTimeout(centerCanvas, 300);
-    }
+function bindText() {
+  const f = STATE.fields;
+  /* every catalog key binds automatically, plus the specials below */
+  const map = Object.assign({}, f);
+  map.signScript = (f.sign || '').split(' ')[0] || 'Sign';
+  map.rules = (f.rules || '').split('|').join('\n');
+  map.backTitle = f.backTitle || 'Terms & Conditions';
+  $$('[data-bind]').forEach(function (n) {
+    const k = n.dataset.bind;
+    if (map[k] !== undefined) { n.textContent = map[k]; }
+  });
+  /* seals redraw with the current org name */
+  $$('[data-seal]').forEach(function (n) {
+    n.innerHTML = sealSVG(f.org, STATE.orientation === 'landscape');
+  });
+}
 
-    window.changeTemplate = function() {
-        const val = document.getElementById('sel_template').value;
-        const layer = document.getElementById('cardBgLayer');
-        for(let i=1; i<=10; i++) layer.classList.remove('tpl-'+i);
-        layer.classList.add('tpl-'+val);
-        updateStyle(); // reapply colors
-    }
+/* natural pixel size cache — lets us zoom the background while keeping
+   the exact aspect ratio (background-size:cover cannot be scaled directly) */
+const IMG_NAT = { photo: null, logo: null };
 
-    window.handleRoleChange = function() {
-        const sel = document.getElementById('inp_role_select').value;
-        const cInput = document.getElementById('inp_custom_role');
-        if (sel === 'Custom') {
-            cInput.style.display = 'block';
-        } else {
-            cInput.style.display = 'none';
-        }
-        updateContent();
-    }
+function ensureNatural(kind, src) {
+  if (!src) { IMG_NAT[kind] = null; return; }
+  if (IMG_NAT[kind] && IMG_NAT[kind].src === src) { return; }
+  if (IMG_NAT[kind] && IMG_NAT[kind].pending === src) { return; }
+  IMG_NAT[kind] = { pending: src };
+  const probe = new Image();
+  probe.crossOrigin = 'anonymous';
+  probe.onload = function () {
+    IMG_NAT[kind] = { src: src, w: probe.naturalWidth || 1, h: probe.naturalHeight || 1 };
+    applyImages();
+    updateImgToolLabels();
+  };
+  probe.onerror = function () { IMG_NAT[kind] = null; };
+  probe.src = src;
+}
 
-    // ================= DATA & STYLES UPDATE =================
-    window.updateContent = function() {
-        // Role
-        const roleSel = document.getElementById('inp_role_select').value;
-        const finalRole = roleSel === 'Custom' ? document.getElementById('inp_custom_role').value : roleSel;
-        document.getElementById('txt_role').innerText = finalRole || 'ROLE';
+function bgSizeFor(kind, box) {
+  const p = STATE.imgPos[kind];
+  const z = p.zoom || 1;
+  const nat = IMG_NAT[kind];
 
-        document.getElementById('txt_orgName').innerText = document.getElementById('inp_orgName').value;
-        document.getElementById('txt_orgSub').innerText = document.getElementById('inp_orgSub').value;
-        document.getElementById('txt_orgAddr').innerHTML = document.getElementById('inp_orgAddr').value.replace(/\n/g, '<br>');
-        
-        document.getElementById('txt_name').innerText = document.getElementById('inp_name').value;
-        document.getElementById('txt_course').innerText = document.getElementById('inp_course').value;
-        document.getElementById('txt_reg').innerText = document.getElementById('inp_reg').value;
-        document.getElementById('txt_dob').innerText = document.getElementById('inp_dob').value;
-        document.getElementById('txt_blood').innerText = document.getElementById('inp_blood').value;
-        document.getElementById('txt_phone').innerText = document.getElementById('inp_phone').value;
-        document.getElementById('txt_valid').innerText = document.getElementById('inp_valid').value;
-        
-        // Back
-        document.getElementById('txt_borgName').innerText = document.getElementById('inp_orgName').value;
-        document.getElementById('txt_orgAddrBack').innerHTML = document.getElementById('inp_orgAddr').value.replace(/\n/g, '<br>');
-        document.getElementById('txt_terms').innerHTML = document.getElementById('inp_terms').value.replace(/\n/g, '<br>');
-    }
+  /* no measurement yet (or no image) -> plain keyword */
+  if (!nat || !nat.w || !nat.h) {
+    return z === 1 ? p.mode : (Math.round(z * 100) + '% auto');
+  }
 
-    window.updateStyle = function() {
-        const h1 = document.getElementById('clr_h1').value;
-        const h2 = document.getElementById('clr_h2').value;
-        const f1 = document.getElementById('clr_f1').value;
-        const f2 = document.getElementById('clr_f2').value;
-        const bg = document.getElementById('clr_bg').value;
-        const tx = document.getElementById('clr_text').value;
-        const font = document.getElementById('sel_font').value;
+  const bw = box.offsetWidth || 1;
+  const bh = box.offsetHeight || 1;
+  const ratio = nat.w / nat.h;
 
-        // Apply CSS Variables so templates can use them dynamically
-        const idCard = document.getElementById('idCard');
-        idCard.style.setProperty('--h1', h1);
-        idCard.style.setProperty('--h2', h2);
-        idCard.style.setProperty('--f1', f1);
-        idCard.style.setProperty('--f2', f2);
-        idCard.style.setProperty('--c-bg', bg);
-        idCard.style.setProperty('--c-txt', tx);
-        idCard.style.setProperty('--c-font', font);
+  /* base width that produces cover / contain, then multiply by the zoom */
+  let w = (p.mode === 'cover')
+    ? Math.max(bw, bh * ratio)
+    : Math.min(bw, bh * ratio);
 
-        // BADGE COLOR FIX
-        const badgeUi = document.getElementById('txt_role');
-        badgeUi.style.background = h1;
-        badgeUi.style.color = getContrast(h1);
-        
-        const orgInfo = document.getElementById('txt_orgName').parentElement;
-        const tpl = document.getElementById('sel_template').value;
-        
-        // Some templates have white backgrounds for header, so text needs to be main color
-        if(['4','6','8','10'].includes(tpl)) {
-            orgInfo.style.color = tx; document.getElementById('ph_logo').style.color = tx;
-        } else {
-            orgInfo.style.color = getContrast(h1); document.getElementById('ph_logo').style.color = getContrast(h1);
-        }
+  w = w * z;
+  return w.toFixed(2) + 'px ' + (w / ratio).toFixed(2) + 'px';
+}
 
-        const shp = document.getElementById('sel_pShape').value;
-        const bdr = document.getElementById('sel_pBorder').value;
-        const pbox = document.getElementById('box_photo');
-        pbox.style.borderRadius = shp; pbox.style.borderStyle = bdr;
-        if(bdr !== 'none') { pbox.style.borderWidth = '2px'; pbox.style.borderColor = h1; }
+function applyImages() {
+  ['photo', 'logo'].forEach(function (kind) {
+    const src = STATE.images[kind];
+    const p = STATE.imgPos[kind];
+    ensureNatural(kind, src);
 
-        const wms = document.querySelectorAll('.saas-watermark');
-        wms.forEach(w => { if(getContrast(bg) === '#0f172a') w.classList.add('watermark-dark'); else w.classList.remove('watermark-dark'); });
-    }
+    $$('[data-img="' + kind + '"]').forEach(function (box) {
+      if (src) {
+        /* IMPORTANT: background-image (NOT <img>) so html2canvas never clips it */
+        box.style.backgroundImage = 'url("' + src + '")';
+        box.textContent = '';
+      } else {
+        box.style.backgroundImage = 'none';
+        box.textContent = kind === 'photo' ? 'PHOTO' : 'LOGO';
+      }
+      box.style.backgroundSize = src ? bgSizeFor(kind, box) : p.mode;
+      box.style.backgroundPosition = p.x + '% ' + p.y + '%';
+    });
+  });
+}
 
-    function getContrast(hex) {
-        if(!hex) return '#ffffff';
-        const r = parseInt(hex.substr(1,2),16), g = parseInt(hex.substr(3,2),16), b = parseInt(hex.substr(5,2),16);
-        return (r*299 + g*587 + b*114)/1000 > 128 ? '#0f172a' : '#ffffff';
-    }
+/* ------------------------------------------------------------------
+   6b. PHOTO / LOGO ADJUST TOOLS (ribbon cluster + floating D-Pad)
+   ------------------------------------------------------------------ */
+let IMG_TARGET = 'photo';   /* which image the tools act upon */
 
-    // ================= MEDIA UPLOAD =================
-    window.loadMedia = function(input, imgId, phId, type) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const el = document.querySelector('.' + imgId.replace('img','el-').toLowerCase());
-                el.style.backgroundImage = `url('${e.target.result}')`;
-                el.style.backgroundSize = 'cover';
-                el.style.backgroundPosition = 'center';
-                el.classList.remove('empty');
-                document.getElementById(phId).style.display = 'none';
-                
-                document.getElementById(imgId).src = '';
-                document.getElementById(imgId).style.display = 'none';
-                
-                window.appState.media[type] = {x:0, y:0, z:1};
-                applyMediaTransform();
-                autoSave();
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
+function setImgTarget(kind) {
+  IMG_TARGET = kind;
+  $$('#imgTargetSeg button').forEach(function (b) {
+    b.classList.toggle('on', b.dataset.t === kind);
+  });
+  updateImgToolLabels();
+}
 
-    window.toggleEl = function(id, cb) {
-        const el = document.getElementById(id);
-        if(el) { el.style.display = cb.checked ? 'block' : 'none'; }
-        autoSave();
+function updateImgToolLabels() {
+  const p = STATE.imgPos[IMG_TARGET];
+  const frame = posOf(IMG_TARGET).s;
+  const zTxt = Math.round((p.zoom || 1) * 100) + '%';
+
+  const zv = document.getElementById('imgZoomVal');
+  const sv = document.getElementById('imgSizeVal');
+  const fm = document.getElementById('imgFitMode');
+  const dz = document.getElementById('dpZoomVal');
+  const df = document.getElementById('dpFit');
+
+  if (zv) { zv.textContent = zTxt; }
+  if (sv) { sv.textContent = Math.round(frame * 100) + '%'; }
+  if (fm) { fm.textContent = 'Fit: ' + p.mode.toUpperCase(); }
+  if (dz) { dz.textContent = zTxt; }
+  if (df) { df.textContent = 'Mode: ' + p.mode.toUpperCase(); }
+}
+
+/* arrows -> move the picture inside its frame */
+function nudgeImg(dir) {
+  const p = STATE.imgPos[IMG_TARGET];
+  const step = 4;
+  if (dir === 'up') { p.y = clamp(p.y - step, 0, 100); }
+  else if (dir === 'down') { p.y = clamp(p.y + step, 0, 100); }
+  else if (dir === 'left') { p.x = clamp(p.x - step, 0, 100); }
+  else if (dir === 'right') { p.x = clamp(p.x + step, 0, 100); }
+  else if (dir === 'reset') { p.x = 50; p.y = 50; }
+  applyImages();
+  updateImgToolLabels();
+  autoSave();
+}
+
+/* + / -  -> zoom the picture itself (background scale) */
+function zoomImg(dir) {
+  const p = STATE.imgPos[IMG_TARGET];
+  p.zoom = clamp(+(((p.zoom || 1) + dir * 0.08).toFixed(2)), 0.3, 4);
+  applyImages();
+  updateImgToolLabels();
+  autoSave();
+}
+
+/* + / -  -> resize the photo / logo frame on the card */
+function sizeImg(dir) {
+  const p = posOf(IMG_TARGET);
+  p.s = clamp(+((p.s + dir * 0.08).toFixed(2)), 0.35, 3);
+  $$('.el[data-el="' + IMG_TARGET + '"]').forEach(function (n) {
+    n.style.transform = 'scale(' + p.s + ')';
+  });
+  updateImgToolLabels();
+  updateZoomLabel();
+  autoSave();
+}
+
+function toggleImgMode() {
+  const p = STATE.imgPos[IMG_TARGET];
+  p.mode = (p.mode === 'cover') ? 'contain' : 'cover';
+  applyImages();
+  updateImgToolLabels();
+  autoSave();
+}
+
+function resetImgAdjust() {
+  const p = STATE.imgPos[IMG_TARGET];
+  p.x = 50; p.y = 50; p.zoom = 1;
+  p.mode = (IMG_TARGET === 'photo') ? 'cover' : 'contain';
+  posOf(IMG_TARGET).s = 1;
+  $$('.el[data-el="' + IMG_TARGET + '"]').forEach(function (n) { n.style.transform = 'scale(1)'; });
+  applyImages();
+  updateImgToolLabels();
+  autoSave();
+  toast('↺ ' + IMG_TARGET + ' adjustments reset');
+}
+
+function wireImgTools() {
+  $$('#imgTargetSeg button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      setImgTarget(b.dataset.t);
+      if (!LOCKED) { selectElement(b.dataset.t); }
+      toast('🎯 Adjusting ' + b.dataset.t);
+    });
+  });
+
+  /* delegated so both the ribbon cluster and the floating D-Pad work */
+  document.addEventListener('click', function (e) {
+    const n = e.target.closest('[data-nudge]');
+    if (n) { nudgeImg(n.dataset.nudge); return; }
+
+    const z = e.target.closest('[data-izoom]');
+    if (z) { zoomImg(+z.dataset.izoom); return; }
+
+    const s = e.target.closest('[data-isize]');
+    if (s) { sizeImg(+s.dataset.isize); return; }
+  });
+
+  document.getElementById('imgFitMode').addEventListener('click', toggleImgMode);
+  document.getElementById('imgResetAll').addEventListener('click', resetImgAdjust);
+  updateImgToolLabels();
+}
+
+/* ------------------------------------------------------------------
+   7. WORKSPACE TRANSFORM (pan + zoom)
+   ------------------------------------------------------------------ */
+function applyView() {
+  $('#world').style.transform =
+    'translate(' + VIEW.panX + 'px,' + VIEW.panY + 'px) scale(' + VIEW.zoom + ')';
+  updateZoomLabel();
+}
+
+function updateZoomLabel() {
+  if (!LOCKED && SELECTED) {
+    $('#zoomVal').innerHTML = Math.round(posOf(SELECTED).s * 100) + '%<small>element</small>';
+  } else {
+    $('#zoomVal').innerHTML = Math.round(VIEW.zoom * 100) + '%<small>canvas</small>';
+  }
+}
+
+function fitToScreen() {
+  const stage = $('#stage');
+  const world = $('#world');
+  const sw = stage.clientWidth;
+  const sh = stage.clientHeight;
+  const ww = world.offsetWidth || 1;
+  const wh = world.offsetHeight || 1;
+  const z = Math.min((sw - 24) / ww, (sh - 24) / wh, 1.6);
+  VIEW.zoom = clamp(z, 0.18, 3);
+  VIEW.panX = (sw - ww * VIEW.zoom) / 2;
+  VIEW.panY = (sh - wh * VIEW.zoom) / 2;
+  applyView();
+}
+
+function centerWorld() {
+  const stage = $('#stage');
+  const world = $('#world');
+  VIEW.panX = (stage.clientWidth - world.offsetWidth * VIEW.zoom) / 2;
+  VIEW.panY = (stage.clientHeight - world.offsetHeight * VIEW.zoom) / 2;
+  applyView();
+}
+
+function zoomAt(factor, cx, cy) {
+  const stage = $('#stage').getBoundingClientRect();
+  const fx = (cx === undefined) ? stage.width / 2 : cx - stage.left;
+  const fy = (cy === undefined) ? stage.height / 2 : cy - stage.top;
+  const old = VIEW.zoom;
+  const nz = clamp(old * factor, 0.18, 4);
+  /* keep the focal point stationary (transform-origin is 0 0) */
+  VIEW.panX = fx - (fx - VIEW.panX) * (nz / old);
+  VIEW.panY = fy - (fy - VIEW.panY) * (nz / old);
+  VIEW.zoom = nz;
+  applyView();
+}
+
+/* ------------------------------------------------------------------
+   8. ELEMENT DRAG ENGINE
+      *** BUG FIX: delta is divided by VIEW.zoom so elements track the
+          finger exactly, at any workspace zoom level ***
+   ------------------------------------------------------------------ */
+let drag = null;
+
+function attachElementDrag() {
+  $$('.el').forEach(function (el) {
+    el.addEventListener('pointerdown', onElPointerDown);
+  });
+  if (SELECTED) {
+    const node = document.querySelector('.el[data-el="' + SELECTED + '"]');
+    if (node) { node.classList.add('selected'); }
+  }
+}
+
+function onElPointerDown(e) {
+  if (LOCKED) { return; }               /* locked => canvas pan wins */
+  e.stopPropagation();
+  e.preventDefault();
+
+  const el = e.currentTarget;
+  selectElement(el.dataset.el);
+
+  const p = posOf(el.dataset.el);
+  drag = {
+    el: el,
+    id: el.dataset.el,
+    startX: e.clientX,
+    startY: e.clientY,
+    originX: p.x,
+    originY: p.y,
+    moved: false
+  };
+  try { el.setPointerCapture(e.pointerId); } catch (err) {}
+}
+
+document.addEventListener('pointermove', function (e) {
+  if (!drag) { return; }
+  /* THE CRUCIAL FIX — screen delta -> card-space delta */
+  const dx = (e.clientX - drag.startX) / VIEW.zoom;
+  const dy = (e.clientY - drag.startY) / VIEW.zoom;
+
+  if (Math.abs(dx) > 1 || Math.abs(dy) > 1) { drag.moved = true; }
+
+  const size = cardSize();
+  const w = drag.el.offsetWidth;
+  const h = drag.el.offsetHeight;
+
+  const nx = clamp(drag.originX + dx, -w * 0.5, size.w - w * 0.35);
+  const ny = clamp(drag.originY + dy, -h * 0.5, size.h - h * 0.35);
+
+  const p = posOf(drag.id);
+  p.x = Math.round(nx);
+  p.y = Math.round(ny);
+
+  drag.el.style.left = p.x + 'px';
+  drag.el.style.top = p.y + 'px';
+}, { passive: false });
+
+function endDrag() {
+  if (!drag) { return; }
+  drag = null;
+  autoSave();
+}
+
+document.addEventListener('pointerup', endDrag);
+document.addEventListener('pointercancel', endDrag);
+
+function selectElement(id) {
+  SELECTED = id;
+  $$('.el').forEach(function (n) {
+    n.classList.toggle('selected', n.dataset.el === id);
+  });
+  const isImage = (id === 'photo' || id === 'logo');
+  $('#dpad').classList.toggle('show', isImage && !LOCKED);
+  if (isImage) {
+    $('#dpadTitle').textContent = (id === 'photo' ? 'Photo' : 'Logo') + ' adjust';
+    setImgTarget(id);   /* ribbon tools follow the on-card selection */
+  }
+  updateImgToolLabels();
+  updateZoomLabel();
+}
+
+function deselect() {
+  SELECTED = null;
+  $$('.el').forEach(function (n) { n.classList.remove('selected'); });
+  $('#dpad').classList.remove('show');
+  updateZoomLabel();
+}
+
+/* ------------------------------------------------------------------
+   9. CANVAS PAN + PINCH ZOOM
+   ------------------------------------------------------------------ */
+const stage = $('#stage');
+let pan = null;
+let pinch = null;
+
+stage.addEventListener('pointerdown', function (e) {
+  if (drag) { return; }
+  /* clicking empty space deselects */
+  if (!e.target.closest('.el')) { deselect(); }
+  if (!LOCKED) { return; }              /* pan only in locked mode (mouse) */
+  if (e.pointerType === 'touch') { return; } /* touch handled below */
+  pan = { x: e.clientX, y: e.clientY, px: VIEW.panX, py: VIEW.panY };
+});
+
+document.addEventListener('pointermove', function (e) {
+  if (!pan) { return; }
+  VIEW.panX = pan.px + (e.clientX - pan.x);
+  VIEW.panY = pan.py + (e.clientY - pan.y);
+  applyView();
+});
+
+document.addEventListener('pointerup', function () { pan = null; });
+
+/* ---- touch: 1 finger pan (locked) / 2 finger pinch (always) ---- */
+stage.addEventListener('touchstart', function (e) {
+  if (e.touches.length === 2) {
+    drag = null;
+    const t1 = e.touches[0], t2 = e.touches[1];
+    pinch = {
+      dist: Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY),
+      zoom: VIEW.zoom,
+      cx: (t1.clientX + t2.clientX) / 2,
+      cy: (t1.clientY + t2.clientY) / 2,
+      panX: VIEW.panX,
+      panY: VIEW.panY
     };
+  } else if (e.touches.length === 1 && LOCKED) {
+    /* locked => one finger pans the whole workspace, even over a card */
+    pan = { x: e.touches[0].clientX, y: e.touches[0].clientY, px: VIEW.panX, py: VIEW.panY };
+  }
+}, { passive: false });
 
-    window.resetPositions = function() {
-        if(window.appState.orientation === 'portrait') { positions = JSON.parse(JSON.stringify(posP)); } 
-        else { positions = JSON.parse(JSON.stringify(posL)); }
-        applyPositions();
-        showToast("Positions Reset!");
+stage.addEventListener('touchmove', function (e) {
+  if (pinch && e.touches.length === 2) {
+    e.preventDefault();
+    const t1 = e.touches[0], t2 = e.touches[1];
+    const d = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+    const nz = clamp(pinch.zoom * (d / pinch.dist), 0.18, 4);
+    const rect = stage.getBoundingClientRect();
+    const fx = pinch.cx - rect.left;
+    const fy = pinch.cy - rect.top;
+    VIEW.panX = fx - (fx - pinch.panX) * (nz / pinch.zoom);
+    VIEW.panY = fy - (fy - pinch.panY) * (nz / pinch.zoom);
+    VIEW.zoom = nz;
+    applyView();
+  } else if (pan && e.touches.length === 1 && LOCKED) {
+    e.preventDefault();
+    VIEW.panX = pan.px + (e.touches[0].clientX - pan.x);
+    VIEW.panY = pan.py + (e.touches[0].clientY - pan.y);
+    applyView();
+  }
+}, { passive: false });
+
+stage.addEventListener('touchend', function (e) {
+  if (e.touches.length === 0) { pinch = null; pan = null; }
+});
+
+/* mouse wheel zoom */
+stage.addEventListener('wheel', function (e) {
+  e.preventDefault();
+  zoomAt(e.deltaY < 0 ? 1.1 : 0.9, e.clientX, e.clientY);
+}, { passive: false });
+
+/* ------------------------------------------------------------------
+   10. LOCK / UNLOCK + ZOOM PANEL
+   ------------------------------------------------------------------ */
+$('#lockBtn').addEventListener('click', function () {
+  LOCKED = !LOCKED;
+  document.body.classList.toggle('locked', LOCKED);
+  document.body.classList.toggle('unlocked', !LOCKED);
+  this.textContent = LOCKED ? '🔒' : '🔓';
+  this.classList.toggle('unlocked', !LOCKED);
+  stage.classList.toggle('locked', LOCKED);
+  if (LOCKED) { deselect(); }
+  toast(LOCKED ? '🔒 Canvas locked — pan & pinch to zoom' : '🔓 Unlocked — drag elements freely');
+  updateZoomLabel();
+});
+
+$('#zoomIn').addEventListener('click', function () { stepZoom(1); });
+$('#zoomOut').addEventListener('click', function () { stepZoom(-1); });
+
+function stepZoom(dir) {
+  if (!LOCKED && SELECTED) {
+    const p = posOf(SELECTED);
+    p.s = clamp(+(p.s + dir * 0.08).toFixed(2), 0.35, 3);
+    const node = document.querySelector('.el[data-el="' + SELECTED + '"]');
+    if (node) { node.style.transform = 'scale(' + p.s + ')'; }
+    updateZoomLabel();
+    autoSave();
+  } else {
+    zoomAt(dir > 0 ? 1.12 : 0.89);
+  }
+}
+
+/* ------------------------------------------------------------------
+   11. D-PAD (background-position nudging for photo / logo)
+   ------------------------------------------------------------------ */
+$$('#dpad .dp-grid button[data-dir]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    nudgeImg(b.dataset.dir);
+  });
+});
+
+$('#dpFit').addEventListener('click', toggleImgMode);
+
+/* ------------------------------------------------------------------
+   12. RIBBON + POCKET WIRING
+   ------------------------------------------------------------------ */
+$('#settingsBtn').addEventListener('click', function () {
+  const open = $('#ribbon').classList.toggle('open');
+  this.classList.toggle('on', open);
+  $('#stage').style.top = open ? 'calc(var(--nav-h) + var(--ribbon-h))' : 'var(--nav-h)';
+  setTimeout(fitToScreen, 360);
+});
+
+$('#backBtn').addEventListener('click', function () {
+  const b = this;
+  b.classList.add('spin');
+  setTimeout(function () { b.classList.remove('spin'); }, 600);
+  if ($('#ribbon').classList.contains('open')) {
+    $('#settingsBtn').click();
+  } else if ($('#pocket').classList.contains('open')) {
+    togglePocket(false);
+  } else if (history.length > 1) {
+    history.back();
+  } else {
+    toast('↩ Nothing to go back to');
+  }
+});
+
+function togglePocket(force) {
+  const open = (force === undefined) ? !$('#pocket').classList.contains('open') : force;
+  $('#pocket').classList.toggle('open', open);
+  $('#pocketTab').textContent = open ? '◀' : '▶';
+  $('#pocketTab').style.left = open ? '190px' : '0px';
+}
+$('#pocketTab').addEventListener('click', function () { togglePocket(); });
+
+/* view + orientation segments */
+$$('#viewSeg button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    $$('#viewSeg button').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    STATE.view = b.dataset.view;
+    deselect();
+    renderCards();
+    fitToScreen();
+    autoSave();
+  });
+});
+
+$$('#oriSeg button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    $$('#oriSeg button').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    STATE.orientation = b.dataset.ori;
+    deselect();
+    renderCards();
+    fitToScreen();
+    autoSave();
+  });
+});
+
+/* visibility checkbox list */
+function buildVisList() {
+  const extra = [
+    { id: 'header', label: 'Header shape' },
+    { id: 'footer', label: 'Footer shape' },
+    { id: 'watermark', label: 'Watermark' }
+  ];
+  const all = extra.concat(ELEMENTS.map(function (e) {
+    return { id: e.id, label: e.label + (e.face === 'back' ? ' (back)' : '') };
+  }));
+  const box = $('#visList');
+  box.innerHTML = all.map(function (item) {
+    return '<label class="chk"><input type="checkbox" data-vis="' + item.id + '" ' +
+      (STATE.visible[item.id] !== false ? 'checked' : '') + ' /> ' + item.label + '</label>';
+  }).join('');
+  box.querySelectorAll('input[data-vis]').forEach(function (cb) {
+    cb.addEventListener('change', function () {
+      STATE.visible[cb.dataset.vis] = cb.checked;
+      applyVisibility();
+      autoSave();
+    });
+  });
+}
+
+$('#pkFit').addEventListener('click', fitToScreen);
+$('#pkCenter').addEventListener('click', centerWorld);
+$('#btnFit').addEventListener('click', fitToScreen);
+
+/* template chips */
+function buildTemplateChips() {
+  const strip = $('#tplStrip');
+  let h = '';
+  for (let i = 1; i <= 10; i++) {
+    h += '<button class="tpl-chip' + (STATE.template === i ? ' on' : '') + '" data-tpl="' + i + '"><i></i>' + i + '</button>';
+  }
+  strip.innerHTML = h;
+  strip.querySelectorAll('.tpl-chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      STATE.template = +c.dataset.tpl;
+      strip.querySelectorAll('.tpl-chip').forEach(function (x) { x.classList.remove('on'); });
+      c.classList.add('on');
+      $$('.card').forEach(function (card) {
+        card.className = 'card tpl-' + STATE.template;
+      });
+      autoSave();
+    });
+  });
+}
+
+/* ---- static text fields (always present in the ribbon) ---- */
+const FIELD_INPUTS = ['org', 'tagline', 'sign', 'name', 'role', 'designation',
+  'rules', 'backTitle', 'wm'];
+
+function wireFields() {
+  FIELD_INPUTS.forEach(function (k) {
+    const input = document.getElementById('f_' + k);
+    if (!input) { return; }
+    input.value = STATE.fields[k] || '';
+    input.addEventListener('input', function () {
+      STATE.fields[k] = input.value;
+      bindText();
+      autoSave();
+    });
+  });
+}
+
+/* ---- dynamic inputs: one per active detail field, 3 per ribbon column ---- */
+function buildDynamicFieldInputs() {
+  const wrap = document.getElementById('dynFieldsWrap');
+  if (!wrap) { return; }
+
+  const seen = {};
+  const active = [];
+  ['front', 'back'].forEach(function (face) {
+    (STATE.rows[face] || []).forEach(function (k) {
+      if (!seen[k] && FIELD_BY_KEY[k]) { seen[k] = 1; active.push({ k: k, face: face }); }
+    });
+  });
+
+  let html = '';
+  for (let i = 0; i < active.length; i += 3) {
+    const chunk = active.slice(i, i + 3);
+    html += '<div class="rb-group"><div class="rb-title">' +
+      (chunk[0].face === 'front' ? 'Front details' : 'Back details') + '</div>';
+    chunk.forEach(function (item) {
+      const meta = FIELD_BY_KEY[item.k];
+      html += '<div class="rb-row"><input class="rb-in" data-fin="' + item.k +
+        '" placeholder="' + meta.label + '" title="' + meta.label + '" /></div>';
+    });
+    html += '</div>';
+  }
+  if (!active.length) {
+    html = '<div class="rb-group"><div class="rb-title">Detail fields</div>' +
+      '<div class="rb-row" style="font-size:10px;color:#8494a8">No fields — open ▶ pocket → Field manager</div></div>';
+  }
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('input[data-fin]').forEach(function (inp) {
+    const key = inp.dataset.fin;
+    inp.value = STATE.fields[key] !== undefined ? STATE.fields[key] : '';
+    inp.addEventListener('input', function () {
+      STATE.fields[key] = inp.value;
+      bindText();
+      autoSave();
+    });
+  });
+}
+
+/* ---- profile presets ---- */
+function buildProfileSelect() {
+  const sel = document.getElementById('f_profile');
+  sel.innerHTML = Object.keys(PROFILES).map(function (k) {
+    return '<option value="' + k + '">' + PROFILES[k].name + '</option>';
+  }).join('') + '<option value="custom">Custom / Other…</option>';
+  sel.value = STATE.profile || 'student';
+}
+
+function applyProfilePreset(key, silent) {
+  const p = PROFILES[key];
+  STATE.profile = key;
+  if (!p) {
+    if (!silent) { toast('✏ Custom profile — edit the badge & fields manually'); }
+    return;
+  }
+  STATE.fields.role = p.badge;
+  STATE.fields.designation = p.name;
+  STATE.colors.bgA = p.colors[0];
+  STATE.colors.bgB = p.colors[1];
+  STATE.rows.front = p.front.slice();
+  STATE.rows.back = p.back.slice();
+
+  /* drop stale split positions so the new field set stacks cleanly */
+  Object.keys(STATE.pos).forEach(function (k) {
+    if (/\|f[FB]_/.test(k)) { delete STATE.pos[k]; }
+  });
+
+  syncUIFromState();
+  renderCards();
+  autoSave();
+  if (!silent) { toast('🎓 ' + p.name + ' preset applied'); }
+}
+
+/* ---- detail style chips ---- */
+function buildDetailStyleChips() {
+  const strip = document.getElementById('dsStrip');
+  let h = '';
+  for (let i = 1; i <= 10; i++) {
+    h += '<button class="ds-chip' + (STATE.detailStyle === i ? ' on' : '') +
+      '" data-ds="' + i + '" title="' + DETAIL_STYLE_NAMES[i - 1] + '">' +
+      '<u></u><u></u><u></u><b>' + i + '</b></button>';
+  }
+  strip.innerHTML = h;
+  strip.querySelectorAll('.ds-chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      STATE.detailStyle = +c.dataset.ds;
+      strip.querySelectorAll('.ds-chip').forEach(function (x) { x.classList.remove('on'); });
+      c.classList.add('on');
+      renderCards();
+      autoSave();
+      toast('🎨 Detail style: ' + DETAIL_STYLE_NAMES[STATE.detailStyle - 1]);
+    });
+  });
+}
+
+/* ---- field manager (pocket) ---- */
+function buildFieldManager() {
+  const box = document.getElementById('fieldMgr');
+  if (!box) { return; }
+  box.innerHTML = FIELD_CATALOG.map(function (f) {
+    const inF = STATE.rows.front.indexOf(f.k) > -1;
+    const inB = STATE.rows.back.indexOf(f.k) > -1;
+    return '<div class="fm-row">' +
+      '<button class="fm-pill' + (inF ? ' on' : '') + '" data-fm="front" data-k="' + f.k + '" title="Show on front">F</button>' +
+      '<button class="fm-pill' + (inB ? ' on' : '') + '" data-fm="back" data-k="' + f.k + '" title="Show on back">B</button>' +
+      '<span class="fm-name">' + f.label + '</span></div>';
+  }).join('');
+
+  box.querySelectorAll('.fm-pill').forEach(function (b) {
+    b.addEventListener('click', function () {
+      const face = b.dataset.fm;
+      const k = b.dataset.k;
+      const arr = STATE.rows[face];
+      const i = arr.indexOf(k);
+      if (i > -1) { arr.splice(i, 1); } else { arr.push(k); }
+      b.classList.toggle('on', i === -1);
+      STATE.profile = 'custom';
+      document.getElementById('f_profile').value = 'custom';
+      buildDynamicFieldInputs();
+      renderCards();
+      autoSave();
+    });
+  });
+}
+
+function wireProfileTools() {
+  buildProfileSelect();
+
+  document.getElementById('f_profile').addEventListener('change', function () {
+    applyProfilePreset(this.value);
+  });
+  document.getElementById('applyProfile').addEventListener('click', function () {
+    applyProfilePreset(document.getElementById('f_profile').value);
+  });
+
+  const it = document.getElementById('f_insttype');
+  it.value = STATE.instType;
+  it.addEventListener('change', function () {
+    STATE.instType = this.value;
+    autoSave();
+    toast('🏛 Institution type: ' + this.value);
+  });
+
+  document.getElementById('openFieldMgr').addEventListener('click', function () {
+    togglePocket(true);
+    const el = document.getElementById('fieldMgr');
+    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  });
+
+  const sp = document.getElementById('splitToggle');
+  sp.checked = !!(STATE.split.front || STATE.split.back);
+  sp.addEventListener('change', function () {
+    STATE.split.front = this.checked;
+    STATE.split.back = this.checked;
+    deselect();
+    renderCards();
+    autoSave();
+    toast(this.checked
+      ? '🔀 Split mode — unlock 🔓 and drag any single field'
+      : '🔗 Grouped mode — fields move as one block');
+  });
+
+  document.getElementById('restackFields').addEventListener('click', restackFields);
+  buildDetailStyleChips();
+}
+
+/* colours */
+const COLOR_INPUTS = ['hdA', 'hdB', 'ftA', 'ftB', 'bgA', 'bgB', 'bgT'];
+
+function wireColors() {
+  COLOR_INPUTS.forEach(function (k) {
+    const input = document.getElementById('c_' + k);
+    input.value = STATE.colors[k];
+    input.addEventListener('input', function () {
+      STATE.colors[k] = input.value;
+      applyColors();
+      autoSave();
+    });
+  });
+}
+
+/* image uploads */
+function wireUploads() {
+  [['up_photo', 'photo'], ['up_logo', 'logo']].forEach(function (pair) {
+    document.getElementById(pair[0]).addEventListener('change', function (e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) { return; }
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        STATE.images[pair[1]] = ev.target.result;
+        setImgTarget(pair[1]);
+        applyImages();
+        updateImgToolLabels();
         autoSave();
-    };
+        toast('✅ ' + pair[1] + ' added — use ◀▲▼▶ to move, +/− to zoom');
+      };
+      reader.readAsDataURL(file);
+    });
+  });
 
-    window.updateSeal = function() {
-        const shape = document.getElementById('sel_sealShape').value;
-        const color = document.getElementById('clr_seal').value;
-        const org = document.getElementById('inp_orgName').value || 'INSTITUTION';
-        const w = shape === 'oval' ? 90 : 70; const h = 70;
-        const cx = w/2, cy = h/2, rx = w/2 - 4, ry = h/2 - 4;
-        
-        const svg = `
-        <svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
-            <ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${color}" stroke-width="2"/>
-            <ellipse cx="${cx}" cy="${cy}" rx="${rx-3}" ry="${ry-3}" fill="none" stroke="${color}" stroke-width="1" stroke-dasharray="2,2"/>
-            <path id="curve_${shape}" d="M ${cx-rx+5},${cy} A ${rx-5},${ry-5} 0 0 1 ${cx+rx-5},${cy}" fill="none" stroke="none" />
-            <text font-size="6" fill="${color}" font-weight="900" font-family="sans-serif">
-                <textPath href="#curve_${shape}" startOffset="50%" text-anchor="middle">${org.toUpperCase()}</textPath>
-            </text>
-            <text x="${cx}" y="${cy+8}" text-anchor="middle" font-size="18" fill="#16a34a" font-weight="bold">✅</text>
-            <text x="${cx}" y="${cy+20}" text-anchor="middle" font-size="5" fill="${color}" font-weight="bold">VERIFIED</text>
-        </svg>`;
-        document.getElementById('box_seal').style.width = w + 'px';
-        document.getElementById('box_seal').innerHTML = svg;
+  $('#clearImgs').addEventListener('click', function () {
+    STATE.images.photo = '';
+    STATE.images.logo = '';
+    IMG_NAT.photo = null;
+    IMG_NAT.logo = null;
+    STATE.imgPos.photo = { x: 50, y: 50, mode: 'cover', zoom: 1 };
+    STATE.imgPos.logo = { x: 50, y: 50, mode: 'contain', zoom: 1 };
+    document.getElementById('up_photo').value = '';
+    document.getElementById('up_logo').value = '';
+    applyImages();
+    updateImgToolLabels();
+    autoSave();
+    toast('🧹 Images cleared');
+  });
+}
+
+$('#resetPos').addEventListener('click', function () {
+  Object.keys(STATE.pos).forEach(function (k) {
+    if (k.indexOf(STATE.orientation + '|') === 0) { delete STATE.pos[k]; }
+  });
+  renderCards();
+  fitToScreen();
+  autoSave();
+  toast('↺ Layout reset to default');
+});
+
+/* ------------------------------------------------------------------
+   13. STORAGE — autosave + 5 slots
+   ------------------------------------------------------------------ */
+let saveTimer = null;
+function autoSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function () {
+    try {
+      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(STATE));
+    } catch (err) {
+      console.warn('autosave failed', err);
     }
+  }, 220);
+}
 
-    // ================= CANVAS PANNING & PINCH ZOOM =================
-    function initCanvasPan() {
-        const workspace = document.querySelector('.workspace');
-        let isDown = false, startX, startY;
-        let initialPinchDist = null;
+function loadAutoSave() {
+  try {
+    const raw = localStorage.getItem(AUTOSAVE_KEY);
+    if (!raw) { return false; }
+    const data = JSON.parse(raw);
+    STATE = mergeState(freshState(), data);
+    return true;
+  } catch (err) { return false; }
+}
 
-        // Mouse Events
-        workspace.addEventListener('mousedown', (e) => {
-            if(!window.appState.isFrozen) return; 
-            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket') || e.target.closest('.zoom-panel')) return;
-            isDown = true;
-            startX = e.pageX - window.appState.panX; 
-            startY = e.pageY - window.appState.panY;
-        });
-        workspace.addEventListener('mouseleave', () => { isDown = false; });
-        workspace.addEventListener('mouseup', () => { isDown = false; });
-        workspace.addEventListener('mousemove', (e) => {
-            if(!isDown || !window.appState.isFrozen) return;
-            e.preventDefault();
-            window.appState.panX = e.pageX - startX; 
-            window.appState.panY = e.pageY - startY;
-            applyCanvasTransform();
-        });
+function mergeState(base, data) {
+  const out = base;
+  ['orientation', 'view', 'template', 'profile', 'instType', 'detailStyle'].forEach(function (k) {
+    if (data[k] !== undefined) { out[k] = data[k]; }
+  });
+  ['colors', 'fields', 'images', 'visible', 'pos'].forEach(function (k) {
+    if (data[k]) { out[k] = Object.assign(out[k], data[k]); }
+  });
+  if (data.split) { out.split = Object.assign(out.split, data.split); }
+  if (data.rows) {
+    if (Array.isArray(data.rows.front)) { out.rows.front = data.rows.front.slice(); }
+    if (Array.isArray(data.rows.back)) { out.rows.back = data.rows.back.slice(); }
+  }
+  if (data.imgPos) {
+    out.imgPos.photo = Object.assign(out.imgPos.photo, data.imgPos.photo || {});
+    out.imgPos.logo = Object.assign(out.imgPos.logo, data.imgPos.logo || {});
+  }
+  return out;
+}
 
-        // Touch Events
-        workspace.addEventListener('touchstart', (e) => {
-            if(!window.appState.isFrozen) return; 
-            if(e.target.closest('.float-lock') || e.target.closest('.left-pocket') || e.target.closest('.zoom-panel')) return;
+$('#slotSave').addEventListener('click', function () {
+  const n = $('#slotSel').value;
+  try {
+    localStorage.setItem(SLOT_KEY(n), JSON.stringify(STATE));
+    toast('💾 Saved to Slot ' + n);
+  } catch (err) {
+    toast('⚠ Storage full — remove a photo and retry');
+  }
+});
 
-            if (e.touches.length === 1) {
-                isDown = true;
-                initialPinchDist = null;
-                startX = e.touches[0].pageX - window.appState.panX; 
-                startY = e.touches[0].pageY - window.appState.panY;
-            } else if (e.touches.length === 2) {
-                isDown = false;
-                initialPinchDist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
-            }
-        }, {passive: false});
+$('#slotLoad').addEventListener('click', function () {
+  const n = $('#slotSel').value;
+  const raw = localStorage.getItem(SLOT_KEY(n));
+  if (!raw) { toast('Slot ' + n + ' is empty'); return; }
+  try {
+    STATE = mergeState(freshState(), JSON.parse(raw));
+    syncUIFromState();
+    renderCards();
+    fitToScreen();
+    autoSave();
+    toast('📂 Loaded Slot ' + n);
+  } catch (err) {
+    toast('⚠ Slot data corrupted');
+  }
+});
 
-        workspace.addEventListener('touchend', (e) => { 
-            isDown = false; 
-            if (e.touches.length < 2) initialPinchDist = null;
-        });
+$('#slotDel').addEventListener('click', function () {
+  const n = $('#slotSel').value;
+  localStorage.removeItem(SLOT_KEY(n));
+  toast('🗑 Slot ' + n + ' cleared');
+});
 
-        workspace.addEventListener('touchmove', (e) => {
-            if(!window.appState.isFrozen) return;
-            e.preventDefault(); 
+function syncUIFromState() {
+  FIELD_INPUTS.forEach(function (k) {
+    const i = document.getElementById('f_' + k);
+    if (i) { i.value = STATE.fields[k] || ''; }
+  });
+  COLOR_INPUTS.forEach(function (k) {
+    document.getElementById('c_' + k).value = STATE.colors[k];
+  });
+  $$('#viewSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.view === STATE.view); });
+  $$('#oriSeg button').forEach(function (b) { b.classList.toggle('on', b.dataset.ori === STATE.orientation); });
+  const ps = document.getElementById('f_profile');
+  if (ps) { ps.value = STATE.profile || 'student'; }
+  const its = document.getElementById('f_insttype');
+  if (its) { its.value = STATE.instType; }
+  const sp = document.getElementById('splitToggle');
+  if (sp) { sp.checked = !!(STATE.split.front || STATE.split.back); }
+  buildTemplateChips();
+  buildDetailStyleChips();
+  buildDynamicFieldInputs();
+  buildFieldManager();
+  buildVisList();
+  updateImgToolLabels();
+}
 
-            if (e.touches.length === 1 && isDown) {
-                window.appState.panX = e.touches[0].pageX - startX; 
-                window.appState.panY = e.touches[0].pageY - startY;
-                applyCanvasTransform();
-            } 
-            else if (e.touches.length === 2 && initialPinchDist) {
-                const currentDist = Math.hypot(
-                    e.touches[0].pageX - e.touches[1].pageX,
-                    e.touches[0].pageY - e.touches[1].pageY
-                );
+/* ------------------------------------------------------------------
+   14. SUPABASE AUTO-LOAD PLACEHOLDER  ( ?student_id=XYZ )
+   ------------------------------------------------------------------ */
+const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR-PUBLIC-ANON-KEY';
+const SUPABASE_TABLE = 'students';
 
-                const scaleDelta = currentDist / initialPinchDist;
-                let newZoom = window.appState.zoom * scaleDelta;
+async function fetchStudentFromSupabase(studentId) {
+  /* Placeholder REST call — plug in your project URL + anon key above.
+     Expected row shape:
+     { student_id, full_name, role, class, dob, blood_group, phone,
+       email, address, valid_upto, photo_url, logo_url, org_name } */
+  if (SUPABASE_URL.indexOf('YOUR-PROJECT') === 0 || SUPABASE_URL.indexOf('YOUR-PROJECT') > -1) {
+    toast('ℹ Supabase not configured — demo data shown');
+    return null;
+  }
+  const url = SUPABASE_URL + '/rest/v1/' + SUPABASE_TABLE +
+    '?student_id=eq.' + encodeURIComponent(studentId) + '&select=*&limit=1';
+  try {
+    const res = await fetch(url, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: 'Bearer ' + SUPABASE_ANON_KEY,
+        Accept: 'application/json'
+      }
+    });
+    if (!res.ok) { throw new Error('HTTP ' + res.status); }
+    const rows = await res.json();
+    return (rows && rows.length) ? rows[0] : null;
+  } catch (err) {
+    console.warn('Supabase fetch failed:', err);
+    toast('⚠ Could not reach Supabase');
+    return null;
+  }
+}
 
-                if (newZoom < 0.4) newZoom = 0.4;
-                if (newZoom > 3) newZoom = 3;
+function applyStudentRow(row) {
+  if (!row) { return; }
+  const f = STATE.fields;
 
-                window.appState.zoom = newZoom;
-                initialPinchDist = currentDist; 
-                applyCanvasTransform();
-                
-                const zoomTxt = document.getElementById('zoomTxt');
-                if(zoomTxt) zoomTxt.innerText = Math.round(newZoom * 100) + '%';
-            }
-        }, {passive: false});
+  /* explicit column -> field aliases */
+  const ALIAS = {
+    org_name: 'org', institute: 'org', full_name: 'name', member_name: 'name',
+    student_id: 'id', employee_id: 'empid', roll_no: 'roll', reg_no: 'reg',
+    department: 'dept', class: 'year', programme: 'course', blood_group: 'blood',
+    valid_upto: 'valid', date_of_join: 'doj', joined_on: 'doj',
+    emergency_contact: 'emergency', room_no: 'cabin', access_level: 'access',
+    tag_line: 'tagline'
+  };
+
+  /* profile / designation aware auto-switch */
+  if (row.profile && PROFILES[row.profile]) {
+    applyProfilePreset(row.profile, true);
+  } else if (row.category && PROFILES[String(row.category).toLowerCase()]) {
+    applyProfilePreset(String(row.category).toLowerCase(), true);
+  }
+
+  Object.keys(row).forEach(function (col) {
+    const val = row[col];
+    if (val === null || val === undefined || val === '') { return; }
+    const key = ALIAS[col] || col;
+    if (key === 'photo_url') { STATE.images.photo = val; return; }
+    if (key === 'logo_url') { STATE.images.logo = val; return; }
+    if (FIELD_BY_KEY[key] || ['org', 'tagline', 'name', 'role', 'designation', 'sign'].indexOf(key) > -1) {
+      f[key] = String(val);
     }
+  });
 
-    function applyCanvasTransform() {
-        const wrapper = document.getElementById('canvasWrapper');
-        if (wrapper) {
-            wrapper.style.transform = `translate(${window.appState.panX}px, ${window.appState.panY}px) scale(${window.appState.zoom})`;
-        }
+  if (row.designation && !row.role) { f.role = String(row.designation).toUpperCase(); }
+
+  syncUIFromState();
+  renderCards();
+  autoSave();
+  toast('👤 Card data loaded for ' + (f.name || 'member'));
+}
+
+async function tryAutoLoad() {
+  const params = new URLSearchParams(location.search);
+  const sid = params.get('student_id');
+  if (!sid) { return; }
+  busy(true, 'Fetching student…');
+  const row = await fetchStudentFromSupabase(sid);
+  busy(false);
+  applyStudentRow(row);
+}
+
+/* ==================================================================
+   15. THE FIX: EXPORT — HD PNG / HD PDF (Zero-Offset rendering)
+   ================================================================== */
+function visibleCards() {
+  const list = [];
+  const f = document.getElementById('cardFront');
+  const b = document.getElementById('cardBack');
+  if (f) { list.push({ node: f, name: 'front' }); }
+  if (b) { list.push({ node: b, name: 'back' }); }
+  return list;
+}
+
+/* THE FIX: Use BoundingRect to avoid any sub-pixel offset/shift bugs in html2canvas */
+async function snap(node) {
+  const rect = node.getBoundingClientRect();
+  return await html2canvas(node, {
+    scale: 4,                       /* Super HD output for print */
+    backgroundColor: '#ffffff',
+    useCORS: true,
+    allowTaint: false,
+    logging: false,
+    imageTimeout: 0,
+    x: rect.left,
+    y: rect.top,
+    width: rect.width,
+    height: rect.height,
+    scrollX: 0,
+    scrollY: 0,
+    windowWidth: document.documentElement.clientWidth,
+    windowHeight: document.documentElement.clientHeight
+  });
+}
+
+const TPL_SVG = {
+  1:  { h: { t: 'poly', d: '0,0 100,0 100,100 0,100' },
+        f: { t: 'poly', d: '0,100 100,100 100,0 0,0' } },
+  2:  { h: { t: 'poly', d: '0,0 100,0 100,62 0,100' },
+        f: { t: 'poly', d: '0,100 100,100 100,0 0,42' } },
+  3:  { h: { t: 'poly', d: '0,0 100,0 100,100 78,74 50,92 24,70 0,88' },
+        f: { t: 'poly', d: '0,100 100,100 100,16 74,38 48,12 22,36 0,14' } },
+  4:  { h: { t: 'path', d: 'M0,0 H100 V58 Q50,108 0,58 Z' },
+        f: { t: 'path', d: 'M0,100 H100 V44 Q50,-8 0,44 Z' } },
+  5:  { h: { t: 'poly', d: '0,0 100,0 100,74 50,100 0,74' },
+        f: { t: 'poly', d: '0,100 100,100 100,28 50,0 0,28' } },
+  6:  { h: { t: 'poly', d: '0,0 100,0 100,70 87,96 75,70 62,96 50,70 37,96 25,70 12,96 0,70' },
+        f: { t: 'poly', d: '0,100 100,100 100,28 87,4 75,28 62,4 50,28 37,4 25,28 12,4 0,28' } },
+  7:  { h: { t: 'path', d: 'M0,0 H100 V66 Q50,112 0,66 Z' },
+        f: { t: 'path', d: 'M0,100 H100 V34 Q50,-12 0,34 Z' } },
+  8:  { h: { t: 'poly', d: '0,0 100,0 100,100 0,58' },
+        f: { t: 'poly', d: '0,100 100,100 100,34 0,100' } },
+  9:  { h: { t: 'poly', d: '0,0 100,0 100,100 66,100 58,66 42,66 34,100 0,100' },
+        f: { t: 'poly', d: '0,100 100,100 100,0 66,0 58,40 42,40 34,0 0,0' } },
+  10: { h: { t: 'poly', d: '0,0 100,0 100,56 62,96 30,62 0,92' },
+        f: { t: 'poly', d: '0,100 100,100 100,40 62,6 30,44 0,10' } }
+};
+
+function shapeDataURI(shape, colorA, colorB) {
+  const gid = 'g' + Math.random().toString(36).slice(2, 7);
+  const body = shape.t === 'poly'
+    ? '<polygon points="' + shape.d + '" fill="url(#' + gid + ')"/>'
+    : '<path d="' + shape.d + '" fill="url(#' + gid + ')"/>';
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">' +
+      '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1">' +
+        '<stop offset="0%" stop-color="' + colorA + '"/>' +
+        '<stop offset="100%" stop-color="' + colorB + '"/>' +
+      '</linearGradient></defs>' + body +
+    '</svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+function swapShapesForExport() {
+  const tpl = TPL_SVG[STATE.template] || TPL_SVG[1];
+  const c = STATE.colors;
+  const restore = [];
+  $$('[data-part="header"], [data-part="footer"]').forEach(function (node) {
+    const isHeader = node.dataset.part === 'header';
+    restore.push({ node: node, css: node.getAttribute('style') || '' });
+    node.style.clipPath = 'none';
+    node.style.webkitClipPath = 'none';
+    node.style.borderRadius = '0';
+    node.style.background = 'transparent';
+    node.style.backgroundImage = 'url("' +
+      shapeDataURI(isHeader ? tpl.h : tpl.f,
+        isHeader ? c.hdA : c.ftA,
+        isHeader ? c.hdB : c.ftB) + '")';
+    node.style.backgroundSize = '100% 100%';
+    node.style.backgroundRepeat = 'no-repeat';
+  });
+  return function undo() {
+    restore.forEach(function (r) { r.node.setAttribute('style', r.css); });
+  };
+}
+
+/* THE FIX: Force zero scroll before capture to eliminate shift bugs */
+async function withCleanRender(fn) {
+  const wasSelected = SELECTED;
+  deselect();
+  document.body.classList.add('exporting');
+  const undoShapes = swapShapesForExport();
+
+  const oldScrollX = window.scrollX;
+  const oldScrollY = window.scrollY;
+  window.scrollTo(0, 0);
+
+  /* let the browser repaint before capture */
+  await new Promise(function (r) { setTimeout(r, 160); });
+  try {
+    await fn();
+  } catch (err) {
+    console.error(err);
+    toast('⚠ Export failed: ' + err.message);
+  } finally {
+    undoShapes();
+    document.body.classList.remove('exporting');
+    window.scrollTo(oldScrollX, oldScrollY);
+    if (wasSelected) { selectElement(wasSelected); }
+    applyView();
+  }
+}
+
+$('#btnPng').addEventListener('click', function () {
+  const cards = visibleCards();
+  if (!cards.length) { toast('Nothing to export'); return; }
+  busy(true, 'Rendering HD PNG…');
+  withCleanRender(async function () {
+    for (let i = 0; i < cards.length; i++) {
+      const canvas = await snap(cards[i].node);
+      const a = document.createElement('a');
+      a.download = safeName() + '-' + cards[i].name + '.png';
+      a.href = canvas.toDataURL('image/png', 1.0);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      await new Promise(function (r) { setTimeout(r, 320); });
     }
+  }).then(function () {
+    busy(false);
+    toast('🖼 PNG exported (' + cards.length + ' file' + (cards.length > 1 ? 's' : '') + ')');
+  });
+});
 
-    // ================= DRAG & DROP ELEMENTS (FLYING FIX & SELECTION) =================
-    function initDragAndDrop() {
-        const draggables = document.querySelectorAll('.drag-el');
-        let activeEl = null; let initX = 0, initY = 0;
-
-        document.getElementById('workspaceArea').addEventListener('mousedown', (e) => {
-            if (!e.target.closest('.drag-el') && !window.appState.isFrozen) {
-                document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
-                window.appState.selectedId = null;
-            }
-        });
-
-        function dragStart(e) {
-            if(window.appState.isFrozen) return; 
-            if (e.target.tagName === 'INPUT') return;
-            
-            document.querySelectorAll('.drag-el').forEach(el => el.classList.remove('selected'));
-            activeEl = e.currentTarget; 
-            activeEl.classList.add('selected');
-            window.appState.selectedId = activeEl.dataset.id;
-
-            const id = activeEl.dataset.id; 
-            const pos = positions[id] || {x:0, y:0, scale:1}; 
-            const z = window.appState.zoom;
-            
-            if (e.type === "touchstart") { initX = (e.touches[0].clientX / z) - pos.x; initY = (e.touches[0].clientY / z) - pos.y; } 
-            else { initX = (e.clientX / z) - pos.x; initY = (e.clientY / z) - pos.y; }
-        }
-
-        function drag(e) {
-            if (!activeEl || window.appState.isFrozen) return;
-            e.preventDefault();
-            const z = window.appState.zoom; let curX, curY;
-            
-            if (e.type === "touchmove") { curX = (e.touches[0].clientX / z) - initX; curY = (e.touches[0].clientY / z) - initY; } 
-            else { curX = (e.clientX / z) - initX; curY = (e.clientY / z) - initY; }
-
-            const id = activeEl.dataset.id; 
-            positions[id].x = curX; positions[id].y = curY;
-            activeEl.style.transform = `translate(${curX}px, ${curY}px) scale(${positions[id].scale || 1})`;
-        }
-
-        function dragEnd(e) {
-            if (!activeEl) return;
-            activeEl = null; autoSave();
-        }
-
-        draggables.forEach(el => {
-            el.addEventListener("mousedown", dragStart, false);
-            el.addEventListener("touchstart", dragStart, {passive: false});
-        });
-
-        document.addEventListener("mousemove", drag, false); document.addEventListener("touchmove", drag, {passive: false});
-        document.addEventListener("mouseup", dragEnd, false); document.addEventListener("touchend", dragEnd, false);
-    }
-
-    function applyPositions() {
-        document.querySelectorAll('.drag-el').forEach(el => {
-            const id = el.dataset.id;
-            if(positions[id]) {
-                const s = positions[id].scale || 1;
-                el.style.transform = `translate(${positions[id].x}px, ${positions[id].y}px) scale(${s})`;
-            }
-        });
-    }
-
-    // ================= EXPORT =================
-    window.exportCard = async function(type) {
-        const btn = document.querySelector(`.btn-${type}`);
-        const oldText = btn.innerText; btn.innerText = '⏳ Processing...'; btn.disabled = true;
-
-        document.querySelectorAll('.drag-el').forEach(el => { el.style.border = 'none'; el.classList.remove('selected'); });
-        window.appState.selectedId = null;
-        
-        const wrapper = document.getElementById('print-render-area');
-        const cWrapper = document.getElementById('canvasWrapper');
-        const oldTrans = cWrapper.style.transform;
-        cWrapper.style.transform = 'translate(0px, 0px) scale(1)';
-        
-        await new Promise(r => setTimeout(r, 150)); 
-
-        try {
-            const canvas = await html2canvas(wrapper, {
-                scale: 4, 
-                useCORS: true,
-                backgroundColor: null,
-                logging: false,
-                allowTaint: true
-            });
-
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
-            const fileName = `ID_Card_${document.getElementById('inp_name').value.replace(/ /g, '_')}`;
-            
-            if (type === 'png') {
-                const link = document.createElement('a'); link.download = fileName + '.jpg'; link.href = imgData; link.click();
-            } else if (type === 'pdf') {
-                const isPort = window.appState.orientation === 'portrait';
-                let w = isPort ? 54 : 86; let h = isPort ? 86 : 54;
-                if (window.appState.view === 'both') { if(isPort) { w = 112; h = 86; } else { w = 86; h = 112; } }
-                
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: (w > h) ? 'l' : 'p', unit: 'mm', format: [w, h] });
-                pdf.addImage(imgData, 'JPEG', 0, 0, w, h, '', 'FAST'); pdf.save(fileName + '.pdf');
-            }
-            showToast('✅ Download Complete!');
-        } catch (e) { alert("Error exporting card."); } 
-        finally {
-            cWrapper.style.transform = oldTrans;
-            document.querySelectorAll('.drag-el').forEach(el => el.style.border = '');
-            btn.innerText = oldText; btn.disabled = false;
-        }
-    };
-
-    // ================= AUTO SAVE & LOAD =================
-    function autoSave() {
-        const data = {};
-        document.querySelectorAll('.frm-input, .frm-select, .color-picker, input[type="checkbox"]').forEach(el => {
-            if(el.id && !el.id.startsWith('slot_name')) data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
-        });
-        const saveData = { inputs: data, positions: positions, state: window.appState };
-        localStorage.setItem('vpk_id_studio_v6', JSON.stringify(saveData));
-    }
-
-    function loadAutoSave() {
-        try {
-            const saved = localStorage.getItem('vpk_id_studio_v6');
-            if(saved) {
-                const data = JSON.parse(saved);
-                if(data.inputs) {
-                    Object.keys(data.inputs).forEach(key => {
-                        const el = document.getElementById(key);
-                        if(el) { if(el.type === 'checkbox') el.checked = data.inputs[key]; else el.value = data.inputs[key]; }
-                    });
-                }
-                if(data.positions) positions = data.positions;
-                if(data.state) {
-                    window.appState.media = data.state.media || {photo: {x:0,y:0,z:1}, logo: {x:0,y:0,z:1}};
-                    applyMediaTransform();
-                }
-                
-                ['logo','org','photo','details','badge','seal','borg','terms','qr','return'].forEach(key => {
-                    const chk = document.getElementById('pkt_' + key);
-                    if(chk) toggleEl('box_' + key, chk);
-                });
-
-                updateContent(); updateStyle(); updateSeal(); applyPositions();
-            }
-        } catch(e) {}
-    }
-
-    // ================= SUPABASE AUTO-LOAD =================
-    async function autoLoadStudent() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const stuId = urlParams.get('student_id');
-        if(stuId) {
-            try {
-                const { data: stu } = await supabase.from('students').select('*').eq('id', stuId).single();
-                if(stu) {
-                    document.getElementById('inp_name').value = stu.full_name || '';
-                    document.getElementById('inp_reg').value = stu.register_number || '';
-                    document.getElementById('inp_phone').value = stu.phone_number || '';
-                    document.getElementById('inp_blood').value = stu.blood_group || '';
-                    if(stu.dob) {
-                        const d = new Date(stu.dob);
-                        document.getElementById('inp_dob').value = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
-                    }
-                    if(stu.course_id) {
-                        const { data: cData } = await supabase.from('courses').select('course_name').eq('id', stu.course_id).single();
-                        if(cData) document.getElementById('inp_course').value = cData.course_name;
-                    }
-                    if(stu.photo_url) {
-                        const el = document.querySelector('.el-photo');
-                        el.style.backgroundImage = `url('${stu.photo_url}')`;
-                        el.style.backgroundSize = 'cover';
-                        el.style.backgroundPosition = 'center';
-                        el.classList.remove('empty');
-                        document.getElementById('ph_photo').style.display = 'none';
-                    }
-                    updateContent(); autoSave(); showToast("✅ Student Auto-Loaded!");
-                }
-            } catch(e) {}
-        }
-    }
+$('#btnPdf').addEventListener('click', function () {
+  const cards = visibleCards();
+  if (!cards.length) { toast('Nothing to export'); return; }
+  busy(true, 'Building HD PDF…');
+  withCleanRender(async function () {
+    const jsPDFCtor = window.jspdf.jsPDF;
+    const portrait = STATE.orientation === 'portrait';
     
-    // ================= SAAS CONTROLS =================
-    async function applySaaSControls() {
-        try {
-            const microStr = localStorage.getItem('saas_micro_features');
-            if (microStr) {
-                const micro = JSON.parse(microStr);
-                const marks = document.querySelectorAll('.saas-watermark');
-                if (micro.remove_watermark === false) { marks.forEach(m => m.style.display = 'block'); } 
-                else { marks.forEach(m => m.style.display = 'none'); }
-            }
-        } catch(e) {}
+    /* THE FIX: Exact CR80 standard ID Card dimensions in mm */
+    const wmm = portrait ? 54 : 86;
+    const hmm = portrait ? 86 : 54;
+    
+    const pdf = new jsPDFCtor({
+      orientation: portrait ? 'portrait' : 'landscape',
+      unit: 'mm',
+      format: [wmm, hmm],
+      compress: true
+    });
+    for (let i = 0; i < cards.length; i++) {
+      const canvas = await snap(cards[i].node);
+      const img = canvas.toDataURL('image/jpeg', 1.0);
+      if (i > 0) { pdf.addPage([wmm, hmm], portrait ? 'portrait' : 'landscape'); }
+      pdf.addImage(img, 'JPEG', 0, 0, wmm, hmm, undefined, 'FAST');
     }
+    pdf.save(safeName() + '-idcard.pdf');
+  }).then(function () {
+    busy(false);
+    toast('📄 PDF exported');
+  });
+});
+
+function safeName() {
+  return (STATE.fields.name || 'idcard')
+    .replace(/[^a-z0-9]+/gi, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase() || 'idcard';
+}
+
+/* ------------------------------------------------------------------
+   16. KEYBOARD NUDGE (desktop nicety)
+   ------------------------------------------------------------------ */
+document.addEventListener('keydown', function (e) {
+  if (LOCKED || !SELECTED) { return; }
+  if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { return; }
+  const p = posOf(SELECTED);
+  const step = e.shiftKey ? 10 : 1;
+  let hit = true;
+  if (e.key === 'ArrowUp') { p.y -= step; }
+  else if (e.key === 'ArrowDown') { p.y += step; }
+  else if (e.key === 'ArrowLeft') { p.x -= step; }
+  else if (e.key === 'ArrowRight') { p.x += step; }
+  else if (e.key === 'Escape') { deselect(); hit = false; }
+  else { hit = false; }
+  if (hit) {
+    e.preventDefault();
+    const node = document.querySelector('.el[data-el="' + SELECTED + '"]');
+    node.style.left = p.x + 'px';
+    node.style.top = p.y + 'px';
+    autoSave();
+  }
+});
+
+/* ------------------------------------------------------------------
+   17. BOOT
+   ------------------------------------------------------------------ */
+function boot() {
+  loadAutoSave();
+  wireFields();
+  wireColors();
+  wireUploads();
+  wireImgTools();
+  wireProfileTools();
+  buildTemplateChips();
+  buildVisList();
+  buildFieldManager();
+  buildDynamicFieldInputs();
+  syncUIFromState();
+  renderCards();
+  fitToScreen();
+  stage.classList.add('locked');
+
+  window.addEventListener('resize', function () {
+    clearTimeout(window.__rt);
+    window.__rt = setTimeout(fitToScreen, 180);
+  });
+
+  setTimeout(function () {
+    toast('👋 Tap 🔓 to drag elements • ▶ for view controls');
+  }, 700);
+
+  tryAutoLoad();
+}
+
+boot();
 </script>
 </body>
 </html>
