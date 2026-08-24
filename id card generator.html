@@ -3083,7 +3083,7 @@ async function tryAutoLoad() {
 }
 
 /* ==================================================================
-   15. THE FIX: EXPORT — HD PNG / HD PDF (Header & Oval Corner Fix)
+   15. THE FIX: EXPORT — HD PNG / HD PDF (Perfect Crop & Alignment)
    ================================================================== */
 function visibleCards() {
   const list = [];
@@ -3094,23 +3094,16 @@ function visibleCards() {
   return list;
 }
 
+/* കൃത്യമായി കാർഡ് മാത്രം ഓട്ടോമാറ്റിക് ആയി മുറിച്ചെടുക്കാൻ (Auto-Crop Fix) */
 async function snap(node) {
-  const rect = node.getBoundingClientRect();
   return await html2canvas(node, {
     scale: 4,                       
-    backgroundColor: null, /* കാർഡിന്റെ റൗണ്ട് ഷേപ്പ് (Oval corners) നിലനിർത്താൻ */
+    backgroundColor: null, 
     useCORS: true,
     allowTaint: false,
     logging: false,
-    imageTimeout: 0,
-    x: rect.left,
-    y: rect.top,
-    width: rect.width,
-    height: rect.height,
     scrollX: 0,
-    scrollY: 0,
-    windowWidth: document.documentElement.clientWidth,
-    windowHeight: document.documentElement.clientHeight
+    scrollY: 0
   });
 }
 
@@ -3135,7 +3128,6 @@ function swapShapesForExport() {
     const isHeader = node.dataset.part === 'header';
     restore.push({ node: node, css: node.getAttribute('style') || '', inner: node.innerHTML });
     
-    /* ഹെഡർ മാഞ്ഞുപോകാതിരിക്കാനുള്ള ഫിക്സ് 1: ടെംപ്ലേറ്റ് 1 ആണെങ്കിൽ മാറ്റം വേണ്ട */
     if (STATE.template == 1) return;
 
     node.style.clipPath = 'none';
@@ -3143,7 +3135,6 @@ function swapShapesForExport() {
     node.style.borderRadius = '0';
     node.style.background = 'transparent';
     
-    /* ഹെഡർ മാഞ്ഞുപോകാതിരിക്കാനുള്ള ഫിക്സ് 2: നേരിട്ട് SVG വരയ്ക്കുന്നു */
     const gid = 'g' + Math.random().toString(36).slice(2, 7);
     const shape = isHeader ? tpl.h : tpl.f;
     const colorA = isHeader ? c.hdA : c.ftA;
@@ -3168,10 +3159,9 @@ async function withCleanRender(fn) {
   if(!fixStyle) {
       fixStyle = document.createElement('style');
       fixStyle.id = 'export-fix-style';
-      /* 4 മൂലകളും കൃത്യമായി റൗണ്ട് ആയി വരാൻ border-radius: 14px തിരികെ നൽകി */
       fixStyle.innerHTML = `
-        body.exporting #stage { top: 0 !important; bottom: 0 !important; left: 0 !important; position: absolute !important; overflow: visible !important; }
-        body.exporting #world { transform: none !important; padding: 0 !important; margin: 0 !important; gap: 20px !important; }
+        body.exporting #stage { position: absolute !important; top: 0 !important; left: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+        body.exporting #world { position: absolute !important; top: 0 !important; left: 0 !important; transform: none !important; margin: 0 !important; padding: 0 !important; gap: 20px !important; }
         body.exporting .card { box-shadow: none !important; border: none !important; margin: 0 !important; transform: none !important; border-radius: 14px !important; overflow: hidden !important; }
         body.exporting .el.selected { outline: none !important; border-color: transparent !important; background: transparent !important; }
       `;
@@ -3185,7 +3175,7 @@ async function withCleanRender(fn) {
   const oldScrollY = window.scrollY;
   window.scrollTo(0, 0);
 
-  await new Promise(function (r) { setTimeout(r, 160); });
+  await new Promise(function (r) { setTimeout(r, 300); });
   try {
     await fn();
   } catch (err) {
