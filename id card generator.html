@@ -3083,7 +3083,7 @@ async function tryAutoLoad() {
 }
 
 /* ==================================================================
-   15. THE FIX: EXPORT — HD PNG / HD PDF (Zero-Offset & Auto-Fix)
+   15. THE FIX: EXPORT — HD PNG / HD PDF (Header & Oval Corner Fix)
    ================================================================== */
 function visibleCards() {
   const list = [];
@@ -3098,7 +3098,7 @@ async function snap(node) {
   const rect = node.getBoundingClientRect();
   return await html2canvas(node, {
     scale: 4,                       
-    backgroundColor: null,
+    backgroundColor: null, /* കാർഡിന്റെ റൗണ്ട് ഷേപ്പ് (Oval corners) നിലനിർത്താൻ */
     useCORS: true,
     allowTaint: false,
     logging: false,
@@ -3127,30 +3127,36 @@ const TPL_SVG = {
   10: { h: { t: 'poly', d: '0,0 100,0 100,56 62,96 30,62 0,92' }, f: { t: 'poly', d: '0,100 100,100 100,40 62,6 30,44 0,10' } }
 };
 
-function shapeDataURI(shape, colorA, colorB) {
-  const gid = 'g' + Math.random().toString(36).slice(2, 7);
-  const body = shape.t === 'poly' ? '<polygon points="' + shape.d + '" fill="url(#' + gid + ')"/>' : '<path d="' + shape.d + '" fill="url(#' + gid + ')"/>';
-  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + colorA + '"/><stop offset="100%" stop-color="' + colorB + '"/></linearGradient></defs>' + body + '</svg>';
-  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-}
-
 function swapShapesForExport() {
   const tpl = TPL_SVG[STATE.template] || TPL_SVG[1];
   const c = STATE.colors;
   const restore = [];
   $$('[data-part="header"], [data-part="footer"]').forEach(function (node) {
     const isHeader = node.dataset.part === 'header';
-    restore.push({ node: node, css: node.getAttribute('style') || '' });
+    restore.push({ node: node, css: node.getAttribute('style') || '', inner: node.innerHTML });
+    
+    /* ഹെഡർ മാഞ്ഞുപോകാതിരിക്കാനുള്ള ഫിക്സ് 1: ടെംപ്ലേറ്റ് 1 ആണെങ്കിൽ മാറ്റം വേണ്ട */
+    if (STATE.template == 1) return;
+
     node.style.clipPath = 'none';
     node.style.webkitClipPath = 'none';
     node.style.borderRadius = '0';
     node.style.background = 'transparent';
-    node.style.backgroundImage = 'url("' + shapeDataURI(isHeader ? tpl.h : tpl.f, isHeader ? c.hdA : c.ftA, isHeader ? c.hdB : c.ftB) + '")';
-    node.style.backgroundSize = '100% 100%';
-    node.style.backgroundRepeat = 'no-repeat';
+    
+    /* ഹെഡർ മാഞ്ഞുപോകാതിരിക്കാനുള്ള ഫിക്സ് 2: നേരിട്ട് SVG വരയ്ക്കുന്നു */
+    const gid = 'g' + Math.random().toString(36).slice(2, 7);
+    const shape = isHeader ? tpl.h : tpl.f;
+    const colorA = isHeader ? c.hdA : c.ftA;
+    const colorB = isHeader ? c.hdB : c.ftB;
+    const body = shape.t === 'poly' ? '<polygon points="' + shape.d + '" fill="url(#' + gid + ')"/>' : '<path d="' + shape.d + '" fill="url(#' + gid + ')"/>';
+    
+    node.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%; display:block;"><defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="' + colorA + '"/><stop offset="100%" stop-color="' + colorB + '"/></linearGradient></defs>' + body + '</svg>';
   });
   return function undo() {
-    restore.forEach(function (r) { r.node.setAttribute('style', r.css); });
+    restore.forEach(function (r) { 
+        r.node.setAttribute('style', r.css); 
+        r.node.innerHTML = r.inner;
+    });
   };
 }
 
@@ -3158,16 +3164,16 @@ async function withCleanRender(fn) {
   const wasSelected = SELECTED;
   deselect();
   
-  /* CSS ഇൻസെർട്ട് ചെയ്യാനുള്ള എളുപ്പവഴി */
   let fixStyle = document.getElementById('export-fix-style');
   if(!fixStyle) {
       fixStyle = document.createElement('style');
       fixStyle.id = 'export-fix-style';
+      /* 4 മൂലകളും കൃത്യമായി റൗണ്ട് ആയി വരാൻ border-radius: 14px തിരികെ നൽകി */
       fixStyle.innerHTML = `
         body.exporting #stage { top: 0 !important; bottom: 0 !important; left: 0 !important; position: absolute !important; overflow: visible !important; }
         body.exporting #world { transform: none !important; padding: 0 !important; margin: 0 !important; gap: 20px !important; }
-        body.exporting .card { box-shadow: none !important; border: none !important; border-radius: 14px !important; margin: 0 !important; transform: none !important; }
-        body.exporting .el.selected { outline: none !important; }
+        body.exporting .card { box-shadow: none !important; border: none !important; margin: 0 !important; transform: none !important; border-radius: 14px !important; overflow: hidden !important; }
+        body.exporting .el.selected { outline: none !important; border-color: transparent !important; background: transparent !important; }
       `;
       document.head.appendChild(fixStyle);
   }
@@ -3223,7 +3229,6 @@ $('#btnPdf').addEventListener('click', function () {
     const jsPDFCtor = window.jspdf.jsPDF;
     const portrait = STATE.orientation === 'portrait';
     
-    /* ഇന്റർനാഷണൽ ഐഡി കാർഡ് സൈസ് (54mm x 86mm) */
     const wmm = portrait ? 54 : 86;
     const hmm = portrait ? 86 : 54;
     
@@ -3252,7 +3257,6 @@ function safeName() {
     .replace(/^-|-$/g, '')
     .toLowerCase() || 'idcard';
 }
-
 /* ------------------------------------------------------------------
    16. KEYBOARD NUDGE (desktop nicety)
    ------------------------------------------------------------------ */
