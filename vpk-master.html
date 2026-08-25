@@ -570,19 +570,27 @@
             container.innerHTML = html || '<div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:13px;">No clients found.</div>';
         }
 
-        // ==========================================
+       // ==========================================
         // PROMO ENGINE, IMPERSONATION, SETTINGS
         // ==========================================
         window.impersonateClient = async function(email) {
-            const ans = await window.magicConfirm(`SUPER ADMIN OVERRIDE\n\nYou are about to securely login directly into ${email}'s dashboard. Proceed?`);
+            const ans = await window.magicConfirm(`⚠️ SUPER ADMIN OVERRIDE\n\nLogin directly into ${email}'s dashboard securely?`);
             if(ans) {
+                // 1. മാസ്റ്റർ പാനലിന്റെ സീക്രട്ട് കീ എടുക്കുന്നു
+                const masterSession = localStorage.getItem('vpk-master-secret-key');
+                if(masterSession) {
+                    // 2. ഇആർപി ഗാർഡിന് (auth-check.js) മനസ്സിലാകാൻ വേണ്ടി സുരക്ഷിതമായി ആ കീ പാസ്സ് ചെയ്യുന്നു
+                    localStorage.setItem('sb-kwrugdbrzrfbmibaccwr-auth-token', masterSession);
+                }
+                
+                // 3. ക്ലയന്റിന്റെ ഐഡന്റിറ്റി സെറ്റ് ചെയ്യുന്നു
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('userRole', 'Super Admin'); 
-                alert("✅ Impersonation Active. Redirecting...");
+                
+                alert("✅ Master Key Accepted. Redirecting to Client Dashboard...");
                 setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
             }
         };
-
         window.openPromoModal = function(id, name, msg) {
             activeClientId = id;
             document.getElementById('pClientName').innerText = name;
