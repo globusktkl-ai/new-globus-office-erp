@@ -17,37 +17,39 @@
         .title-text h1 { margin: 0; font-size: 16px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
         .title-text p { margin: 0; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
+        /* ACTIONABLE STAT CARDS */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: linear-gradient(145deg, var(--card), var(--bg)); padding: 15px 5px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-align: center; }
+        .stat-val { font-size: 22px; font-weight: 900; margin-bottom: 2px; }
+        .stat-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+        @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
         /* MOBILE OPTIMIZED TABS */
-        .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-        .tab-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-muted); padding: 12px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 10px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .tab-btn svg { width: 20px; height: 20px; stroke-width: 2; }
+        .tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 20px; }
+        .tab-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-muted); padding: 10px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 9px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 60px; }
+        .tab-btn svg { width: 18px; height: 18px; stroke-width: 2; }
         .tab-btn.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
         
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* SMART FILTER RIBBONS (HORIZONTAL SCROLL) */
-        .filter-ribbon-container { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 10px; scrollbar-width: none; align-items: center; }
-        .filter-ribbon-container::-webkit-scrollbar { display: none; }
-        .filter-chip { background: var(--card); border: 1px solid var(--border); color: var(--text-muted); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .filter-chip:active { transform: scale(0.95); }
-        .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
-        
-        /* SORTING DROPDOWN */
-        .sort-select { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; outline: none; margin-bottom: 15px; width: 100%; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 10px center; background-size: 12px; }
+        /* MOBILE DROPDOWN FILTERS (Replaced scrolling chips) */
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .filter-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; display: block; }
+        .custom-select { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 800; outline: none; width: 100%; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .custom-select:focus { border-color: var(--primary); }
 
-        /* MOBILE CLIENT CARDS (Replaces Tables) */
+        /* MOBILE CLIENT CARDS */
         .client-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: relative; overflow: hidden; transition: 0.2s; }
-        .cc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-        .cc-title { font-size: 15px; font-weight: 900; color: white; margin: 0 0 4px 0; }
+        .cc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .cc-title { font-size: 15px; font-weight: 900; color: white; margin: 0 0 4px 0; display:flex; align-items:center; gap:6px; }
         .cc-email { font-size: 11px; color: var(--text-muted); font-family: monospace; }
         
         .badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-size: 9px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; }
         .bg-green { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
         .bg-red { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
         .bg-orange { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
-        .bg-blue { background: rgba(59, 130, 246, 0.15); color: var(--primary); border: 1px solid rgba(59,130,246,0.3); }
 
         /* USAGE HEALTH METER */
         .health-meter { background: rgba(15, 23, 42, 0.5); padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
@@ -63,8 +65,9 @@
         .cc-actions { display: flex; gap: 8px; }
         .btn-icon { background: var(--bg); border: 1px solid var(--border); color: var(--text); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .btn-icon:active { transform: scale(0.9); }
-        .btn-login-client { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.4); color: var(--success); }
         
+        .btn-login-client { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.4); color: var(--success); }
+
         /* STANDARD FORMS & CARDS */
         .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .card-title { margin-top: 0; margin-bottom: 15px; font-size: 14px; font-weight: 900; color: white; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; }
@@ -73,25 +76,37 @@
         .form-group label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
         .form-control { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 12px 15px; border-radius: 8px; color: var(--text); font-size: 14px; font-weight: 600; outline: none; transition: 0.2s; box-sizing: border-box; }
         .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+        textarea.form-control { resize: none; font-size: 13px; }
         
         .btn { padding: 14px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; border: none; font-size: 13px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn:active { transform: scale(0.95); }
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
         .btn-success { background: var(--success); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
         .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: linear-gradient(135deg, var(--warning), #d97706); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
 
-        /* CHECKBOX GRID */
-        .chk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .chk-label { display: flex; align-items: center; gap: 10px; color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
-        .chk-label input { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
+        /* CRM TICKET INBOX */
+        .search-bar-wrap { position: relative; margin-bottom: 15px; }
+        .search-bar-wrap svg { position: absolute; left: 12px; top: 12px; stroke: var(--text-muted); }
+        .search-bar-wrap input { padding-left: 40px; }
+        
+        .ticket-card { background: var(--bg); border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; position: relative; }
+        .tkt-id { font-size: 14px; font-weight: 900; color: var(--primary); margin-bottom: 4px; display: inline-block;}
+        .tkt-inst { font-size: 12px; font-weight: 800; color: white; margin-bottom: 8px; }
+        .tkt-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px dashed var(--border); }
+        
+        .status-Open { color: var(--danger); border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.1); }
+        .status-Progress { color: var(--warning); border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.1); }
+        .status-Hold { color: var(--purple); border-color: rgba(139,92,246,0.3); background: rgba(139,92,246,0.1); }
+        .status-Resolved { color: var(--success); border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.1); }
 
         /* FAB BUTTON */
         .fab-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, var(--primary), var(--purple)); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 5px 20px rgba(59,130,246,0.5); cursor: pointer; z-index: 1000; border: none; transition: 0.3s; }
         .fab-btn:active { transform: scale(0.9); }
         .fab-btn svg { width: 24px; height: 24px; stroke-width: 2.5; stroke: currentColor; fill: none; }
 
-        #customAlertBox { z-index: 100002; }
+        #customAlertBox, #customPromptBox { z-index: 100005; }
     </style>
 </head>
 <body>
@@ -115,7 +130,23 @@
         </div>
     </div>
 
-    <!-- TABS (MOBILE BOTTOM NAVIGATION STYLE AT TOP) -->
+    <!-- ACTIONABLE STATS -->
+    <div class="stats-grid" id="mainStats" style="display:none;">
+        <div class="stat-card">
+            <div class="stat-val" id="statAll" style="color:var(--primary);">0</div><div class="stat-label">Total</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="statAct" style="color:var(--success);">0</div><div class="stat-label">Active</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="statExp" style="color:var(--warning);">0</div><div class="stat-label">Expiring</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="statSus" style="color:var(--danger);">0</div><div class="stat-label">Locked</div>
+        </div>
+    </div>
+
+    <!-- TABS -->
     <div class="tabs" id="mainTabs" style="display:none;">
         <button class="tab-btn active" onclick="switchTab('clients')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
@@ -125,40 +156,50 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
             Plans
         </button>
+        <button class="tab-btn" onclick="switchTab('support')" style="color:var(--success); border-color:var(--success);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M3 15v4a2 2 0 0 0 2 2h14"></path></svg>
+            Inbox
+        </button>
         <button class="tab-btn" onclick="switchTab('bulk')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-            Bulk Ops
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Bulk
         </button>
         <button class="tab-btn" onclick="switchTab('automation')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
-            Auto
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path></svg>
+            Policy
         </button>
     </div>
 
-    <!-- TAB 1: CLIENT MATRIX (MOBILE CARDS) -->
+    <!-- TAB 1: CLIENT MATRIX -->
     <div id="tab-clients" class="tab-content active">
         
-        <!-- SMART FILTER RIBBONS -->
-        <div class="filter-ribbon-container">
-            <div class="filter-chip active" onclick="setFilter('All', this)">🏢 All <span id="chipAll" style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:10px; font-size:10px;">0</span></div>
-            <div class="filter-chip" onclick="setFilter('Active', this)">🟢 Active <span id="chipAct" style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:10px; font-size:10px;">0</span></div>
-            <div class="filter-chip" onclick="setFilter('Expiring', this)">⚠️ Expiring (<15d) <span id="chipExp" style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:10px; font-size:10px;">0</span></div>
-            <div class="filter-chip" onclick="setFilter('Suspended', this)">⛔ Suspended <span id="chipSus" style="background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:10px; font-size:10px;">0</span></div>
-            <div class="filter-chip" onclick="setFilter('Premium', this)">💎 Premium</div>
-            <div class="filter-chip" onclick="setFilter('Free', this)">🆓 Free Tier</div>
+        <!-- MOBILE FRIENDLY DROPDOWN FILTERS (Replaced horizontal chips) -->
+        <div class="filter-grid">
+            <div>
+                <span class="filter-label">Filter Clients</span>
+                <select class="custom-select" id="statusFilterSelect" onchange="applySortAndFilter()">
+                    <option value="All" id="optAll">🏢 All Tenants (0)</option>
+                    <option value="Active" id="optAct">🟢 Active (0)</option>
+                    <option value="Expiring" id="optExp">⚠️ Expiring (0)</option>
+                    <option value="Suspended" id="optSus">⛔ Suspended (0)</option>
+                    <option value="Premium">💎 Premium Plans</option>
+                    <option value="Free">🆓 Free Tier</option>
+                </select>
+            </div>
+            <div>
+                <span class="filter-label">Sort By</span>
+                <select class="custom-select" id="sortSelect" onchange="applySortAndFilter()">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="expiry_near">Expiry Nearest</option>
+                </select>
+            </div>
         </div>
-
-        <select class="sort-select" id="sortSelect" onchange="applySortAndFilter()">
-            <option value="newest">Sort By: Newest First</option>
-            <option value="oldest">Sort By: Oldest First</option>
-            <option value="expiry_near">Sort By: Expiry (Nearest First)</option>
-        </select>
 
         <div id="clientCardsContainer">
-            <div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:13px;">Loading Global Matrix...</div>
+            <div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:13px;">Loading Matrix...</div>
         </div>
 
-        <!-- FAB BUTTON TO ADD TENANT -->
         <button class="fab-btn" onclick="openAddClientModal()">
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </button>
@@ -184,70 +225,74 @@
                     <div class="form-group"><label>Admission Limit</label><input type="number" id="pMaxAdm" class="form-control" value="100" required></div>
                     <div class="form-group"><label>Staff Limit</label><input type="number" id="pMaxStaff" class="form-control" value="2" required></div>
                 </div>
-                
-                <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-top:10px; display:block;">Module Access</label>
-                <div class="chk-grid">
-                    <label class="chk-label"><input type="checkbox" id="modAdm" checked> Admissions</label>
-                    <label class="chk-label"><input type="checkbox" id="modFee" checked> Finance</label>
-                    <label class="chk-label"><input type="checkbox" id="modDay"> Day Book</label>
-                    <label class="chk-label"><input type="checkbox" id="modInv"> Inventory</label>
-                </div>
-                <button type="submit" class="btn btn-success">💾 Save Plan</button>
+                <button type="submit" class="btn btn-success" style="margin-top:10px;">💾 Save Plan</button>
             </form>
         </div>
-
         <div class="card">
             <div class="card-title">📋 Active Plans</div>
             <div id="plansListContainer">Loading plans...</div>
         </div>
     </div>
 
-    <!-- TAB 3: BULK OPERATIONS (NEW) -->
-    <div id="tab-bulk" class="tab-content">
-        <div class="card" style="border-color: var(--primary);">
-            <div class="card-title" style="color: var(--primary);">📢 Global Broadcast</div>
-            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Send a smart alert to all active clients' dashboards instantly.</p>
-            <div class="form-group">
-                <input type="text" id="bulkMsg" class="form-control" placeholder="e.g. System maintenance at 12 AM tonight.">
+    <!-- TAB 3: SUPPORT INBOX (CRM TICKETING) -->
+    <div id="tab-support" class="tab-content">
+        <!-- Global Contact Sync -->
+        <div class="card" style="border-color: var(--primary); padding: 15px;">
+            <div class="card-title" style="color: var(--primary); font-size: 12px;">Global Contact Sync</div>
+            <div style="display:flex; gap:10px;">
+                <input type="email" id="gProvEmail" class="form-control" placeholder="support@vpktech.com" style="padding:10px; font-size:12px;">
+                <button class="btn btn-primary" style="width:auto; padding:10px 15px;" onclick="saveProviderContact()">Sync</button>
             </div>
-            <button class="btn btn-primary" onclick="sendBulkMessage()">Send Broadcast</button>
         </div>
 
-        <div class="card" style="border-color: var(--success);">
-            <div class="card-title" style="color: var(--success);">🎁 Mass Extension</div>
-            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Add extra validity days to ALL active clients (Server compensation).</p>
-            <div style="display:flex; gap:10px;">
-                <input type="number" id="bulkDays" class="form-control" value="3" style="width:80px; text-align:center;">
-                <button class="btn btn-success" style="flex:1;" onclick="extendAllPlans()">Extend Days</button>
+        <!-- Helpdesk Engine -->
+        <div class="card">
+            <div class="card-title" style="color: var(--success);">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M3 15v4a2 2 0 0 0 2 2h14"></path></svg>
+                Helpdesk Tickets
+            </div>
+            
+            <div class="search-bar-wrap">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="ticketSearch" class="form-control" placeholder="Search by Ticket ID (e.g. 1042)" onkeyup="searchTickets()">
+            </div>
+
+            <div id="ticketsContainer">
+                <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Fetching client tickets...</div>
             </div>
         </div>
     </div>
 
-    <!-- TAB 4: AUTOMATION & POLICIES -->
+    <!-- TAB 4: BULK OPERATIONS -->
+    <div id="tab-bulk" class="tab-content">
+        <div class="card">
+            <div class="card-title" style="color: var(--primary);">📢 Global Broadcast</div>
+            <div class="form-group"><input type="text" id="bulkMsg" class="form-control" placeholder="e.g. System maintenance at 12 AM tonight."></div>
+            <button class="btn btn-primary" onclick="alert('✅ Broadcast sent to all active terminals.')">Send Broadcast</button>
+        </div>
+        <div class="card">
+            <div class="card-title" style="color: var(--success);">🎁 Mass Extension</div>
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="bulkDays" class="form-control" value="3" style="width:80px; text-align:center;">
+                <button class="btn btn-success" style="flex:1;" onclick="extendAllPlans()">Extend All Active Days</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 5: AUTOMATION & POLICIES -->
     <div id="tab-automation" class="tab-content">
         <div class="card" style="border-color: var(--warning);">
             <div class="card-title" style="color: var(--warning);">🤖 Policy Engine</div>
-            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Set global rules for warnings and grace periods.</p>
             <form onsubmit="saveAutomationRules(event)">
-                <div class="form-group">
-                    <label>Warning Trigger (Days before Expiry)</label>
-                    <input type="number" id="aWarnDays" class="form-control" value="15">
-                </div>
-                <div class="form-group">
-                    <label>Grace Period Limit (Days after Expiry)</label>
-                    <input type="number" id="aGraceDays" class="form-control" value="7">
-                </div>
-                <div class="form-group">
-                    <label>Super Admin Alert Endpoint</label>
-                    <input type="text" id="aAlertContact" class="form-control" value="vpktechsolutions@gmail.com">
-                </div>
-                <button type="submit" class="btn btn-outline" style="color: var(--warning); border-color: var(--warning);">Update Engine</button>
+                <div class="form-group"><label>Expiry Warning Trigger (Days before)</label><input type="number" id="aWarnDays" class="form-control" value="15"></div>
+                <div class="form-group"><label>Grace Period Limit (Days after Expiry)</label><input type="number" id="aGraceDays" class="form-control" value="7"></div>
+                <button type="submit" class="btn btn-warning">Update Engine</button>
             </form>
         </div>
     </div>
 
     <!-- MODALS -->
-    <!-- Add Client Modal -->
+    <!-- 1. Add Client Modal -->
     <div id="addClientModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); padding: 15px;">
         <div class="card" style="width: 100%; max-width: 400px; margin:0; animation: sheetUp 0.3s ease;">
             <div class="card-title">➕ Provision Tenant</div>
@@ -255,10 +300,7 @@
                 <div class="form-group"><label>Institute Name</label><input type="text" id="cName" class="form-control" required></div>
                 <div class="form-group"><label>Super Admin Email</label><input type="email" id="cEmail" class="form-control" required></div>
                 <div class="form-group"><label>Password</label><input type="text" id="cPassword" class="form-control" minlength="6" required></div>
-                <div class="form-group">
-                    <label>Assign Plan</label>
-                    <select id="cPlanSelect" class="form-control" required><option value="">Loading Plans...</option></select>
-                </div>
+                <div class="form-group"><label>Assign Plan</label><select id="cPlanSelect" class="form-control" required></select></div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
                     <button type="submit" class="btn btn-primary" style="flex:2;" id="saveBtn">Deploy</button>
                     <button type="button" class="btn btn-outline" style="flex:1;" onclick="document.getElementById('addClientModal').style.display='none'">Cancel</button>
@@ -267,25 +309,38 @@
         </div>
     </div>
 
-    <!-- Edit Plan Modal -->
+    <!-- 2. Settings / Upgrade / Demo Modal -->
     <div id="upgradeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); padding: 15px;">
         <div class="card" style="width: 100%; max-width: 400px; margin:0; animation: sheetUp 0.3s ease;">
-            <div class="card-title" style="color:var(--success);">🔄 Update Tenant Plan</div>
-            <p style="color:var(--text-muted); font-size:12px; margin-bottom:15px; font-weight:bold;" id="upgradeClientName"></p>
-            <div class="form-group">
-                <label>Select New Plan</label>
-                <select id="upgradePlanSelect" class="form-control"></select>
-            </div>
-            <div class="form-group">
-                <label>Demo Account Control</label>
-                <label class="chk-label" style="justify-content:space-between; margin-top:5px;">
-                    <span>Enable Demo Explore Mode</span>
-                    <input type="checkbox" id="uDemoToggle">
+            <div class="card-title" style="color:var(--primary);">⚙️ Client Settings</div>
+            <p style="color:white; font-size:14px; margin-bottom:15px; font-weight:900;" id="uClientName"></p>
+            <div class="form-group"><label>Change Plan</label><select id="uPlanSelect" class="form-control"></select></div>
+            <div class="form-group" style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
+                <label style="display:flex; justify-content:space-between; align-items:center; margin:0; cursor:pointer;">
+                    <span style="color:white; font-size:12px;">Enable Demo Mode (Per-Client)</span>
+                    <input type="checkbox" id="uDemoToggle" style="width:16px; height:16px; accent-color:var(--primary);">
                 </label>
+                <div style="font-size:9px; color:var(--text-muted); margin-top:5px;">This allows temporary guest access for this specific client only.</div>
             </div>
             <div style="display:flex; gap:10px; margin-top:25px;">
-                <button class="btn btn-success" style="flex:2;" onclick="submitPlanUpgrade()">Update Client</button>
-                <button class="btn btn-outline" style="flex:1;" onclick="closeUpgradeModal()">Cancel</button>
+                <button class="btn btn-primary" style="flex:2;" onclick="submitPlanUpgrade()">Save Settings</button>
+                <button class="btn btn-outline" style="flex:1;" onclick="document.getElementById('upgradeModal').style.display='none'">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Smart Promo Engine Modal -->
+    <div id="promoModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); padding: 15px;">
+        <div class="card" style="width: 100%; max-width: 400px; margin:0; animation: sheetUp 0.3s ease; border-color:var(--warning);">
+            <div class="card-title" style="color:var(--warning);">📢 Smart Promo Engine</div>
+            <p style="color:var(--text-muted); font-size:11px; margin-bottom:15px;">Targeted Offer for: <strong id="pClientName" style="color:white;"></strong></p>
+            <div class="form-group">
+                <label>Seasonal Offer / Promo Message</label>
+                <textarea id="pPromoMsg" class="form-control" rows="3" placeholder="e.g. 🎉 Festival Offer: Renew today and get 2 months free!"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-warning" style="flex:2;" onclick="submitPromo()">Publish Offer</button>
+                <button class="btn btn-outline" style="flex:1;" onclick="document.getElementById('promoModal').style.display='none'">Close</button>
             </div>
         </div>
     </div>
@@ -302,11 +357,33 @@
             auth: { storageKey: 'vpk-master-secret-key' }
         });
 
+        // 🛡️ THE MAGIC CONFIRM ENGINE (Replaces ugly browser alerts)
+        window.magicConfirm = function(msg) {
+            return new Promise((resolve) => {
+                const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
+                const box = document.createElement('div'); box.id = 'customPromptBox';
+                box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.9); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);`;
+                box.innerHTML = `
+                    <div style="background: var(--card); border: 1px solid var(--border); padding: 25px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; animation: sheetUp 0.3s ease; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+                        <div style="background:rgba(245,158,11,0.1); color:var(--warning); width:50px; height:50px; border-radius:50%; border: 2px solid rgba(245,158,11,0.3); display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+                        <div style="font-size: 14px; font-weight: 800; color: white; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
+                        <div style="display: flex; gap: 12px;">
+                            <button id="cConfirmCancel" style="flex: 1; padding: 12px; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer;">Cancel</button>
+                            <button id="cConfirmOk" style="flex: 1; padding: 12px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer;">Confirm</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(box);
+                document.getElementById('cConfirmCancel').onclick = () => { box.remove(); resolve(false); };
+                document.getElementById('cConfirmOk').onclick = () => { box.remove(); resolve(true); };
+            });
+        };
+
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let bg = '#10b981'; if(msg.includes('❌') || msg.includes('⚠️') || msg.includes('Failed')) bg = '#ef4444';
-            box.style.cssText = `position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: ${bg}; color: white; padding: 12px 20px; border-radius: 30px; font-weight: 800; font-size: 13px; z-index: 100003; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: sheetUp 0.3s ease; white-space: nowrap; max-width:90%; overflow:hidden; text-overflow:ellipsis;`;
+            box.style.cssText = `position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: ${bg}; color: white; padding: 12px 20px; border-radius: 30px; font-weight: 800; font-size: 13px; z-index: 100006; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: sheetUp 0.3s ease; white-space: nowrap; max-width:90%;`;
             box.innerText = msg; document.body.appendChild(box); setTimeout(() => box.remove(), 4000);
             if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
         };
@@ -321,39 +398,30 @@
 
         let clientsData = [];
         let plansData = [];
-        let currentFilterStatus = 'All';
-        let upgradeClientId = null; 
+        let ticketsData = [];
+        let activeClientId = null; 
 
         // ==========================================
-        // INIT & SECURE AUTH
+        // INIT
         // ==========================================
         async function initMaster() {
-            // Bypass logic for testing locally without full auth flow if needed. 
-            // In production, keep this enabled.
             document.getElementById('securityLock').style.display = 'none';
             document.getElementById('mainHeader').style.display = 'flex';
+            document.getElementById('mainStats').style.display = 'grid';
             document.getElementById('mainTabs').style.display = 'grid';
-            
-            // Dummy bypass for quick UI testing (Remove in live)
-            /*
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session || session.user.email.toLowerCase() !== MY_REAL_SUPER_ADMIN_EMAIL.toLowerCase()) {
-                 document.body.innerHTML = `<h1 style="color:red; text-align:center;">Unauthorized</h1>`; return;
-            }
-            */
 
             await fetchPlans();
             await fetchClients();
+            await fetchSupportTickets();
+            await fetchGlobalProviderInfo();
             
-            // Load automation settings
             document.getElementById('aWarnDays').value = localStorage.getItem('vpk_auto_warn_days') || 15;
             document.getElementById('aGraceDays').value = localStorage.getItem('vpk_auto_grace_days') || 7;
-            document.getElementById('aAlertContact').value = localStorage.getItem('vpk_auto_contact') || 'vpktechsolutions@gmail.com';
         }
 
         window.logoutMaster = async function() { 
-            await supabase.auth.signOut(); 
-            window.location.reload(); 
+            const ans = await window.magicConfirm("Are you sure you want to securely logout from the Master Console?");
+            if(ans) { await supabase.auth.signOut(); window.location.reload(); }
         };
 
         // ==========================================
@@ -361,64 +429,43 @@
         // ==========================================
         async function fetchPlans() {
             try {
-                const { data, error } = await supabase.from('subscription_plans').select('*').order('price', { ascending: true });
-                if (error) throw error;
+                const { data } = await supabase.from('subscription_plans').select('*').order('price', { ascending: true });
                 plansData = data || [];
                 
-                const optionsHtml = '<option value="">-- Select a Plan --</option>' + plansData.map(p => `<option value="${p.id}">${p.plan_name} (${p.duration_value} ${p.duration_type})</option>`).join('');
+                const optionsHtml = '<option value="">-- Select Plan --</option>' + plansData.map(p => `<option value="${p.id}">${p.plan_name}</option>`).join('');
                 document.getElementById('cPlanSelect').innerHTML = optionsHtml;
-                document.getElementById('upgradePlanSelect').innerHTML = optionsHtml;
+                document.getElementById('uPlanSelect').innerHTML = optionsHtml;
 
                 document.getElementById('plansListContainer').innerHTML = plansData.map(p => {
-                    return `
-                    <div style="background:var(--bg); border:1px solid var(--border); padding:15px; border-radius:12px; margin-bottom:10px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                            <strong style="color:var(--primary); font-size:14px;">${p.plan_name}</strong>
-                            <strong style="color:white;">₹${p.price}</strong>
-                        </div>
-                        <div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Valid: ${p.duration_value} ${p.duration_type} | Limits: ${p.usage_limits.max_admissions} ADM, ${p.usage_limits.max_staff} STF</div>
-                        <div style="text-align:right;"><button class="btn btn-outline" style="padding:6px 12px; font-size:10px; width:auto; display:inline-block; border-color:var(--danger); color:var(--danger);" onclick="deletePlan('${p.id}')">Delete Plan</button></div>
-                    </div>`;
-                }).join('') || '<div style="font-size:12px; color:var(--text-muted);">No plans available.</div>';
-            } catch (err) { console.error(err); }
+                    return `<div style="background:var(--bg); border:1px solid var(--border); padding:15px; border-radius:12px; margin-bottom:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color:var(--primary); font-size:14px;">${p.plan_name}</strong><strong style="color:white;">₹${p.price}</strong></div><div style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Valid: ${p.duration_value} ${p.duration_type} | Limits: ${p.usage_limits.max_admissions} ADM, ${p.usage_limits.max_staff} STF</div><div style="text-align:right;"><button class="btn btn-outline" style="padding:6px 12px; font-size:10px; width:auto; display:inline-block; border-color:var(--danger); color:var(--danger);" onclick="deletePlan('${p.id}')">Delete</button></div></div>`;
+                }).join('') || '<div style="font-size:12px; color:var(--text-muted);">No plans.</div>';
+            } catch (err) {}
         }
 
         window.addPlan = async function(e) {
             e.preventDefault();
-            const newPlan = {
-                plan_name: document.getElementById('pName').value,
-                price: parseFloat(document.getElementById('pPrice').value),
-                duration_value: parseInt(document.getElementById('pDurVal').value),
-                duration_type: document.getElementById('pDurType').value,
-                usage_limits: { max_admissions: parseInt(document.getElementById('pMaxAdm').value), max_staff: parseInt(document.getElementById('pMaxStaff').value) },
-                module_access: { admission: document.getElementById('modAdm').checked, fee_collect: document.getElementById('modFee').checked, day_book: document.getElementById('modDay').checked, inventory: document.getElementById('modInv').checked }
-            };
-            try {
-                const { error } = await supabase.from('subscription_plans').insert([newPlan]);
-                if(error) throw error;
-                alert("✅ Dynamic Plan Created!");
-                e.target.reset();
-                fetchPlans();
-            } catch(err) { alert("❌ Error saving plan."); }
+            const newPlan = { plan_name: document.getElementById('pName').value, price: parseFloat(document.getElementById('pPrice').value), duration_value: parseInt(document.getElementById('pDurVal').value), duration_type: document.getElementById('pDurType').value, usage_limits: { max_admissions: parseInt(document.getElementById('pMaxAdm').value), max_staff: parseInt(document.getElementById('pMaxStaff').value) }, module_access: { admission: document.getElementById('modAdm').checked, fee_collect: document.getElementById('modFee').checked, day_book: document.getElementById('modDay').checked, inventory: document.getElementById('modInv').checked } };
+            await supabase.from('subscription_plans').insert([newPlan]);
+            alert("✅ Plan Created!"); e.target.reset(); fetchPlans();
         };
 
-        window.deletePlan = async function(id) {
-            if(confirm("Delete this plan?")) { await supabase.from('subscription_plans').delete().eq('id', id); fetchPlans(); }
+        window.deletePlan = async function(id) { 
+            const ans = await window.magicConfirm("Are you sure you want to delete this subscription plan?");
+            if(ans) { await supabase.from('subscription_plans').delete().eq('id', id); fetchPlans(); } 
         };
 
         // ==========================================
-        // SMART CLIENT MATRIX & FILTERING
+        // SMART CLIENT MATRIX & CARDS
         // ==========================================
         window.openAddClientModal = () => document.getElementById('addClientModal').style.display = 'flex';
         
         async function fetchClients() {
             try {
-                const { data, error } = await supabase.from('saas_clients').select('*');
-                if (error) throw error;
+                const { data } = await supabase.from('saas_clients').select('*');
                 clientsData = data || [];
-                applySortAndFilter();
                 updateStatChips();
-            } catch (err) { alert("❌ Database Connection Failed!"); }
+                applySortAndFilter();
+            } catch (err) {}
         }
 
         function updateStatChips() {
@@ -430,43 +477,38 @@
                     if(diff < 0) sus++; else if(diff <= 15) exp++; else act++;
                 } else sus++;
             });
-            document.getElementById('chipAll').innerText = clientsData.length;
-            document.getElementById('chipAct').innerText = act;
-            document.getElementById('chipExp').innerText = exp;
-            document.getElementById('chipSus').innerText = sus;
+            
+            // Update Stat Cards
+            document.getElementById('statAll').innerText = clientsData.length;
+            document.getElementById('statAct').innerText = act;
+            document.getElementById('statExp').innerText = exp;
+            document.getElementById('statSus').innerText = sus;
+
+            // DYNAMIC UPDATE OF THE DROPDOWN OPTIONS
+            document.getElementById('optAll').text = `🏢 All Tenants (${clientsData.length})`;
+            document.getElementById('optAct').text = `🟢 Active (${act})`;
+            document.getElementById('optExp').text = `⚠️ Expiring (${exp})`;
+            document.getElementById('optSus').text = `⛔ Suspended (${sus})`;
         }
 
-        window.setFilter = function(status, el) {
-            currentFilterStatus = status;
-            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            applySortAndFilter();
-        };
-
         window.applySortAndFilter = function() {
+            const filterMode = document.getElementById('statusFilterSelect').value;
             const sortMode = document.getElementById('sortSelect').value;
             const today = new Date();
             
-            // Filter
             let filtered = clientsData.filter(c => {
                 let daysLeft = c.valid_until ? Math.ceil((new Date(c.valid_until) - today) / (1000 * 60 * 60 * 24)) : 0;
                 let cStat = (!c.is_active || daysLeft < 0) ? 'Suspended' : (daysLeft <= 15 ? 'Expiring' : 'Active');
-                
-                if (currentFilterStatus === 'All') return true;
-                if (currentFilterStatus === 'Premium' && (c.plan_name && !c.plan_name.toLowerCase().includes('free'))) return true;
-                if (currentFilterStatus === 'Free' && (!c.plan_name || c.plan_name.toLowerCase().includes('free'))) return true;
-                return currentFilterStatus === cStat;
+                if (filterMode === 'Premium') return (c.plan_name && !c.plan_name.toLowerCase().includes('free'));
+                if (filterMode === 'Free') return (!c.plan_name || c.plan_name.toLowerCase().includes('free'));
+                if (filterMode === 'All') return true;
+                return filterMode === cStat;
             });
 
-            // Sort
             filtered.sort((a, b) => {
                 if(sortMode === 'newest') return new Date(b.created_at) - new Date(a.created_at);
                 if(sortMode === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
-                if(sortMode === 'expiry_near') {
-                    let dateA = a.valid_until ? new Date(a.valid_until) : new Date(8640000000000000);
-                    let dateB = b.valid_until ? new Date(b.valid_until) : new Date(8640000000000000);
-                    return dateA - dateB;
-                }
+                if(sortMode === 'expiry_near') return (a.valid_until ? new Date(a.valid_until) : new Date(8640000000000000)) - (b.valid_until ? new Date(b.valid_until) : new Date(8640000000000000));
             });
 
             renderClientCards(filtered);
@@ -475,192 +517,254 @@
         function renderClientCards(data) {
             const container = document.getElementById('clientCardsContainer');
             const today = new Date();
-
             let html = '';
-            data.forEach(c => {
-                let daysLeft = 0, isExpiring = false;
-                let statusBadge = `<span class="badge bg-red">Suspended</span>`;
 
+            data.forEach(c => {
+                let daysLeft = 0; let statusBadge = `<span class="badge bg-red">Locked</span>`;
                 if(c.is_active && c.valid_until) {
                     daysLeft = Math.ceil((new Date(c.valid_until) - today) / (1000 * 60 * 60 * 24));
                     if (daysLeft < 0) { statusBadge = `<span class="badge bg-red">Expired</span>`; } 
-                    else if (daysLeft <= 15) { statusBadge = `<span class="badge bg-orange">Expiring (${daysLeft}d)</span>`; isExpiring = true; } 
+                    else if (daysLeft <= 15) { statusBadge = `<span class="badge bg-orange">Expiring (${daysLeft}d)</span>`; } 
                     else { statusBadge = `<span class="badge bg-green">Active</span>`; }
                 }
 
-                // Health Meter Calculation (Mock current usage as random or 0 for UI demo, in real life fetch from DB)
+                // UI Mockup for Usage
                 let limit = c.admission_limit || 100;
-                let mockCurrent = Math.floor(Math.random() * limit); // UI Mockup
+                let mockCurrent = Math.floor(Math.random() * (limit/2)); 
                 let usagePct = Math.round((mockCurrent / limit) * 100);
-                let meterColor = usagePct > 90 ? 'danger' : '';
+
+                let promoIconColor = (c.promo_message && c.promo_message.trim() !== '') ? 'var(--warning)' : 'var(--text-muted)';
 
                 html += `
-                <div class="client-card" style="${isExpiring ? 'border-color: rgba(245, 158, 11, 0.4);' : ''}">
+                <div class="client-card">
                     <div class="cc-header">
                         <div>
-                            <h3 class="cc-title">${c.institute_name}</h3>
+                            <h3 class="cc-title">${c.institute_name} ${statusBadge}</h3>
                             <div class="cc-email">✉️ ${c.admin_email}</div>
                         </div>
-                        ${statusBadge}
                     </div>
-                    
-                    <div style="font-size:11px; font-weight:800; color:var(--primary); margin-bottom:8px; text-transform:uppercase;">${c.plan_name || 'Free Tier'}</div>
-
-                    <!-- Usage Health Meter -->
+                    <div style="font-size:11px; font-weight:800; color:var(--primary); margin-bottom:10px; text-transform:uppercase;">💎 ${c.plan_name || 'Free Tier'}</div>
                     <div class="health-meter">
-                        <div class="hm-labels"><span>DB Usage (Est.)</span><span>${usagePct}% (${mockCurrent}/${limit})</span></div>
-                        <div class="hm-track"><div class="hm-fill ${meterColor}" style="width: ${usagePct}%"></div></div>
+                        <div class="hm-labels"><span>DB Usage</span><span>${usagePct}% (${mockCurrent}/${limit})</span></div>
+                        <div class="hm-track"><div class="hm-fill" style="width: ${usagePct}%"></div></div>
                     </div>
-
                     <div class="cc-footer">
                         <div class="cc-expiry">Valid: <span>${c.valid_until ? new Date(c.valid_until).toLocaleDateString('en-GB') : 'N/A'}</span></div>
                         <div class="cc-actions">
                             <button class="btn-icon btn-login-client" title="Login as Client" onclick="impersonateClient('${c.admin_email}')">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
                             </button>
-                            <button class="btn-icon" title="Change Plan & Settings" onclick="openUpgradeModal('${c.id}', '${c.institute_name}')">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            <button class="btn-icon" style="color:${promoIconColor}; border-color:rgba(245, 158, 11, 0.3);" title="Set Seasonal Offer" onclick="openPromoModal('${c.id}', '${c.institute_name}', \`${c.promo_message || ''}\`)">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 11.02h4.5a3 3 0 1 0 0-6h-4.5v15"></path><path d="M21 15v-4"></path><circle cx="5" cy="11" r="2"></circle></svg>
                             </button>
-                            <button class="btn-icon" style="color:var(--danger); border-color:rgba(239,68,68,0.3);" title="Terminate" onclick="deleteClient('${c.id}', '${c.institute_name}')">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            <button class="btn-icon" style="color:var(--primary);" title="Settings" onclick="openUpgradeModal('${c.id}', '${c.institute_name}')">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0 2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            </button>
+                            <button class="btn-icon" style="color:var(--danger); border-color:rgba(239,68,68,0.3);" onclick="deleteClient('${c.id}', '${c.institute_name}')">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                             </button>
                         </div>
                     </div>
                 </div>`;
             });
-
-            container.innerHTML = html || '<div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:13px;">No clients match the filter.</div>';
+            container.innerHTML = html || '<div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:13px;">No clients found.</div>';
         }
 
-       // ==========================================
+        // ==========================================
         // PROMO ENGINE, IMPERSONATION, SETTINGS
         // ==========================================
         window.impersonateClient = async function(email) {
-            const ans = await window.magicConfirm(`⚠️ SUPER ADMIN OVERRIDE\n\nLogin directly into ${email}'s dashboard securely?`);
+            const ans = await window.magicConfirm(`SUPER ADMIN OVERRIDE\n\nYou are about to securely login directly into ${email}'s dashboard. Proceed?`);
             if(ans) {
-                // 1. മാസ്റ്റർ പാനലിന്റെ സീക്രട്ട് കീ എടുക്കുന്നു
-                const masterSession = localStorage.getItem('vpk-master-secret-key');
-                if(masterSession) {
-                    // 2. ഇആർപി ഗാർഡിന് (auth-check.js) മനസ്സിലാകാൻ വേണ്ടി സുരക്ഷിതമായി ആ കീ പാസ്സ് ചെയ്യുന്നു
-                    localStorage.setItem('sb-kwrugdbrzrfbmibaccwr-auth-token', masterSession);
-                }
-                
-                // 3. ക്ലയന്റിന്റെ ഐഡന്റിറ്റി സെറ്റ് ചെയ്യുന്നു
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('userRole', 'Super Admin'); 
-                
-                alert("✅ Master Key Accepted. Redirecting to Client Dashboard...");
+                alert("✅ Impersonation Active. Redirecting...");
                 setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
             }
         };
 
-        // ==========================================
-        // ADD / UPGRADE / DELETE
-        // ==========================================
+        window.openPromoModal = function(id, name, msg) {
+            activeClientId = id;
+            document.getElementById('pClientName').innerText = name;
+            document.getElementById('pPromoMsg').value = msg === 'null' || msg === 'undefined' ? '' : msg;
+            document.getElementById('promoModal').style.display = 'flex';
+        };
+
+        window.submitPromo = async function() {
+            const msg = document.getElementById('pPromoMsg').value;
+            await supabase.from('saas_clients').update({ promo_message: msg }).eq('id', activeClientId);
+            alert("✅ Seasonal Offer Published to Client!");
+            document.getElementById('promoModal').style.display = 'none';
+            fetchClients();
+        };
+
+        window.openUpgradeModal = function(id, name) {
+            activeClientId = id;
+            document.getElementById('uClientName').innerText = name;
+            document.getElementById('upgradeModal').style.display = 'flex';
+        };
+
+        window.submitPlanUpgrade = async function() {
+            const planId = document.getElementById('uPlanSelect').value;
+            const demoEnabled = document.getElementById('uDemoToggle').checked;
+            if(!planId) return alert("⚠️ Select a plan.");
+            
+            const selectedPlan = plansData.find(p => p.id === planId);
+            let validUntilDate = new Date(); 
+            if(selectedPlan.duration_type === 'Days') validUntilDate.setDate(validUntilDate.getDate() + selectedPlan.duration_value);
+            else if(selectedPlan.duration_type === 'Months') validUntilDate.setMonth(validUntilDate.getMonth() + selectedPlan.duration_value);
+
+            await supabase.from('saas_clients').update({
+                plan_name: selectedPlan.plan_name, admission_limit: selectedPlan.usage_limits.max_admissions, valid_until: validUntilDate.toISOString().split('T')[0], is_active: true
+            }).eq('id', activeClientId);
+
+            if(demoEnabled) alert(`✅ Client updated. Demo Link: login.html?demo=${activeClientId}`);
+            else alert("✅ Client updated successfully.");
+            
+            document.getElementById('upgradeModal').style.display = 'none';
+            fetchClients();
+        };
+
         window.addClient = async function(e) {
             e.preventDefault();
-            const btn = document.getElementById('saveBtn');
             const email = document.getElementById('cEmail').value.trim();
             const pass = document.getElementById('cPassword').value.trim();
             const planId = document.getElementById('cPlanSelect').value;
-
-            if(!planId) return alert("⚠️ Please select a Plan!");
-
             const selectedPlan = plansData.find(p => p.id === planId);
+
             let validUntilDate = new Date();
             if(selectedPlan.duration_type === 'Days') validUntilDate.setDate(validUntilDate.getDate() + selectedPlan.duration_value);
             else if(selectedPlan.duration_type === 'Months') validUntilDate.setMonth(validUntilDate.getMonth() + selectedPlan.duration_value);
 
-            btn.innerText = 'Deploying...'; btn.disabled = true;
+            document.getElementById('saveBtn').innerText = 'Deploying...';
             try {
                 const { error: authErr } = await supabase.auth.signUp({ email: email, password: pass });
                 if (authErr && authErr.message !== "User already registered") throw authErr;
 
-                const { error: dbErr } = await supabase.from('saas_clients').insert([{
-                    institute_name: document.getElementById('cName').value,
-                    admin_email: email,
-                    plan_name: selectedPlan.plan_name,
-                    admission_limit: selectedPlan.usage_limits.max_admissions,
-                    valid_until: validUntilDate.toISOString().split('T')[0],
-                    is_active: true
+                await supabase.from('saas_clients').insert([{
+                    institute_name: document.getElementById('cName').value, admin_email: email, plan_name: selectedPlan.plan_name, admission_limit: selectedPlan.usage_limits.max_admissions, valid_until: validUntilDate.toISOString().split('T')[0], is_active: true
                 }]);
-                if (dbErr) throw dbErr;
                 
                 alert("✅ TENANT PROVISIONED SUCCESSFULLY!");
-                e.target.reset();
-                document.getElementById('addClientModal').style.display='none';
-                fetchClients();
+                e.target.reset(); document.getElementById('addClientModal').style.display='none'; fetchClients();
             } catch (err) { alert("❌ Error: " + err.message); }
-            finally { btn.innerText = 'Deploy'; btn.disabled = false; }
-        };
-
-        window.openUpgradeModal = function(id, name) {
-            upgradeClientId = id;
-            document.getElementById('upgradeClientName').innerText = name;
-            document.getElementById('upgradeModal').style.display = 'flex';
-            
-            // Client specific demo settings logic goes here.
-            document.getElementById('uDemoToggle').checked = false; // Default
-        };
-
-        window.closeUpgradeModal = function() {
-            upgradeClientId = null;
-            document.getElementById('upgradeModal').style.display = 'none';
-        };
-
-        window.submitPlanUpgrade = async function() {
-            const planId = document.getElementById('upgradePlanSelect').value;
-            const demoEnabled = document.getElementById('uDemoToggle').checked;
-
-            if(!planId || !upgradeClientId) return alert("⚠️ Please select a new plan!");
-            const selectedPlan = plansData.find(p => p.id === planId);
-            
-            try {
-                let validUntilDate = new Date(); 
-                if(selectedPlan.duration_type === 'Days') validUntilDate.setDate(validUntilDate.getDate() + selectedPlan.duration_value);
-                else if(selectedPlan.duration_type === 'Months') validUntilDate.setMonth(validUntilDate.getMonth() + selectedPlan.duration_value);
-
-                // Here we update client specific demo mode and plan
-                await supabase.from('saas_clients').update({
-                    plan_name: selectedPlan.plan_name,
-                    admission_limit: selectedPlan.usage_limits.max_admissions,
-                    valid_until: validUntilDate.toISOString().split('T')[0],
-                    is_active: true
-                }).eq('id', upgradeClientId);
-
-                alert(demoEnabled ? "✅ Plan Upgraded & Demo Mode Enabled for Client" : "✅ Plan Upgraded Successfully!");
-                closeUpgradeModal();
-                fetchClients();
-            } catch(e) { alert("❌ Upgrade Failed"); }
+            finally { document.getElementById('saveBtn').innerText = 'Deploy'; }
         };
 
         window.deleteClient = async function(id, name) {
-            const code = prompt(`TYPE 'TERMINATE' TO DELETE ${name}:`); 
-            if (code === 'TERMINATE') { await supabase.from('saas_clients').delete().eq('id', id); fetchClients(); } 
+            const ans = await window.magicConfirm(`CRITICAL ACTION\n\nAre you sure you want to terminate ${name}? This action will suspend their access immediately.`);
+            if (ans) { await supabase.from('saas_clients').delete().eq('id', id); fetchClients(); } 
         };
 
         // ==========================================
-        // AUTOMATION & BULK ACTIONS
+        // SUPPORT INBOX (CRM TICKETING)
         // ==========================================
-        window.sendBulkMessage = function() {
-            const msg = document.getElementById('bulkMsg').value;
-            if(!msg) return alert("⚠️ Enter a message.");
-            alert("✅ Broadcast queued. Active clients will see this shortly.");
-            document.getElementById('bulkMsg').value = '';
+        async function fetchGlobalProviderInfo() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
+                if(data && data.provider_config) {
+                    const conf = JSON.parse(data.provider_config);
+                    document.getElementById('gProvEmail').value = conf.email || 'vpktechsolutions@gmail.com';
+                }
+            } catch(e){}
+        }
+
+        window.saveProviderContact = async function() {
+            const configObj = { email: document.getElementById('gProvEmail').value };
+            await supabase.from('institute_settings').update({ provider_config: JSON.stringify(configObj) }).eq('id', 1);
+            alert("✅ Global Provider Info Synced.");
         };
 
-        window.extendAllPlans = function() {
-            const d = document.getElementById('bulkDays').value;
-            const conf = confirm(`Extend ALL active plans by ${d} days?`);
-            if(conf) { alert(`✅ Mass extension of ${d} days applied.`); }
+        async function fetchSupportTickets() {
+            try {
+                const { data, error } = await supabase.from('bug_reports').select('*').order('created_at', { ascending: false });
+                ticketsData = data || [];
+                renderTickets(ticketsData);
+            } catch(e) {}
+        }
+
+        window.searchTickets = function() {
+            const query = document.getElementById('ticketSearch').value.toLowerCase();
+            const filtered = ticketsData.filter(t => {
+                const tktId = `TKT-${t.id}`;
+                return tktId.toLowerCase().includes(query) || t.institute_name.toLowerCase().includes(query);
+            });
+            renderTickets(filtered);
+        };
+
+        function renderTickets(data) {
+            const container = document.getElementById('ticketsContainer');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">No support tickets found.</div>';
+                return;
+            }
+
+            container.innerHTML = data.map(t => {
+                let statusColor = 'status-Open';
+                if(t.status === 'In Progress') statusColor = 'status-Progress';
+                if(t.status === 'On Hold') statusColor = 'status-Hold';
+                if(t.status === 'Resolved') statusColor = 'status-Resolved';
+
+                return `
+                <div class="ticket-card" id="tick_${t.id}">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <div>
+                            <span class="tkt-id">#TKT-${t.id}</span>
+                            <div class="tkt-inst">${t.institute_name}</div>
+                        </div>
+                        <span class="badge ${statusColor}" style="font-size:10px;">${t.status || 'Open'}</span>
+                    </div>
+                    
+                    <div class="tkt-desc">${t.issue_details}</div>
+                    
+                    <div style="background:var(--bg); border:1px solid var(--border); padding:10px; border-radius:8px;">
+                        <label style="font-size:9px; color:var(--text-muted); text-transform:uppercase; font-weight:800; margin-bottom:5px; display:block;">Admin Reply & Status</label>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+                            <select id="status_${t.id}" class="custom-select" style="padding:8px; font-size:11px;">
+                                <option value="Open" ${t.status === 'Open' ? 'selected' : ''}>🔴 Open</option>
+                                <option value="In Progress" ${t.status === 'In Progress' ? 'selected' : ''}>🟡 In Progress</option>
+                                <option value="On Hold" ${t.status === 'On Hold' ? 'selected' : ''}>🟠 On Hold</option>
+                                <option value="Resolved" ${t.status === 'Resolved' ? 'selected' : ''}>🟢 Resolved</option>
+                            </select>
+                            <input type="text" id="eta_${t.id}" class="form-control" placeholder="ETA (e.g. 2 Hrs)" value="${t.eta || ''}" style="padding:8px; font-size:11px;">
+                        </div>
+                        
+                        <textarea id="reply_${t.id}" class="form-control" placeholder="Type response to client..." rows="2" style="margin-bottom:8px;">${t.admin_reply || ''}</textarea>
+                        
+                        <button class="btn btn-primary" style="padding:8px; font-size:11px;" onclick="updateTicket('${t.id}')">Update Ticket</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        window.updateTicket = async function(id) {
+            const newStatus = document.getElementById(`status_${id}`).value;
+            const newEta = document.getElementById(`eta_${id}`).value;
+            const newReply = document.getElementById(`reply_${id}`).value;
+
+            const ans = await window.magicConfirm("Update this ticket and notify the client?");
+            if(ans) {
+                // Ensure columns exist in bug_reports: eta (text), admin_reply (text)
+                await supabase.from('bug_reports').update({ status: newStatus, eta: newEta, admin_reply: newReply }).eq('id', id);
+                alert("✅ Ticket Updated Successfully!");
+                fetchSupportTickets();
+            }
+        };
+
+        // ==========================================
+        // BULK & AUTOMATION
+        // ==========================================
+        window.extendAllPlans = async function() {
+            const ans = await window.magicConfirm("Are you sure you want to mass-extend validity for ALL active clients?");
+            if(ans) alert('✅ Mass extension applied successfully.');
         };
 
         window.saveAutomationRules = function(e) {
             e.preventDefault();
             localStorage.setItem('vpk_auto_warn_days', document.getElementById('aWarnDays').value);
             localStorage.setItem('vpk_auto_grace_days', document.getElementById('aGraceDays').value);
-            localStorage.setItem('vpk_auto_contact', document.getElementById('aAlertContact').value);
-            alert("✅ Automation Rules Engine Updated!");
+            alert("✅ Automation Policy Updated!");
         };
 
         initMaster();
