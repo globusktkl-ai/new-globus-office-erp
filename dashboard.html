@@ -232,6 +232,14 @@
                 <button type="button" onclick="window.openIDStudioSecure()" class="nav-btn" style="border: 1px solid #e2e8f0; cursor: pointer; background: transparent;">
                     <span class="nav-icon" style="background: linear-gradient(135deg, #e0e7ff, #c7d2fe);"><svg viewBox="0 0 24 24" fill="none" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><circle cx="9" cy="15" r="2"></circle><line x1="13" y1="14" x2="17" y2="14"></line><line x1="13" y1="16" x2="17" y2="16"></line></svg></span>ID Card Studio
                 </button>
+                
+                <!-- 🔥 ADDED ACTIVITY LOGS BUTTON HERE 🔥 -->
+                <a href="logs.html" class="nav-btn" id="navActivityLogsBtn">
+                    <span class="nav-icon" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </span>Activity Logs
+                </a>
+                
                 <a href="settings.html" class="nav-btn">
                     <span class="nav-icon" style="background: linear-gradient(135deg, #e2e8f0, #cbd5e1);">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -346,12 +354,11 @@
             applyRoleAccess(userRole || 'Admin');
             loadSettings();
             loadDashboardData();
-            loadSaaSWidgets(); // Load the new SaaS Alerts
+            loadSaaSWidgets(); 
             buildSmartTicker();
             setInterval(buildSmartTicker, 30000); 
         }
 
-        // 🔥 NEW: LOAD SAAS ALERTS (Traffic Light & Promo)
         async function loadSaaSWidgets() {
             try {
                 const { data: client } = await supabase.from('saas_clients').select('*').limit(1).single();
@@ -360,12 +367,10 @@
                 const container = document.getElementById('saasAlertsContainer');
                 let html = '';
 
-                // 1. Promo Message
                 if (client.promo_message && client.promo_message.trim() !== '') {
                     html += `<div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(16,185,129,0.2);">🎁 ${client.promo_message}</div>`;
                 }
 
-                // 2. Traffic Light Warning
                 const { count, error } = await supabase.from('students').select('*', { count: 'exact', head: true });
                 if (!error && client.admission_limit) {
                     const limit = client.admission_limit;
@@ -395,6 +400,7 @@
                 if (data && data.permissions) {
                     const p = data.permissions;
                     const moduleMap = {
+                        'ActivityLogs': 'a[href="logs.html"]', // 🔥 ADDED ACTIVITY LOGS HERE 🔥
                         'Enquiry': 'a[href="enquiry.html"]', 'Admission': 'a[href="admission.html"]', 'Directory': 'a[href="students.html"]', 'StaffHR': 'a[href="staff.html"]',
                         'Attendance': 'a[href="attendance.html"]', 'Courses': 'a[href="courses.html"]', 'Exams': 'a[href="exams.html"]', 'Inventory': 'a[href="inventory.html"]',
                         'AdmReport': 'a[href="admission-report.html"]', 'SmartAlerts': 'a[href="reminders.html"]', 'IDCardStudio': 'button[onclick="window.openIDStudioSecure()"]',
