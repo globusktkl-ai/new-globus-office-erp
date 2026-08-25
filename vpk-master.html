@@ -236,11 +236,12 @@
 
     <!-- TAB 3: SUPPORT INBOX (CRM TICKETING) -->
     <div id="tab-support" class="tab-content">
-        <!-- Global Contact Sync -->
+       <!-- Global Contact Sync -->
         <div class="card" style="border-color: var(--primary); padding: 15px;">
             <div class="card-title" style="color: var(--primary); font-size: 12px;">Global Contact Sync</div>
-            <div style="display:flex; gap:10px;">
-                <input type="email" id="gProvEmail" class="form-control" placeholder="support@vpktech.com" style="padding:10px; font-size:12px;">
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                <input type="email" id="gProvEmail" class="form-control" placeholder="Support Email" style="flex:1; min-width:150px; padding:10px; font-size:12px;">
+                <input type="text" id="gProvPhone" class="form-control" placeholder="Support Phone (+91...)" style="flex:1; min-width:150px; padding:10px; font-size:12px;">
                 <button class="btn btn-primary" style="width:auto; padding:10px 15px;" onclick="saveProviderContact()">Sync</button>
             </div>
         </div>
@@ -678,9 +679,12 @@
         }
 
         window.saveProviderContact = async function() {
-            const configObj = { email: document.getElementById('gProvEmail').value };
+            const configObj = { 
+                email: document.getElementById('gProvEmail').value,
+                phone: document.getElementById('gProvPhone').value
+            };
             await supabase.from('institute_settings').update({ provider_config: JSON.stringify(configObj) }).eq('id', 1);
-            alert("✅ Global Provider Info Synced.");
+            alert("✅ Global Provider Info Synced. All clients will see this now.");
         };
 
         async function fetchSupportTickets() {
