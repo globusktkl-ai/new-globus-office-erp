@@ -89,7 +89,7 @@
         .btn-bug { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1.5px solid rgba(239, 68, 68, 0.5); padding: 14px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; }
         .btn-backup:active, .btn-bug:active { transform: scale(0.95); }
 
-        /* CRM TICKET CARDS (Client Side - NEW) */
+        /* CRM TICKET CARDS (Client Side) */
         .client-ticket-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .ct-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px; }
         .ct-id { font-size: 14px; font-weight: 900; color: #1e3a8a; }
@@ -107,7 +107,7 @@
         .ct-reply-title { font-size: 10px; font-weight: 900; color: #3b82f6; text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
         .ct-reply-text { font-size: 12px; color: #1e293b; font-weight: 700; line-height: 1.4; }
 
-        #customAlertBox { z-index: 100000; }
+        #customAlertBox, #customPromptBox { z-index: 100000; }
         
         @media (max-width: 500px) {
             .add-role-flex { flex-direction: column; }
@@ -265,7 +265,7 @@
             </div>
         </div>
 
-        <!-- SECTION 3: VPKTECH SUPPORT & BILLING (UPDATED WITH TICKETS) -->
+        <!-- SECTION 3: VPKTECH SUPPORT & BILLING -->
         <div id="panel-billing" class="tab-panel">
             <div class="vpk-brand-card">
                 <h2 class="vpk-title">VPKTech Solutions</h2>
@@ -646,15 +646,24 @@
             }
         }
 
+        // 🔥 THE FIX: Robust Fallback for Dynamic Provider Info 🔥
         async function loadDynamicProviderInfo() {
+            const emailEl = document.getElementById('dynProvEmail');
+            const phoneEl = document.getElementById('dynProvPhone');
             try {
                 const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
                 if(data && data.provider_config) {
                     const conf = JSON.parse(data.provider_config);
-                    document.getElementById('dynProvEmail').innerText = conf.email || 'vpktechsolutions@gmail.com';
-                    document.getElementById('dynProvPhone').innerText = conf.phone || 'Available 24/7';
+                    emailEl.innerText = conf.email || 'vpktechsolutions@gmail.com';
+                    phoneEl.innerText = conf.phone || 'Available 24/7';
+                } else {
+                    emailEl.innerText = 'vpktechsolutions@gmail.com';
+                    phoneEl.innerText = 'Available 24/7';
                 }
-            } catch(e) {}
+            } catch(e) {
+                emailEl.innerText = 'vpktechsolutions@gmail.com';
+                phoneEl.innerText = 'Available 24/7';
+            }
         }
 
         async function loadSaaSDetails(adminEmail) {
@@ -704,7 +713,6 @@
             btn.innerText = '⏳ Generating Ticket...'; btn.disabled = true;
 
             try {
-                // VERY IMPORTANT: .select() is added so we get the new Ticket ID back immediately!
                 const { data, error } = await supabase.from('bug_reports').insert([{ 
                     institute_name: instName, 
                     reported_by_email: email, 
@@ -724,7 +732,6 @@
                 document.getElementById('bugDesc').value = '';
                 document.getElementById('bugReportSection').style.display = 'none';
                 
-                // Refresh the tickets list live
                 fetchMyTickets(email);
             } catch(e) { 
                 alert('❌ Failed to send report: ' + e.message); 
