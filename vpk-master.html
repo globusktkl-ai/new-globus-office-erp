@@ -24,17 +24,17 @@
         .stat-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
         @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
-        /* MOBILE OPTIMIZED TABS */
-        .tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 20px; }
-        .tab-btn { background: var(--card); border: 1px solid var(--border); color: var(--text-muted); padding: 10px 5px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 9px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 60px; }
-        .tab-btn svg { width: 18px; height: 18px; stroke-width: 2; }
-        .tab-btn.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
+        /* MOBILE PERFECT TABS */
+        .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 20px; }
+        .tab-btn { flex: 1 1 calc(30% - 8px); background: var(--card); border: 1px solid var(--border); color: var(--text-muted); padding: 12px 5px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 10px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 65px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tab-btn svg { width: 20px; height: 20px; stroke-width: 2; }
+        .tab-btn.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); transform: translateY(-2px); }
         
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MOBILE DROPDOWN FILTERS (Replaced scrolling chips) */
+        /* MOBILE DROPDOWN FILTERS */
         .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .filter-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; display: block; }
         .custom-select { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 800; outline: none; width: 100%; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -56,7 +56,6 @@
         .hm-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
         .hm-track { width: 100%; height: 6px; background: var(--bg); border-radius: 4px; overflow: hidden; }
         .hm-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--purple)); border-radius: 4px; transition: width 0.5s ease; }
-        .hm-fill.danger { background: linear-gradient(90deg, var(--warning), var(--danger)); }
 
         .cc-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 5px; }
         .cc-expiry { font-size: 11px; font-weight: 800; color: var(--text-muted); }
@@ -146,25 +145,25 @@
         </div>
     </div>
 
-    <!-- TABS -->
+    <!-- TABS (Color Bug Fixed) -->
     <div class="tabs" id="mainTabs" style="display:none;">
-        <button class="tab-btn active" onclick="switchTab('clients')">
+        <button class="tab-btn active" onclick="switchTab('clients', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             Clients
         </button>
-        <button class="tab-btn" onclick="switchTab('studio')">
+        <button class="tab-btn" onclick="switchTab('studio', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
             Plans
         </button>
-        <button class="tab-btn" onclick="switchTab('support')" style="color:var(--success); border-color:var(--success);">
+        <button class="tab-btn" onclick="switchTab('support', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M3 15v4a2 2 0 0 0 2 2h14"></path></svg>
             Inbox
         </button>
-        <button class="tab-btn" onclick="switchTab('bulk')">
+        <button class="tab-btn" onclick="switchTab('bulk', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
             Bulk
         </button>
-        <button class="tab-btn" onclick="switchTab('automation')">
+        <button class="tab-btn" onclick="switchTab('automation', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path></svg>
             Policy
         </button>
@@ -172,8 +171,6 @@
 
     <!-- TAB 1: CLIENT MATRIX -->
     <div id="tab-clients" class="tab-content active">
-        
-        <!-- MOBILE FRIENDLY DROPDOWN FILTERS (Replaced horizontal chips) -->
         <div class="filter-grid">
             <div>
                 <span class="filter-label">Filter Clients</span>
@@ -234,11 +231,11 @@
         </div>
     </div>
 
-    <!-- TAB 3: SUPPORT INBOX (CRM TICKETING) -->
+    <!-- TAB 3: SUPPORT INBOX -->
     <div id="tab-support" class="tab-content">
-       <!-- Global Contact Sync -->
         <div class="card" style="border-color: var(--primary); padding: 15px;">
             <div class="card-title" style="color: var(--primary); font-size: 12px;">Global Contact Sync</div>
+            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Update this info and it will reflect in all clients' ERP support tabs automatically.</p>
             <div style="display:flex; flex-wrap:wrap; gap:10px;">
                 <input type="email" id="gProvEmail" class="form-control" placeholder="Support Email" style="flex:1; min-width:150px; padding:10px; font-size:12px;">
                 <input type="text" id="gProvPhone" class="form-control" placeholder="Support Phone (+91...)" style="flex:1; min-width:150px; padding:10px; font-size:12px;">
@@ -246,7 +243,6 @@
             </div>
         </div>
 
-        <!-- Helpdesk Engine -->
         <div class="card">
             <div class="card-title" style="color: var(--success);">
                 <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M3 15v4a2 2 0 0 0 2 2h14"></path></svg>
@@ -255,7 +251,7 @@
             
             <div class="search-bar-wrap">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="ticketSearch" class="form-control" placeholder="Search by Ticket ID (e.g. 1042)" onkeyup="searchTickets()">
+                <input type="text" id="ticketSearch" class="form-control" placeholder="Search by Ticket ID (e.g. 610A)" onkeyup="searchTickets()">
             </div>
 
             <div id="ticketsContainer">
@@ -264,12 +260,13 @@
         </div>
     </div>
 
-    <!-- TAB 4: BULK OPERATIONS -->
+    <!-- TAB 4: BULK OPERATIONS (BROADCAST FIX) -->
     <div id="tab-bulk" class="tab-content">
         <div class="card">
             <div class="card-title" style="color: var(--primary);">📢 Global Broadcast</div>
             <div class="form-group"><input type="text" id="bulkMsg" class="form-control" placeholder="e.g. System maintenance at 12 AM tonight."></div>
-            <button class="btn btn-primary" onclick="alert('✅ Broadcast sent to all active terminals.')">Send Broadcast</button>
+            <!-- Connected to DB via sendBulkMessage() -->
+            <button class="btn btn-primary" id="btnBroadcast" onclick="sendBulkMessage()">Send Broadcast</button>
         </div>
         <div class="card">
             <div class="card-title" style="color: var(--success);">🎁 Mass Extension</div>
@@ -321,7 +318,6 @@
                     <span style="color:white; font-size:12px;">Enable Demo Mode (Per-Client)</span>
                     <input type="checkbox" id="uDemoToggle" style="width:16px; height:16px; accent-color:var(--primary);">
                 </label>
-                <div style="font-size:9px; color:var(--text-muted); margin-top:5px;">This allows temporary guest access for this specific client only.</div>
             </div>
             <div style="display:flex; gap:10px; margin-top:25px;">
                 <button class="btn btn-primary" style="flex:2;" onclick="submitPlanUpgrade()">Save Settings</button>
@@ -349,7 +345,6 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-        // ⚠️ YOUR CREDENTIALS
         const MY_REAL_SUPER_ADMIN_EMAIL = 'vpk@vpk.com'; 
         const SUPABASE_URL = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
@@ -358,7 +353,7 @@
             auth: { storageKey: 'vpk-master-secret-key' }
         });
 
-        // 🛡️ THE MAGIC CONFIRM ENGINE (Replaces ugly browser alerts)
+        // 🛡️ THE MAGIC CONFIRM ENGINE
         window.magicConfirm = function(msg) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
@@ -384,15 +379,19 @@
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let bg = '#10b981'; if(msg.includes('❌') || msg.includes('⚠️') || msg.includes('Failed')) bg = '#ef4444';
-            box.style.cssText = `position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: ${bg}; color: white; padding: 12px 20px; border-radius: 30px; font-weight: 800; font-size: 13px; z-index: 100006; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: sheetUp 0.3s ease; white-space: nowrap; max-width:90%;`;
+            box.style.cssText = `position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: ${bg}; color: white; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 13px; z-index: 100006; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: sheetUp 0.3s ease; max-width: 90%; width: max-content; white-space: normal; word-wrap: break-word; text-align: center; line-height: 1.5;`;
             box.innerText = msg; document.body.appendChild(box); setTimeout(() => box.remove(), 4000);
             if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
         };
 
-        window.switchTab = function(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        // 🔥 FIX: TAB COLOR BUG RESOLVED 🔥
+        window.switchTab = function(tabId, el) {
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active');
+            });
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            
+            el.classList.add('active');
             document.getElementById('tab-' + tabId).classList.add('active');
             window.scrollTo(0,0);
         };
@@ -402,19 +401,16 @@
         let ticketsData = [];
         let activeClientId = null; 
 
-        // ==========================================
-        // INIT
-        // ==========================================
         async function initMaster() {
             document.getElementById('securityLock').style.display = 'none';
             document.getElementById('mainHeader').style.display = 'flex';
             document.getElementById('mainStats').style.display = 'grid';
-            document.getElementById('mainTabs').style.display = 'grid';
+            document.getElementById('mainTabs').style.display = 'flex';
 
             await fetchPlans();
             await fetchClients();
-            await fetchSupportTickets();
             await fetchGlobalProviderInfo();
+            await fetchSupportTickets();
             
             document.getElementById('aWarnDays').value = localStorage.getItem('vpk_auto_warn_days') || 15;
             document.getElementById('aGraceDays').value = localStorage.getItem('vpk_auto_grace_days') || 7;
@@ -432,7 +428,6 @@
             try {
                 const { data } = await supabase.from('subscription_plans').select('*').order('price', { ascending: true });
                 plansData = data || [];
-                
                 const optionsHtml = '<option value="">-- Select Plan --</option>' + plansData.map(p => `<option value="${p.id}">${p.plan_name}</option>`).join('');
                 document.getElementById('cPlanSelect').innerHTML = optionsHtml;
                 document.getElementById('uPlanSelect').innerHTML = optionsHtml;
@@ -479,13 +474,11 @@
                 } else sus++;
             });
             
-            // Update Stat Cards
             document.getElementById('statAll').innerText = clientsData.length;
             document.getElementById('statAct').innerText = act;
             document.getElementById('statExp').innerText = exp;
             document.getElementById('statSus').innerText = sus;
 
-            // DYNAMIC UPDATE OF THE DROPDOWN OPTIONS
             document.getElementById('optAll').text = `🏢 All Tenants (${clientsData.length})`;
             document.getElementById('optAct').text = `🟢 Active (${act})`;
             document.getElementById('optExp').text = `⚠️ Expiring (${exp})`;
@@ -529,7 +522,6 @@
                     else { statusBadge = `<span class="badge bg-green">Active</span>`; }
                 }
 
-                // UI Mockup for Usage
                 let limit = c.admission_limit || 100;
                 let mockCurrent = Math.floor(Math.random() * (limit/2)); 
                 let usagePct = Math.round((mockCurrent / limit) * 100);
@@ -559,7 +551,7 @@
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 11.02h4.5a3 3 0 1 0 0-6h-4.5v15"></path><path d="M21 15v-4"></path><circle cx="5" cy="11" r="2"></circle></svg>
                             </button>
                             <button class="btn-icon" style="color:var(--primary);" title="Settings" onclick="openUpgradeModal('${c.id}', '${c.institute_name}')">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0 2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                             </button>
                             <button class="btn-icon" style="color:var(--danger); border-color:rgba(239,68,68,0.3);" onclick="deleteClient('${c.id}', '${c.institute_name}')">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -571,27 +563,21 @@
             container.innerHTML = html || '<div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:13px;">No clients found.</div>';
         }
 
-       // ==========================================
-        // PROMO ENGINE, IMPERSONATION, SETTINGS
+        // ==========================================
+        // IMPERSONATION, PROMO, SETTINGS
         // ==========================================
         window.impersonateClient = async function(email) {
-            const ans = await window.magicConfirm(`⚠️ SUPER ADMIN OVERRIDE\n\nLogin directly into ${email}'s dashboard securely?`);
+            const ans = await window.magicConfirm(`SUPER ADMIN OVERRIDE\n\nYou are about to securely login directly into ${email}'s dashboard. Proceed?`);
             if(ans) {
-                // 1. മാസ്റ്റർ പാനലിന്റെ സീക്രട്ട് കീ എടുക്കുന്നു
                 const masterSession = localStorage.getItem('vpk-master-secret-key');
-                if(masterSession) {
-                    // 2. ഇആർപി ഗാർഡിന് (auth-check.js) മനസ്സിലാകാൻ വേണ്ടി സുരക്ഷിതമായി ആ കീ പാസ്സ് ചെയ്യുന്നു
-                    localStorage.setItem('sb-kwrugdbrzrfbmibaccwr-auth-token', masterSession);
-                }
-                
-                // 3. ക്ലയന്റിന്റെ ഐഡന്റിറ്റി സെറ്റ് ചെയ്യുന്നു
+                if(masterSession) { localStorage.setItem('sb-kwrugdbrzrfbmibaccwr-auth-token', masterSession); }
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('userRole', 'Super Admin'); 
-                
-                alert("✅ Master Key Accepted. Redirecting to Client Dashboard...");
+                alert("✅ Impersonation Active. Redirecting...");
                 setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
             }
         };
+
         window.openPromoModal = function(id, name, msg) {
             activeClientId = id;
             document.getElementById('pClientName').innerText = name;
@@ -673,18 +659,17 @@
                 const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
                 if(data && data.provider_config) {
                     const conf = JSON.parse(data.provider_config);
-                    document.getElementById('gProvEmail').value = conf.email || 'vpktechsolutions@gmail.com';
+                    document.getElementById('gProvEmail').value = conf.email || '';
+                    document.getElementById('gProvPhone').value = conf.phone || '';
                 }
             } catch(e){}
         }
 
         window.saveProviderContact = async function() {
-            const configObj = { 
-                email: document.getElementById('gProvEmail').value,
-                phone: document.getElementById('gProvPhone').value
-            };
-            await supabase.from('institute_settings').update({ provider_config: JSON.stringify(configObj) }).eq('id', 1);
-            alert("✅ Global Provider Info Synced. All clients will see this now.");
+            const configObj = { email: document.getElementById('gProvEmail').value, phone: document.getElementById('gProvPhone').value };
+            const { error } = await supabase.from('institute_settings').update({ provider_config: JSON.stringify(configObj) }).eq('id', 1);
+            if(error) alert("❌ Failed to save: " + error.message);
+            else alert("✅ Global Provider Info Synced.");
         };
 
         async function fetchSupportTickets() {
@@ -698,7 +683,8 @@
         window.searchTickets = function() {
             const query = document.getElementById('ticketSearch').value.toLowerCase();
             const filtered = ticketsData.filter(t => {
-                const tktId = `TKT-${t.id}`;
+                const shortId = t.id.toString().substring(0, 8).toUpperCase();
+                const tktId = `TKT-${shortId}`;
                 return tktId.toLowerCase().includes(query) || t.institute_name.toLowerCase().includes(query);
             });
             renderTickets(filtered);
@@ -717,11 +703,13 @@
                 if(t.status === 'On Hold') statusColor = 'status-Hold';
                 if(t.status === 'Resolved') statusColor = 'status-Resolved';
 
+                const shortId = t.id.toString().substring(0, 8).toUpperCase();
+
                 return `
                 <div class="ticket-card" id="tick_${t.id}">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <div>
-                            <span class="tkt-id">#TKT-${t.id}</span>
+                            <span class="tkt-id">#TKT-${shortId}</span>
                             <div class="tkt-inst">${t.institute_name}</div>
                         </div>
                         <span class="badge ${statusColor}" style="font-size:10px;">${t.status || 'Open'}</span>
@@ -757,16 +745,31 @@
 
             const ans = await window.magicConfirm("Update this ticket and notify the client?");
             if(ans) {
-                // Ensure columns exist in bug_reports: eta (text), admin_reply (text)
-                await supabase.from('bug_reports').update({ status: newStatus, eta: newEta, admin_reply: newReply }).eq('id', id);
-                alert("✅ Ticket Updated Successfully!");
-                fetchSupportTickets();
+                const { error } = await supabase.from('bug_reports').update({ status: newStatus, eta: newEta, admin_reply: newReply }).eq('id', id);
+                if(error) alert("❌ Status Update Failed: " + error.message);
+                else { alert("✅ Ticket Updated Successfully!"); fetchSupportTickets(); }
             }
         };
 
         // ==========================================
-        // BULK & AUTOMATION
+        // BULK & AUTOMATION (BROADCAST FIX APPLIED)
         // ==========================================
+        
+        window.sendBulkMessage = async function() {
+            const msg = document.getElementById('bulkMsg').value.trim();
+            if(!msg) return alert("⚠️ Enter a message.");
+            const btn = document.getElementById('btnBroadcast');
+            btn.innerText = "Sending...";
+            try {
+                const configObj = { message: msg, timestamp: new Date().toISOString() };
+                const { error } = await supabase.from('institute_settings').update({ global_broadcast: JSON.stringify(configObj) }).eq('id', 1);
+                if(error) throw error;
+                alert("✅ Broadcast sent successfully to all active ERP terminals.");
+                document.getElementById('bulkMsg').value = '';
+            } catch(e) { alert("❌ Broadcast Failed: " + e.message); }
+            finally { btn.innerText = "Send Broadcast"; }
+        };
+
         window.extendAllPlans = async function() {
             const ans = await window.magicConfirm("Are you sure you want to mass-extend validity for ALL active clients?");
             if(ans) alert('✅ Mass extension applied successfully.');
