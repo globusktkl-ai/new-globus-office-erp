@@ -52,17 +52,20 @@
         @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } }
         .uf-divider-line { background: linear-gradient(180deg, transparent 0%, #cbd5e1 20%, #cbd5e1 80%, transparent 100%); }
 
-        /* 🔥 FIX: SMART TICKER STYLES (3 COLORS) 🔥 */
-        .alert-ticker-wrap { overflow: hidden; border-radius: 10px; margin-bottom: 12px; padding: 8px 5px; white-space: nowrap; display: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .alert-ticker-track { display: inline-block; animation: scrollTicker 15s linear infinite; }
-        .alert-item { display: inline-flex; align-items: center; gap: 8px; margin-right: 40px; font-size: 12px; font-weight: 800; text-decoration: none; padding: 4px 10px; border-radius: 6px; }
+        /* 🔥 FIX: UNIFIED SMART TICKER STYLES 🔥 */
+        .alert-ticker-wrap { overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 12px; padding: 8px 5px; white-space: nowrap; display: none; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); }
+        .alert-ticker-track { display: inline-block; animation: scrollTicker 25s linear infinite; }
+        .alert-ticker-track:hover { animation-play-state: paused; } /* Pauses scroll when touched */
+        .alert-item { display: inline-flex; align-items: center; gap: 8px; margin-right: 25px; font-size: 12px; font-weight: 800; text-decoration: none; padding: 6px 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         
-        /* THEMES FOR DIFFERENT ALERTS */
-        .theme-local { background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 1px solid #fde68a; color: #b45309; }
-        .theme-broadcast { background: linear-gradient(135deg, #e0f2fe, #bae6fd); border: 1px solid #7dd3fc; color: #0369a1; }
-        .theme-danger { background: linear-gradient(135deg, #fef2f2, #fecaca); border: 1px solid #fca5a5; color: #b91c1c; }
+        /* 4 Different Themes for Different Notifications */
+        .theme-expiry { background: linear-gradient(135deg, #fef2f2, #fecaca); border: 1px solid #fca5a5; color: #b91c1c; } /* Red */
+        .theme-warning { background: linear-gradient(135deg, #fffbeb, #fde68a); border: 1px solid #fcd34d; color: #b45309; } /* Orange */
+        .theme-broadcast { background: linear-gradient(135deg, #e0f2fe, #bae6fd); border: 1px solid #7dd3fc; color: #0369a1; } /* Blue */
+        .theme-local { background: linear-gradient(135deg, #fef9c3, #fef08a); border: 1px solid #fde047; color: #854d0e; } /* Yellow */
+        .theme-promo { background: linear-gradient(135deg, #ecfdf5, #a7f3d0); border: 1px solid #6ee7b7; color: #047857; } /* Green */
 
-        @keyframes scrollTicker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        @keyframes scrollTicker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
         .module-section { background: #ffffff; border-radius: 14px !important; padding: 12px 12px 14px 12px !important; margin-bottom: 12px !important; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02) !important; border: 1px solid #e2e8f0; }
         .module-section .nav-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; margin-top: 10px; }
@@ -126,10 +129,7 @@
 
     <main class="main-content">
         
-        <!-- 🔥 FIX: SAAS DYNAMIC BANNERS CONTAINER 🔥 -->
-        <div id="saasAlertsContainer" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;"></div>
-
-        <!-- 🔥 FIX: SMART TICKER WRAP 🔥 -->
+        <!-- 🔥 THE UNIFIED SMART TICKER WRAP 🔥 -->
         <div class="alert-ticker-wrap" id="alertTickerWrap">
             <div class="alert-ticker-track" id="alertTickerTrack"></div>
         </div>
@@ -241,7 +241,7 @@
                 </button>
                 <a href="settings.html" class="nav-btn">
                     <span class="nav-icon" style="background: linear-gradient(135deg, #e2e8f0, #cbd5e1);">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     </span>Inst. Settings
                 </a>
             </div>
@@ -342,7 +342,7 @@
                 document.getElementById('authEmail').innerText = "Read Only";
                 const timeLeft = (30 * 60 * 1000) - timePassed;
                 setTimeout(() => { alert("⏳ Guest session expired!"); localStorage.clear(); window.location.href = 'login.html'; }, Math.max(0, timeLeft));
-                applyRoleAccess('Guest'); loadSettings(); loadDashboardData(); loadSaaSWidgets(); return;
+                applyRoleAccess('Guest'); loadSettings(); loadDashboardData(); window.buildUnifiedTicker(); setInterval(window.buildUnifiedTicker, 30000); return;
             }
 
             if (!session) { window.location.href = 'login.html'; return; }
@@ -353,48 +353,119 @@
             applyRoleAccess(userRole || 'Admin');
             loadSettings();
             loadDashboardData();
-            loadSaaSWidgets(); 
-            buildSmartTicker();
-            setInterval(buildSmartTicker, 30000); 
+            
+            // 🔥 THE FIX: Launching Unified Smart Ticker
+            window.buildUnifiedTicker();
+            setInterval(window.buildUnifiedTicker, 30000); 
         }
 
-        // 🔥 THE BIG FIX: SAAS ALERTS & WARNINGS 🔥
-        async function loadSaaSWidgets() {
+        // 🔥 THE BIG FIX: UNIFIED SMART TICKER ENGINE 🔥
+        window.buildUnifiedTicker = async function() {
+            const wrap = document.getElementById('alertTickerWrap');
+            const track = document.getElementById('alertTickerTrack');
+            let tickerItems = [];
+            
+            const { data: { session } } = await supabase.auth.getSession();
+            const userEmail = session ? session.user.email : localStorage.getItem('userEmail');
+            const userRole = localStorage.getItem('userRole') || 'Guest';
+            const now = new Date();
+            
+            // 1. Fetch SaaS Expiry & Promo (Red & Green)
             try {
-                // 1. Fetch Plan Expiry & Promo (From saas_clients)
-                const { data: { session } } = await supabase.auth.getSession();
-                const email = session ? session.user.email : '';
-                const { data: client } = await supabase.from('saas_clients').select('*').eq('admin_email', email).single();
-                
-                const container = document.getElementById('saasAlertsContainer');
-                let html = '';
-
-                // Add Expiry/Limit Warning
-                if (client) {
-                    const today = new Date();
-                    let daysLeft = client.valid_until ? Math.ceil((new Date(client.valid_until) - today) / (1000 * 60 * 60 * 24)) : 0;
-                    
-                    if (daysLeft < 0) {
-                        html += `<div style="background: #fef2f2; border: 1px solid #ef4444; color: #b91c1c; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 8px;">⛔ ACCOUNT SUSPENDED: Your plan expired. Please contact VPKTech immediately.</div>`;
-                    } else if (daysLeft <= 15) {
-                        html += `<div style="background: #fffbeb; border: 1px solid #f59e0b; color: #b45309; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 8px;">⚠️ SUBSCRIPTION ALERT: Your plan expires in ${daysLeft} days. Renew soon to avoid interruption.</div>`;
+                if(userEmail) {
+                    const { data: client } = await supabase.from('saas_clients').select('*').eq('admin_email', userEmail).single();
+                    if(client) {
+                        let daysLeft = client.valid_until ? Math.ceil((new Date(client.valid_until) - now) / (1000 * 60 * 60 * 24)) : 0;
+                        if (daysLeft < 0) {
+                            tickerItems.push(`<span class="alert-item theme-expiry">⛔ ACCOUNT SUSPENDED: Plan expired. Contact VPKTech.</span>`);
+                        } else if (daysLeft <= 15) {
+                            tickerItems.push(`<span class="alert-item theme-warning">⚠️ SUBSCRIPTION ALERT: Your plan expires in ${daysLeft} days.</span>`);
+                        }
+                        
+                        if (client.promo_message && client.promo_message.trim() !== '') {
+                            tickerItems.push(`<span class="alert-item theme-promo">🎁 PROMO: ${client.promo_message}</span>`);
+                        }
                     }
                 }
+            } catch(e) {}
 
-                // 2. Fetch Master Broadcast (From institute_settings id=1)
+            // 2. Fetch Global Broadcast (Blue)
+            try {
                 const { data: settings } = await supabase.from('institute_settings').select('global_broadcast').eq('id', 1).single();
                 if(settings && settings.global_broadcast) {
                     const bCast = JSON.parse(settings.global_broadcast);
-                    // Show broadcast if it was sent in the last 24 hours
                     const bTime = new Date(bCast.timestamp);
-                    if((new Date() - bTime) < (24 * 60 * 60 * 1000) && bCast.message) {
-                        html += `<div style="background: linear-gradient(135deg, #e0f2fe, #bae6fd); border: 1px solid #7dd3fc; color: #0369a1; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 8px;">📢 PROVIDER UPDATE: ${bCast.message}</div>`;
+                    // Show if broadcast was sent in the last 24 hours
+                    if((now - bTime) < (24 * 60 * 60 * 1000) && bCast.message) {
+                        tickerItems.push(`<span class="alert-item theme-broadcast">📢 PROVIDER UPDATE: ${bCast.message}</span>`);
+                    }
+                }
+            } catch(e) {}
+
+            // 3. School Bells & Smart Alerts (Yellow/Amber)
+            const eventSet = localStorage.getItem('ERP_events_settings');
+            let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
+            
+            if (masterAlertsOn) {
+                const savedBell = localStorage.getItem('ERP_bell_settings_final'); 
+                if(savedBell) {
+                    const bSettings = JSON.parse(savedBell);
+                    if(bSettings.isOn && bSettings.warningDuration > 0 && !(bSettings.excludedDays && bSettings.excludedDays.includes(now.getDay()))) {
+                        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+                        let nextBell = null; let minDiff = Infinity;
+                        if(bSettings.bells) {
+                            bSettings.bells.forEach(bell => {
+                                const [bH, bM] = bell.time.split(':').map(Number);
+                                const diff = (bH * 60 + bM) - currentMinutes;
+                                if(diff > 0 && diff <= bSettings.warningDuration && diff < minDiff) { minDiff = diff; nextBell = bell; }
+                            });
+                        }
+                        if(nextBell) {
+                            let parts = nextBell.time.split(':');
+                            let h = parseInt(parts[0]); let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+                            tickerItems.push(`<a href="reminders.html" class="alert-item theme-local">🔔 UPCOMING BELL: ${nextBell.name} at ${String(h).padStart(2,'0')}:${parts[1]} ${ampm}</a>`);
+                        }
                     }
                 }
 
-                container.innerHTML = html;
-            } catch(e) { console.log(e) }
-        }
+                try {
+                    let localDate = new Date();
+                    localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
+                    const todayStr = localDate.toISOString().split('T')[0];
+
+                    const { data } = await supabase.from('smart_alerts').select('*').gte('alert_date', todayStr).order('alert_date', { ascending: true }).order('alert_time', { ascending: true });
+
+                    if (data && data.length > 0) {
+                        data.forEach(alert => {
+                            let canView = false;
+                            if (userRole === 'Super Admin' || userRole === 'Admin') canView = true;
+                            else if (alert.target_audience === 'General') canView = true;
+                            else if (alert.target_audience === userRole) canView = true;
+                            else if (alert.target_audience === 'Personal' && alert.created_by === userEmail) canView = true;
+
+                            if (canView) {
+                                let timeParts = alert.alert_time.split(':');
+                                let displayTime = `${timeParts[0] % 12 || 12}:${timeParts[1]} ${timeParts[0] >= 12 ? 'PM' : 'AM'}`;
+                                let icon = alert.alert_type === 'Reminder' ? '🔔' : (alert.alert_type === 'Event' ? '📅' : '📢');
+                                tickerItems.push(`<a href="reminders.html" class="alert-item theme-local">${icon} ${alert.title} | ${displayTime}</a>`);
+                            }
+                        });
+                    }
+                } catch(e) {}
+            }
+
+            // 🔥 RENDER UNIFIED TICKER 🔥
+            if (tickerItems.length > 0) {
+                wrap.style.display = 'block';
+                // Duplicate items to ensure smooth infinite scrolling if there are too few items
+                let displayItems = tickerItems.join('');
+                if (tickerItems.length < 4) { displayItems += displayItems + displayItems; }
+                track.innerHTML = displayItems;
+            } else {
+                wrap.style.display = 'none'; // No gap when empty!
+                track.innerHTML = '';
+            }
+        };
 
         window.applyRoleAccess = async function(role) {
             if (role === 'Super Admin' || role === 'Admin' || role === 'Guest') {
@@ -423,80 +494,6 @@
                     });
                 }
             } catch (err) {}
-        };
-
-        // 🔥 FIX: SMART TICKER ENGINE (3 Themes Logic) 🔥
-        window.buildSmartTicker = async function() {
-            const eventSet = localStorage.getItem('ERP_events_settings');
-            let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
-            const wrap = document.getElementById('alertTickerWrap');
-            const track = document.getElementById('alertTickerTrack');
-
-            if (!masterAlertsOn) { wrap.style.display = 'none'; track.innerHTML = ''; return; }
-
-            let tickerItems = [];
-            const now = new Date();
-            
-            // 1. School Bell Logic
-            const savedBell = localStorage.getItem('ERP_bell_settings_final'); 
-            if(savedBell) {
-                const bSettings = JSON.parse(savedBell);
-                if(bSettings.isOn && bSettings.warningDuration > 0 && !(bSettings.excludedDays && bSettings.excludedDays.includes(now.getDay()))) {
-                    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-                    let nextBell = null; let minDiff = Infinity;
-                    if(bSettings.bells) {
-                        bSettings.bells.forEach(bell => {
-                            const [bH, bM] = bell.time.split(':').map(Number);
-                            const diff = (bH * 60 + bM) - currentMinutes;
-                            if(diff > 0 && diff <= bSettings.warningDuration && diff < minDiff) { minDiff = diff; nextBell = bell; }
-                        });
-                    }
-                    if(nextBell) {
-                        let parts = nextBell.time.split(':');
-                        let h = parseInt(parts[0]); let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
-                        // Styled specifically for bells
-                        tickerItems.push(`<a href="reminders.html" class="alert-item theme-local">🔔 Upcoming Bell: ${nextBell.name} at ${String(h).padStart(2,'0')}:${parts[1]} ${ampm}</a>`);
-                    }
-                }
-            }
-
-            // 2. Local Smart Alerts (Events/Reminders)
-            try {
-                const userEmail = localStorage.getItem('userEmail');
-                const userRole = localStorage.getItem('userRole') || 'Guest';
-                let localDate = new Date();
-                localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
-                const todayStr = localDate.toISOString().split('T')[0];
-
-                const { data, error } = await supabase.from('smart_alerts').select('*').gte('alert_date', todayStr).order('alert_date', { ascending: true }).order('alert_time', { ascending: true });
-
-                if (data && data.length > 0) {
-                    data.forEach(alert => {
-                        let canView = false;
-                        if (userRole === 'Super Admin' || userRole === 'Admin') canView = true;
-                        else if (alert.target_audience === 'General') canView = true;
-                        else if (alert.target_audience === userRole) canView = true;
-                        else if (alert.target_audience === 'Personal' && alert.created_by === userEmail) canView = true;
-
-                        if (canView) {
-                            let timeParts = alert.alert_time.split(':');
-                            let displayTime = `${timeParts[0] % 12 || 12}:${timeParts[1]} ${timeParts[0] >= 12 ? 'PM' : 'AM'}`;
-                            let displayDate = new Date(alert.alert_date).toLocaleDateString('en-IN', { day:'2-digit', month:'short'});
-                            let icon = alert.alert_type === 'Reminder' ? '🔔' : (alert.alert_type === 'Event' ? '📅' : '📢');
-                            
-                            // Yellow theme for standard events
-                            tickerItems.push(`<a href="reminders.html" class="alert-item theme-local">${icon} ${alert.title} - ${displayDate} | ${displayTime}</a>`);
-                        }
-                    });
-                }
-            } catch (err) {}
-
-            // Apply HTML if there are alerts
-            if (tickerItems.length > 0) {
-                wrap.style.display = 'block'; // Make it visible
-                if(tickerItems.length < 3) tickerItems = [...tickerItems, ...tickerItems, ...tickerItems]; // Duplicate to make scroll smooth
-                track.innerHTML = tickerItems.join('');
-            } else { wrap.style.display = 'none'; track.innerHTML = ''; }
         };
 
         async function loadDashboardData() {
