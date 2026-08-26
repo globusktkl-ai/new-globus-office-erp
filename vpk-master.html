@@ -42,7 +42,7 @@
         .client-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: relative; overflow: hidden; transition: 0.2s; }
         .cc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
         .cc-title { font-size: 15px; font-weight: 900; color: white; margin: 0 0 4px 0; display:flex; align-items:center; gap:6px; }
-        .cc-email { font-size: 11px; color: var(--text-muted); font-family: monospace; }
+        .cc-email { font-size: 11px; color: var(--text-muted); font-family: monospace; display: flex; align-items: center; gap: 6px;}
         
         .badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-size: 9px; font-weight: 900; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; }
         .bg-green { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
@@ -110,6 +110,10 @@
         .live-broadcast-box .lb-msg { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 15px; }
 
         #customAlertBox, #customPromptBox { z-index: 100005; }
+        
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot-online { background-color: var(--success); box-shadow: 0 0 8px var(--success); animation: pulse 2s infinite; }
+        .dot-offline { background-color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -157,7 +161,11 @@
         </button>
         <button class="tab-btn" onclick="switchTab('studio', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-            Plans
+            Plans & Billing
+        </button>
+        <button class="tab-btn" onclick="switchTab('offers', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+            Offers
         </button>
         <button class="tab-btn" onclick="switchTab('support', this)">
             <div style="position: relative; display: flex; align-items: center; justify-content: center;">
@@ -166,19 +174,9 @@
             </div>
             Inbox
         </button>
-        
-        <button class="tab-btn" onclick="switchTab('offers', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-            Offers
-        </button>
-
         <button class="tab-btn" onclick="switchTab('bulk', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            Bulk
-        </button>
-        <button class="tab-btn" onclick="switchTab('automation', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path></svg>
-            Policy
+            Broadcast
         </button>
     </div>
 
@@ -215,10 +213,12 @@
         </button>
     </div>
 
-    <!-- TAB 2: SUBSCRIPTION STUDIO (🔥 EDIT PLAN FIXED 🔥) -->
+    <!-- TAB 2: PLANS & BILLING COMMAND CENTER (🔥 CONSOLIDATED 🔥) -->
     <div id="tab-studio" class="tab-content">
+        
+        <!-- SECTION A: PLAN STUDIO -->
         <div class="card">
-            <div class="card-title" style="color: var(--success);">💎 Create / Edit Plan</div>
+            <div class="card-title" style="color: var(--success);">💎 Plan Studio</div>
             <form onsubmit="addPlan(event)">
                 <div class="form-group"><label>Plan Name</label><input type="text" id="pName" class="form-control" placeholder="e.g. Pro Suite" required></div>
                 <div class="responsive-grid">
@@ -241,53 +241,78 @@
                 </div>
             </form>
         </div>
+        
         <div class="card">
             <div class="card-title">📋 Active Plans</div>
+            <p style="font-size:10px; color:var(--text-muted); margin-top:-10px; margin-bottom:15px;">Note: Modifying a plan only affects new subscriptions (Grandfathering is active).</p>
             <div id="plansListContainer">Loading plans...</div>
         </div>
-    </div>
 
-    <!-- TAB 3: SUPPORT INBOX -->
-    <div id="tab-support" class="tab-content">
-        <div class="card" style="border-color: var(--primary); padding: 15px;">
-            <div class="card-title" style="color: var(--primary); font-size: 12px;">Global Contact Sync</div>
-            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Update this info and it will reflect in all clients' ERP support tabs automatically.</p>
-            <div class="responsive-grid">
-                <input type="email" id="gProvEmail" class="form-control" placeholder="Support Email" style="font-size:12px;">
-                <input type="text" id="gProvPhone" class="form-control" placeholder="Support Phone (+91...)" style="font-size:12px;">
+        <!-- SECTION B: GLOBAL BILLING POLICY -->
+        <div class="card" style="border-color: var(--primary);">
+            <div class="card-title" style="color: var(--primary);">⚙️ Global Billing Policy</div>
+            <form onsubmit="saveAutomationRules(event)">
+                <div class="responsive-grid">
+                    <div class="form-group" style="margin-bottom:0;"><label>Expiry Warning Trigger (Days before)</label><input type="number" id="aWarnDays" class="form-control" value="15"></div>
+                    <div class="form-group" style="margin-bottom:0;"><label>Grace Period Limit (Days after Expiry)</label><input type="number" id="aGraceDays" class="form-control" value="7"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:10px;">Update Global Policy</button>
+            </form>
+
+            <div style="border-top: 1px dashed var(--border); margin-top: 20px; padding-top: 20px;">
+                <label style="display:flex; justify-content:space-between; align-items:center; margin:0; cursor:pointer;">
+                    <div>
+                        <span style="color:var(--danger); font-size:13px; font-weight:900;">🛑 Master Alert Control (Kill Switch)</span>
+                        <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">Turn off to instantly hide all billing alerts globally.</div>
+                    </div>
+                    <input type="checkbox" id="masterAlertToggle" style="width:20px; height:20px; accent-color:var(--danger);" checked onchange="saveMasterAlertToggle()">
+                </label>
             </div>
-            <button class="btn btn-primary" onclick="saveProviderContact()">Update Contact Info</button>
         </div>
 
-        <div class="card" style="border-color: var(--purple); padding: 15px;">
-            <div class="card-title" style="color: var(--purple); font-size: 12px;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:5px;"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                Automated Ticket Diversion
-            </div>
-            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Forward all incoming client bug reports and tickets dynamically to your Webhook integration.</p>
+        <!-- SECTION C: TARGETED BILLING & ALERTS -->
+        <div class="card" style="border-color: var(--warning);">
+            <div class="card-title" style="color: var(--warning);">🎯 Advanced Targeted Billing Alerts</div>
+            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Schedule custom billing/subscription warnings for specific individuals or groups.</p>
+            
             <div class="form-group">
-                <label>Forwarding Webhook URL</label>
-                <input type="text" id="gForwardEmail" class="form-control" placeholder="https://hook.make.com/..." style="font-size:12px;">
+                <label>Target Audience</label>
+                <select id="billAlertTarget" class="custom-select" style="padding:13px;">
+                    <optgroup label="General Groups">
+                        <option value="All">🏢 All Terminals</option>
+                        <option value="Active">🟢 Active Clients Only</option>
+                        <option value="Expiring">⚠️ Expiring Soon Only</option>
+                    </optgroup>
+                    <optgroup label="Individual Clients" id="indBillList">
+                        <option disabled>Loading clients...</option>
+                    </optgroup>
+                </select>
             </div>
-            <button class="btn btn-purple" onclick="saveTicketDiversion()">Apply Diversion Rule</button>
-        </div>
 
-        <div class="card">
-            <div class="card-title" style="color: var(--success);">
-                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M3 15v4a2 2 0 0 0 2 2h14"></path></svg>
-                Helpdesk Tickets
+            <div class="form-group">
+                <label>Custom Warning Message</label>
+                <textarea id="billAlertMsg" class="form-control" rows="2" placeholder="e.g. Your premium plan expires in 2 days. Backup your data."></textarea>
             </div>
-            <div class="search-bar-wrap">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="ticketSearch" class="form-control" placeholder="Search by Ticket ID (e.g. 610A)" onkeyup="searchTickets()">
+            
+            <div class="responsive-grid">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Schedule Start Time</label>
+                    <input type="datetime-local" id="billAlertStart" class="form-control" style="padding:11px;">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Auto-Remove (Timeout)</label>
+                    <input type="datetime-local" id="billAlertExpiry" class="form-control" style="padding:11px;">
+                </div>
             </div>
-            <div id="ticketsContainer">
-                <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Fetching client tickets...</div>
+
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+                <button class="btn btn-warning" id="btnLaunchBillAlert" onclick="launchBillingAlert()">🚀 Publish Custom Alert</button>
+                <button class="btn btn-outline" style="color:var(--danger); border-color:rgba(239,68,68,0.3);" onclick="revokeBillingAlert()">🛑 Revoke Alerts from Target</button>
             </div>
         </div>
     </div>
 
-    <!-- TAB 4: OFFERS -->
+    <!-- TAB 3: OFFERS (PROMO ENGINE) -->
     <div id="tab-offers" class="tab-content">
         <div class="card" style="border-color: var(--warning);">
             <div class="card-title" style="color: var(--warning);">🎁 Advanced Promo Engine</div>
@@ -330,17 +355,39 @@
         </div>
     </div>
 
+    <!-- TAB 4: SUPPORT INBOX -->
+    <div id="tab-support" class="tab-content">
+        <!-- Contact & Webhook content remains same as previous... -->
+        <div class="card" style="border-color: var(--primary); padding: 15px;">
+            <div class="card-title" style="color: var(--primary); font-size: 12px;">Global Contact Sync</div>
+            <div class="responsive-grid">
+                <input type="email" id="gProvEmail" class="form-control" placeholder="Support Email" style="font-size:12px;">
+                <input type="text" id="gProvPhone" class="form-control" placeholder="Support Phone (+91...)" style="font-size:12px;">
+            </div>
+            <button class="btn btn-primary" onclick="saveProviderContact()">Update Contact Info</button>
+        </div>
+        <div class="card">
+            <div class="card-title" style="color: var(--success);">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M3 15v4a2 2 0 0 0 2 2h14"></path></svg>
+                Helpdesk Tickets
+            </div>
+            <div class="search-bar-wrap">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="ticketSearch" class="form-control" placeholder="Search by Ticket ID" onkeyup="searchTickets()">
+            </div>
+            <div id="ticketsContainer"><div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Fetching...</div></div>
+        </div>
+    </div>
+
     <!-- TAB 5: BULK OPERATIONS (BROADCAST) -->
     <div id="tab-bulk" class="tab-content">
         <div class="card" style="border-color: var(--primary);">
             <div class="card-title" style="color: var(--primary);">📢 Advanced Scheduled Broadcast</div>
             <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Send or schedule targeted system alerts to client dashboards with exact timeout controls.</p>
-            
             <div class="form-group">
                 <label>Broadcast Message</label>
                 <textarea id="bulkMsg" class="form-control" placeholder="e.g. Server maintenance scheduled tomorrow at 10 AM." rows="2"></textarea>
             </div>
-            
             <div class="form-group">
                 <label>Target Audience</label>
                 <select id="bulkTarget" class="custom-select" style="padding:13px;">
@@ -349,71 +396,26 @@
                         <option value="Active">🟢 Active Clients Only</option>
                         <option value="Expiring">⚠️ Expiring Soon Only</option>
                     </optgroup>
-                    <optgroup label="Individual Clients" id="indClientList1">
-                        <option disabled>Loading clients...</option>
-                    </optgroup>
+                    <optgroup label="Individual Clients" id="indClientList1"><option disabled>Loading...</option></optgroup>
                 </select>
             </div>
-
             <div class="responsive-grid">
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Schedule Start Time <span style="font-size:8px; color:var(--primary);">(Auto-saves on selection)</span></label>
-                    <input type="datetime-local" id="bulkStart" class="form-control" style="padding:11px;">
-                </div>
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Auto-Remove (Timeout) <span style="font-size:8px; color:var(--primary);">(Auto-saves on selection)</span></label>
-                    <input type="datetime-local" id="bulkExpiry" class="form-control" style="padding:11px;">
-                </div>
+                <div class="form-group" style="margin-bottom:0;"><label>Schedule Start</label><input type="datetime-local" id="bulkStart" class="form-control" style="padding:11px;"></div>
+                <div class="form-group" style="margin-bottom:0;"><label>Timeout</label><input type="datetime-local" id="bulkExpiry" class="form-control" style="padding:11px;"></div>
             </div>
-
             <button class="btn btn-primary" id="btnBroadcast" onclick="sendBulkMessage()" style="margin-top:10px;">🚀 Schedule Broadcast</button>
 
-            <!-- LIVE BROADCAST STATUS BOX -->
             <div id="activeBroadcastPanel" class="live-broadcast-box">
-                <div class="lb-header">
-                    <span style="display:flex; align-items:center; gap:5px;"><span style="width:8px; height:8px; background:var(--success); border-radius:50%; animation: pulse 2s infinite;"></span> Scheduled / Live Broadcast Active</span>
-                </div>
+                <div class="lb-header"><span style="display:flex; align-items:center; gap:5px;"><span style="width:8px; height:8px; background:var(--success); border-radius:50%; animation: pulse 2s infinite;"></span> Scheduled / Live Broadcast Active</span></div>
                 <div style="font-size:10px; color:var(--primary); margin-bottom:5px;" id="liveTarget"></div>
                 <div style="font-size:10px; color:var(--warning); margin-bottom:10px;" id="liveSchedule"></div>
                 <div id="liveMsgText" class="lb-msg"></div>
                 <button class="btn btn-danger" style="padding: 10px; font-size: 11px;" onclick="revokeBroadcast()">🛑 Revoke / Kill Broadcast</button>
             </div>
         </div>
-
-        <div class="card">
-            <div class="card-title" style="color: var(--success);">🎁 Mass Extension</div>
-            <div style="display:flex; gap:10px;">
-                <input type="number" id="bulkDays" class="form-control" value="3" style="width:80px; text-align:center;">
-                <button class="btn btn-success" style="flex:1;" onclick="extendAllPlans()">Extend All Active Days</button>
-            </div>
-        </div>
     </div>
 
-    <!-- TAB 6: AUTOMATION & POLICIES -->
-    <div id="tab-automation" class="tab-content">
-        <div class="card" style="border-color: var(--warning);">
-            <div class="card-title" style="color: var(--warning);">🤖 Policy Engine</div>
-            <form onsubmit="saveAutomationRules(event)">
-                <div class="form-group"><label>Expiry Warning Trigger (Days before)</label><input type="number" id="aWarnDays" class="form-control" value="15"></div>
-                <div class="form-group"><label>Grace Period Limit (Days after Expiry)</label><input type="number" id="aGraceDays" class="form-control" value="7"></div>
-                <button type="submit" class="btn btn-warning">Update Engine</button>
-            </form>
-        </div>
-
-        <div class="card" style="border-color: var(--danger);">
-            <div class="card-title" style="color: var(--danger);">🛑 Master Alert Control</div>
-            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Turn off this switch to instantly hide all Subscription Expiry banners from all client dashboards globally.</p>
-            <div class="form-group" style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
-                <label style="display:flex; justify-content:space-between; align-items:center; margin:0; cursor:pointer;">
-                    <span style="color:white; font-size:13px; font-weight:900;">Show Subscription Alerts Global</span>
-                    <input type="checkbox" id="masterAlertToggle" style="width:20px; height:20px; accent-color:var(--danger);" checked onchange="saveMasterAlertToggle()">
-                </label>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODALS -->
-    <!-- 1. Add Client Modal -->
+    <!-- MODALS (Add/Upgrade) -->
     <div id="addClientModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); padding: 15px;">
         <div class="card" style="width: 100%; max-width: 400px; margin:0; animation: sheetUp 0.3s ease;">
             <div class="card-title">➕ Provision Tenant</div>
@@ -430,7 +432,6 @@
         </div>
     </div>
 
-    <!-- 2. Settings / Upgrade Modal -->
     <div id="upgradeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); padding: 15px;">
         <div class="card" style="width: 100%; max-width: 400px; margin:0; animation: sheetUp 0.3s ease;">
             <div class="card-title" style="color:var(--primary);">⚙️ Client Settings</div>
@@ -461,14 +462,8 @@
             auth: { storageKey: 'vpk-master-secret-key' }
         });
 
-        // 🔥 SCROLL BUG FIX FOR NUMBER INPUTS 🔥
-        document.addEventListener('wheel', function(event) {
-            if (document.activeElement.type === 'number') {
-                document.activeElement.blur();
-            }
-        }, { passive: false });
+        document.addEventListener('wheel', function(event) { if (document.activeElement.type === 'number') document.activeElement.blur(); }, { passive: false });
 
-        // 🛡️ THE MAGIC CONFIRM ENGINE
         window.magicConfirm = function(msg) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
@@ -476,7 +471,6 @@
                 box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.9); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);`;
                 box.innerHTML = `
                     <div style="background: var(--card); border: 1px solid var(--border); padding: 25px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; animation: sheetUp 0.3s ease; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
-                        <div style="background:rgba(245,158,11,0.1); color:var(--warning); width:50px; height:50px; border-radius:50%; border: 2px solid rgba(245,158,11,0.3); display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
                         <div style="font-size: 14px; font-weight: 800; color: white; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
                         <div style="display: flex; gap: 12px;">
                             <button id="cConfirmCancel" style="flex: 1; padding: 12px; background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer;">Cancel</button>
@@ -493,28 +487,37 @@
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
-            let bg = '#10b981'; if(msg.includes('❌') || msg.includes('⚠️') || msg.includes('Failed')) bg = '#ef4444';
+            let bg = '#10b981'; if(msg.includes('❌') || msg.includes('⚠️') || msg.includes('Failed') || msg.includes('⛔') || msg.includes('⏱️')) bg = '#ef4444';
             box.style.cssText = `position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: ${bg}; color: white; padding: 12px 20px; border-radius: 12px; font-weight: 800; font-size: 13px; z-index: 100006; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: sheetUp 0.3s ease; max-width: 90%; width: max-content; white-space: normal; word-wrap: break-word; text-align: center; line-height: 1.5;`;
             box.innerText = msg; document.body.appendChild(box); setTimeout(() => box.remove(), 4000);
             if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
         };
 
+        window.showWaitingModal = function() {
+            const oldBox = document.getElementById('waitingModalBox'); if (oldBox) oldBox.remove();
+            const box = document.createElement('div'); box.id = 'waitingModalBox';
+            box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.95); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); flex-direction: column;`;
+            box.innerHTML = `
+                <div style="width:50px; height:50px; border-radius:50%; border:3px solid var(--primary); border-top-color:transparent; animation:spin 1s linear infinite; margin-bottom:20px;"></div>
+                <div style="font-size: 16px; font-weight: 900; color: white; text-align: center; line-height: 1.5;">Sending Live Request to Client...<br><span style="font-size:12px; color:var(--text-muted); font-weight:700;">Waiting for their approval to securely enter dashboard.</span></div>
+                <button onclick="window.cancelPolling()" style="margin-top:20px; padding:10px 20px; background:var(--danger); color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer;">Cancel Request</button>
+                <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+            `;
+            document.body.appendChild(box);
+        };
+        window.hideWaitingModal = function() { const box = document.getElementById('waitingModalBox'); if(box) box.remove(); };
+
         window.switchTab = function(tabId, el) {
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('active');
-            });
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            el.classList.add('active');
-            document.getElementById('tab-' + tabId).classList.add('active');
-            window.scrollTo(0,0);
+            el.classList.add('active'); document.getElementById('tab-' + tabId).classList.add('active'); window.scrollTo(0,0);
         };
 
         let clientsData = [];
         let plansData = [];
         let ticketsData = [];
-        let activeClientId = null; 
-        let editingPlanId = null; // 🔥 NEW: Track which plan is being edited
+        let editingPlanId = null; 
+        window.pollInterval = null;
 
         async function initMaster() {
             document.getElementById('securityLock').style.display = 'none';
@@ -530,9 +533,7 @@
             
             document.getElementById('aWarnDays').value = localStorage.getItem('vpk_auto_warn_days') || 15;
             document.getElementById('aGraceDays').value = localStorage.getItem('vpk_auto_grace_days') || 7;
-
-            const isAlertsOn = localStorage.getItem('vpk_master_alerts_enabled') !== 'false';
-            document.getElementById('masterAlertToggle').checked = isAlertsOn;
+            document.getElementById('masterAlertToggle').checked = localStorage.getItem('vpk_master_alerts_enabled') !== 'false';
         }
 
         window.logoutMaster = async function() { 
@@ -541,7 +542,7 @@
         };
 
         // ==========================================
-        // DYNAMIC PLAN MANAGEMENT (🔥 EDIT FIX 🔥)
+        // DYNAMIC PLAN MANAGEMENT
         // ==========================================
         async function fetchPlans() {
             try {
@@ -571,59 +572,25 @@
         window.editPlan = function(id) {
             const plan = plansData.find(p => p.id === id);
             if(!plan) return;
-            
-            document.getElementById('pName').value = plan.plan_name;
-            document.getElementById('pPrice').value = plan.price;
-            document.getElementById('pDurVal').value = plan.duration_value;
-            document.getElementById('pDurType').value = plan.duration_type;
-            document.getElementById('pMaxAdm').value = plan.usage_limits?.max_admissions || 100;
-            document.getElementById('pMaxStaff').value = plan.usage_limits?.max_staff || 2;
-            
-            editingPlanId = id;
-            document.getElementById('planSubmitBtn').innerText = '🔄 Update Plan';
-            document.getElementById('planCancelBtn').style.display = 'block';
-            window.scrollTo(0, 0);
+            document.getElementById('pName').value = plan.plan_name; document.getElementById('pPrice').value = plan.price;
+            document.getElementById('pDurVal').value = plan.duration_value; document.getElementById('pDurType').value = plan.duration_type;
+            document.getElementById('pMaxAdm').value = plan.usage_limits?.max_admissions || 100; document.getElementById('pMaxStaff').value = plan.usage_limits?.max_staff || 2;
+            editingPlanId = id; document.getElementById('planSubmitBtn').innerText = '🔄 Update Plan'; document.getElementById('planCancelBtn').style.display = 'block'; window.scrollTo(0, 0);
         };
 
         window.cancelEditPlan = function() {
-            editingPlanId = null;
-            document.getElementById('planSubmitBtn').innerText = '💾 Save Plan';
-            document.getElementById('planCancelBtn').style.display = 'none';
-            document.querySelector('#tab-studio form').reset();
+            editingPlanId = null; document.getElementById('planSubmitBtn').innerText = '💾 Save Plan'; document.getElementById('planCancelBtn').style.display = 'none'; document.querySelector('#tab-studio form').reset();
         };
 
         window.addPlan = async function(e) {
             e.preventDefault();
-            const planData = { 
-                plan_name: document.getElementById('pName').value, 
-                price: parseFloat(document.getElementById('pPrice').value), 
-                duration_value: parseInt(document.getElementById('pDurVal').value), 
-                duration_type: document.getElementById('pDurType').value, 
-                usage_limits: { 
-                    max_admissions: parseInt(document.getElementById('pMaxAdm').value), 
-                    max_staff: parseInt(document.getElementById('pMaxStaff').value) 
-                }
-            };
-
-            const btn = document.getElementById('planSubmitBtn');
-            btn.innerText = "Saving...";
-
+            const planData = { plan_name: document.getElementById('pName').value, price: parseFloat(document.getElementById('pPrice').value), duration_value: parseInt(document.getElementById('pDurVal').value), duration_type: document.getElementById('pDurType').value, usage_limits: { max_admissions: parseInt(document.getElementById('pMaxAdm').value), max_staff: parseInt(document.getElementById('pMaxStaff').value) } };
+            const btn = document.getElementById('planSubmitBtn'); btn.innerText = "Saving...";
             try {
-                if (editingPlanId) {
-                    await supabase.from('subscription_plans').update(planData).eq('id', editingPlanId);
-                    alert("✅ Plan Updated Successfully!");
-                    cancelEditPlan();
-                } else {
-                    await supabase.from('subscription_plans').insert([planData]);
-                    alert("✅ New Plan Created!");
-                    e.target.reset();
-                }
+                if (editingPlanId) { await supabase.from('subscription_plans').update(planData).eq('id', editingPlanId); alert("✅ Plan Updated Successfully!"); cancelEditPlan(); } 
+                else { await supabase.from('subscription_plans').insert([planData]); alert("✅ New Plan Created!"); e.target.reset(); }
                 fetchPlans();
-            } catch(err) {
-                alert("❌ Error saving plan: " + err.message);
-            } finally {
-                if(!editingPlanId) btn.innerText = "💾 Save Plan";
-            }
+            } catch(err) { alert("❌ Error saving plan: " + err.message); } finally { if(!editingPlanId) btn.innerText = "💾 Save Plan"; }
         };
 
         window.deletePlan = async function(id) { 
@@ -640,10 +607,8 @@
             try {
                 const { data } = await supabase.from('saas_clients').select('*');
                 clientsData = data || [];
-                updateStatChips();
-                applySortAndFilter();
-
-                const dropdowns = ['indClientList1', 'indPromoList'];
+                updateStatChips(); applySortAndFilter();
+                const dropdowns = ['indClientList1', 'indPromoList', 'indBillList'];
                 dropdowns.forEach(ddId => {
                     const el = document.getElementById(ddId);
                     if(el) el.innerHTML = clientsData.map(c => `<option value="${c.admin_email}">👤 ${c.institute_name} (${c.admin_email})</option>`).join('');
@@ -652,48 +617,39 @@
         }
 
         function updateStatChips() {
-            const today = new Date();
-            let act = 0, exp = 0, sus = 0;
+            const today = new Date(); let act = 0, exp = 0, sus = 0;
             clientsData.forEach(c => {
                 if(c.is_active && c.valid_until) {
                     const diff = Math.ceil((new Date(c.valid_until) - today) / (1000 * 60 * 60 * 24));
                     if(diff < 0) sus++; else if(diff <= 15) exp++; else act++;
                 } else sus++;
             });
-            
-            document.getElementById('statAll').innerText = clientsData.length;
-            document.getElementById('statAct').innerText = act;
-            document.getElementById('statExp').innerText = exp;
-            document.getElementById('statSus').innerText = sus;
+            document.getElementById('statAll').innerText = clientsData.length; document.getElementById('statAct').innerText = act;
+            document.getElementById('statExp').innerText = exp; document.getElementById('statSus').innerText = sus;
         }
 
         window.applySortAndFilter = function() {
             const filterMode = document.getElementById('statusFilterSelect').value;
-            const sortMode = document.getElementById('sortSelect').value;
-            const today = new Date();
+            const sortMode = document.getElementById('sortSelect').value; const today = new Date();
             
             let filtered = clientsData.filter(c => {
                 let daysLeft = c.valid_until ? Math.ceil((new Date(c.valid_until) - today) / (1000 * 60 * 60 * 24)) : 0;
                 let cStat = (!c.is_active || daysLeft < 0) ? 'Suspended' : (daysLeft <= 15 ? 'Expiring' : 'Active');
                 if (filterMode === 'Premium') return (c.plan_name && !c.plan_name.toLowerCase().includes('free'));
                 if (filterMode === 'Free') return (!c.plan_name || c.plan_name.toLowerCase().includes('free'));
-                if (filterMode === 'All') return true;
-                return filterMode === cStat;
+                if (filterMode === 'All') return true; return filterMode === cStat;
             });
-
             filtered.sort((a, b) => {
                 if(sortMode === 'newest') return new Date(b.created_at) - new Date(a.created_at);
                 if(sortMode === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
                 if(sortMode === 'expiry_near') return (a.valid_until ? new Date(a.valid_until) : new Date(8640000000000000)) - (b.valid_until ? new Date(b.valid_until) : new Date(8640000000000000));
             });
-
             renderClientCards(filtered);
         };
 
         function renderClientCards(data) {
             const container = document.getElementById('clientCardsContainer');
-            const today = new Date();
-            let html = '';
+            const today = new Date(); let html = '';
 
             data.forEach(c => {
                 let daysLeft = 0; let statusBadge = `<span class="badge bg-red">Locked</span>`;
@@ -704,16 +660,19 @@
                     else { statusBadge = `<span class="badge bg-green">Active</span>`; }
                 }
 
-                let limit = c.admission_limit || 100;
-                let mockCurrent = Math.floor(Math.random() * (limit/2)); 
+                let limit = c.admission_limit || 100; let mockCurrent = Math.floor(Math.random() * (limit/2)); 
                 let usagePct = Math.round((mockCurrent / limit) * 100);
+
+                let pData = {}; try { pData = JSON.parse(c.promo_message || '{}'); } catch(e){}
+                let isOnline = pData.last_active && (Date.now() - pData.last_active < 3 * 60 * 1000);
+                let onlineDot = isOnline ? `<span class="status-dot dot-online" title="Online Now"></span>` : `<span class="status-dot dot-offline" title="Offline"></span>`;
 
                 html += `
                 <div class="client-card">
                     <div class="cc-header">
                         <div>
                             <h3 class="cc-title">${c.institute_name} ${statusBadge}</h3>
-                            <div class="cc-email">✉️ ${c.admin_email}</div>
+                            <div class="cc-email">${onlineDot} ✉️ ${c.admin_email}</div>
                         </div>
                     </div>
                     <div style="font-size:11px; font-weight:800; color:var(--primary); margin-bottom:10px; text-transform:uppercase;">💎 ${c.plan_name || 'Free Tier'}</div>
@@ -724,11 +683,13 @@
                     <div class="cc-footer">
                         <div class="cc-expiry">Valid: <span>${c.valid_until ? new Date(c.valid_until).toLocaleDateString('en-GB') : 'N/A'}</span></div>
                         <div class="cc-actions">
-                            <button class="btn-icon btn-login-client" title="Login as Client" onclick="impersonateClient('${c.admin_email}')">
+                            <!-- 🔥 LOGIN AS CLIENT WITH ID 🔥 -->
+                            <button class="btn-icon btn-login-client" title="Login as Client" onclick="impersonateClient('${c.admin_email}', '${c.id}')">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
                             </button>
+                            <!-- 🔥 BEAUTIFUL SOLID GEAR ICON 🔥 -->
                             <button class="btn-icon" style="color:var(--primary);" title="Settings" onclick="openUpgradeModal('${c.id}', '${c.institute_name}')">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.05-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22l-1.92 3.32c-.12.22-.07.49.12.61l2.03 1.58c-.04.3-.06.61-.06.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
                             </button>
                             <button class="btn-icon" style="color:var(--danger); border-color:rgba(239,68,68,0.3);" onclick="deleteClient('${c.id}', '${c.institute_name}')">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -741,124 +702,171 @@
         }
 
         // ==========================================
-        // IMPERSONATION
+        // 🔥 THE PRIVACY-FIRST IMPERSONATION HANDSHAKE 🔥
         // ==========================================
-        window.impersonateClient = async function(email) {
-            const ans = await window.magicConfirm(`SUPER ADMIN OVERRIDE\n\nYou are about to securely login directly into ${email}'s dashboard. Proceed?`);
-            if(ans) {
-                localStorage.setItem('userRole', 'Super Admin'); 
-                alert("✅ Impersonation Active. Redirecting securely...");
-                setTimeout(() => { 
-                    window.open(`dashboard.html?override=${encodeURIComponent(email)}`, '_blank'); 
-                }, 1000);
+        window.impersonateClient = async function(email, id) {
+            const { data } = await supabase.from('saas_clients').select('promo_message').eq('id', id).single();
+            let pData = {}; try { pData = JSON.parse(data.promo_message || '{}'); } catch(e){}
+
+            const isOnline = pData.last_active && (Date.now() - pData.last_active < 3 * 60 * 1000);
+            
+            if (!isOnline) {
+                if (pData.support_access_24h) {
+                    const ans = await window.magicConfirm(`Client is OFFLINE ⚪, but they have granted you 24H Support Access.\n\nProceed to login securely?`);
+                    if(ans) executeLogin(email);
+                } else {
+                    alert("❌ Client is OFFLINE and has not granted 24H Remote Access. You cannot login without their live permission.");
+                }
+                return;
             }
+
+            const ans = await window.magicConfirm(`Client is ONLINE 🟢\n\nSend a live request to their dashboard asking for permission to enter?`);
+            if(!ans) return;
+
+            pData.impersonation = { status: 'pending', timestamp: Date.now() };
+            await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', id);
+
+            window.showWaitingModal();
+            
+            let attempts = 0;
+            window.pollInterval = setInterval(async () => {
+                attempts++;
+                const { data: pollData } = await supabase.from('saas_clients').select('promo_message').eq('id', id).single();
+                let curData = {}; try { curData = JSON.parse(pollData.promo_message || '{}'); } catch(e){}
+                
+                if (curData.impersonation?.status === 'approved') {
+                    clearInterval(window.pollInterval); window.hideWaitingModal();
+                    alert("✅ Request APPROVED! Entering dashboard...");
+                    executeLogin(email);
+                } else if (curData.impersonation?.status === 'rejected') {
+                    clearInterval(window.pollInterval); window.hideWaitingModal();
+                    alert("⛔ TERMINATED BY USER: The client denied your request.");
+                } else if (attempts > 30) { 
+                    clearInterval(window.pollInterval); window.hideWaitingModal();
+                    alert("⏱️ Timeout: Client did not respond.");
+                }
+            }, 2000);
         };
 
-        // ==========================================
-        // DEDICATED PROMO ENGINE (OFFERS TAB)
-        // ==========================================
-        window.launchPromo = async function() {
-            const msg = document.getElementById('promoMsgInput').value.trim();
-            const target = document.getElementById('promoTarget').value;
-            const start = document.getElementById('promoStart').value;
-            const expiry = document.getElementById('promoExpiry').value;
+        window.cancelPolling = function() {
+            if(window.pollInterval) clearInterval(window.pollInterval);
+            window.hideWaitingModal();
+        };
 
-            if(!msg) return alert("⚠️ Please enter an offer message.");
-            if(!start || !expiry) return alert("⚠️ Please select both Schedule Start and Timeout for the offer.");
+        function executeLogin(email) {
+            localStorage.setItem('userRole', 'Super Admin'); 
+            setTimeout(() => { window.open(`dashboard.html?override=${encodeURIComponent(email)}`, '_blank'); }, 1000);
+        }
 
-            const btn = document.getElementById('btnLaunchPromo');
-            btn.innerText = "Publishing...";
+        // ==========================================
+        // 🎯 TARGETED BILLING & ALERTS ENGINE
+        // ==========================================
+        window.launchBillingAlert = async function() {
+            const msg = document.getElementById('billAlertMsg').value.trim();
+            const target = document.getElementById('billAlertTarget').value;
+            const start = document.getElementById('billAlertStart').value;
+            const expiry = document.getElementById('billAlertExpiry').value;
+
+            if(!msg) return alert("⚠️ Please enter a billing warning message.");
+            if(!start || !expiry) return alert("⚠️ Please set Schedule Start and Timeout for the alert.");
+
+            const btn = document.getElementById('btnLaunchBillAlert'); btn.innerText = "Publishing...";
 
             try {
-                const promoObj = { msg: msg, starts_at: new Date(start).toISOString(), expires_at: new Date(expiry).toISOString() };
-                const promoJson = JSON.stringify(promoObj);
+                let targetIds = getTargetIds(target);
+                if(targetIds.length === 0) { btn.innerText = "🚀 Publish Custom Alert"; return alert("⚠️ No clients found in target group."); }
 
-                let targetIds = [];
-                const today = new Date();
-
-                if (target === 'All') {
-                    targetIds = clientsData.map(c => c.id);
-                } else if (target === 'Active') {
-                    targetIds = clientsData.filter(c => c.is_active).map(c => c.id);
-                } else if (target === 'Expiring') {
-                    targetIds = clientsData.filter(c => {
-                        let daysLeft = c.valid_until ? Math.ceil((new Date(c.valid_until) - today) / (1000 * 60 * 60 * 24)) : 0;
-                        return daysLeft >= 0 && daysLeft <= 15;
-                    }).map(c => c.id);
-                } else {
-                    const client = clientsData.find(c => c.admin_email === target);
-                    if(client) targetIds.push(client.id);
+                for(let id of targetIds) {
+                    const { data } = await supabase.from('saas_clients').select('promo_message').eq('id', id).single();
+                    let pData = {}; try { pData = JSON.parse(data.promo_message || '{}'); } catch(e){}
+                    pData.billing_alert = { msg: msg, starts_at: new Date(start).toISOString(), expires_at: new Date(expiry).toISOString() };
+                    await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', id);
                 }
+                alert(`✅ Custom Billing Alert successfully scheduled for ${targetIds.length} client(s)!`);
+                document.getElementById('billAlertMsg').value = ''; document.getElementById('billAlertStart').value = ''; document.getElementById('billAlertExpiry').value = '';
+            } catch(e) { alert("❌ Failed: " + e.message); } finally { btn.innerText = "🚀 Publish Custom Alert"; }
+        };
 
-                if(targetIds.length === 0) {
-                    alert("⚠️ No clients found in the selected target group.");
-                    btn.innerText = "🚀 Publish Offer";
-                    return;
+        window.revokeBillingAlert = async function() {
+            const target = document.getElementById('billAlertTarget').value;
+            const ans = await window.magicConfirm("🛑 Are you sure you want to remove any active or scheduled billing alerts for the selected target group?");
+            if(!ans) return;
+
+            try {
+                let targetIds = getTargetIds(target);
+                if(targetIds.length === 0) return alert("⚠️ No clients found in target group.");
+
+                for(let id of targetIds) {
+                    const { data } = await supabase.from('saas_clients').select('promo_message').eq('id', id).single();
+                    let pData = {}; try { pData = JSON.parse(data.promo_message || '{}'); } catch(e){}
+                    delete pData.billing_alert;
+                    await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', id);
                 }
+                alert(`✅ Billing alerts successfully revoked from ${targetIds.length} client(s).`);
+            } catch(e) { alert("❌ Error: " + e.message); }
+        };
 
-                const { error } = await supabase.from('saas_clients')
-                    .update({ promo_message: promoJson })
-                    .in('id', targetIds);
+        function getTargetIds(target) {
+            let targetIds = []; const today = new Date();
+            if (target === 'All') targetIds = clientsData.map(c => c.id);
+            else if (target === 'Active') targetIds = clientsData.filter(c => c.is_active).map(c => c.id);
+            else if (target === 'Expiring') targetIds = clientsData.filter(c => {
+                let daysLeft = c.valid_until ? Math.ceil((new Date(c.valid_until) - today) / (1000 * 60 * 60 * 24)) : 0;
+                return daysLeft >= 0 && daysLeft <= 15;
+            }).map(c => c.id);
+            else { const client = clientsData.find(c => c.admin_email === target); if(client) targetIds.push(client.id); }
+            return targetIds;
+        }
 
-                if(error) throw error;
+        // ==========================================
+        // PROMO ENGINE (OFFERS TAB)
+        // ==========================================
+        window.launchPromo = async function() {
+            const msg = document.getElementById('promoMsgInput').value.trim(); const target = document.getElementById('promoTarget').value;
+            const start = document.getElementById('promoStart').value; const expiry = document.getElementById('promoExpiry').value;
 
+            if(!msg || !start || !expiry) return alert("⚠️ Please fill all offer fields.");
+            const btn = document.getElementById('btnLaunchPromo'); btn.innerText = "Publishing...";
+
+            try {
+                let targetIds = getTargetIds(target);
+                if(targetIds.length === 0) { btn.innerText = "🚀 Publish Offer"; return alert("⚠️ No clients found."); }
+
+                for(let id of targetIds) {
+                    const { data } = await supabase.from('saas_clients').select('promo_message').eq('id', id).single();
+                    let pData = {}; try { pData = JSON.parse(data.promo_message || '{}'); } catch(e){}
+                    pData.promo = { msg: msg, starts_at: new Date(start).toISOString(), expires_at: new Date(expiry).toISOString() };
+                    await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', id);
+                }
                 alert(`✅ Promo Offer successfully scheduled for ${targetIds.length} client(s)!`);
-                document.getElementById('promoMsgInput').value = '';
-                document.getElementById('promoStart').value = '';
-                document.getElementById('promoExpiry').value = '';
+                document.getElementById('promoMsgInput').value = ''; document.getElementById('promoStart').value = ''; document.getElementById('promoExpiry').value = '';
                 fetchClients(); 
-            } catch(e) {
-                alert("❌ Failed: " + e.message);
-            } finally {
-                btn.innerText = "🚀 Publish Offer";
-            }
+            } catch(e) { alert("❌ Failed: " + e.message); } finally { btn.innerText = "🚀 Publish Offer"; }
         };
 
         window.revokePromo = async function() {
             const target = document.getElementById('promoTarget').value;
-            const ans = await window.magicConfirm("🛑 Stop Active Offer?\n\nAre you sure you want to remove any active or scheduled offers for the currently selected target group?");
+            const ans = await window.magicConfirm("🛑 Are you sure you want to clear offers for the selected target group?");
             if(!ans) return;
-
             try {
-                let targetIds = [];
-                const today = new Date();
+                let targetIds = getTargetIds(target);
+                if(targetIds.length === 0) return alert("⚠️ No clients found.");
 
-                if (target === 'All') targetIds = clientsData.map(c => c.id);
-                else if (target === 'Active') targetIds = clientsData.filter(c => c.is_active).map(c => c.id);
-                else if (target === 'Expiring') targetIds = clientsData.filter(c => {
-                    let daysLeft = c.valid_until ? Math.ceil((new Date(c.valid_until) - today) / (1000 * 60 * 60 * 24)) : 0;
-                    return daysLeft >= 0 && daysLeft <= 15;
-                }).map(c => c.id);
-                else {
-                    const client = clientsData.find(c => c.admin_email === target);
-                    if(client) targetIds.push(client.id);
+                for(let id of targetIds) {
+                    const { data } = await supabase.from('saas_clients').select('promo_message').eq('id', id).single();
+                    let pData = {}; try { pData = JSON.parse(data.promo_message || '{}'); } catch(e){}
+                    delete pData.promo;
+                    await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', id);
                 }
-
-                if(targetIds.length === 0) return alert("⚠️ No clients found in target group.");
-
-                const { error } = await supabase.from('saas_clients')
-                    .update({ promo_message: null })
-                    .in('id', targetIds);
-
-                if(error) throw error;
-                
-                alert(`✅ Offers successfully revoked and cleared from ${targetIds.length} client(s) dashboards.`);
-                fetchClients();
-            } catch(e) {
-                alert("❌ Error: " + e.message);
-            }
+                alert(`✅ Offers successfully revoked from ${targetIds.length} client(s).`); fetchClients();
+            } catch(e) { alert("❌ Error: " + e.message); }
         };
 
         // Settings / Upgrade Modal
-        window.openUpgradeModal = function(id, name) {
-            activeClientId = id;
-            document.getElementById('uClientName').innerText = name;
-            document.getElementById('upgradeModal').style.display = 'flex';
-        };
+        window.openUpgradeModal = function(id, name) { activeClientId = id; document.getElementById('uClientName').innerText = name; document.getElementById('upgradeModal').style.display = 'flex'; };
 
         window.submitPlanUpgrade = async function() {
-            const planId = document.getElementById('uPlanSelect').value;
-            const demoEnabled = document.getElementById('uDemoToggle').checked;
+            const planId = document.getElementById('uPlanSelect').value; const demoEnabled = document.getElementById('uDemoToggle').checked;
             if(!planId) return alert("⚠️ Select a plan.");
             
             const selectedPlan = plansData.find(p => p.id === planId);
@@ -866,23 +874,15 @@
             if(selectedPlan.duration_type === 'Days') validUntilDate.setDate(validUntilDate.getDate() + selectedPlan.duration_value);
             else if(selectedPlan.duration_type === 'Months') validUntilDate.setMonth(validUntilDate.getMonth() + selectedPlan.duration_value);
 
-            await supabase.from('saas_clients').update({
-                plan_name: selectedPlan.plan_name, admission_limit: selectedPlan.usage_limits.max_admissions, valid_until: validUntilDate.toISOString().split('T')[0], is_active: true
-            }).eq('id', activeClientId);
-
-            if(demoEnabled) alert(`✅ Client updated. Demo Link: login.html?demo=${activeClientId}`);
-            else alert("✅ Client updated successfully.");
-            
-            document.getElementById('upgradeModal').style.display = 'none';
-            fetchClients();
+            await supabase.from('saas_clients').update({ plan_name: selectedPlan.plan_name, admission_limit: selectedPlan.usage_limits.max_admissions, valid_until: validUntilDate.toISOString().split('T')[0], is_active: true }).eq('id', activeClientId);
+            if(demoEnabled) alert(`✅ Client updated. Demo Link: login.html?demo=${activeClientId}`); else alert("✅ Client updated successfully.");
+            document.getElementById('upgradeModal').style.display = 'none'; fetchClients();
         };
 
         window.addClient = async function(e) {
             e.preventDefault();
-            const email = document.getElementById('cEmail').value.trim();
-            const pass = document.getElementById('cPassword').value.trim();
-            const planId = document.getElementById('cPlanSelect').value;
-            const selectedPlan = plansData.find(p => p.id === planId);
+            const email = document.getElementById('cEmail').value.trim(); const pass = document.getElementById('cPassword').value.trim();
+            const planId = document.getElementById('cPlanSelect').value; const selectedPlan = plansData.find(p => p.id === planId);
 
             let validUntilDate = new Date();
             if(selectedPlan.duration_type === 'Days') validUntilDate.setDate(validUntilDate.getDate() + selectedPlan.duration_value);
@@ -892,200 +892,95 @@
             try {
                 const { error: authErr } = await supabase.auth.signUp({ email: email, password: pass });
                 if (authErr && authErr.message !== "User already registered") throw authErr;
-
-                await supabase.from('saas_clients').insert([{
-                    institute_name: document.getElementById('cName').value, admin_email: email, plan_name: selectedPlan.plan_name, admission_limit: selectedPlan.usage_limits.max_admissions, valid_until: validUntilDate.toISOString().split('T')[0], is_active: true
-                }]);
-                
-                alert("✅ TENANT PROVISIONED SUCCESSFULLY!");
-                e.target.reset(); document.getElementById('addClientModal').style.display='none'; fetchClients();
-            } catch (err) { alert("❌ Error: " + err.message); }
-            finally { document.getElementById('saveBtn').innerText = 'Deploy'; }
+                await supabase.from('saas_clients').insert([{ institute_name: document.getElementById('cName').value, admin_email: email, plan_name: selectedPlan.plan_name, admission_limit: selectedPlan.usage_limits.max_admissions, valid_until: validUntilDate.toISOString().split('T')[0], is_active: true }]);
+                alert("✅ TENANT PROVISIONED SUCCESSFULLY!"); e.target.reset(); document.getElementById('addClientModal').style.display='none'; fetchClients();
+            } catch (err) { alert("❌ Error: " + err.message); } finally { document.getElementById('saveBtn').innerText = 'Deploy'; }
         };
 
         window.deleteClient = async function(id, name) {
-            const ans = await window.magicConfirm(`CRITICAL ACTION\n\nAre you sure you want to terminate ${name}? This action will suspend their access immediately.`);
+            const ans = await window.magicConfirm(`CRITICAL ACTION\n\nAre you sure you want to terminate ${name}?`);
             if (ans) { await supabase.from('saas_clients').delete().eq('id', id); fetchClients(); } 
         };
 
         // ==========================================
-        // SUPPORT INBOX (CRM TICKETING) & DIVERSION
+        // SUPPORT INBOX (CRM TICKETING) & REST
         // ==========================================
         async function fetchGlobalProviderInfo() {
-            try {
-                const { data, error } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
-                if(!error && data && data.provider_config) {
-                    const conf = JSON.parse(data.provider_config);
-                    document.getElementById('gProvEmail').value = conf.email || '';
-                    document.getElementById('gProvPhone').value = conf.phone || '';
-                    if(document.getElementById('gForwardEmail')) {
-                        document.getElementById('gForwardEmail').value = conf.forwarding_email || '';
-                    }
-                }
+            try { const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
+                if(data && data.provider_config) { const conf = JSON.parse(data.provider_config); document.getElementById('gProvEmail').value = conf.email || ''; document.getElementById('gProvPhone').value = conf.phone || ''; }
             } catch(e){}
         }
 
         window.saveProviderContact = async function() {
-            let currentConf = {};
-            try {
-                const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
-                if(data && data.provider_config) currentConf = JSON.parse(data.provider_config);
-            } catch(e){}
-
-            currentConf.email = document.getElementById('gProvEmail').value;
-            currentConf.phone = document.getElementById('gProvPhone').value;
-
+            let currentConf = {}; try { const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single(); if(data && data.provider_config) currentConf = JSON.parse(data.provider_config); } catch(e){}
+            currentConf.email = document.getElementById('gProvEmail').value; currentConf.phone = document.getElementById('gProvPhone').value;
             const { error } = await supabase.from('institute_settings').update({ provider_config: JSON.stringify(currentConf) }).eq('id', 1);
-            if(error) alert("❌ Failed to save contact info.");
-            else alert("✅ Global Contact Info Updated.");
-        };
-
-        window.saveTicketDiversion = async function() {
-            const fEmail = document.getElementById('gForwardEmail').value.trim();
-            let currentConf = {};
-            try {
-                const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
-                if(data && data.provider_config) currentConf = JSON.parse(data.provider_config);
-            } catch(e){}
-
-            currentConf.forwarding_email = fEmail;
-
-            const { error } = await supabase.from('institute_settings').update({ provider_config: JSON.stringify(currentConf) }).eq('id', 1);
-            if(error) alert("❌ Failed to update Diversion Rules.");
-            else alert("✅ Ticket Diversion Rule Successfully Updated!\nAll new tickets will now be forwarded to: " + (fEmail || 'None'));
+            if(error) alert("❌ Failed."); else alert("✅ Global Contact Info Updated.");
         };
 
         async function fetchSupportTickets() {
-            try {
-                const { data, error } = await supabase.from('bug_reports').select('*').order('created_at', { ascending: false });
-                ticketsData = data || [];
-                
-                let unreadCount = ticketsData.filter(t => t.status === 'Open').length;
-                const badge = document.getElementById('inboxBadge');
-                if (unreadCount > 0) {
-                    badge.innerText = unreadCount;
-                    badge.classList.add('show');
-                } else {
-                    badge.classList.remove('show');
-                }
-
+            try { const { data } = await supabase.from('bug_reports').select('*').order('created_at', { ascending: false });
+                ticketsData = data || []; let unreadCount = ticketsData.filter(t => t.status === 'Open').length;
+                const badge = document.getElementById('inboxBadge'); if (unreadCount > 0) { badge.innerText = unreadCount; badge.classList.add('show'); } else { badge.classList.remove('show'); }
                 renderTickets(ticketsData);
             } catch(e) {}
         }
 
         window.searchTickets = function() {
             const query = document.getElementById('ticketSearch').value.toLowerCase();
-            const filtered = ticketsData.filter(t => {
-                const shortId = t.id.toString().substring(0, 8).toUpperCase();
-                const tktId = `TKT-${shortId}`;
-                return tktId.toLowerCase().includes(query) || t.institute_name.toLowerCase().includes(query);
-            });
-            renderTickets(filtered);
+            renderTickets(ticketsData.filter(t => `TKT-${t.id.toString().substring(0, 8).toUpperCase()}`.toLowerCase().includes(query) || t.institute_name.toLowerCase().includes(query)));
         };
 
         function renderTickets(data) {
             const container = document.getElementById('ticketsContainer');
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">No support tickets found.</div>';
-                return;
-            }
-
+            if (!data || data.length === 0) { container.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">No support tickets found.</div>'; return; }
             container.innerHTML = data.map(t => {
-                let statusColor = 'status-Open';
-                if(t.status === 'In Progress') statusColor = 'status-Progress';
-                if(t.status === 'On Hold') statusColor = 'status-Hold';
-                if(t.status === 'Resolved') statusColor = 'status-Resolved';
-
-                const shortId = t.id.toString().substring(0, 8).toUpperCase();
-
-                let deleteBtnHtml = '';
-                if(t.status === 'Resolved') {
-                    deleteBtnHtml = `<button class="btn btn-outline" style="padding:8px; font-size:11px; color:var(--danger); border-color:rgba(239,68,68,0.3); width:auto;" title="Delete Ticket" onclick="deleteTicket('${t.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
-                }
-
+                let statusColor = t.status === 'Resolved' ? 'status-Resolved' : (t.status === 'In Progress' ? 'status-Progress' : (t.status === 'On Hold' ? 'status-Hold' : 'status-Open'));
+                let deleteBtnHtml = t.status === 'Resolved' ? `<button class="btn btn-outline" style="padding:8px; font-size:11px; color:var(--danger); border-color:rgba(239,68,68,0.3); width:auto;" onclick="deleteTicket('${t.id}')">🗑️</button>` : '';
                 return `
                 <div class="ticket-card" id="tick_${t.id}">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <div>
-                            <span class="tkt-id">#TKT-${shortId}</span>
-                            <div class="tkt-inst">${t.institute_name}</div>
-                        </div>
+                        <div><span class="tkt-id">#TKT-${t.id.toString().substring(0,8).toUpperCase()}</span><div class="tkt-inst">${t.institute_name}</div></div>
                         <span class="badge ${statusColor}" style="font-size:10px;">${t.status || 'Open'}</span>
                     </div>
-                    
                     <div class="tkt-desc">${t.issue_details}</div>
-                    
                     <div style="background:var(--bg); border:1px solid var(--border); padding:10px; border-radius:8px;">
-                        <label style="font-size:9px; color:var(--text-muted); text-transform:uppercase; font-weight:800; margin-bottom:5px; display:block;">Admin Reply & Status</label>
-                        
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
                             <select id="status_${t.id}" class="custom-select" style="padding:8px; font-size:11px;">
-                                <option value="Open" ${t.status === 'Open' ? 'selected' : ''}>🔴 Open</option>
-                                <option value="In Progress" ${t.status === 'In Progress' ? 'selected' : ''}>🟡 In Progress</option>
-                                <option value="On Hold" ${t.status === 'On Hold' ? 'selected' : ''}>🟠 On Hold</option>
-                                <option value="Resolved" ${t.status === 'Resolved' ? 'selected' : ''}>🟢 Resolved</option>
+                                <option value="Open" ${t.status === 'Open' ? 'selected' : ''}>🔴 Open</option><option value="In Progress" ${t.status === 'In Progress' ? 'selected' : ''}>🟡 In Progress</option>
+                                <option value="On Hold" ${t.status === 'On Hold' ? 'selected' : ''}>🟠 On Hold</option><option value="Resolved" ${t.status === 'Resolved' ? 'selected' : ''}>🟢 Resolved</option>
                             </select>
                             <input type="text" id="eta_${t.id}" class="form-control" placeholder="ETA (e.g. 2 Hrs)" value="${t.eta || ''}" style="padding:8px; font-size:11px;">
                         </div>
-                        
-                        <textarea id="reply_${t.id}" class="form-control" placeholder="Type response to client..." rows="2" style="margin-bottom:8px;">${t.admin_reply || ''}</textarea>
-                        
-                        <div style="display:flex; gap:8px;">
-                            <button class="btn btn-primary" style="padding:8px; font-size:11px; flex:1;" onclick="updateTicket('${t.id}')">Update Ticket</button>
-                            ${deleteBtnHtml}
-                        </div>
+                        <textarea id="reply_${t.id}" class="form-control" placeholder="Type response..." rows="2" style="margin-bottom:8px;">${t.admin_reply || ''}</textarea>
+                        <div style="display:flex; gap:8px;"><button class="btn btn-primary" style="padding:8px; font-size:11px; flex:1;" onclick="updateTicket('${t.id}')">Update</button>${deleteBtnHtml}</div>
                     </div>
                 </div>`;
             }).join('');
         }
 
         window.updateTicket = async function(id) {
-            const newStatus = document.getElementById(`status_${id}`).value;
-            const newEta = document.getElementById(`eta_${id}`).value;
-            const newReply = document.getElementById(`reply_${id}`).value;
-
             const ans = await window.magicConfirm("Update this ticket and notify the client?");
             if(ans) {
-                const { error } = await supabase.from('bug_reports').update({ status: newStatus, eta: newEta, admin_reply: newReply }).eq('id', id);
-                if(error) alert("❌ Status Update Failed: " + error.message);
-                else { alert("✅ Ticket Updated Successfully!"); fetchSupportTickets(); }
+                const { error } = await supabase.from('bug_reports').update({ status: document.getElementById(`status_${id}`).value, eta: document.getElementById(`eta_${id}`).value, admin_reply: document.getElementById(`reply_${id}`).value }).eq('id', id);
+                if(error) alert("❌ Update Failed"); else { alert("✅ Ticket Updated!"); fetchSupportTickets(); }
             }
         };
 
         window.deleteTicket = async function(id) {
-            const ans = await window.magicConfirm("🗑️ Delete Ticket?\n\nAre you sure you want to permanently remove this resolved ticket from your inbox?");
-            if(ans) {
-                const { error } = await supabase.from('bug_reports').delete().eq('id', id);
-                if(error) alert("❌ Deletion Failed: " + error.message);
-                else { alert("✅ Ticket Removed Successfully!"); fetchSupportTickets(); }
-            }
+            const ans = await window.magicConfirm("🗑️ Delete Ticket permanently?");
+            if(ans) { await supabase.from('bug_reports').delete().eq('id', id); fetchSupportTickets(); }
         };
 
-        // ==========================================
-        // SMART GLOBAL BROADCAST ENGINE 🚀
-        // ==========================================
         window.checkActiveBroadcast = async function() {
-            try {
-                const { data } = await supabase.from('institute_settings').select('global_broadcast').eq('id', 1).single();
+            try { const { data } = await supabase.from('institute_settings').select('global_broadcast').eq('id', 1).single();
                 const panel = document.getElementById('activeBroadcastPanel');
                 if(data && data.global_broadcast) {
                     const bCast = JSON.parse(data.global_broadcast);
                     if(bCast && bCast.message) {
                         document.getElementById('liveMsgText').innerText = bCast.message;
-                        
-                        let targetText = "All Active Terminals";
-                        if(bCast.target === 'Active') targetText = "Active Clients Only";
-                        else if(bCast.target === 'Expiring') targetText = "Expiring Soon Only";
-                        else if(bCast.target !== 'All') targetText = `Specific Client (${bCast.target})`;
-                        
-                        document.getElementById('liveTarget').innerText = `🎯 Target: ${targetText}`;
-                        
-                        let sTime = new Date(bCast.starts_at).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
-                        let eTime = new Date(bCast.expires_at).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
-                        document.getElementById('liveSchedule').innerText = `⏳ Scheduled: ${sTime} to ${eTime}`;
-
-                        panel.style.display = 'block';
-                        return;
+                        document.getElementById('liveTarget').innerText = `🎯 Target: ${bCast.target}`;
+                        panel.style.display = 'block'; return;
                     }
                 }
                 panel.style.display = 'none';
@@ -1093,61 +988,29 @@
         };
 
         window.sendBulkMessage = async function() {
-            const msg = document.getElementById('bulkMsg').value.trim();
-            const target = document.getElementById('bulkTarget').value;
-            const start = document.getElementById('bulkStart').value;
-            const expiry = document.getElementById('bulkExpiry').value;
-            
-            if(!msg) return alert("⚠️ Please enter a broadcast message.");
-            if(!start || !expiry) return alert("⚠️ Please select both Schedule Start Time and Auto-Remove (Timeout) limits.");
-            
-            const btn = document.getElementById('btnBroadcast');
-            btn.innerText = "Scheduling...";
-            
+            const msg = document.getElementById('bulkMsg').value.trim(); const target = document.getElementById('bulkTarget').value;
+            const start = document.getElementById('bulkStart').value; const expiry = document.getElementById('bulkExpiry').value;
+            if(!msg || !start || !expiry) return alert("⚠️ Please fill all fields.");
             try {
                 const configObj = { message: msg, target: target, starts_at: new Date(start).toISOString(), expires_at: new Date(expiry).toISOString(), timestamp: new Date().toISOString() };
-                const { error } = await supabase.from('institute_settings').update({ global_broadcast: JSON.stringify(configObj) }).eq('id', 1);
-                if(error) throw error;
-                
-                alert("✅ Smart Broadcast Scheduled Successfully!");
-                document.getElementById('bulkMsg').value = '';
-                document.getElementById('bulkStart').value = '';
-                document.getElementById('bulkExpiry').value = '';
-                checkActiveBroadcast(); 
-            } catch(e) { 
-                alert("❌ Broadcast Scheduling Failed: " + e.message); 
-            }
-            finally { btn.innerText = "🚀 Schedule Broadcast"; }
+                await supabase.from('institute_settings').update({ global_broadcast: JSON.stringify(configObj) }).eq('id', 1);
+                alert("✅ Broadcast Scheduled!"); checkActiveBroadcast(); 
+            } catch(e) { alert("❌ Failed."); }
         };
 
         window.revokeBroadcast = async function() {
-            const ans = await window.magicConfirm("🛑 Are you sure you want to Stop/Kill the current scheduled broadcast?");
-            if(!ans) return;
-            try {
-                const { error } = await supabase.from('institute_settings').update({ global_broadcast: null }).eq('id', 1);
-                if(error) throw error;
-                alert("✅ Broadcast successfully revoked and removed from all client dashboards.");
-                checkActiveBroadcast();
-            } catch(e) { alert("❌ Error: " + e.message); }
+            const ans = await window.magicConfirm("🛑 Stop current broadcast?");
+            if(ans) { await supabase.from('institute_settings').update({ global_broadcast: null }).eq('id', 1); checkActiveBroadcast(); }
         };
 
-        window.extendAllPlans = async function() {
-            const ans = await window.magicConfirm("Are you sure you want to mass-extend validity for ALL active clients?");
-            if(ans) alert('✅ Mass extension applied successfully.');
-        };
+        window.extendAllPlans = async function() { const ans = await window.magicConfirm("Mass-extend validity?"); if(ans) alert('✅ Mass extension applied.'); };
 
         window.saveMasterAlertToggle = function() {
             const isOn = document.getElementById('masterAlertToggle').checked;
             localStorage.setItem('vpk_master_alerts_enabled', isOn);
             alert(`✅ Master Subscription Alerts are now ${isOn ? 'ENABLED' : 'DISABLED'} globally.`);
         };
-
-        window.saveAutomationRules = function(e) {
-            e.preventDefault();
-            localStorage.setItem('vpk_auto_warn_days', document.getElementById('aWarnDays').value);
-            localStorage.setItem('vpk_auto_grace_days', document.getElementById('aGraceDays').value);
-            alert("✅ Automation Policy Updated!");
-        };
+        window.saveAutomationRules = function(e) { e.preventDefault(); localStorage.setItem('vpk_auto_warn_days', document.getElementById('aWarnDays').value); localStorage.setItem('vpk_auto_grace_days', document.getElementById('aGraceDays').value); alert("✅ Automation Policy Updated!"); };
 
         initMaster();
     </script>
