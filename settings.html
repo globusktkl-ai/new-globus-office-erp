@@ -441,10 +441,12 @@
             }
         });
 
-        // 1. FETCH INSTITUTE SETTINGS
+        // 1. FETCH INSTITUTE SETTINGS (🔥 .limit(1) FIX APPLIED 🔥)
         async function loadProfile() {
             try {
-                const { data } = await supabase.from('institute_settings').select('*').eq('id', 1).single();
+                const { data: settingsList } = await supabase.from('institute_settings').select('*').eq('id', 1).limit(1);
+                const data = settingsList && settingsList.length > 0 ? settingsList[0] : null;
+                
                 if (data) {
                     document.getElementById('instName').value = data.institute_name || '';
                     document.getElementById('instSubName').value = data.sub_name || '';
@@ -578,7 +580,7 @@
             }
         };
 
-        // 6. LOAD PERMISSIONS FOR A ROLE
+        // 6. LOAD PERMISSIONS FOR A ROLE (🔥 .limit(1) FIX APPLIED 🔥)
         window.editPermissions = async function(roleName) {
             window.currentEditingRole = roleName;
             document.getElementById('editingRoleNameText').innerText = roleName;
@@ -587,7 +589,8 @@
             const tbody = document.getElementById('permissionsTableBody');
             tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading...</td></tr>';
             
-            const { data } = await supabase.from('role_management').select('permissions').eq('role_name', roleName).single();
+            const { data: roleList } = await supabase.from('role_management').select('permissions').eq('role_name', roleName).limit(1);
+            const data = roleList && roleList.length > 0 ? roleList[0] : null;
             const perms = data ? (data.permissions || {}) : {};
 
             tbody.innerHTML = window.allModules.map(mod => {
@@ -638,9 +641,10 @@
             if (userRole === 'Super Admin' || userRole === 'Admin') {
                 document.getElementById('tabBilling').style.display = 'inline-block';
                 const { data: { session } } = await supabase.auth.getSession();
-                if(session && session.user) {
-                    loadSaaSDetails(session.user.email);
-                    fetchMyTickets(session.user.email);
+                const uEmail = session ? session.user.email : localStorage.getItem('userEmail');
+                if(uEmail) {
+                    loadSaaSDetails(uEmail);
+                    fetchMyTickets(uEmail);
                 }
                 loadDynamicProviderInfo();
             }
@@ -651,7 +655,9 @@
             const emailEl = document.getElementById('dynProvEmail');
             const phoneEl = document.getElementById('dynProvPhone');
             try {
-                const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
+                const { data: provList } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).limit(1);
+                const data = provList && provList.length > 0 ? provList[0] : null;
+                
                 if(data && data.provider_config) {
                     const conf = JSON.parse(data.provider_config);
                     emailEl.innerText = conf.email || 'vpktechsolutions@gmail.com';
@@ -666,9 +672,12 @@
             }
         }
 
+        // 🔥 THE FIX: SAAS DETAILS 406 ERROR RESOLVED WITH .limit(1) 🔥
         async function loadSaaSDetails(adminEmail) {
             try {
-                const { data, error } = await supabase.from('saas_clients').select('*').eq('admin_email', adminEmail).single();
+                const { data: clientList, error } = await supabase.from('saas_clients').select('*').eq('admin_email', adminEmail).limit(1);
+                const data = clientList && clientList.length > 0 ? clientList[0] : null;
+                
                 if(data) {
                     const planBoxHtml = `
                         <div class="plan-box-label">Active Plan</div>
@@ -689,8 +698,18 @@
                     if(data.promo_message && data.promo_message.trim() !== '') {
                         const promoDiv = document.getElementById('promoBadge');
                         promoDiv.style.display = 'block';
-                        promoDiv.innerText = `🎁 ${data.promo_message}`;
+                        
+                        try {
+                            const pObj = JSON.parse(data.promo_message);
+                            promoDiv.innerText = `🎁 ${pObj.msg || data.promo_message}`;
+                        } catch(e) {
+                            promoDiv.innerText = `🎁 ${data.promo_message}`;
+                        }
                     }
+                } else {
+                    document.getElementById('licExpiry').innerText = 'No Plan Found';
+                    document.getElementById('licStatus').innerHTML = '🔴 Inactive';
+                    document.getElementById('licStatus').style.color = '#ef4444';
                 }
             } catch(e) { console.log(e); }
         }
@@ -707,7 +726,7 @@
 
             const instName = document.getElementById('instName').value || 'Unknown Client';
             const { data: { session } } = await supabase.auth.getSession();
-            const email = session ? session.user.email : 'Unknown Email';
+            const email = session ? session.user.email : localStorage.getItem('userEmail');
 
             const btn = document.getElementById('btnSendReport');
             btn.innerText = '⏳ Generating Ticket...'; btn.disabled = true;
