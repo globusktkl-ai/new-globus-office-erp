@@ -129,7 +129,9 @@ async function enforceSecurity() {
 window.checkDynamicAccess = async function(moduleName) {
     const userRole = localStorage.getItem('userRole');
     if (!userRole) return false;
-    if (userRole === 'Super Admin') return true; 
+    
+    // 🔥 THE FIX: Both Super Admin AND Admin are allowed to bypass regular module blocks 🔥
+    if (userRole === 'Super Admin' || userRole === 'Admin') return true; 
 
     const { data, error } = await supabase.from('role_management').select('permissions').eq('role_name', userRole).single();
 
