@@ -259,7 +259,7 @@
             <button class="btn btn-primary" onclick="saveProviderContact()">Update Contact Info</button>
         </div>
 
-        <!-- 🔥 NEW: Automated Ticket Diversion Engine 🔥 -->
+        <!-- Automated Ticket Diversion Engine -->
         <div class="card" style="border-color: var(--purple); padding: 15px;">
             <div class="card-title" style="color: var(--purple); font-size: 12px;">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:5px;"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
@@ -288,42 +288,54 @@
         </div>
     </div>
 
-    <!-- TAB 4: BULK OPERATIONS -->
+    <!-- TAB 4: BULK OPERATIONS (ADVANCED SCHEDULED BROADCAST) -->
     <div id="tab-bulk" class="tab-content">
-        <!-- 🔥 NEW: SMART BROADCAST ENGINE 🔥 -->
+        
+        <!-- 🔥 ADVANCED SCHEDULED BROADCAST ENGINE 🔥 -->
         <div class="card" style="border-color: var(--primary);">
-            <div class="card-title" style="color: var(--primary);">📢 Smart Global Broadcast</div>
-            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Send targeted alerts to client dashboards with automatic timeout features.</p>
+            <div class="card-title" style="color: var(--primary);">📢 Advanced Scheduled Broadcast</div>
+            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Send or schedule targeted alerts to client dashboards with exact timeout controls.</p>
             
             <div class="form-group">
                 <label>Broadcast Message</label>
-                <textarea id="bulkMsg" class="form-control" placeholder="e.g. Server maintenance at 12 AM tonight." rows="2"></textarea>
+                <textarea id="bulkMsg" class="form-control" placeholder="e.g. Server maintenance scheduled tomorrow at 10 AM." rows="2"></textarea>
             </div>
             
-            <div class="responsive-grid">
-                <div class="form-group" style="margin-bottom:0;">
-                    <label>Target Audience</label>
-                    <select id="bulkTarget" class="custom-select" style="padding:13px;">
-                        <option value="All">🏢 All Terminals</option>
+            <div class="form-group">
+                <label>Target Audience</label>
+                <select id="bulkTarget" class="custom-select" style="padding:13px;">
+                    <optgroup label="General Groups">
+                        <option value="All">🏢 All Terminals (Global)</option>
                         <option value="Active">🟢 Active Clients Only</option>
                         <option value="Expiring">⚠️ Expiring Soon Only</option>
-                    </select>
+                    </optgroup>
+                    <optgroup label="Individual Clients" id="indClientList">
+                        <!-- Populated Dynamically via JS -->
+                        <option disabled>Loading clients...</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="responsive-grid">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Schedule Start Time</label>
+                    <input type="datetime-local" id="bulkStart" class="form-control" style="padding:11px;">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
-                    <label>Auto-Remove After (Timeout)</label>
-                    <!-- Fallback to text if datetime-local is tricky on some old webviews, but modern phones support it well -->
+                    <label>Auto-Remove (Timeout)</label>
                     <input type="datetime-local" id="bulkExpiry" class="form-control" style="padding:11px;">
                 </div>
             </div>
 
-            <button class="btn btn-primary" id="btnBroadcast" onclick="sendBulkMessage()" style="margin-top:10px;">🚀 Launch Broadcast</button>
+            <button class="btn btn-primary" id="btnBroadcast" onclick="sendBulkMessage()" style="margin-top:10px;">🚀 Schedule Broadcast</button>
 
             <!-- LIVE BROADCAST STATUS BOX -->
             <div id="activeBroadcastPanel" class="live-broadcast-box">
                 <div class="lb-header">
-                    <span style="display:flex; align-items:center; gap:5px;"><span style="width:8px; height:8px; background:var(--success); border-radius:50%; animation: pulse 2s infinite;"></span> Live Broadcast Active</span>
-                    <span id="liveTarget" style="color:var(--text-muted); font-size:9px;"></span>
+                    <span style="display:flex; align-items:center; gap:5px;"><span style="width:8px; height:8px; background:var(--success); border-radius:50%; animation: pulse 2s infinite;"></span> Scheduled / Live Broadcast Active</span>
                 </div>
+                <div style="font-size:10px; color:var(--primary); margin-bottom:5px;" id="liveTarget"></div>
+                <div style="font-size:10px; color:var(--warning); margin-bottom:10px;" id="liveSchedule"></div>
                 <div id="liveMsgText" class="lb-msg"></div>
                 <button class="btn btn-danger" style="padding: 10px; font-size: 11px;" onclick="revokeBroadcast()">🛑 Revoke / Kill Broadcast</button>
             </div>
@@ -472,7 +484,7 @@
             await fetchClients();
             await fetchGlobalProviderInfo();
             await fetchSupportTickets();
-            await checkActiveBroadcast(); // Check if any broadcast is currently running
+            await checkActiveBroadcast(); 
             
             document.getElementById('aWarnDays').value = localStorage.getItem('vpk_auto_warn_days') || 15;
             document.getElementById('aGraceDays').value = localStorage.getItem('vpk_auto_grace_days') || 7;
@@ -523,6 +535,12 @@
                 clientsData = data || [];
                 updateStatChips();
                 applySortAndFilter();
+
+                // 🔥 NEW: Populate Individual Client List in Broadcast Menu 🔥
+                const indList = document.getElementById('indClientList');
+                if(indList) {
+                    indList.innerHTML = clientsData.map(c => `<option value="${c.admin_email}">👤 ${c.institute_name} (${c.admin_email})</option>`).join('');
+                }
             } catch (err) {}
         }
 
@@ -540,11 +558,6 @@
             document.getElementById('statAct').innerText = act;
             document.getElementById('statExp').innerText = exp;
             document.getElementById('statSus').innerText = sus;
-
-            document.getElementById('optAll').text = `🏢 All Tenants (${clientsData.length})`;
-            document.getElementById('optAct').text = `🟢 Active (${act})`;
-            document.getElementById('optExp').text = `⚠️ Expiring (${exp})`;
-            document.getElementById('optSus').text = `⛔ Suspended (${sus})`;
         }
 
         window.applySortAndFilter = function() {
@@ -613,7 +626,7 @@
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 11.02h4.5a3 3 0 1 0 0-6h-4.5v15"></path><path d="M21 15v-4"></path><circle cx="5" cy="11" r="2"></circle></svg>
                             </button>
                             <button class="btn-icon" style="color:var(--primary);" title="Settings" onclick="openUpgradeModal('${c.id}', '${c.institute_name}')">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0 2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                             </button>
                             <button class="btn-icon" style="color:var(--danger); border-color:rgba(239,68,68,0.3);" onclick="deleteClient('${c.id}', '${c.institute_name}')">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -731,7 +744,6 @@
         }
 
         window.saveProviderContact = async function() {
-            // Get current to not overwrite forwarding_email
             let currentConf = {};
             try {
                 const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
@@ -746,7 +758,6 @@
             else alert("✅ Global Contact Info Updated.");
         };
 
-        // 🔥 NEW: SAVE TICKET DIVERSION ENGINE 🔥
         window.saveTicketDiversion = async function() {
             const fEmail = document.getElementById('gForwardEmail').value.trim();
             let currentConf = {};
@@ -869,7 +880,7 @@
         };
 
         // ==========================================
-        // SMART GLOBAL BROADCAST ENGINE 🚀
+        // SMART GLOBAL BROADCAST ENGINE 🚀 (NEW)
         // ==========================================
         window.checkActiveBroadcast = async function() {
             try {
@@ -882,9 +893,15 @@
                         
                         let targetText = "All Active Terminals";
                         if(bCast.target === 'Active') targetText = "Active Clients Only";
-                        if(bCast.target === 'Expiring') targetText = "Expiring Soon Only";
-                        document.getElementById('liveTarget').innerText = `Target: ${targetText}`;
+                        else if(bCast.target === 'Expiring') targetText = "Expiring Soon Only";
+                        else if(bCast.target !== 'All') targetText = `Specific Client (${bCast.target})`;
                         
+                        document.getElementById('liveTarget').innerText = `🎯 Target: ${targetText}`;
+                        
+                        let sTime = new Date(bCast.starts_at).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+                        let eTime = new Date(bCast.expires_at).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+                        document.getElementById('liveSchedule').innerText = `⏳ Scheduled: ${sTime} to ${eTime}`;
+
                         panel.style.display = 'block';
                         return;
                     }
@@ -896,34 +913,39 @@
         window.sendBulkMessage = async function() {
             const msg = document.getElementById('bulkMsg').value.trim();
             const target = document.getElementById('bulkTarget').value;
-            const expiry = document.getElementById('bulkExpiry').value; // Can be empty
+            const start = document.getElementById('bulkStart').value;
+            const expiry = document.getElementById('bulkExpiry').value;
             
             if(!msg) return alert("⚠️ Please enter a broadcast message.");
+            if(!start || !expiry) return alert("⚠️ Please select both Schedule Start Time and Auto-Remove (Timeout) limits.");
+            
             const btn = document.getElementById('btnBroadcast');
-            btn.innerText = "Launching...";
+            btn.innerText = "Scheduling...";
             
             try {
-                const configObj = { message: msg, target: target, expires_at: expiry, timestamp: new Date().toISOString() };
+                const configObj = { message: msg, target: target, starts_at: new Date(start).toISOString(), expires_at: new Date(expiry).toISOString(), timestamp: new Date().toISOString() };
                 const { error } = await supabase.from('institute_settings').update({ global_broadcast: JSON.stringify(configObj) }).eq('id', 1);
                 if(error) throw error;
                 
-                alert("✅ Smart Broadcast Launched Successfully!");
+                alert("✅ Smart Broadcast Scheduled Successfully!");
                 document.getElementById('bulkMsg').value = '';
-                checkActiveBroadcast(); // Refresh the panel
+                document.getElementById('bulkStart').value = '';
+                document.getElementById('bulkExpiry').value = '';
+                checkActiveBroadcast(); 
             } catch(e) { 
-                alert("❌ Broadcast Failed: " + e.message); 
+                alert("❌ Broadcast Scheduling Failed: " + e.message); 
             }
-            finally { btn.innerText = "🚀 Launch Broadcast"; }
+            finally { btn.innerText = "🚀 Schedule Broadcast"; }
         };
 
         window.revokeBroadcast = async function() {
-            const ans = await window.magicConfirm("🛑 Are you sure you want to Stop/Kill the current live broadcast?");
+            const ans = await window.magicConfirm("🛑 Are you sure you want to Stop/Kill the current scheduled broadcast?");
             if(!ans) return;
             try {
                 const { error } = await supabase.from('institute_settings').update({ global_broadcast: null }).eq('id', 1);
                 if(error) throw error;
                 alert("✅ Broadcast successfully revoked and removed from all client dashboards.");
-                checkActiveBroadcast(); // Hide the panel
+                checkActiveBroadcast();
             } catch(e) { alert("❌ Error: " + e.message); }
         };
 
