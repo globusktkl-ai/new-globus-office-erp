@@ -17,9 +17,7 @@
         
         .page-title { font-size: 16px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
 
-        @media (max-width: 600px) {
-            .page-title { font-size: 15px; }
-        }
+        @media (max-width: 600px) { .page-title { font-size: 15px; } }
 
         .settings-tabs { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; box-sizing: border-box; }
         .tab-btn { flex: 1; padding: 10px 5px; background: #fff; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 13px; font-weight: 800; color: #475569; cursor: pointer; text-align: center; transition: 0.2s; white-space: normal; line-height: 1.25; word-wrap: break-word; display: flex; align-items: center; justify-content: center; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); min-height: 48px; }
@@ -48,7 +46,6 @@
         .btn-save { background: #3b82f6; color: white; border: none; padding: 14px 20px; border-radius: 8px; font-size: 15px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.2s; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; }
         .btn-save:active { transform: scale(0.98); }
 
-        /* Role Management Section (RESTORED FULLY) */
         .role-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 15px; }
         .role-item { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
         .role-item:hover { background: #dbeafe; border-color: #93c5fd; }
@@ -58,7 +55,6 @@
         .add-role-flex { display: flex; gap: 10px; }
         .btn-add-role { background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: 800; cursor: pointer; white-space: nowrap; }
 
-        /* Permission Table (RESTORED FULLY) */
         .perm-table-wrap { overflow-x: auto; margin-top: 20px; border: 1px solid #e2e8f0; border-radius: 8px; display: none; background: #fff; }
         .perm-table { width: 100%; border-collapse: collapse; min-width: 400px; }
         .perm-table th { background: #1e293b; color: white; padding: 12px; text-align: center; font-size: 11px; text-transform: uppercase; }
@@ -68,7 +64,6 @@
         .perm-header-bar { display: flex; justify-content: space-between; align-items: center; background: #f1f5f9; padding: 12px 15px; border-bottom: 1px solid #e2e8f0; }
         .perm-role-title { font-size: 15px; font-weight: 900; color: #1e3a8a; display: flex; align-items: center; gap: 8px; }
 
-        /* VPKTech Support Section Styles */
         .vpk-brand-card { background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 16px; padding: 30px 25px; color: #fff; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(15,23,42,0.3); }
         .vpk-brand-card::after { content: 'V'; position: absolute; right: -20px; top: -30px; font-size: 180px; font-weight: 900; color: rgba(255,255,255,0.03); pointer-events: none; }
         .vpk-title { font-size: 24px; font-weight: 900; letter-spacing: 1px; margin: 0 0 5px; color: #fff; }
@@ -89,7 +84,6 @@
         .btn-bug { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1.5px solid rgba(239, 68, 68, 0.5); padding: 14px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; }
         .btn-backup:active, .btn-bug:active { transform: scale(0.95); }
 
-        /* CRM TICKET CARDS (Client Side) */
         .client-ticket-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .ct-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px; }
         .ct-id { font-size: 14px; font-weight: 900; color: #1e3a8a; }
@@ -108,6 +102,16 @@
         .ct-reply-text { font-size: 12px; color: #1e293b; font-weight: 700; line-height: 1.4; }
 
         #customAlertBox, #customPromptBox { z-index: 100000; }
+
+        /* REMOTE SUPPORT TOGGLE (MOVED TO SETTINGS) */
+        .remote-support-widget { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px 18px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .rs-text { font-size: 12px; font-weight: 800; color: #fff; }
+        .rs-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .rs-switch input { opacity: 0; width: 0; height: 0; }
+        .rs-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; }
+        .rs-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .rs-slider { background-color: #10b981; }
+        input:checked + .rs-slider:before { transform: translateX(18px); }
         
         @media (max-width: 500px) {
             .add-role-flex { flex-direction: column; }
@@ -134,16 +138,11 @@
             <button class="tab-btn" id="tabBilling" onclick="switchTab('billing')" style="display:none; border-color:#3b82f6; color:#3b82f6;"> Support<br>& Billing</button>
         </div>
 
-        <!-- SECTION 1: INSTITUTE PROFILE & DANGER ZONE (RESTORED) -->
         <div id="panel-institute" class="tab-panel active">
             <div class="settings-card">
                 <div class="settings-header">
-                    <h2>
-                        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                        Institute Profile
-                    </h2>
+                    <h2><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>Institute Profile</h2>
                 </div>
-                
                 <form id="instituteForm">
                     <div class="form-group">
                         <label class="form-label">Institute Logo</label>
@@ -156,54 +155,26 @@
                         </div>
                         <input type="file" id="logoUpload" accept="image/png, image/jpeg, image/jpg" style="display: none;">
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Institute Primary Name</label>
-                        <input type="text" id="instName" class="form-control" placeholder="e.g. VPKTECH" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Sub Name / Tagline</label>
-                        <input type="text" id="instSubName" class="form-control" placeholder="e.g. Tech Solutions" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Contact Phone</label>
-                        <input type="tel" id="instPhone" class="form-control" placeholder="e.g. 9876543210">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Complete Address (For Receipts & Reports)</label>
-                        <textarea id="instAddress" class="form-control" rows="3" placeholder="Enter full address..." style="resize: none; height: 80px;"></textarea>
-                    </div>
-
+                    <div class="form-group"><label class="form-label">Institute Primary Name</label><input type="text" id="instName" class="form-control" placeholder="e.g. VPKTECH" required></div>
+                    <div class="form-group"><label class="form-label">Sub Name / Tagline</label><input type="text" id="instSubName" class="form-control" placeholder="e.g. Tech Solutions" required></div>
+                    <div class="form-group"><label class="form-label">Contact Phone</label><input type="tel" id="instPhone" class="form-control" placeholder="e.g. 9876543210"></div>
+                    <div class="form-group"><label class="form-label">Complete Address (For Receipts & Reports)</label><textarea id="instAddress" class="form-control" rows="3" placeholder="Enter full address..." style="resize: none; height: 80px;"></textarea></div>
                     <button type="submit" id="saveProfileBtn" class="btn-save">💾 Save Institute Profile</button>
                 </form>
-
-                <!-- DANGER ZONE (WIPE DATA) -->
                 <div style="margin-top: 35px; padding: 20px; border: 2px dashed #fca5a5; border-radius: 12px; background: #fef2f2; text-align: center; position: relative; overflow: hidden;">
                     <div style="position: absolute; top: -15px; right: -15px; font-size: 60px; opacity: 0.1;">⚠️</div>
-                    <h4 style="color: #dc2626; font-size: 15px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                        Danger Zone
-                    </h4>
+                    <h4 style="color: #dc2626; font-size: 15px; font-weight: 900; margin: 0 0 10px 0; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>Danger Zone</h4>
                     <p style="color: #991b1b; font-size: 12px; font-weight: 700; margin-bottom: 15px; line-height: 1.5; position: relative; z-index: 2;">Permanently delete all students, staff, fee payments, attendance, & expense records. This action cannot be undone.</p>
                     <button type="button" onclick="window.triggerWipeProcess()" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 14px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); transition: 0.2s; position: relative; z-index: 2;">🗑️ WIPE SYSTEM DATA</button>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 2: CUSTOM ROLE MANAGEMENT & PERMISSIONS (RESTORED FULLY) -->
         <div id="panel-roles" class="tab-panel">
-            
-            <!-- MASTER ACTIVITY LOGS CARD -->
             <div class="settings-card" style="background: linear-gradient(135deg, #1e293b, #0f172a); border: none;">
                 <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
                     <div>
-                        <h3 style="margin: 0; font-size: 15px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px;">
-                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="#a78bfa" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                            Master Activity Logs
-                        </h3>
+                        <h3 style="margin: 0; font-size: 15px; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="#a78bfa" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>Master Activity Logs</h3>
                         <p style="margin: 5px 0 0 0; font-size: 11px; color: #94a3b8; line-height: 1.4;">Track all system logins, data updates, and security events.</p>
                     </div>
                     <a href="logs.html" style="background: #3b82f6; color: white; text-decoration: none; padding: 10px 15px; border-radius: 8px; font-weight: 800; font-size: 12px; white-space: nowrap; box-shadow: 0 4px 10px rgba(59,130,246,0.3); transition: 0.2s;">View Logs ➔</a>
@@ -211,13 +182,7 @@
             </div>
 
             <div class="settings-card">
-                <div class="settings-header">
-                    <h2>
-                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                        Staff Roles & Permissions
-                    </h2>
-                </div>
-                
+                <div class="settings-header"><h2><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>Staff Roles & Permissions</h2></div>
                 <div class="form-group">
                     <label class="form-label">Create New Role</label>
                     <div class="add-role-flex">
@@ -225,60 +190,47 @@
                         <button type="button" class="btn-add-role" onclick="window.addNewRole()">+ Add Role</button>
                     </div>
                 </div>
-
-                <label class="form-label" style="margin-top: 25px;">Available Roles (Click Edit to change permissions)</label>
-                <div class="role-list" id="rolesContainer">
-                    <div style="color: #64748b; font-size: 12px; font-weight: bold;">Loading roles...</div>
-                </div>
-                
-                <div style="margin-top: 15px; font-size: 11px; color: #94a3b8; line-height: 1.5;">
-                    * Note: The 'Admin' role is permanent and cannot be deleted. New roles will have limited permission by default.
-                </div>
+                <label class="form-label" style="margin-top: 25px;">Available Roles</label>
+                <div class="role-list" id="rolesContainer"><div style="color: #64748b; font-size: 12px; font-weight: bold;">Loading roles...</div></div>
+                <div style="margin-top: 15px; font-size: 11px; color: #94a3b8; line-height: 1.5;">* Note: The 'Admin' role is permanently locked to ensure system integrity.</div>
 
                 <div id="permissionSection" class="perm-table-wrap">
                     <div class="perm-header-bar">
-                        <div class="perm-role-title">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                            Editing Permissions: <span id="editingRoleNameText" style="color: #ef4444; font-weight: 900; margin-left: 5px;">-</span>
-                        </div>
+                        <div class="perm-role-title"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Editing Permissions: <span id="editingRoleNameText" style="color: #ef4444; font-weight: 900; margin-left: 5px;">-</span></div>
                         <button onclick="document.getElementById('permissionSection').style.display='none'" style="background: #e2e8f0; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; color: #475569;">Close</button>
                     </div>
-
                     <table class="perm-table">
-                        <thead>
-                            <tr>
-                                <th style="text-align: left;">App Feature</th>
-                                <th>View</th>
-                                <th>Add</th>
-                                <th>Edit</th>
-                                <th>Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody id="permissionsTableBody">
-                            <tr><td colspan="5">Loading...</td></tr>
-                        </tbody>
+                        <thead><tr><th style="text-align: left;">App Feature</th><th>View</th><th>Add</th><th>Edit</th><th>Delete</th></tr></thead>
+                        <tbody id="permissionsTableBody"><tr><td colspan="5">Loading...</td></tr></tbody>
                     </table>
-                    <div style="padding: 15px; background: #f8fafc; border-top: 1px solid #e2e8f0;">
-                        <button onclick="window.saveRolePermissions()" class="btn-save" style="background: #10b981; max-width: 300px; display: flex; margin: 0 auto;">✅ Save Permissions</button>
-                    </div>
+                    <div style="padding: 15px; background: #f8fafc; border-top: 1px solid #e2e8f0;"><button onclick="window.saveRolePermissions()" class="btn-save" style="background: #10b981; max-width: 300px; display: flex; margin: 0 auto;">✅ Save Permissions</button></div>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 3: VPKTECH SUPPORT & BILLING -->
         <div id="panel-billing" class="tab-panel">
             <div class="vpk-brand-card">
+                
+                <!-- REMOTE SUPPORT WIDGET (MOVED HERE & FIXED) -->
+                <div class="remote-support-widget" id="remoteSupportWidget" style="display:none;">
+                    <div>
+                        <div class="rs-text">🛡️ Remote Support Access</div>
+                        <div style="font-size:9px; color:#94a3b8; margin-top:3px;">Allow provider to securely login for 24H to resolve issues.</div>
+                    </div>
+                    <label class="rs-switch">
+                        <input type="checkbox" id="rsToggle" onchange="window.toggleRemoteSupport()">
+                        <span class="rs-slider"></span>
+                    </label>
+                </div>
+
                 <h2 class="vpk-title">VPKTech Solutions</h2>
                 <div class="vpk-sub">Authorized ERP Provider</div>
 
-                <div id="promoBadge" class="promo-badge">
-                    🎉 Special Offer Loading...
-                </div>
+                <div id="promoBadge" class="promo-badge">🎉 Special Offer Loading...</div>
 
                 <div class="plan-box">
                     <div class="plan-box-label">License Status</div>
                     <div class="plan-box-val" id="licStatus">🟢 Active</div>
-                    
                     <div class="plan-box-label" style="margin-top:15px;">Valid Until</div>
                     <div class="plan-box-val" id="licExpiry" style="color:#f1f5f9; font-size:16px;">Fetching...</div>
                 </div>
@@ -292,35 +244,23 @@
                 </div>
             </div>
 
-            <!-- BUG REPORT FORM -->
             <div id="bugReportSection" class="settings-card" style="display:none; margin-top:15px; border-color:#ef4444; padding:20px; box-shadow: 0 5px 20px rgba(239, 68, 68, 0.1);">
-                <h3 style="margin:0 0 15px; color:#ef4444; font-size:16px; font-weight:900; display:flex; align-items:center; gap:8px;">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                    Send Error Report
-                </h3>
+                <h3 style="margin:0 0 15px; color:#ef4444; font-size:16px; font-weight:900; display:flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>Send Error Report</h3>
                 <label class="form-label">Describe the issue in detail</label>
                 <textarea class="form-control" id="bugDesc" placeholder="Example: I cannot save fees for 2nd year students..." style="height:100px; resize:none;"></textarea>
                 <button class="btn-save" style="background:#ef4444; margin-top:15px;" id="btnSendReport" onclick="window.submitBugReport()">📨 Submit Ticket</button>
             </div>
 
-            <!-- MY TICKETS TRACKING AREA (LIVE CRM) -->
             <div style="margin-top: 25px;">
-                <h3 style="color:#1e3a8a; font-size:15px; font-weight:900; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
-                    <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M3 15v4a2 2 0 0 0 2 2h14"></path></svg>
-                    My Support Tickets
-                </h3>
-                <div id="myTicketsContainer">
-                    <div style="text-align:center; padding:20px; font-size:12px; color:#64748b;">Loading your tickets...</div>
-                </div>
+                <h3 style="color:#1e3a8a; font-size:15px; font-weight:900; margin-bottom:15px; display:flex; align-items:center; gap:8px;"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M3 15v4a2 2 0 0 0 2 2h14"></path></svg>My Support Tickets</h3>
+                <div id="myTicketsContainer"><div style="text-align:center; padding:20px; font-size:12px; color:#64748b;">Loading your tickets...</div></div>
             </div>
         </div>
-
     </main>
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // TAB SWITCHER
         window.switchTab = function(tabId) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -328,7 +268,6 @@
             document.getElementById('panel-' + tabId).classList.add('active');
         };
 
-        // MAGIC ALERT SYSTEM (Single button alerts)
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
@@ -341,16 +280,12 @@
             document.body.appendChild(box); setTimeout(() => { if (box.parentElement) box.remove(); }, 6000);
         };
 
-        // 🔥 THE PROFESSIONAL MAGIC PROMPT ENGINE (Used for Danger Zone Verifications) 🔥
         window.magicPrompt = function(msg, isText = false) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
                 const box = document.createElement('div'); box.id = 'customPromptBox';
                 box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.9); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);`;
-                
-                let inputType = isText ? "text" : "number";
-                let btnColor = "#dc2626";
-
+                let inputType = isText ? "text" : "number"; let btnColor = "#dc2626";
                 box.innerHTML = `
                     <div style="background: #ffffff; padding: 25px; border-radius: 16px; width: 90%; max-width: 350px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); text-align: center; animation: sheetUp 0.3s ease;">
                         <div style="background:#fee2e2; color:#ef4444; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
@@ -369,230 +304,143 @@
                 input.addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('cPromptOk').click(); });
             });
         };
-
-        // 🔥 DANGER ZONE: WIPE DATA LOGIC (Triple Verification) 🔥
-        window.triggerWipeProcess = async function() {
-            // Check 1: Math Captcha
-            const num1 = Math.floor(Math.random() * 20) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            const expectedAns = num1 + num2;
-            
-            const mathAns = await window.magicPrompt(`🛡️ Security Check\nSolve this to proceed:\n\n${num1} + ${num2} = ?`, false);
-            if (mathAns === null) return; 
-            if (parseInt(mathAns) !== expectedAns) {
-                alert("❌ Incorrect Answer. Wipe process cancelled.");
-                return;
-            }
-
-            // Check 2: Text Verification
-            const textAns = await window.magicPrompt(`🚨 CRITICAL WARNING\n\nThis will PERMANENTLY DELETE all student data, staff details, fees, and attendance.\n\nType "WIPE" to confirm:`, true);
-            if (textAns === null) return; 
-            if (textAns.trim().toUpperCase() !== 'WIPE') {
-                alert("❌ Confirmation failed. You must type exactly 'WIPE'.");
-                return;
-            }
-
-            // Check 3: Final Confirmation
-            const finalConfirm = await window.magicPrompt(`🔥 FINAL CONFIRMATION 🔥\n\nAre you absolutely sure?\nType "CONFIRM" to destroy all data:`, true);
-            if (finalConfirm !== 'CONFIRM') {
-                alert("❌ Action cancelled.");
-                return;
-            }
-
-            alert("⏳ WIPING DATA... Please do not close the window.");
-            
-            try {
-                // Delete records from all major tables safely
-                await Promise.allSettled([
-                    supabase.from('attendance_records').delete().not('id', 'is', null),
-                    supabase.from('fee_payments').delete().not('id', 'is', null),
-                    supabase.from('expenses').delete().not('id', 'is', null),
-                    supabase.from('module_assignments').delete().not('id', 'is', null),
-                    supabase.from('inventory_logs').delete().not('id', 'is', null),
-                    supabase.from('inventory_items').delete().not('id', 'is', null),
-                    supabase.from('enquiries').delete().not('id', 'is', null) 
-                ]);
-
-                await Promise.allSettled([
-                    supabase.from('students').delete().not('id', 'is', null),
-                    supabase.from('staff').delete().not('id', 'is', null)
-                ]);
-
-                alert("✅ SYSTEM WIPE SUCCESSFUL!\nAll user data has been permanently deleted.");
-                setTimeout(() => { window.location.reload(); }, 3000);
-
-            } catch (err) {
-                alert("❌ Error wiping data. Please contact VPKTech support.");
-            }
+        
+        window.magicConfirm = function(msg) {
+            return new Promise((resolve) => {
+                const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
+                const box = document.createElement('div'); box.id = 'customPromptBox';
+                box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.9); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);`;
+                box.innerHTML = `
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; animation: sheetUp 0.3s ease; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+                        <div style="font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 20px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
+                        <div style="display: flex; gap: 12px;">
+                            <button id="cConfirmCancel" style="flex: 1; padding: 12px; background: transparent; color: #64748b; border: 1px solid #cbd5e1; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer;">Cancel</button>
+                            <button id="cConfirmOk" style="flex: 1; padding: 12px; background: #ef4444; color: #fff; border: none; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer;">Confirm Delete</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(box);
+                document.getElementById('cConfirmCancel').onclick = () => { box.remove(); resolve(false); };
+                document.getElementById('cConfirmOk').onclick = () => { box.remove(); resolve(true); };
+            });
         };
 
-        // IMAGE PREVIEW LOGIC
+        window.triggerWipeProcess = async function() {
+            const num1 = Math.floor(Math.random() * 20) + 1; const num2 = Math.floor(Math.random() * 10) + 1; const expectedAns = num1 + num2;
+            const mathAns = await window.magicPrompt(`🛡️ Security Check\nSolve this to proceed:\n\n${num1} + ${num2} = ?`, false);
+            if (mathAns === null) return; if (parseInt(mathAns) !== expectedAns) { alert("❌ Incorrect Answer. Wipe process cancelled."); return; }
+            const textAns = await window.magicPrompt(`🚨 CRITICAL WARNING\n\nThis will PERMANENTLY DELETE all student data, staff details, fees, and attendance.\n\nType "WIPE" to confirm:`, true);
+            if (textAns === null) return; if (textAns.trim().toUpperCase() !== 'WIPE') { alert("❌ Confirmation failed. You must type exactly 'WIPE'."); return; }
+            const finalConfirm = await window.magicPrompt(`🔥 FINAL CONFIRMATION 🔥\n\nAre you absolutely sure?\nType "CONFIRM" to destroy all data:`, true);
+            if (finalConfirm !== 'CONFIRM') { alert("❌ Action cancelled."); return; }
+            alert("⏳ WIPING DATA... Please do not close the window.");
+            try {
+                await Promise.allSettled([ supabase.from('attendance_records').delete().not('id', 'is', null), supabase.from('fee_payments').delete().not('id', 'is', null), supabase.from('expenses').delete().not('id', 'is', null), supabase.from('module_assignments').delete().not('id', 'is', null), supabase.from('inventory_logs').delete().not('id', 'is', null), supabase.from('inventory_items').delete().not('id', 'is', null), supabase.from('enquiries').delete().not('id', 'is', null) ]);
+                await Promise.allSettled([ supabase.from('students').delete().not('id', 'is', null), supabase.from('staff').delete().not('id', 'is', null) ]);
+                alert("✅ SYSTEM WIPE SUCCESSFUL!\nAll user data has been permanently deleted."); setTimeout(() => { window.location.reload(); }, 3000);
+            } catch (err) { alert("❌ Error wiping data. Please contact VPKTech support."); }
+        };
+
         document.getElementById('logoUpload').addEventListener('change', function(e) {
             if(e.target.files && e.target.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const preview = document.getElementById('logoPreview');
-                    const placeholder = document.getElementById('logoPlaceholder');
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    placeholder.style.display = 'none';
+                    const preview = document.getElementById('logoPreview'); const placeholder = document.getElementById('logoPlaceholder');
+                    preview.src = e.target.result; preview.style.display = 'block'; placeholder.style.display = 'none';
                 }
                 reader.readAsDataURL(e.target.files[0]);
             }
         });
 
-        // 1. FETCH INSTITUTE SETTINGS (🔥 .limit(1) FIX APPLIED 🔥)
         async function loadProfile() {
             try {
                 const { data: settingsList } = await supabase.from('institute_settings').select('*').eq('id', 1).limit(1);
                 const data = settingsList && settingsList.length > 0 ? settingsList[0] : null;
-                
                 if (data) {
-                    document.getElementById('instName').value = data.institute_name || '';
-                    document.getElementById('instSubName').value = data.sub_name || '';
-                    document.getElementById('instPhone').value = data.phone || '';
-                    document.getElementById('instAddress').value = data.address || '';
-                    
+                    document.getElementById('instName').value = data.institute_name || ''; document.getElementById('instSubName').value = data.sub_name || '';
+                    document.getElementById('instPhone').value = data.phone || ''; document.getElementById('instAddress').value = data.address || '';
                     if(data.logo_url) {
-                        const preview = document.getElementById('logoPreview');
-                        const placeholder = document.getElementById('logoPlaceholder');
-                        preview.src = data.logo_url;
-                        preview.style.display = 'block';
-                        placeholder.style.display = 'none';
+                        const preview = document.getElementById('logoPreview'); const placeholder = document.getElementById('logoPlaceholder');
+                        preview.src = data.logo_url; preview.style.display = 'block'; placeholder.style.display = 'none';
                     }
                 }
             } catch (err) {}
         }
 
-        // 2. SAVE INSTITUTE PROFILE
         document.getElementById('instituteForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('saveProfileBtn');
-            btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
-
+            e.preventDefault(); const btn = document.getElementById('saveProfileBtn'); btn.innerHTML = '⏳ Saving...'; btn.disabled = true;
             try {
-                let logoUrl = document.getElementById('logoPreview').src;
-                const fileInput = document.getElementById('logoUpload');
-
+                let logoUrl = document.getElementById('logoPreview').src; const fileInput = document.getElementById('logoUpload');
                 if (fileInput.files.length > 0) {
-                    const file = fileInput.files[0];
-                    const fileName = `logo_${Date.now()}.${file.name.split('.').pop()}`;
-                    
+                    const file = fileInput.files[0]; const fileName = `logo_${Date.now()}.${file.name.split('.').pop()}`;
                     const { error: uploadError } = await supabase.storage.from('student_photos').upload(fileName, file);
                     if (uploadError) throw new Error("Logo Upload Failed.");
                     logoUrl = supabase.storage.from('student_photos').getPublicUrl(fileName).data.publicUrl;
                 }
-
-                const updates = {
-                    institute_name: document.getElementById('instName').value,
-                    sub_name: document.getElementById('instSubName').value,
-                    phone: document.getElementById('instPhone').value,
-                    address: document.getElementById('instAddress').value,
-                    logo_url: logoUrl.startsWith('http') ? logoUrl : null
-                };
-
+                const updates = { institute_name: document.getElementById('instName').value, sub_name: document.getElementById('instSubName').value, phone: document.getElementById('instPhone').value, address: document.getElementById('instAddress').value, logo_url: logoUrl.startsWith('http') ? logoUrl : null };
                 const { error } = await supabase.from('institute_settings').upsert({ id: 1, ...updates });
-                if (error) throw error;
-                alert("✅ Institute Profile Updated Successfully!");
-            } catch (err) {
-                alert("❌ Error: " + err.message);
-            } finally {
-                btn.innerHTML = '💾 Save Institute Profile'; btn.disabled = false;
-            }
+                if (error) throw error; alert("✅ Institute Profile Updated Successfully!");
+            } catch (err) { alert("❌ Error: " + err.message); } finally { btn.innerHTML = '💾 Save Institute Profile'; btn.disabled = false; }
         });
 
         // ==========================================
-        // PERMISSION & ROLE MANAGEMENT LOGIC
+        // ROLES & ADMIN LOCK FIX
         // ==========================================
         window.allModules = [
-            { id: 'Enquiry', name: 'Enquiry' }, { id: 'Admission', name: 'Admission' },
-            { id: 'Directory', name: 'Directory (Students)' }, { id: 'StaffHR', name: 'Staff & HR' },
-            { id: 'Attendance', name: 'Attendance' }, { id: 'Courses', name: 'Courses' },
-            { id: 'Exams', name: 'Exams' }, { id: 'Inventory', name: 'Inventory' },
-            { id: 'AdmReport', name: 'Admission Report' }, { id: 'SmartAlerts', name: 'Smart Alerts' },
-            { id: 'IDCardStudio', name: 'ID Card Studio' }, { id: 'FeeCollect', name: 'Fee Collect' },
+            { id: 'Enquiry', name: 'Enquiry' }, { id: 'Admission', name: 'Admission' }, { id: 'Directory', name: 'Directory (Students)' }, { id: 'StaffHR', name: 'Staff & HR' },
+            { id: 'Attendance', name: 'Attendance' }, { id: 'Courses', name: 'Courses' }, { id: 'Exams', name: 'Exams' }, { id: 'Inventory', name: 'Inventory' },
+            { id: 'AdmReport', name: 'Admission Report' }, { id: 'SmartAlerts', name: 'Smart Alerts' }, { id: 'IDCardStudio', name: 'ID Card Studio' }, { id: 'FeeCollect', name: 'Fee Collect' },
             { id: 'DayBook', name: 'Day Book' }, { id: 'MasterDayBook', name: 'Master Day Book' }
         ];
 
         window.currentEditingRole = null;
 
-        // 3. FETCH ROLES
         window.loadRoles = async function() {
             try {
                 const { data, error } = await supabase.from('role_management').select('id, role_name').neq('role_name', 'Super Admin');
                 const container = document.getElementById('rolesContainer');
-                
-                if (error) throw error;
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<div>No roles found.</div>';
-                    return;
-                }
+                if (error) throw error; if (!data || data.length === 0) { container.innerHTML = '<div>No roles found.</div>'; return; }
 
                 container.innerHTML = data.map(role => {
                     const isSystemRole = (role.role_name === 'Admin');
+                    // 🔥 THE FIX: Lock Admin role so it cannot be edited or deleted 🔥
+                    const actionButtons = isSystemRole 
+                        ? `<span style="font-size:10px; color:#ef4444; font-weight:900; background:rgba(239,68,68,0.1); padding:4px 8px; border-radius:6px;">🔒 System Locked</span>` 
+                        : `<button class="btn-edit-role" onclick="window.editPermissions('${role.role_name}')">Edit Perms</button>
+                           <button class="btn-del-role" onclick="window.deleteRole(${role.id}, '${role.role_name}')">X</button>`;
                     return `
                         <div class="role-item">
                             <span>${role.role_name}</span>
-                            <div>
-                                <button class="btn-edit-role" onclick="window.editPermissions('${role.role_name}')">Edit Perms</button>
-                                ${!isSystemRole ? `<button class="btn-del-role" onclick="window.deleteRole(${role.id}, '${role.role_name}')">X</button>` : ''}
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                ${actionButtons}
                             </div>
                         </div>
                     `;
                 }).join('');
-            } catch (err) {
-                document.getElementById('rolesContainer').innerHTML = '<div style="color:red;">Error loading roles.</div>';
-            }
+            } catch (err) { document.getElementById('rolesContainer').innerHTML = '<div style="color:red;">Error loading roles.</div>'; }
         }
 
-        // 4. ADD NEW ROLE
         window.addNewRole = async function() {
-            const roleInput = document.getElementById('newRoleName');
-            const roleName = roleInput.value.trim();
+            const roleInput = document.getElementById('newRoleName'); const roleName = roleInput.value.trim();
             if (!roleName) { alert("⚠️ Please enter a role name."); return; }
-
             try {
                 const defaultPerms = { "Directory": { view: true } };
                 const { error } = await supabase.from('role_management').insert([{ role_name: roleName, permissions: defaultPerms }]);
-                if (error) {
-                    if(error.code === '23505') throw new Error("Role already exists!");
-                    throw error;
-                }
-                alert(`✅ Role '${roleName}' created! Now click 'Edit Perms' to assign access.`);
-                roleInput.value = '';
-                loadRoles();
-            } catch (err) {
-                alert("❌ Error: " + err.message);
-            }
+                if (error) { if(error.code === '23505') throw new Error("Role already exists!"); throw error; }
+                alert(`✅ Role '${roleName}' created! Now click 'Edit Perms' to assign access.`); roleInput.value = ''; loadRoles();
+            } catch (err) { alert("❌ Error: " + err.message); }
         };
 
-        // 5. DELETE ROLE
         window.deleteRole = async function(id, name) {
             if(!confirm(`Are you sure you want to delete the role: ${name}?`)) return;
-            try {
-                const { error } = await supabase.from('role_management').delete().eq('id', id);
-                if (error) throw error;
-                alert(`✅ Role '${name}' deleted!`);
-                document.getElementById('permissionSection').style.display = 'none';
-                loadRoles();
-            } catch (err) {
-                alert("❌ Error: " + err.message);
-            }
+            try { const { error } = await supabase.from('role_management').delete().eq('id', id); if (error) throw error; alert(`✅ Role '${name}' deleted!`); document.getElementById('permissionSection').style.display = 'none'; loadRoles(); } catch (err) { alert("❌ Error: " + err.message); }
         };
 
-        // 6. LOAD PERMISSIONS FOR A ROLE (🔥 .limit(1) FIX APPLIED 🔥)
         window.editPermissions = async function(roleName) {
-            window.currentEditingRole = roleName;
-            document.getElementById('editingRoleNameText').innerText = roleName;
-            document.getElementById('permissionSection').style.display = 'block';
-            
-            const tbody = document.getElementById('permissionsTableBody');
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading...</td></tr>';
-            
+            window.currentEditingRole = roleName; document.getElementById('editingRoleNameText').innerText = roleName; document.getElementById('permissionSection').style.display = 'block';
+            const tbody = document.getElementById('permissionsTableBody'); tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Loading...</td></tr>';
             const { data: roleList } = await supabase.from('role_management').select('permissions').eq('role_name', roleName).limit(1);
-            const data = roleList && roleList.length > 0 ? roleList[0] : null;
-            const perms = data ? (data.permissions || {}) : {};
-
+            const data = roleList && roleList.length > 0 ? roleList[0] : null; const perms = data ? (data.permissions || {}) : {};
             tbody.innerHTML = window.allModules.map(mod => {
                 const p = perms[mod.id] || { view: false, add: false, edit: false, delete: false };
                 return `
@@ -605,74 +453,42 @@
                     </tr>
                 `;
             }).join('');
-            
             document.getElementById('permissionSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         };
 
-        // 7. SAVE PERMISSIONS
         window.saveRolePermissions = async function() {
-            if (!window.currentEditingRole) return;
-            
-            let newPermissions = {};
+            if (!window.currentEditingRole) return; let newPermissions = {};
             window.allModules.forEach(mod => {
-                newPermissions[mod.id] = {
-                    view: document.getElementById(`perm_${mod.id}_view`).checked,
-                    add: document.getElementById(`perm_${mod.id}_add`).checked,
-                    edit: document.getElementById(`perm_${mod.id}_edit`).checked,
-                    delete: document.getElementById(`perm_${mod.id}_delete`).checked
-                };
+                newPermissions[mod.id] = { view: document.getElementById(`perm_${mod.id}_view`).checked, add: document.getElementById(`perm_${mod.id}_add`).checked, edit: document.getElementById(`perm_${mod.id}_edit`).checked, delete: document.getElementById(`perm_${mod.id}_delete`).checked };
             });
-
             const { error } = await supabase.from('role_management').update({ permissions: newPermissions }).eq('role_name', window.currentEditingRole);
-            
-            if (!error) {
-                alert("✅ Permissions Saved Successfully!");
-            } else {
-                alert("❌ Error saving permissions.");
-            }
+            if (!error) alert("✅ Permissions Saved Successfully!"); else alert("❌ Error saving permissions.");
         };
 
         // ==========================================
-        // SAAS LOGIC (Billing, Backup & Bugs) - UPDATED WITH CRM TICKETS
+        // SAAS LOGIC & REMOTE SUPPORT TOGGLE
         // ==========================================
-        
         async function initSaaS() {
             const userRole = localStorage.getItem('userRole');
             if (userRole === 'Super Admin' || userRole === 'Admin') {
                 document.getElementById('tabBilling').style.display = 'inline-block';
                 const { data: { session } } = await supabase.auth.getSession();
                 const uEmail = session ? session.user.email : localStorage.getItem('userEmail');
-                if(uEmail) {
-                    loadSaaSDetails(uEmail);
-                    fetchMyTickets(uEmail);
-                }
+                if(uEmail) { loadSaaSDetails(uEmail); fetchMyTickets(uEmail); }
                 loadDynamicProviderInfo();
             }
         }
 
-        // 🔥 THE FIX: Robust Fallback for Dynamic Provider Info 🔥
         async function loadDynamicProviderInfo() {
-            const emailEl = document.getElementById('dynProvEmail');
-            const phoneEl = document.getElementById('dynProvPhone');
+            const emailEl = document.getElementById('dynProvEmail'); const phoneEl = document.getElementById('dynProvPhone');
             try {
                 const { data: provList } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).limit(1);
                 const data = provList && provList.length > 0 ? provList[0] : null;
-                
-                if(data && data.provider_config) {
-                    const conf = JSON.parse(data.provider_config);
-                    emailEl.innerText = conf.email || 'vpktechsolutions@gmail.com';
-                    phoneEl.innerText = conf.phone || 'Available 24/7';
-                } else {
-                    emailEl.innerText = 'vpktechsolutions@gmail.com';
-                    phoneEl.innerText = 'Available 24/7';
-                }
-            } catch(e) {
-                emailEl.innerText = 'vpktechsolutions@gmail.com';
-                phoneEl.innerText = 'Available 24/7';
-            }
+                if(data && data.provider_config) { const conf = JSON.parse(data.provider_config); emailEl.innerText = conf.email || 'vpktechsolutions@gmail.com'; phoneEl.innerText = conf.phone || 'Available 24/7'; } 
+                else { emailEl.innerText = 'vpktechsolutions@gmail.com'; phoneEl.innerText = 'Available 24/7'; }
+            } catch(e) { emailEl.innerText = 'vpktechsolutions@gmail.com'; phoneEl.innerText = 'Available 24/7'; }
         }
 
-        // 🔥 THE FIX: SAAS DETAILS 406 ERROR RESOLVED WITH .limit(1) 🔥
         async function loadSaaSDetails(adminEmail) {
             try {
                 const { data: clientList, error } = await supabase.from('saas_clients').select('*').eq('admin_email', adminEmail).limit(1);
@@ -695,24 +511,57 @@
                     `;
                     document.querySelector('.plan-box').innerHTML = planBoxHtml;
 
+                    // 🔥 THE FIX: PROMO BADGE RAW JSON ISSUE 🔥
+                    const promoDiv = document.getElementById('promoBadge');
+                    promoDiv.style.display = 'none'; // Default hidden
+                    
                     if(data.promo_message && data.promo_message.trim() !== '') {
-                        const promoDiv = document.getElementById('promoBadge');
-                        promoDiv.style.display = 'block';
-                        
                         try {
                             const pObj = JSON.parse(data.promo_message);
-                            promoDiv.innerText = `🎁 ${pObj.msg || data.promo_message}`;
+                            // Set Remote Support Toggle based on JSON data
+                            if(document.getElementById('rsToggle')) {
+                                document.getElementById('rsToggle').checked = (pObj.support_access_24h === true);
+                            }
+                            
+                            // Check if there is an active Promo inside the JSON
+                            if(pObj.promo && pObj.promo.msg) {
+                                promoDiv.innerText = `🎁 ${pObj.promo.msg}`;
+                                promoDiv.style.display = 'block';
+                            } else if(pObj.msg) { // Fallback for direct JSON msg
+                                promoDiv.innerText = `🎁 ${pObj.msg}`;
+                                promoDiv.style.display = 'block';
+                            }
                         } catch(e) {
+                            // If it's pure text (not JSON)
                             promoDiv.innerText = `🎁 ${data.promo_message}`;
+                            promoDiv.style.display = 'block';
                         }
                     }
+
+                    // Show Remote Support Widget if Super Admin is NOT logged in
+                    if(localStorage.getItem('userRole') !== 'Super Admin') {
+                        document.getElementById('remoteSupportWidget').style.display = 'flex';
+                    }
+
                 } else {
-                    document.getElementById('licExpiry').innerText = 'No Plan Found';
-                    document.getElementById('licStatus').innerHTML = '🔴 Inactive';
-                    document.getElementById('licStatus').style.color = '#ef4444';
+                    document.getElementById('licExpiry').innerText = 'No Plan Found'; document.getElementById('licStatus').innerHTML = '🔴 Inactive'; document.getElementById('licStatus').style.color = '#ef4444';
                 }
             } catch(e) { console.log(e); }
         }
+
+        // 🔥 NEW: REMOTE SUPPORT TOGGLE FUNCTION 🔥
+        window.toggleRemoteSupport = async function() {
+            const userEmail = localStorage.getItem('userEmail');
+            const isOn = document.getElementById('rsToggle').checked;
+            try {
+                const { data: clients } = await supabase.from('saas_clients').select('promo_message, id').eq('admin_email', userEmail).limit(1);
+                if(clients && clients.length > 0) {
+                    let pData = {}; try { pData = JSON.parse(clients[0].promo_message || '{}'); } catch(e){}
+                    pData.support_access_24h = isOn;
+                    await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', clients[0].id);
+                }
+            } catch(e) { console.error("Toggle error:", e); }
+        };
 
         window.openBugReport = function() {
             const section = document.getElementById('bugReportSection');
@@ -723,42 +572,21 @@
         window.submitBugReport = async function() {
             const issue = document.getElementById('bugDesc').value.trim();
             if(!issue) return alert('⚠️ Please describe the issue before sending.');
-
             const instName = document.getElementById('instName').value || 'Unknown Client';
             const { data: { session } } = await supabase.auth.getSession();
             const email = session ? session.user.email : localStorage.getItem('userEmail');
-
-            const btn = document.getElementById('btnSendReport');
-            btn.innerText = '⏳ Generating Ticket...'; btn.disabled = true;
+            const btn = document.getElementById('btnSendReport'); btn.innerText = '⏳ Generating Ticket...'; btn.disabled = true;
 
             try {
-                const { data, error } = await supabase.from('bug_reports').insert([{ 
-                    institute_name: instName, 
-                    reported_by_email: email, 
-                    issue_details: issue, 
-                    status: 'Open' 
-                }]).select();
-                
+                const { data, error } = await supabase.from('bug_reports').insert([{ institute_name: instName, reported_by_email: email, issue_details: issue, status: 'Open' }]).select();
                 if(error) throw error;
-                
-                if(data && data.length > 0) {
-                    const newId = data[0].id;
-                    alert(`✅ Your complaint is successfully registered.\n\nTicket ID: #TKT-${newId}\n\nOur team will update you shortly.`);
-                } else {
-                    alert('✅ Issue Reported Successfully! VPKTech Support will review it.');
-                }
-
-                document.getElementById('bugDesc').value = '';
-                document.getElementById('bugReportSection').style.display = 'none';
-                
-                fetchMyTickets(email);
-            } catch(e) { 
-                alert('❌ Failed to send report: ' + e.message); 
-            } 
-            finally { btn.innerText = '📨 Submit Ticket'; btn.disabled = false; }
+                if(data && data.length > 0) alert(`✅ Your complaint is successfully registered.\n\nTicket ID: #TKT-${data[0].id}\n\nOur team will update you shortly.`);
+                else alert('✅ Issue Reported Successfully! VPKTech Support will review it.');
+                document.getElementById('bugDesc').value = ''; document.getElementById('bugReportSection').style.display = 'none'; fetchMyTickets(email);
+            } catch(e) { alert('❌ Failed to send report: ' + e.message); } finally { btn.innerText = '📨 Submit Ticket'; btn.disabled = false; }
         };
 
-        // NEW FUNCTION: Fetch My Tickets (CRM)
+        // 🔥 THE FIX: CLIENT CAN NOW DELETE THEIR OWN TICKETS 🔥
         async function fetchMyTickets(email) {
             try {
                 const { data, error } = await supabase.from('bug_reports').select('*').eq('reported_by_email', email).order('created_at', { ascending: false });
@@ -770,8 +598,7 @@
                 }
 
                 container.innerHTML = data.map(t => {
-                    let statusColor = 'status-Open';
-                    let statusText = t.status || 'Open';
+                    let statusColor = 'status-Open'; let statusText = t.status || 'Open';
                     if(t.status === 'In Progress') statusColor = 'status-Progress';
                     if(t.status === 'On Hold') statusColor = 'status-Hold';
                     if(t.status === 'Resolved') statusColor = 'status-Resolved';
@@ -782,14 +609,12 @@
                     if (t.admin_reply || t.eta) {
                         adminReplyHtml = `
                         <div class="ct-reply-box">
-                            <div class="ct-reply-title">
-                                <span>🛡️ Provider Update</span>
-                                <span>${t.eta ? `ETA: ${t.eta}` : ''}</span>
-                            </div>
+                            <div class="ct-reply-title"><span>🛡️ Provider Update</span><span>${t.eta ? `ETA: ${t.eta}` : ''}</span></div>
                             <div class="ct-reply-text">${t.admin_reply || 'We are working on this.'}</div>
                         </div>`;
                     }
 
+                    // Client Delete Button HTML
                     return `
                     <div class="client-ticket-card">
                         <div class="ct-header">
@@ -797,7 +622,10 @@
                                 <div class="ct-id">#TKT-${t.id}</div>
                                 <div class="ct-date">${dateStr}</div>
                             </div>
-                            <div class="ct-status ${statusColor}">${statusText}</div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span class="ct-status ${statusColor}">${statusText}</span>
+                                <button onclick="window.deleteClientTicket('${t.id}')" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:16px; padding:0; outline:none;" title="Delete Ticket">🗑️</button>
+                            </div>
                         </div>
                         <div class="ct-desc">${t.issue_details}</div>
                         ${adminReplyHtml}
@@ -806,40 +634,33 @@
             } catch(e) { console.error(e); }
         }
 
+        window.deleteClientTicket = async function(id) {
+            const ans = await window.magicConfirm("🗑️ Are you sure you want to delete this ticket?");
+            if(ans) {
+                try {
+                    const { error } = await supabase.from('bug_reports').delete().eq('id', id);
+                    if(error) throw error;
+                    alert("✅ Ticket deleted successfully.");
+                    const userEmail = localStorage.getItem('userEmail');
+                    fetchMyTickets(userEmail);
+                } catch(e) { alert("❌ Failed to delete: " + e.message); }
+            }
+        };
+
         window.exportLocalBackup = async function() {
             alert("⏳ Preparing Data Backup... Please wait.");
             try {
                 const { data, error } = await supabase.from('students').select('*');
-                if(error) throw error;
-                if(!data || data.length === 0) return alert('⚠️ No student data found to backup.');
-
-                const keys = Object.keys(data[0]);
-                let csv = keys.join(',') + '\n';
-                data.forEach(row => {
-                    csv += keys.map(k => {
-                        let cell = row[k] === null ? '' : String(row[k]);
-                        cell = cell.replace(/"/g, '""');
-                        return `"${cell}"`;
-                    }).join(',') + '\n';
-                });
-
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `ERP_Backup_${new Date().toISOString().split('T')[0]}.csv`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                alert("✅ Backup Downloaded Successfully! Please keep this file safe.");
+                if(error) throw error; if(!data || data.length === 0) return alert('⚠️ No student data found to backup.');
+                const keys = Object.keys(data[0]); let csv = keys.join(',') + '\n';
+                data.forEach(row => { csv += keys.map(k => { let cell = row[k] === null ? '' : String(row[k]); cell = cell.replace(/"/g, '""'); return `"${cell}"`; }).join(',') + '\n'; });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob);
+                const a = document.createElement("a"); a.href = url; a.download = `ERP_Backup_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a); alert("✅ Backup Downloaded Successfully! Please keep this file safe.");
             } catch(e) { alert("❌ Backup Failed: " + e.message); }
         };
 
-        // Initialize Everything
-        loadProfile();
-        loadRoles();
-        initSaaS();
-
+        loadProfile(); loadRoles(); initSaaS();
     </script>
 
     <!-- SECURITY GUARD -->
