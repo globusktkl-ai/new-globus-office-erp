@@ -52,18 +52,16 @@
         @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.7; } }
         .uf-divider-line { background: linear-gradient(180deg, transparent 0%, #cbd5e1 20%, #cbd5e1 80%, transparent 100%); }
 
-        /* 🔥 FIX: UNIFIED SMART TICKER STYLES 🔥 */
         .alert-ticker-wrap { overflow: hidden; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 12px; padding: 8px 5px; white-space: nowrap; display: none; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04); }
         .alert-ticker-track { display: inline-block; animation: scrollTicker 25s linear infinite; }
-        .alert-ticker-track:hover { animation-play-state: paused; } /* Pauses scroll when touched */
+        .alert-ticker-track:hover { animation-play-state: paused; } 
         .alert-item { display: inline-flex; align-items: center; gap: 8px; margin-right: 25px; font-size: 12px; font-weight: 800; text-decoration: none; padding: 6px 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         
-        /* 4 Different Themes for Different Notifications */
-        .theme-expiry { background: linear-gradient(135deg, #fef2f2, #fecaca); border: 1px solid #fca5a5; color: #b91c1c; } /* Red */
-        .theme-warning { background: linear-gradient(135deg, #fffbeb, #fde68a); border: 1px solid #fcd34d; color: #b45309; } /* Orange */
-        .theme-broadcast { background: linear-gradient(135deg, #e0f2fe, #bae6fd); border: 1px solid #7dd3fc; color: #0369a1; } /* Blue */
-        .theme-local { background: linear-gradient(135deg, #fef9c3, #fef08a); border: 1px solid #fde047; color: #854d0e; } /* Yellow */
-        .theme-promo { background: linear-gradient(135deg, #ecfdf5, #a7f3d0); border: 1px solid #6ee7b7; color: #047857; } /* Green */
+        .theme-expiry { background: linear-gradient(135deg, #fef2f2, #fecaca); border: 1px solid #fca5a5; color: #b91c1c; }
+        .theme-warning { background: linear-gradient(135deg, #fffbeb, #fde68a); border: 1px solid #fcd34d; color: #b45309; }
+        .theme-broadcast { background: linear-gradient(135deg, #e0f2fe, #bae6fd); border: 1px solid #7dd3fc; color: #0369a1; }
+        .theme-local { background: linear-gradient(135deg, #fef9c3, #fef08a); border: 1px solid #fde047; color: #854d0e; }
+        .theme-promo { background: linear-gradient(135deg, #ecfdf5, #a7f3d0); border: 1px solid #6ee7b7; color: #047857; }
 
         @keyframes scrollTicker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
@@ -129,7 +127,7 @@
 
     <main class="main-content">
         
-        <!-- 🔥 THE UNIFIED SMART TICKER WRAP 🔥 -->
+        <!-- THE UNIFIED SMART TICKER WRAP -->
         <div class="alert-ticker-wrap" id="alertTickerWrap">
             <div class="alert-ticker-track" id="alertTickerTrack"></div>
         </div>
@@ -327,7 +325,25 @@
             else { if(userInput !== null) alert('❌ Verification failed! Access denied.'); }
         };
 
+        // 🔥 BUG FIX: SUPER ADMIN IMPERSONATION BYPASS 🔥
         async function checkAuth() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const overrideEmail = urlParams.get('override');
+
+            if (overrideEmail && localStorage.getItem('userRole') === 'Super Admin') {
+                // Impersonation Mode Active
+                document.getElementById('authRoleTitle').innerText = "Super Admin (Impersonating)";
+                document.getElementById('authEmail').innerText = overrideEmail;
+                localStorage.setItem('userEmail', overrideEmail); // Force context
+                
+                applyRoleAccess('Super Admin');
+                loadSettings();
+                loadDashboardData();
+                window.buildUnifiedTicker();
+                setInterval(window.buildUnifiedTicker, 30000); 
+                return;
+            }
+
             const userRole = localStorage.getItem('userRole');
             const { data: { session } } = await supabase.auth.getSession();
 
@@ -354,50 +370,90 @@
             loadSettings();
             loadDashboardData();
             
-            // 🔥 THE FIX: Launching Unified Smart Ticker
             window.buildUnifiedTicker();
             setInterval(window.buildUnifiedTicker, 30000); 
         }
 
-        // 🔥 THE BIG FIX: UNIFIED SMART TICKER ENGINE 🔥
+        // 🔥 THE BIG FIX: ADVANCED SMART TICKER ENGINE 🔥
         window.buildUnifiedTicker = async function() {
             const wrap = document.getElementById('alertTickerWrap');
             const track = document.getElementById('alertTickerTrack');
             let tickerItems = [];
             
-            const { data: { session } } = await supabase.auth.getSession();
-            const userEmail = session ? session.user.email : localStorage.getItem('userEmail');
+            const userEmail = localStorage.getItem('userEmail');
             const userRole = localStorage.getItem('userRole') || 'Guest';
             const now = new Date();
             
+            let currentClient = null;
+
+            // Check Master Toggle
+            const isAlertsOn = localStorage.getItem('vpk_master_alerts_enabled') !== 'false';
+
             // 1. Fetch SaaS Expiry & Promo (Red & Green)
             try {
                 if(userEmail) {
-                    const { data: client } = await supabase.from('saas_clients').select('*').eq('admin_email', userEmail).single();
-                    if(client) {
-                        let daysLeft = client.valid_until ? Math.ceil((new Date(client.valid_until) - now) / (1000 * 60 * 60 * 24)) : 0;
-                        if (daysLeft < 0) {
-                            tickerItems.push(`<span class="alert-item theme-expiry">⛔ ACCOUNT SUSPENDED: Plan expired. Contact VPKTech.</span>`);
-                        } else if (daysLeft <= 15) {
-                            tickerItems.push(`<span class="alert-item theme-warning">⚠️ SUBSCRIPTION ALERT: Your plan expires in ${daysLeft} days.</span>`);
+                    const { data: client, error } = await supabase.from('saas_clients').select('*').eq('admin_email', userEmail).single();
+                    if(!error && client) {
+                        currentClient = client; 
+                        
+                        // Expiry logic ONLY if Master Alert is ON
+                        if(isAlertsOn) {
+                            let daysLeft = client.valid_until ? Math.ceil((new Date(client.valid_until) - now) / (1000 * 60 * 60 * 24)) : 0;
+                            if (daysLeft < 0) {
+                                tickerItems.push(`<span class="alert-item theme-expiry">⛔ ACCOUNT SUSPENDED: Plan expired. Contact VPKTech.</span>`);
+                            } else if (daysLeft <= 15) {
+                                tickerItems.push(`<span class="alert-item theme-warning">⚠️ SUBSCRIPTION ALERT: Your plan expires in ${daysLeft} days.</span>`);
+                            }
                         }
                         
+                        // Advanced Promo Logic
                         if (client.promo_message && client.promo_message.trim() !== '') {
-                            tickerItems.push(`<span class="alert-item theme-promo">🎁 PROMO: ${client.promo_message}</span>`);
+                            try {
+                                const pObj = JSON.parse(client.promo_message);
+                                if(pObj.starts_at && pObj.expires_at) {
+                                    const sTime = new Date(pObj.starts_at);
+                                    const eTime = new Date(pObj.expires_at);
+                                    if(now >= sTime && now <= eTime && pObj.msg) {
+                                        tickerItems.push(`<span class="alert-item theme-promo">🎁 PROMO: ${pObj.msg}</span>`);
+                                    }
+                                }
+                            } catch(e) {
+                                // Fallback for old string promos
+                                tickerItems.push(`<span class="alert-item theme-promo">🎁 PROMO: ${client.promo_message}</span>`);
+                            }
                         }
                     }
                 }
             } catch(e) {}
 
-            // 2. Fetch Global Broadcast (Blue)
+            // 2. Fetch Advanced Scheduled Broadcast (Blue)
             try {
-                const { data: settings } = await supabase.from('institute_settings').select('global_broadcast').eq('id', 1).single();
-                if(settings && settings.global_broadcast) {
+                const { data: settings, error } = await supabase.from('institute_settings').select('global_broadcast').eq('id', 1).single();
+                if(!error && settings && settings.global_broadcast) {
                     const bCast = JSON.parse(settings.global_broadcast);
-                    const bTime = new Date(bCast.timestamp);
-                    // Show if broadcast was sent in the last 24 hours
-                    if((now - bTime) < (24 * 60 * 60 * 1000) && bCast.message) {
-                        tickerItems.push(`<span class="alert-item theme-broadcast">📢 PROVIDER UPDATE: ${bCast.message}</span>`);
+                    
+                    if(bCast.starts_at && bCast.expires_at) {
+                        const startTime = new Date(bCast.starts_at);
+                        const endTime = new Date(bCast.expires_at);
+                        
+                        if(now >= startTime && now <= endTime && bCast.message) {
+                            let isTargeted = false;
+                            
+                            if(bCast.target === 'All') {
+                                isTargeted = true;
+                            } else if(bCast.target === 'Active' && currentClient && currentClient.is_active) {
+                                isTargeted = true;
+                            } else if(bCast.target === 'Expiring' && currentClient) {
+                                let daysLeft = currentClient.valid_until ? Math.ceil((new Date(currentClient.valid_until) - now) / (1000 * 60 * 60 * 24)) : 0;
+                                if(daysLeft >= 0 && daysLeft <= 15) isTargeted = true;
+                            } else if(bCast.target === userEmail) { 
+                                isTargeted = true;
+                            }
+                            
+                            if(isTargeted) {
+                                tickerItems.push(`<span class="alert-item theme-broadcast">📢 PROVIDER UPDATE: ${bCast.message}</span>`);
+                            }
+                        }
                     }
                 }
             } catch(e) {}
@@ -454,15 +510,13 @@
                 } catch(e) {}
             }
 
-            // 🔥 RENDER UNIFIED TICKER 🔥
             if (tickerItems.length > 0) {
                 wrap.style.display = 'block';
-                // Duplicate items to ensure smooth infinite scrolling if there are too few items
                 let displayItems = tickerItems.join('');
                 if (tickerItems.length < 4) { displayItems += displayItems + displayItems; }
                 track.innerHTML = displayItems;
             } else {
-                wrap.style.display = 'none'; // No gap when empty!
+                wrap.style.display = 'none'; 
                 track.innerHTML = '';
             }
         };
