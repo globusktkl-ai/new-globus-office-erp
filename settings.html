@@ -103,14 +103,14 @@
 
         #customAlertBox, #customPromptBox { z-index: 100000; }
 
-        /* REMOTE SUPPORT TOGGLE (MOVED TO SETTINGS) */
+        /* 🔥 CSS FIX FOR REMOTE SUPPORT TOGGLE 🔥 */
         .remote-support-widget { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px 18px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
         .rs-text { font-size: 12px; font-weight: 800; color: #fff; }
-        .rs-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .rs-switch { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
         .rs-switch input { opacity: 0; width: 0; height: 0; }
-        .rs-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; }
-        .rs-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .rs-slider { background-color: #10b981; }
+        .rs-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); }
+        .rs-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .rs-slider { background-color: #10b981; border-color: #10b981; }
         input:checked + .rs-slider:before { transform: translateX(18px); }
         
         @media (max-width: 500px) {
@@ -211,7 +211,6 @@
         <div id="panel-billing" class="tab-panel">
             <div class="vpk-brand-card">
                 
-                <!-- REMOTE SUPPORT WIDGET (MOVED HERE & FIXED) -->
                 <div class="remote-support-widget" id="remoteSupportWidget" style="display:none;">
                     <div>
                         <div class="rs-text">🛡️ Remote Support Access</div>
@@ -403,7 +402,6 @@
 
                 container.innerHTML = data.map(role => {
                     const isSystemRole = (role.role_name === 'Admin');
-                    // 🔥 THE FIX: Lock Admin role so it cannot be edited or deleted 🔥
                     const actionButtons = isSystemRole 
                         ? `<span style="font-size:10px; color:#ef4444; font-weight:900; background:rgba(239,68,68,0.1); padding:4px 8px; border-radius:6px;">🔒 System Locked</span>` 
                         : `<button class="btn-edit-role" onclick="window.editPermissions('${role.role_name}')">Edit Perms</button>
@@ -511,34 +509,29 @@
                     `;
                     document.querySelector('.plan-box').innerHTML = planBoxHtml;
 
-                    // 🔥 THE FIX: PROMO BADGE RAW JSON ISSUE 🔥
                     const promoDiv = document.getElementById('promoBadge');
-                    promoDiv.style.display = 'none'; // Default hidden
+                    promoDiv.style.display = 'none'; 
                     
                     if(data.promo_message && data.promo_message.trim() !== '') {
                         try {
                             const pObj = JSON.parse(data.promo_message);
-                            // Set Remote Support Toggle based on JSON data
                             if(document.getElementById('rsToggle')) {
                                 document.getElementById('rsToggle').checked = (pObj.support_access_24h === true);
                             }
                             
-                            // Check if there is an active Promo inside the JSON
                             if(pObj.promo && pObj.promo.msg) {
                                 promoDiv.innerText = `🎁 ${pObj.promo.msg}`;
                                 promoDiv.style.display = 'block';
-                            } else if(pObj.msg) { // Fallback for direct JSON msg
+                            } else if(pObj.msg) { 
                                 promoDiv.innerText = `🎁 ${pObj.msg}`;
                                 promoDiv.style.display = 'block';
                             }
                         } catch(e) {
-                            // If it's pure text (not JSON)
                             promoDiv.innerText = `🎁 ${data.promo_message}`;
                             promoDiv.style.display = 'block';
                         }
                     }
 
-                    // Show Remote Support Widget if Super Admin is NOT logged in
                     if(localStorage.getItem('userRole') !== 'Super Admin') {
                         document.getElementById('remoteSupportWidget').style.display = 'flex';
                     }
@@ -549,7 +542,6 @@
             } catch(e) { console.log(e); }
         }
 
-        // 🔥 NEW: REMOTE SUPPORT TOGGLE FUNCTION 🔥
         window.toggleRemoteSupport = async function() {
             const userEmail = localStorage.getItem('userEmail');
             const isOn = document.getElementById('rsToggle').checked;
@@ -586,7 +578,6 @@
             } catch(e) { alert('❌ Failed to send report: ' + e.message); } finally { btn.innerText = '📨 Submit Ticket'; btn.disabled = false; }
         };
 
-        // 🔥 THE FIX: CLIENT CAN NOW DELETE THEIR OWN TICKETS 🔥
         async function fetchMyTickets(email) {
             try {
                 const { data, error } = await supabase.from('bug_reports').select('*').eq('reported_by_email', email).order('created_at', { ascending: false });
@@ -614,7 +605,6 @@
                         </div>`;
                     }
 
-                    // Client Delete Button HTML
                     return `
                     <div class="client-ticket-card">
                         <div class="ct-header">
