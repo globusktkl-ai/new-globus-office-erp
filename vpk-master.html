@@ -213,7 +213,7 @@
         </button>
     </div>
 
-    <!-- TAB 2: PLANS & BILLING COMMAND CENTER (🔥 CONSOLIDATED 🔥) -->
+    <!-- TAB 2: PLANS & BILLING COMMAND CENTER -->
     <div id="tab-studio" class="tab-content">
         
         <!-- SECTION A: PLAN STUDIO -->
@@ -357,7 +357,6 @@
 
     <!-- TAB 4: SUPPORT INBOX -->
     <div id="tab-support" class="tab-content">
-        <!-- Contact & Webhook content remains same as previous... -->
         <div class="card" style="border-color: var(--primary); padding: 15px;">
             <div class="card-title" style="color: var(--primary); font-size: 12px;">Global Contact Sync</div>
             <div class="responsive-grid">
@@ -453,7 +452,6 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-        // ⚠️ YOUR CREDENTIALS
         const MY_REAL_SUPER_ADMIN_EMAIL = 'vpk@vpk.com'; 
         const SUPABASE_URL = 'https://kwrugdbrzrfbmibaccwr.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_Pf_pB13Hv4ycYmNSiD75XQ_cT0b5eOM';
@@ -516,6 +514,7 @@
         let clientsData = [];
         let plansData = [];
         let ticketsData = [];
+        let activeClientId = null; // 🔥 FIX IS HERE
         let editingPlanId = null; 
         window.pollInterval = null;
 
@@ -683,11 +682,9 @@
                     <div class="cc-footer">
                         <div class="cc-expiry">Valid: <span>${c.valid_until ? new Date(c.valid_until).toLocaleDateString('en-GB') : 'N/A'}</span></div>
                         <div class="cc-actions">
-                            <!-- 🔥 LOGIN AS CLIENT WITH ID 🔥 -->
                             <button class="btn-icon btn-login-client" title="Login as Client" onclick="impersonateClient('${c.admin_email}', '${c.id}')">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
                             </button>
-                            <!-- 🔥 BEAUTIFUL SOLID GEAR ICON 🔥 -->
                             <button class="btn-icon" style="color:var(--primary);" title="Settings" onclick="openUpgradeModal('${c.id}', '${c.institute_name}')">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.05-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22l-1.92 3.32c-.12.22-.07.49.12.61l2.03 1.58c-.04.3-.06.61-.06.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
                             </button>
