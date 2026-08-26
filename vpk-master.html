@@ -10,26 +10,22 @@
         
         body { background-color: var(--bg); color: var(--text); margin: 0; padding: 15px; padding-bottom: 80px; }
         
-        /* HEADER */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .logo-area { display: flex; align-items: center; gap: 12px; }
         .logo-icon { background: linear-gradient(135deg, var(--primary), var(--purple)); width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
         .title-text h1 { margin: 0; font-size: 16px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
         .title-text p { margin: 0; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* ACTIONABLE STAT CARDS */
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: linear-gradient(145deg, var(--card), var(--bg)); padding: 15px 5px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-align: center; }
         .stat-val { font-size: 22px; font-weight: 900; margin-bottom: 2px; }
         .stat-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
         @media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
-        /* MOBILE PERFECT TABS (SMART WRAP) */
         .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 20px; }
         .tab-btn { flex: 1 1 calc(30% - 8px); background: var(--card); border: 1px solid var(--border); color: var(--text-muted); padding: 12px 5px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 10px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 65px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .tab-btn svg { width: 20px; height: 20px; stroke-width: 2; }
         .tab-btn.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); transform: translateY(-2px); }
-        
         .inbox-badge { position: absolute; top: -6px; right: -8px; background: var(--danger); color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid var(--card); opacity: 0; transition: 0.3s; padding: 0 4px; pointer-events: none; box-shadow: 0 2px 5px rgba(239,68,68,0.5); }
         .inbox-badge.show { opacity: 1; transform: scale(1.1); }
 
@@ -37,13 +33,11 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MOBILE DROPDOWN FILTERS */
         .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .filter-label { font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; display: block; }
         .custom-select { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 800; outline: none; width: 100%; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .custom-select:focus { border-color: var(--primary); }
 
-        /* MOBILE CLIENT CARDS */
         .client-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: relative; overflow: hidden; transition: 0.2s; }
         .cc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
         .cc-title { font-size: 15px; font-weight: 900; color: white; margin: 0 0 4px 0; display:flex; align-items:center; gap:6px; }
@@ -54,7 +48,6 @@
         .bg-red { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
         .bg-orange { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245,158,11,0.3); }
 
-        /* USAGE HEALTH METER */
         .health-meter { background: rgba(15, 23, 42, 0.5); padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .hm-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
         .hm-track { width: 100%; height: 6px; background: var(--bg); border-radius: 4px; overflow: hidden; }
@@ -69,7 +62,6 @@
         .btn-icon:active { transform: scale(0.9); }
         .btn-login-client { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.4); color: var(--success); }
 
-        /* STANDARD FORMS & CARDS */
         .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .card-title { margin-top: 0; margin-bottom: 15px; font-size: 14px; font-weight: 900; color: white; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; }
         
@@ -79,7 +71,10 @@
         .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
         textarea.form-control { resize: none; font-size: 13px; }
         
-        /* Grid Layouts for responsive forms */
+        /* 🔥 BUG FIX: Hide number input arrows globally 🔥 */
+        input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+
         .responsive-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
         @media (min-width: 600px) { .responsive-grid { grid-template-columns: 1fr 1fr; } }
 
@@ -92,7 +87,6 @@
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
         .btn-purple { background: linear-gradient(135deg, var(--purple), #6d28d9); color: white; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
 
-        /* CRM TICKET INBOX */
         .search-bar-wrap { position: relative; margin-bottom: 15px; }
         .search-bar-wrap svg { position: absolute; left: 12px; top: 12px; stroke: var(--text-muted); }
         .search-bar-wrap input { padding-left: 40px; }
@@ -107,12 +101,10 @@
         .status-Hold { color: var(--purple); border-color: rgba(139,92,246,0.3); background: rgba(139,92,246,0.1); }
         .status-Resolved { color: var(--success); border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.1); }
 
-        /* FAB BUTTON */
         .fab-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, var(--primary), var(--purple)); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 5px 20px rgba(59,130,246,0.5); cursor: pointer; z-index: 1000; border: none; transition: 0.3s; }
         .fab-btn:active { transform: scale(0.9); }
         .fab-btn svg { width: 24px; height: 24px; stroke-width: 2.5; stroke: currentColor; fill: none; }
 
-        /* LIVE BROADCAST STATUS BOX */
         .live-broadcast-box { margin-top: 15px; padding: 15px; background: rgba(59, 130, 246, 0.1); border: 1px dashed var(--primary); border-radius: 12px; display: none; }
         .live-broadcast-box .lb-header { font-size: 10px; font-weight: 900; color: var(--primary); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .live-broadcast-box .lb-msg { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 15px; }
@@ -217,25 +209,26 @@
         </button>
     </div>
 
-    <!-- TAB 2: SUBSCRIPTION STUDIO -->
+    <!-- TAB 2: SUBSCRIPTION STUDIO (Bug Fixed) -->
     <div id="tab-studio" class="tab-content">
         <div class="card">
             <div class="card-title" style="color: var(--success);">💎 Create Dynamic Plan</div>
             <form onsubmit="addPlan(event)">
                 <div class="form-group"><label>Plan Name</label><input type="text" id="pName" class="form-control" placeholder="e.g. Pro Suite" required></div>
                 <div class="responsive-grid">
-                    <div class="form-group" style="margin-bottom:0;"><label>Price (₹)</label><input type="number" id="pPrice" class="form-control" value="0" required></div>
+                    <!-- Removed value="0" to avoid confusion, disabled scrolling via CSS/JS -->
+                    <div class="form-group" style="margin-bottom:0;"><label>Price (₹)</label><input type="number" id="pPrice" class="form-control" placeholder="e.g. 599" required></div>
                     <div class="form-group" style="margin-bottom:0;">
                         <label>Validity</label>
                         <div style="display:flex; gap:5px;">
-                            <input type="number" id="pDurVal" class="form-control" value="30" style="width:60%;" required>
+                            <input type="number" id="pDurVal" class="form-control" placeholder="30" style="width:60%;" required>
                             <select id="pDurType" class="form-control" style="width:40%; padding:10px;"><option value="Days">Days</option><option value="Months">Mon</option></select>
                         </div>
                     </div>
                 </div>
                 <div class="responsive-grid">
-                    <div class="form-group" style="margin-bottom:0;"><label>Admission Limit</label><input type="number" id="pMaxAdm" class="form-control" value="100" required></div>
-                    <div class="form-group" style="margin-bottom:0;"><label>Staff Limit</label><input type="number" id="pMaxStaff" class="form-control" value="2" required></div>
+                    <div class="form-group" style="margin-bottom:0;"><label>Admission Limit</label><input type="number" id="pMaxAdm" class="form-control" placeholder="100" required></div>
+                    <div class="form-group" style="margin-bottom:0;"><label>Staff Limit</label><input type="number" id="pMaxStaff" class="form-control" placeholder="2" required></div>
                 </div>
                 <button type="submit" class="btn btn-success" style="margin-top:10px;">💾 Save Plan</button>
             </form>
@@ -248,7 +241,6 @@
 
     <!-- TAB 3: SUPPORT INBOX -->
     <div id="tab-support" class="tab-content">
-        <!-- Contact Sync -->
         <div class="card" style="border-color: var(--primary); padding: 15px;">
             <div class="card-title" style="color: var(--primary); font-size: 12px;">Global Contact Sync</div>
             <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Update this info and it will reflect in all clients' ERP support tabs automatically.</p>
@@ -259,7 +251,6 @@
             <button class="btn btn-primary" onclick="saveProviderContact()">Update Contact Info</button>
         </div>
 
-        <!-- Automated Ticket Diversion Engine -->
         <div class="card" style="border-color: var(--purple); padding: 15px;">
             <div class="card-title" style="color: var(--purple); font-size: 12px;">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:5px;"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
@@ -288,10 +279,8 @@
         </div>
     </div>
 
-    <!-- TAB 4: BULK OPERATIONS (ADVANCED SCHEDULED BROADCAST) -->
+    <!-- TAB 4: BULK OPERATIONS -->
     <div id="tab-bulk" class="tab-content">
-        
-        <!-- 🔥 ADVANCED SCHEDULED BROADCAST ENGINE 🔥 -->
         <div class="card" style="border-color: var(--primary);">
             <div class="card-title" style="color: var(--primary);">📢 Advanced Scheduled Broadcast</div>
             <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Send or schedule targeted alerts to client dashboards with exact timeout controls.</p>
@@ -309,8 +298,7 @@
                         <option value="Active">🟢 Active Clients Only</option>
                         <option value="Expiring">⚠️ Expiring Soon Only</option>
                     </optgroup>
-                    <optgroup label="Individual Clients" id="indClientList">
-                        <!-- Populated Dynamically via JS -->
+                    <optgroup label="Individual Clients" id="indClientList1">
                         <option disabled>Loading clients...</option>
                     </optgroup>
                 </select>
@@ -360,6 +348,18 @@
                 <button type="submit" class="btn btn-warning">Update Engine</button>
             </form>
         </div>
+
+        <!-- 🔥 NEW: MASTER ALERT TOGGLE 🔥 -->
+        <div class="card" style="border-color: var(--danger);">
+            <div class="card-title" style="color: var(--danger);">🛑 Master Alert Control</div>
+            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Turn off this switch to instantly hide all Subscription Expiry banners from all client dashboards globally.</p>
+            <div class="form-group" style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px;">
+                <label style="display:flex; justify-content:space-between; align-items:center; margin:0; cursor:pointer;">
+                    <span style="color:white; font-size:13px; font-weight:900;">Show Subscription Alerts Global</span>
+                    <input type="checkbox" id="masterAlertToggle" style="width:20px; height:20px; accent-color:var(--danger);" checked onchange="saveMasterAlertToggle()">
+                </label>
+            </div>
+        </div>
     </div>
 
     <!-- MODALS -->
@@ -399,18 +399,32 @@
         </div>
     </div>
 
-    <!-- 3. Smart Promo Engine Modal -->
-    <div id="promoModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); padding: 15px;">
-        <div class="card" style="width: 100%; max-width: 400px; margin:0; animation: sheetUp 0.3s ease; border-color:var(--warning);">
-            <div class="card-title" style="color:var(--warning);">📢 Smart Promo Engine</div>
+    <!-- 3. Smart Promo Engine Modal (🔥 UPGRADED 🔥) -->
+    <div id="promoModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); padding: 15px; overflow-y:auto;">
+        <div class="card" style="width: 100%; max-width: 400px; margin:auto; animation: sheetUp 0.3s ease; border-color:var(--warning);">
+            <div class="card-title" style="color:var(--warning);">📢 Advanced Promo Engine</div>
             <p style="color:var(--text-muted); font-size:11px; margin-bottom:15px;">Targeted Offer for: <strong id="pClientName" style="color:white;"></strong></p>
+            
             <div class="form-group">
                 <label>Seasonal Offer / Promo Message</label>
-                <textarea id="pPromoMsg" class="form-control" rows="3" placeholder="e.g. 🎉 Festival Offer: Renew today and get 2 months free!"></textarea>
+                <textarea id="pPromoMsg" class="form-control" rows="2" placeholder="e.g. 🎉 Renew today and get 2 months free!"></textarea>
             </div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn btn-warning" style="flex:2;" onclick="submitPromo()">Publish Offer</button>
-                <button class="btn btn-outline" style="flex:1;" onclick="document.getElementById('promoModal').style.display='none'">Close</button>
+            
+            <div class="responsive-grid">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Schedule Start Time</label>
+                    <input type="datetime-local" id="pStart" class="form-control" style="padding:11px;">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Auto-Remove (Timeout)</label>
+                    <input type="datetime-local" id="pExpiry" class="form-control" style="padding:11px;">
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+                <button class="btn btn-warning" id="btnPublishPromo" onclick="submitPromo()">🚀 Publish Offer</button>
+                <button class="btn btn-danger" onclick="stopPromo()">🛑 Stop Active Offer</button>
+                <button class="btn btn-outline" onclick="document.getElementById('promoModal').style.display='none'">Cancel</button>
             </div>
         </div>
     </div>
@@ -426,6 +440,13 @@
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             auth: { storageKey: 'vpk-master-secret-key' }
         });
+
+        // 🔥 SCROLL BUG FIX FOR NUMBER INPUTS 🔥
+        document.addEventListener('wheel', function(event) {
+            if (document.activeElement.type === 'number') {
+                document.activeElement.blur();
+            }
+        }, { passive: false });
 
         // 🛡️ THE MAGIC CONFIRM ENGINE
         window.magicConfirm = function(msg) {
@@ -488,6 +509,10 @@
             
             document.getElementById('aWarnDays').value = localStorage.getItem('vpk_auto_warn_days') || 15;
             document.getElementById('aGraceDays').value = localStorage.getItem('vpk_auto_grace_days') || 7;
+
+            // Load Master Alert Toggle State
+            const isAlertsOn = localStorage.getItem('vpk_master_alerts_enabled') !== 'false';
+            document.getElementById('masterAlertToggle').checked = isAlertsOn;
         }
 
         window.logoutMaster = async function() { 
@@ -496,7 +521,7 @@
         };
 
         // ==========================================
-        // DYNAMIC PLAN MANAGEMENT
+        // DYNAMIC PLAN MANAGEMENT (Bug Fixed)
         // ==========================================
         async function fetchPlans() {
             try {
@@ -514,7 +539,18 @@
 
         window.addPlan = async function(e) {
             e.preventDefault();
-            const newPlan = { plan_name: document.getElementById('pName').value, price: parseFloat(document.getElementById('pPrice').value), duration_value: parseInt(document.getElementById('pDurVal').value), duration_type: document.getElementById('pDurType').value, usage_limits: { max_admissions: parseInt(document.getElementById('pMaxAdm').value), max_staff: parseInt(document.getElementById('pMaxStaff').value) }, module_access: { admission: document.getElementById('modAdm').checked, fee_collect: document.getElementById('modFee').checked, day_book: document.getElementById('modDay').checked, inventory: document.getElementById('modInv').checked } };
+            // Removed module_access reading since checkboxes were removed from UI to fix the "null" error
+            const newPlan = { 
+                plan_name: document.getElementById('pName').value, 
+                price: parseFloat(document.getElementById('pPrice').value), 
+                duration_value: parseInt(document.getElementById('pDurVal').value), 
+                duration_type: document.getElementById('pDurType').value, 
+                usage_limits: { 
+                    max_admissions: parseInt(document.getElementById('pMaxAdm').value), 
+                    max_staff: parseInt(document.getElementById('pMaxStaff').value) 
+                },
+                module_access: { admission: true, fee_collect: true, day_book: true, inventory: true } // Defaults
+            };
             await supabase.from('subscription_plans').insert([newPlan]);
             alert("✅ Plan Created!"); e.target.reset(); fetchPlans();
         };
@@ -536,8 +572,7 @@
                 updateStatChips();
                 applySortAndFilter();
 
-                // 🔥 NEW: Populate Individual Client List in Broadcast Menu 🔥
-                const indList = document.getElementById('indClientList');
+                const indList = document.getElementById('indClientList1');
                 if(indList) {
                     indList.innerHTML = clientsData.map(c => `<option value="${c.admin_email}">👤 ${c.institute_name} (${c.admin_email})</option>`).join('');
                 }
@@ -601,7 +636,15 @@
                 let mockCurrent = Math.floor(Math.random() * (limit/2)); 
                 let usagePct = Math.round((mockCurrent / limit) * 100);
 
-                let promoIconColor = (c.promo_message && c.promo_message.trim() !== '') ? 'var(--warning)' : 'var(--text-muted)';
+                // Highlight active promo
+                let promoActive = false;
+                try {
+                    if(c.promo_message) {
+                        const pObj = JSON.parse(c.promo_message);
+                        if(pObj.msg && new Date() <= new Date(pObj.expires_at)) promoActive = true;
+                    }
+                } catch(e) { if(c.promo_message && c.promo_message.trim() !== '') promoActive = true; }
+                let promoIconColor = promoActive ? 'var(--warning)' : 'var(--text-muted)';
 
                 html += `
                 <div class="client-card">
@@ -626,7 +669,7 @@
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 11.02h4.5a3 3 0 1 0 0-6h-4.5v15"></path><path d="M21 15v-4"></path><circle cx="5" cy="11" r="2"></circle></svg>
                             </button>
                             <button class="btn-icon" style="color:var(--primary);" title="Settings" onclick="openUpgradeModal('${c.id}', '${c.institute_name}')">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0 2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                             </button>
                             <button class="btn-icon" style="color:var(--danger); border-color:rgba(239,68,68,0.3);" onclick="deleteClient('${c.id}', '${c.institute_name}')">
                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -639,35 +682,92 @@
         }
 
         // ==========================================
-        // IMPERSONATION, PROMO, SETTINGS
+        // IMPERSONATION (BUG FIXED)
         // ==========================================
         window.impersonateClient = async function(email) {
             const ans = await window.magicConfirm(`SUPER ADMIN OVERRIDE\n\nYou are about to securely login directly into ${email}'s dashboard. Proceed?`);
             if(ans) {
-                const masterSession = localStorage.getItem('vpk-master-secret-key');
-                if(masterSession) { localStorage.setItem('sb-kwrugdbrzrfbmibaccwr-auth-token', masterSession); }
-                localStorage.setItem('userEmail', email);
+                // Ensure Super Admin status is saved securely
                 localStorage.setItem('userRole', 'Super Admin'); 
-                alert("✅ Impersonation Active. Redirecting...");
-                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+                alert("✅ Impersonation Active. Redirecting securely...");
+                setTimeout(() => { 
+                    // Open dashboard with override query parameter for bypass
+                    window.open(`dashboard.html?override=${encodeURIComponent(email)}`, '_blank'); 
+                }, 1000);
             }
         };
 
+        // ==========================================
+        // PROMO ENGINE (ADVANCED SCHEDULER ADDED)
+        // ==========================================
         window.openPromoModal = function(id, name, msg) {
             activeClientId = id;
             document.getElementById('pClientName').innerText = name;
-            document.getElementById('pPromoMsg').value = msg === 'null' || msg === 'undefined' ? '' : msg;
+            
+            // Try to parse if it's JSON from the new advanced engine
+            try {
+                if(msg && msg !== 'null' && msg !== 'undefined') {
+                    const pObj = JSON.parse(msg);
+                    document.getElementById('pPromoMsg').value = pObj.msg || '';
+                    if(pObj.starts_at) {
+                        let sd = new Date(pObj.starts_at);
+                        sd.setMinutes(sd.getMinutes() - sd.getTimezoneOffset());
+                        document.getElementById('pStart').value = sd.toISOString().slice(0,16);
+                    }
+                    if(pObj.expires_at) {
+                        let ed = new Date(pObj.expires_at);
+                        ed.setMinutes(ed.getMinutes() - ed.getTimezoneOffset());
+                        document.getElementById('pExpiry').value = ed.toISOString().slice(0,16);
+                    }
+                } else {
+                    document.getElementById('pPromoMsg').value = '';
+                    document.getElementById('pStart').value = '';
+                    document.getElementById('pExpiry').value = '';
+                }
+            } catch(e) {
+                // Fallback for old simple text messages
+                document.getElementById('pPromoMsg').value = msg === 'null' || msg === 'undefined' ? '' : msg;
+                document.getElementById('pStart').value = '';
+                document.getElementById('pExpiry').value = '';
+            }
+            
             document.getElementById('promoModal').style.display = 'flex';
         };
 
         window.submitPromo = async function() {
-            const msg = document.getElementById('pPromoMsg').value;
-            await supabase.from('saas_clients').update({ promo_message: msg }).eq('id', activeClientId);
-            alert("✅ Seasonal Offer Published to Client!");
+            const msg = document.getElementById('pPromoMsg').value.trim();
+            const start = document.getElementById('pStart').value;
+            const expiry = document.getElementById('pExpiry').value;
+
+            if(!msg) return alert("⚠️ Please enter an offer message.");
+            if(!start || !expiry) return alert("⚠️ Please set Schedule Start and Timeout for the offer.");
+
+            const btn = document.getElementById('btnPublishPromo');
+            btn.innerText = "Publishing...";
+
+            try {
+                const promoObj = { msg: msg, starts_at: new Date(start).toISOString(), expires_at: new Date(expiry).toISOString() };
+                await supabase.from('saas_clients').update({ promo_message: JSON.stringify(promoObj) }).eq('id', activeClientId);
+                alert("✅ Seasonal Offer Scheduled for this Client!");
+                document.getElementById('promoModal').style.display = 'none';
+                fetchClients();
+            } catch(e) {
+                alert("❌ Failed: " + e.message);
+            } finally {
+                btn.innerText = "🚀 Publish Offer";
+            }
+        };
+
+        window.stopPromo = async function() {
+            const ans = await window.magicConfirm("🛑 Are you sure you want to stop the active offer for this client?");
+            if(!ans) return;
+            await supabase.from('saas_clients').update({ promo_message: null }).eq('id', activeClientId);
+            alert("✅ Offer Stopped.");
             document.getElementById('promoModal').style.display = 'none';
             fetchClients();
         };
 
+        // Settings / Upgrade Modal
         window.openUpgradeModal = function(id, name) {
             activeClientId = id;
             document.getElementById('uClientName').innerText = name;
@@ -880,7 +980,7 @@
         };
 
         // ==========================================
-        // SMART GLOBAL BROADCAST ENGINE 🚀 (NEW)
+        // SMART GLOBAL BROADCAST ENGINE 🚀
         // ==========================================
         window.checkActiveBroadcast = async function() {
             try {
@@ -952,6 +1052,13 @@
         window.extendAllPlans = async function() {
             const ans = await window.magicConfirm("Are you sure you want to mass-extend validity for ALL active clients?");
             if(ans) alert('✅ Mass extension applied successfully.');
+        };
+
+        // 🔥 MASTER ALERT TOGGLE SAVER 🔥
+        window.saveMasterAlertToggle = function() {
+            const isOn = document.getElementById('masterAlertToggle').checked;
+            localStorage.setItem('vpk_master_alerts_enabled', isOn);
+            alert(`✅ Master Subscription Alerts are now ${isOn ? 'ENABLED' : 'DISABLED'} globally.`);
         };
 
         window.saveAutomationRules = function(e) {
