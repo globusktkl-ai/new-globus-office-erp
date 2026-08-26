@@ -216,7 +216,6 @@
     <!-- TAB 2: PLANS & BILLING COMMAND CENTER -->
     <div id="tab-studio" class="tab-content">
         
-        <!-- SECTION A: PLAN STUDIO -->
         <div class="card">
             <div class="card-title" style="color: var(--success);">💎 Plan Studio</div>
             <form onsubmit="addPlan(event)">
@@ -248,7 +247,6 @@
             <div id="plansListContainer">Loading plans...</div>
         </div>
 
-        <!-- SECTION B: GLOBAL BILLING POLICY -->
         <div class="card" style="border-color: var(--primary);">
             <div class="card-title" style="color: var(--primary);">⚙️ Global Billing Policy</div>
             <form onsubmit="saveAutomationRules(event)">
@@ -270,7 +268,6 @@
             </div>
         </div>
 
-        <!-- SECTION C: TARGETED BILLING & ALERTS -->
         <div class="card" style="border-color: var(--warning);">
             <div class="card-title" style="color: var(--warning);">🎯 Advanced Targeted Billing Alerts</div>
             <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Schedule custom billing/subscription warnings for specific individuals or groups.</p>
@@ -312,7 +309,7 @@
         </div>
     </div>
 
-    <!-- TAB 3: OFFERS (PROMO ENGINE) -->
+    <!-- TAB 3: OFFERS -->
     <div id="tab-offers" class="tab-content">
         <div class="card" style="border-color: var(--warning);">
             <div class="card-title" style="color: var(--warning);">🎁 Advanced Promo Engine</div>
@@ -378,7 +375,7 @@
         </div>
     </div>
 
-    <!-- TAB 5: BULK OPERATIONS (BROADCAST) -->
+    <!-- TAB 5: BROADCAST -->
     <div id="tab-bulk" class="tab-content">
         <div class="card" style="border-color: var(--primary);">
             <div class="card-title" style="color: var(--primary);">📢 Advanced Scheduled Broadcast</div>
@@ -414,7 +411,7 @@
         </div>
     </div>
 
-    <!-- MODALS (Add/Upgrade) -->
+    <!-- MODALS -->
     <div id="addClientModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.95); z-index:100001; align-items:center; justify-content:center; backdrop-filter: blur(5px); padding: 15px;">
         <div class="card" style="width: 100%; max-width: 400px; margin:0; animation: sheetUp 0.3s ease;">
             <div class="card-title">➕ Provision Tenant</div>
@@ -514,7 +511,7 @@
         let clientsData = [];
         let plansData = [];
         let ticketsData = [];
-        let activeClientId = null; // 🔥 FIX IS HERE
+        let activeClientId = null; 
         let editingPlanId = null; 
         window.pollInterval = null;
 
@@ -540,9 +537,6 @@
             if(ans) { await supabase.auth.signOut(); window.location.reload(); }
         };
 
-        // ==========================================
-        // DYNAMIC PLAN MANAGEMENT
-        // ==========================================
         async function fetchPlans() {
             try {
                 const { data } = await supabase.from('subscription_plans').select('*').order('price', { ascending: true });
@@ -597,9 +591,6 @@
             if(ans) { await supabase.from('subscription_plans').delete().eq('id', id); fetchPlans(); } 
         };
 
-        // ==========================================
-        // SMART CLIENT MATRIX & CARDS
-        // ==========================================
         window.openAddClientModal = () => document.getElementById('addClientModal').style.display = 'flex';
         
         async function fetchClients() {
@@ -698,25 +689,27 @@
             container.innerHTML = html || '<div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:13px;">No clients found.</div>';
         }
 
-        // ==========================================
-        // 🔥 THE PRIVACY-FIRST IMPERSONATION HANDSHAKE 🔥
-        // ==========================================
+        // 🔥 THE FIX: ORDER OF CHECKING 24H ACCESS FIRST 🔥
         window.impersonateClient = async function(email, id) {
             const { data } = await supabase.from('saas_clients').select('promo_message').eq('id', id).single();
             let pData = {}; try { pData = JSON.parse(data.promo_message || '{}'); } catch(e){}
 
-            const isOnline = pData.last_active && (Date.now() - pData.last_active < 3 * 60 * 1000);
-            
-            if (!isOnline) {
-                if (pData.support_access_24h) {
-                    const ans = await window.magicConfirm(`Client is OFFLINE ⚪, but they have granted you 24H Support Access.\n\nProceed to login securely?`);
-                    if(ans) executeLogin(email);
-                } else {
-                    alert("❌ Client is OFFLINE and has not granted 24H Remote Access. You cannot login without their live permission.");
-                }
+            // 1. Check 24H Access First
+            if (pData.support_access_24h) {
+                const ans = await window.magicConfirm(`Client has granted 24H Remote Support Access.\n\nProceed to login securely?`);
+                if(ans) executeLogin(email);
                 return;
             }
 
+            // 2. If no 24H access, check if online
+            const isOnline = pData.last_active && (Date.now() - pData.last_active < 3 * 60 * 1000);
+            
+            if (!isOnline) {
+                alert("❌ Client is OFFLINE and has not granted 24H Remote Access. You cannot login without their live permission.");
+                return;
+            }
+
+            // 3. If online, ask for live permission
             const ans = await window.magicConfirm(`Client is ONLINE 🟢\n\nSend a live request to their dashboard asking for permission to enter?`);
             if(!ans) return;
 
@@ -750,14 +743,12 @@
             window.hideWaitingModal();
         };
 
+        // 🔥 THE FIX: SAME TAB REDIRECT (Prevents Popup Blocker) 🔥
         function executeLogin(email) {
             localStorage.setItem('userRole', 'Super Admin'); 
-            setTimeout(() => { window.open(`dashboard.html?override=${encodeURIComponent(email)}`, '_blank'); }, 1000);
+            setTimeout(() => { window.location.href = `dashboard.html?override=${encodeURIComponent(email)}`; }, 1000);
         }
 
-        // ==========================================
-        // 🎯 TARGETED BILLING & ALERTS ENGINE
-        // ==========================================
         window.launchBillingAlert = async function() {
             const msg = document.getElementById('billAlertMsg').value.trim();
             const target = document.getElementById('billAlertTarget').value;
@@ -815,9 +806,6 @@
             return targetIds;
         }
 
-        // ==========================================
-        // PROMO ENGINE (OFFERS TAB)
-        // ==========================================
         window.launchPromo = async function() {
             const msg = document.getElementById('promoMsgInput').value.trim(); const target = document.getElementById('promoTarget').value;
             const start = document.getElementById('promoStart').value; const expiry = document.getElementById('promoExpiry').value;
@@ -859,7 +847,6 @@
             } catch(e) { alert("❌ Error: " + e.message); }
         };
 
-        // Settings / Upgrade Modal
         window.openUpgradeModal = function(id, name) { activeClientId = id; document.getElementById('uClientName').innerText = name; document.getElementById('upgradeModal').style.display = 'flex'; };
 
         window.submitPlanUpgrade = async function() {
@@ -899,9 +886,6 @@
             if (ans) { await supabase.from('saas_clients').delete().eq('id', id); fetchClients(); } 
         };
 
-        // ==========================================
-        // SUPPORT INBOX (CRM TICKETING) & REST
-        // ==========================================
         async function fetchGlobalProviderInfo() {
             try { const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
                 if(data && data.provider_config) { const conf = JSON.parse(data.provider_config); document.getElementById('gProvEmail').value = conf.email || ''; document.getElementById('gProvPhone').value = conf.phone || ''; }
