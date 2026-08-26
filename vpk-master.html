@@ -30,7 +30,6 @@
         .tab-btn svg { width: 20px; height: 20px; stroke-width: 2; }
         .tab-btn.active { background: rgba(59, 130, 246, 0.1); color: var(--primary); border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); transform: translateY(-2px); }
         
-        /* 🔥 NEW: INBOX WHATSAPP BADGE STYLES 🔥 */
         .inbox-badge { position: absolute; top: -6px; right: -8px; background: var(--danger); color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid var(--card); opacity: 0; transition: 0.3s; padding: 0 4px; pointer-events: none; box-shadow: 0 2px 5px rgba(239,68,68,0.5); }
         .inbox-badge.show { opacity: 1; transform: scale(1.1); }
 
@@ -74,12 +73,16 @@
         .card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .card-title { margin-top: 0; margin-bottom: 15px; font-size: 14px; font-weight: 900; color: white; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; }
         
-        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; width: 100%; }
         .form-group label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
         .form-control { width: 100%; background: var(--bg); border: 1px solid var(--border); padding: 12px 15px; border-radius: 8px; color: var(--text); font-size: 14px; font-weight: 600; outline: none; transition: 0.2s; box-sizing: border-box; }
         .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
         textarea.form-control { resize: none; font-size: 13px; }
         
+        /* Grid Layouts for responsive forms */
+        .responsive-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
+        @media (min-width: 600px) { .responsive-grid { grid-template-columns: 1fr 1fr; } }
+
         .btn { padding: 14px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; border: none; font-size: 13px; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn:active { transform: scale(0.95); }
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
@@ -87,6 +90,7 @@
         .btn-danger { background: var(--danger); color: white; }
         .btn-warning { background: linear-gradient(135deg, var(--warning), #d97706); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-purple { background: linear-gradient(135deg, var(--purple), #6d28d9); color: white; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
 
         /* CRM TICKET INBOX */
         .search-bar-wrap { position: relative; margin-bottom: 15px; }
@@ -107,6 +111,11 @@
         .fab-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, var(--primary), var(--purple)); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 5px 20px rgba(59,130,246,0.5); cursor: pointer; z-index: 1000; border: none; transition: 0.3s; }
         .fab-btn:active { transform: scale(0.9); }
         .fab-btn svg { width: 24px; height: 24px; stroke-width: 2.5; stroke: currentColor; fill: none; }
+
+        /* LIVE BROADCAST STATUS BOX */
+        .live-broadcast-box { margin-top: 15px; padding: 15px; background: rgba(59, 130, 246, 0.1); border: 1px dashed var(--primary); border-radius: 12px; display: none; }
+        .live-broadcast-box .lb-header { font-size: 10px; font-weight: 900; color: var(--primary); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .live-broadcast-box .lb-msg { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 15px; }
 
         #customAlertBox, #customPromptBox { z-index: 100005; }
     </style>
@@ -158,8 +167,6 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
             Plans
         </button>
-        
-        <!-- 🔥 FIX: INBOX TAB WITH WHATSAPP MODEL BADGE 🔥 -->
         <button class="tab-btn" onclick="switchTab('support', this)">
             <div style="position: relative; display: flex; align-items: center; justify-content: center;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M3 15v4a2 2 0 0 0 2 2h14"></path></svg>
@@ -167,7 +174,6 @@
             </div>
             Inbox
         </button>
-
         <button class="tab-btn" onclick="switchTab('bulk', this)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
             Bulk
@@ -217,9 +223,9 @@
             <div class="card-title" style="color: var(--success);">💎 Create Dynamic Plan</div>
             <form onsubmit="addPlan(event)">
                 <div class="form-group"><label>Plan Name</label><input type="text" id="pName" class="form-control" placeholder="e.g. Pro Suite" required></div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group"><label>Price (₹)</label><input type="number" id="pPrice" class="form-control" value="0" required></div>
-                    <div class="form-group">
+                <div class="responsive-grid">
+                    <div class="form-group" style="margin-bottom:0;"><label>Price (₹)</label><input type="number" id="pPrice" class="form-control" value="0" required></div>
+                    <div class="form-group" style="margin-bottom:0;">
                         <label>Validity</label>
                         <div style="display:flex; gap:5px;">
                             <input type="number" id="pDurVal" class="form-control" value="30" style="width:60%;" required>
@@ -227,9 +233,9 @@
                         </div>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group"><label>Admission Limit</label><input type="number" id="pMaxAdm" class="form-control" value="100" required></div>
-                    <div class="form-group"><label>Staff Limit</label><input type="number" id="pMaxStaff" class="form-control" value="2" required></div>
+                <div class="responsive-grid">
+                    <div class="form-group" style="margin-bottom:0;"><label>Admission Limit</label><input type="number" id="pMaxAdm" class="form-control" value="100" required></div>
+                    <div class="form-group" style="margin-bottom:0;"><label>Staff Limit</label><input type="number" id="pMaxStaff" class="form-control" value="2" required></div>
                 </div>
                 <button type="submit" class="btn btn-success" style="margin-top:10px;">💾 Save Plan</button>
             </form>
@@ -242,14 +248,29 @@
 
     <!-- TAB 3: SUPPORT INBOX -->
     <div id="tab-support" class="tab-content">
+        <!-- Contact Sync -->
         <div class="card" style="border-color: var(--primary); padding: 15px;">
             <div class="card-title" style="color: var(--primary); font-size: 12px;">Global Contact Sync</div>
             <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Update this info and it will reflect in all clients' ERP support tabs automatically.</p>
-            <div style="display:flex; flex-wrap:wrap; gap:10px;">
-                <input type="email" id="gProvEmail" class="form-control" placeholder="Support Email" style="flex:1; min-width:150px; padding:10px; font-size:12px;">
-                <input type="text" id="gProvPhone" class="form-control" placeholder="Support Phone (+91...)" style="flex:1; min-width:150px; padding:10px; font-size:12px;">
-                <button class="btn btn-primary" style="width:auto; padding:10px 15px;" onclick="saveProviderContact()">Sync</button>
+            <div class="responsive-grid">
+                <input type="email" id="gProvEmail" class="form-control" placeholder="Support Email" style="font-size:12px;">
+                <input type="text" id="gProvPhone" class="form-control" placeholder="Support Phone (+91...)" style="font-size:12px;">
             </div>
+            <button class="btn btn-primary" onclick="saveProviderContact()">Update Contact Info</button>
+        </div>
+
+        <!-- 🔥 NEW: Automated Ticket Diversion Engine 🔥 -->
+        <div class="card" style="border-color: var(--purple); padding: 15px;">
+            <div class="card-title" style="color: var(--purple); font-size: 12px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:5px;"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                Automated Ticket Diversion
+            </div>
+            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Forward all incoming client bug reports and tickets dynamically to your Super Admin Email or Webhook integration.</p>
+            <div class="form-group">
+                <label>Forwarding Email / Webhook URL</label>
+                <input type="text" id="gForwardEmail" class="form-control" placeholder="e.g. admin@vpktech.com" style="font-size:12px;">
+            </div>
+            <button class="btn btn-purple" onclick="saveTicketDiversion()">Apply Diversion Rule</button>
         </div>
 
         <div class="card">
@@ -257,12 +278,10 @@
                 <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M3 15v4a2 2 0 0 0 2 2h14"></path></svg>
                 Helpdesk Tickets
             </div>
-            
             <div class="search-bar-wrap">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <input type="text" id="ticketSearch" class="form-control" placeholder="Search by Ticket ID (e.g. 610A)" onkeyup="searchTickets()">
             </div>
-
             <div id="ticketsContainer">
                 <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Fetching client tickets...</div>
             </div>
@@ -271,11 +290,45 @@
 
     <!-- TAB 4: BULK OPERATIONS -->
     <div id="tab-bulk" class="tab-content">
-        <div class="card">
-            <div class="card-title" style="color: var(--primary);">📢 Global Broadcast</div>
-            <div class="form-group"><input type="text" id="bulkMsg" class="form-control" placeholder="e.g. System maintenance at 12 AM tonight."></div>
-            <button class="btn btn-primary" id="btnBroadcast" onclick="sendBulkMessage()">Send Broadcast</button>
+        <!-- 🔥 NEW: SMART BROADCAST ENGINE 🔥 -->
+        <div class="card" style="border-color: var(--primary);">
+            <div class="card-title" style="color: var(--primary);">📢 Smart Global Broadcast</div>
+            <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Send targeted alerts to client dashboards with automatic timeout features.</p>
+            
+            <div class="form-group">
+                <label>Broadcast Message</label>
+                <textarea id="bulkMsg" class="form-control" placeholder="e.g. Server maintenance at 12 AM tonight." rows="2"></textarea>
+            </div>
+            
+            <div class="responsive-grid">
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Target Audience</label>
+                    <select id="bulkTarget" class="custom-select" style="padding:13px;">
+                        <option value="All">🏢 All Terminals</option>
+                        <option value="Active">🟢 Active Clients Only</option>
+                        <option value="Expiring">⚠️ Expiring Soon Only</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>Auto-Remove After (Timeout)</label>
+                    <!-- Fallback to text if datetime-local is tricky on some old webviews, but modern phones support it well -->
+                    <input type="datetime-local" id="bulkExpiry" class="form-control" style="padding:11px;">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="btnBroadcast" onclick="sendBulkMessage()" style="margin-top:10px;">🚀 Launch Broadcast</button>
+
+            <!-- LIVE BROADCAST STATUS BOX -->
+            <div id="activeBroadcastPanel" class="live-broadcast-box">
+                <div class="lb-header">
+                    <span style="display:flex; align-items:center; gap:5px;"><span style="width:8px; height:8px; background:var(--success); border-radius:50%; animation: pulse 2s infinite;"></span> Live Broadcast Active</span>
+                    <span id="liveTarget" style="color:var(--text-muted); font-size:9px;"></span>
+                </div>
+                <div id="liveMsgText" class="lb-msg"></div>
+                <button class="btn btn-danger" style="padding: 10px; font-size: 11px;" onclick="revokeBroadcast()">🛑 Revoke / Kill Broadcast</button>
+            </div>
         </div>
+
         <div class="card">
             <div class="card-title" style="color: var(--success);">🎁 Mass Extension</div>
             <div style="display:flex; gap:10px;">
@@ -419,6 +472,7 @@
             await fetchClients();
             await fetchGlobalProviderInfo();
             await fetchSupportTickets();
+            await checkActiveBroadcast(); // Check if any broadcast is currently running
             
             document.getElementById('aWarnDays').value = localStorage.getItem('vpk_auto_warn_days') || 15;
             document.getElementById('aGraceDays').value = localStorage.getItem('vpk_auto_grace_days') || 7;
@@ -660,9 +714,8 @@
         };
 
         // ==========================================
-        // SUPPORT INBOX (CRM TICKETING) & NOTIFICATIONS
+        // SUPPORT INBOX (CRM TICKETING) & DIVERSION
         // ==========================================
-        
         async function fetchGlobalProviderInfo() {
             try {
                 const { data, error } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
@@ -670,27 +723,43 @@
                     const conf = JSON.parse(data.provider_config);
                     document.getElementById('gProvEmail').value = conf.email || '';
                     document.getElementById('gProvPhone').value = conf.phone || '';
-                } else if (error) {
-                    console.warn("Info: Column 'provider_config' may be missing in DB. Please add it to Supabase.");
+                    if(document.getElementById('gForwardEmail')) {
+                        document.getElementById('gForwardEmail').value = conf.forwarding_email || '';
+                    }
                 }
             } catch(e){}
         }
 
         window.saveProviderContact = async function() {
-            const configObj = { 
-                email: document.getElementById('gProvEmail').value,
-                phone: document.getElementById('gProvPhone').value
-            };
-            const { error } = await supabase.from('institute_settings').update({ provider_config: JSON.stringify(configObj) }).eq('id', 1);
-            if(error) {
-                if(error.message.includes('Could not find')) {
-                    alert("❌ Database Error: 'provider_config' column is missing in Supabase. Please add it to 'institute_settings' table.");
-                } else {
-                    alert("❌ Failed to save: " + error.message);
-                }
-            } else {
-                alert("✅ Global Provider Info Synced. All clients will see this now.");
-            }
+            // Get current to not overwrite forwarding_email
+            let currentConf = {};
+            try {
+                const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
+                if(data && data.provider_config) currentConf = JSON.parse(data.provider_config);
+            } catch(e){}
+
+            currentConf.email = document.getElementById('gProvEmail').value;
+            currentConf.phone = document.getElementById('gProvPhone').value;
+
+            const { error } = await supabase.from('institute_settings').update({ provider_config: JSON.stringify(currentConf) }).eq('id', 1);
+            if(error) alert("❌ Failed to save contact info.");
+            else alert("✅ Global Contact Info Updated.");
+        };
+
+        // 🔥 NEW: SAVE TICKET DIVERSION ENGINE 🔥
+        window.saveTicketDiversion = async function() {
+            const fEmail = document.getElementById('gForwardEmail').value.trim();
+            let currentConf = {};
+            try {
+                const { data } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
+                if(data && data.provider_config) currentConf = JSON.parse(data.provider_config);
+            } catch(e){}
+
+            currentConf.forwarding_email = fEmail;
+
+            const { error } = await supabase.from('institute_settings').update({ provider_config: JSON.stringify(currentConf) }).eq('id', 1);
+            if(error) alert("❌ Failed to update Diversion Rules.");
+            else alert("✅ Ticket Diversion Rule Successfully Updated!\nAll new tickets will now be forwarded to: " + (fEmail || 'None'));
         };
 
         async function fetchSupportTickets() {
@@ -698,7 +767,6 @@
                 const { data, error } = await supabase.from('bug_reports').select('*').order('created_at', { ascending: false });
                 ticketsData = data || [];
                 
-                // 🔥 NEW: Update Unread Badge Count
                 let unreadCount = ticketsData.filter(t => t.status === 'Open').length;
                 const badge = document.getElementById('inboxBadge');
                 if (unreadCount > 0) {
@@ -737,7 +805,6 @@
 
                 const shortId = t.id.toString().substring(0, 8).toUpperCase();
 
-                // 🔥 NEW: Smart Delete Button Logic (Only shows if status is Resolved)
                 let deleteBtnHtml = '';
                 if(t.status === 'Resolved') {
                     deleteBtnHtml = `<button class="btn btn-outline" style="padding:8px; font-size:11px; color:var(--danger); border-color:rgba(239,68,68,0.3); width:auto;" title="Delete Ticket" onclick="deleteTicket('${t.id}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
@@ -787,54 +854,77 @@
             const ans = await window.magicConfirm("Update this ticket and notify the client?");
             if(ans) {
                 const { error } = await supabase.from('bug_reports').update({ status: newStatus, eta: newEta, admin_reply: newReply }).eq('id', id);
-                if(error) {
-                    alert("❌ Status Update Failed: " + error.message);
-                } else {
-                    alert("✅ Ticket Updated Successfully!");
-                    fetchSupportTickets();
-                }
+                if(error) alert("❌ Status Update Failed: " + error.message);
+                else { alert("✅ Ticket Updated Successfully!"); fetchSupportTickets(); }
             }
         };
 
-        // 🔥 NEW: DELETE TICKET FUNCTION 🔥
         window.deleteTicket = async function(id) {
             const ans = await window.magicConfirm("🗑️ Delete Ticket?\n\nAre you sure you want to permanently remove this resolved ticket from your inbox?");
             if(ans) {
                 const { error } = await supabase.from('bug_reports').delete().eq('id', id);
-                if(error) {
-                    alert("❌ Deletion Failed: " + error.message);
-                } else {
-                    alert("✅ Ticket Removed Successfully!");
-                    fetchSupportTickets();
-                }
+                if(error) alert("❌ Deletion Failed: " + error.message);
+                else { alert("✅ Ticket Removed Successfully!"); fetchSupportTickets(); }
             }
         };
 
         // ==========================================
-        // BULK & AUTOMATION 
+        // SMART GLOBAL BROADCAST ENGINE 🚀
         // ==========================================
-        
+        window.checkActiveBroadcast = async function() {
+            try {
+                const { data } = await supabase.from('institute_settings').select('global_broadcast').eq('id', 1).single();
+                const panel = document.getElementById('activeBroadcastPanel');
+                if(data && data.global_broadcast) {
+                    const bCast = JSON.parse(data.global_broadcast);
+                    if(bCast && bCast.message) {
+                        document.getElementById('liveMsgText').innerText = bCast.message;
+                        
+                        let targetText = "All Active Terminals";
+                        if(bCast.target === 'Active') targetText = "Active Clients Only";
+                        if(bCast.target === 'Expiring') targetText = "Expiring Soon Only";
+                        document.getElementById('liveTarget').innerText = `Target: ${targetText}`;
+                        
+                        panel.style.display = 'block';
+                        return;
+                    }
+                }
+                panel.style.display = 'none';
+            } catch(e) {}
+        };
+
         window.sendBulkMessage = async function() {
             const msg = document.getElementById('bulkMsg').value.trim();
-            if(!msg) return alert("⚠️ Enter a message.");
+            const target = document.getElementById('bulkTarget').value;
+            const expiry = document.getElementById('bulkExpiry').value; // Can be empty
+            
+            if(!msg) return alert("⚠️ Please enter a broadcast message.");
             const btn = document.getElementById('btnBroadcast');
-            btn.innerText = "Sending...";
+            btn.innerText = "Launching...";
             
             try {
-                const configObj = { message: msg, timestamp: new Date().toISOString() };
+                const configObj = { message: msg, target: target, expires_at: expiry, timestamp: new Date().toISOString() };
                 const { error } = await supabase.from('institute_settings').update({ global_broadcast: JSON.stringify(configObj) }).eq('id', 1);
                 if(error) throw error;
                 
-                alert("✅ Broadcast sent successfully to all active ERP terminals.");
+                alert("✅ Smart Broadcast Launched Successfully!");
                 document.getElementById('bulkMsg').value = '';
+                checkActiveBroadcast(); // Refresh the panel
             } catch(e) { 
-                if(e.message.includes('Could not find')) {
-                    alert("❌ Database Error: 'global_broadcast' column is missing in Supabase. Please add it to 'institute_settings' table.");
-                } else {
-                    alert("❌ Broadcast Failed: " + e.message); 
-                }
+                alert("❌ Broadcast Failed: " + e.message); 
             }
-            finally { btn.innerText = "Send Broadcast"; }
+            finally { btn.innerText = "🚀 Launch Broadcast"; }
+        };
+
+        window.revokeBroadcast = async function() {
+            const ans = await window.magicConfirm("🛑 Are you sure you want to Stop/Kill the current live broadcast?");
+            if(!ans) return;
+            try {
+                const { error } = await supabase.from('institute_settings').update({ global_broadcast: null }).eq('id', 1);
+                if(error) throw error;
+                alert("✅ Broadcast successfully revoked and removed from all client dashboards.");
+                checkActiveBroadcast(); // Hide the panel
+            } catch(e) { alert("❌ Error: " + e.message); }
         };
 
         window.extendAllPlans = async function() {
