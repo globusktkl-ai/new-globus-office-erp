@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Master Activity Logs - Super Admin</title>
+    <title>Master Activity Logs</title>
     <link rel="stylesheet" href="assets/css/style.css">
     
     <!-- PDF Export Libraries -->
@@ -55,18 +55,14 @@
         .btn-refresh { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; height: 40px;}
         .btn-refresh:active { transform: scale(0.95); }
 
-        /* ========================================================
-           NEW: PILL STYLE MULTI-SELECT CHECKBOXES
-           ======================================================== */
+        /* PILL STYLE MULTI-SELECT CHECKBOXES */
         .check-pill-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
         .check-pill { cursor: pointer; display: inline-flex; }
         .check-pill input { display: none; }
         .check-pill span { background: #f8fafc; color: #64748b; padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 800; border: 1px solid #cbd5e1; transition: 0.2s; user-select: none; }
         .check-pill input:checked + span { background: #eff6ff; color: #2563eb; border-color: #93c5fd; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1); }
 
-        /* ========================================================
-           WHATSAPP STYLE ACCORDION LOGS (MOBILE FIRST)
-           ======================================================== */
+        /* WHATSAPP STYLE ACCORDION LOGS */
         .accordion-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .accordion-header { padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; background: #ffffff; transition: 0.2s; }
         .accordion-header:active { background: #f8fafc; }
@@ -107,9 +103,7 @@
 
         #customPromptBox { z-index: 100000; }
 
-        /* ========================================================
-           PRINT MODE CSS 
-           ======================================================== */
+        /* PRINT MODE CSS */
         .print-header { display: none; }
         @media print {
             body { background: white !important; padding: 0 !important; margin: 0 !important; color: black !important; }
@@ -129,7 +123,8 @@
         <!-- Header -->
         <div class="top-nav no-print">
             <div class="nav-left">
-                <a href="dashboard.html" class="btn-back-dashboard" title="Back to Dashboard">
+                <!-- Adjusted link to go back to settings since this opens from settings -->
+                <a href="settings.html" class="btn-back-dashboard" title="Back to Settings">
                     <svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     <span>Back</span>
                 </a>
@@ -232,12 +227,13 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
+        // 🔥 THE FIX: Now allows 'Admin' to view logs as well 🔥
         async function checkSuperAdmin() {
             const userRole = localStorage.getItem('userRole');
-            if (userRole !== 'Super Admin') {
+            if (userRole !== 'Super Admin' && userRole !== 'Admin') {
                 document.body.innerHTML = '';
-                alert("⛔ SECURITY ALERT: Unauthorized Access! Only Super Admin can view Audit Trails.");
-                setTimeout(() => { window.location.replace('dashboard.html'); }, 2000);
+                alert("⛔ SECURITY ALERT: Unauthorized Access! Only Admin & Super Admin can view Audit Trails.");
+                setTimeout(() => { window.location.replace('settings.html'); }, 2000);
                 return false;
             }
             return true;
@@ -303,24 +299,20 @@
             }
         };
 
-        // THE UPDATED RENDER LOGS FUNCTION (Handles Pill Checkboxes correctly)
         window.renderLogs = function() {
             const searchTxt = document.getElementById('searchLog').value.toLowerCase();
             const fromDate = document.getElementById('fromDate').value;
             const toDate = document.getElementById('toDate').value;
             
-            // Get all checked values as Arrays
             const selectedRoles = Array.from(document.querySelectorAll('.role-cb:checked')).map(cb => cb.value);
             const selectedModules = Array.from(document.querySelectorAll('.mod-cb:checked')).map(cb => cb.value);
             const selectedActions = Array.from(document.querySelectorAll('.act-cb:checked')).map(cb => cb.value);
             
             const container = document.getElementById('logsAccordionContainer');
 
-            // Apply Filters
             let filtered = auditLogs.filter(log => {
                 const matchSearch = (log.details && log.details.toLowerCase().includes(searchTxt)) || (log.user_email && log.user_email.toLowerCase().includes(searchTxt));
                 
-                // If array is empty (nothing checked), it shows ALL. Otherwise, it checks if the log matches any selected pill.
                 const matchRole = selectedRoles.length === 0 || selectedRoles.includes(log.user_role);
                 const matchModule = selectedModules.length === 0 || selectedModules.includes(log.module);
                 const matchAction = selectedActions.length === 0 || selectedActions.includes(log.action_type);
@@ -342,7 +334,6 @@
                 return;
             }
 
-            // GROUP BY USER 
             const groupedLogs = {};
             filtered.forEach(log => {
                 const key = `${log.user_email}|${log.user_role}`;
@@ -350,21 +341,17 @@
                 groupedLogs[key].push(log);
             });
 
-            // Read states from LocalStorage for Badges
             const readState = JSON.parse(localStorage.getItem('ERP_audit_read_state') || '{}');
 
-            // RENDER ACCORDION UI
             let html = '';
             for (const [key, logs] of Object.entries(groupedLogs)) {
                 const [email, role] = key.split('|');
                 const safeEmail = email || 'System';
                 const initial = safeEmail.charAt(0).toUpperCase();
                 
-                // Calculate Unread Count
                 const unreadCount = logs.filter(l => !readState[l.id]).length;
                 let badgeHtml = unreadCount > 0 ? `<span class="acc-badge">${unreadCount}</span>` : '';
 
-                // Generate inner log cards
                 let innerLogsHtml = logs.map(log => {
                     const dateObj = new Date(log.created_at);
                     const dateStr = dateObj.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
@@ -391,7 +378,6 @@
                     </div>`;
                 }).join('');
 
-                // Accordion Wrapper
                 html += `
                 <div class="accordion-item" id="acc_${key.replace(/[^a-zA-Z0-9]/g, '_')}">
                     <div class="accordion-header" onclick="window.toggleAccordion('${key}')">
@@ -419,7 +405,6 @@
             container.innerHTML = html;
         };
 
-        // ACCORDION TOGGLE & AUTO-READ LOGIC
         window.toggleAccordion = function(key) {
             const safeId = key.replace(/[^a-zA-Z0-9]/g, '_');
             const item = document.getElementById(`acc_${safeId}`);
@@ -446,7 +431,6 @@
             }
         };
 
-        // MARK AS UNREAD LOGIC
         window.markAsUnread = function(key) {
             let readState = JSON.parse(localStorage.getItem('ERP_audit_read_state') || '{}');
             const groupLogs = window.filteredLogsData.filter(l => `${l.user_email}|${l.user_role}` === key);
@@ -522,12 +506,6 @@
             if(isAuth) fetchLogs();
         });
 
-    </script>
-
-    <!-- THE NEW DYNAMIC SECURITY SYSTEM -->
-    <script type="module">
-        import './assets/js/auth-check.js';
-        window.checkDynamicAccess('ActivityLogs');
     </script>
 </body>
 </html>
