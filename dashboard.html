@@ -99,6 +99,16 @@
         .logged-in-email { color: var(--app-theme-color); font-weight: 900; font-size: 11px; }
         .btn-logout-round { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); flex-shrink: 0; transition: 0.2s; }
         .btn-logout-round:active { transform: scale(0.95); }
+
+        /* Remote Support Toggle Widget */
+        .remote-support-widget { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .rs-text { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; }
+        .rs-switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+        .rs-switch input { opacity: 0; width: 0; height: 0; }
+        .rs-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .rs-slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .rs-slider { background-color: #10b981; }
+        input:checked + .rs-slider:before { transform: translateX(16px); }
     </style>
 </head>
 <body>
@@ -127,6 +137,15 @@
 
     <main class="main-content">
         
+        <!-- 24H REMOTE SUPPORT TOGGLE -->
+        <div class="remote-support-widget" id="remoteSupportWidget" style="display:none;">
+            <div class="rs-text">🛡️ Remote Support Access (24H)</div>
+            <label class="rs-switch">
+                <input type="checkbox" id="rsToggle" onchange="toggleRemoteSupport()">
+                <span class="rs-slider"></span>
+            </label>
+        </div>
+
         <div class="alert-ticker-wrap" id="alertTickerWrap">
             <div class="alert-ticker-track" id="alertTickerTrack"></div>
         </div>
@@ -272,7 +291,6 @@
                 const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
                 const box = document.createElement('div'); box.id = 'customPromptBox';
                 box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
-                
                 let inputType = isText ? "text" : "number"; let btnColor = "#3b82f6";
                 box.innerHTML = `
                     <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
@@ -296,8 +314,8 @@
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('Denied')) { iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`; } 
-            else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successfully')) { iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`; }
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error')) { iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`; } 
+            else if (msg.includes('✅') || msg.includes('success')) { iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`; }
             box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
             box.innerHTML = `
                 <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
@@ -318,23 +336,28 @@
             else { if(userInput !== null) alert('❌ Verification failed! Access denied.'); }
         };
 
-        // 🔥 THE CONSENT HANDSHAKE & HEARTBEAT ENGINE (Keep background tracking only) 🔥
+        // 🔥 THE CONSENT HANDSHAKE & HEARTBEAT ENGINE 🔥
         async function initSecurityHandshake() {
             const userEmail = localStorage.getItem('userEmail');
             if(!userEmail || localStorage.getItem('userRole') === 'Super Admin') return;
+
+            document.getElementById('remoteSupportWidget').style.display = 'flex';
 
             setInterval(async () => {
                 const { data } = await supabase.from('saas_clients').select('promo_message, id').eq('admin_email', userEmail).limit(1);
                 if(data && data.length > 0) {
                     let pData = {}; try { pData = JSON.parse(data[0].promo_message || '{}'); } catch(e){}
                     
-                    if(!window.hbCount) window.hbCount = 0; window.hbCount++;
+                    // Heartbeat every ~30 seconds (10 loops of 3s)
+                    if(!window.hbCount) window.hbCount = 0;
+                    window.hbCount++;
                     if(window.hbCount > 10) {
                         pData.last_active = Date.now();
                         await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', data[0].id);
                         window.hbCount = 0;
                     }
 
+                    // Check Impersonation Request
                     if (pData.impersonation && pData.impersonation.status === 'pending') {
                         if (Date.now() - pData.impersonation.timestamp < 60000 && !window.isPrompting) {
                             window.isPrompting = true;
@@ -344,9 +367,23 @@
                             window.isPrompting = false;
                         }
                     }
+
+                    // Sync 24H Toggle state
+                    document.getElementById('rsToggle').checked = pData.support_access_24h === true;
                 }
             }, 3000);
         }
+
+        window.toggleRemoteSupport = async function() {
+            const userEmail = localStorage.getItem('userEmail');
+            const isOn = document.getElementById('rsToggle').checked;
+            const { data } = await supabase.from('saas_clients').select('promo_message, id').eq('admin_email', userEmail).limit(1);
+            if(data && data.length > 0) {
+                let pData = {}; try { pData = JSON.parse(data[0].promo_message || '{}'); } catch(e){}
+                pData.support_access_24h = isOn;
+                await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', data[0].id);
+            }
+        };
 
         function showConsentPopup() {
             return new Promise((resolve) => {
@@ -370,16 +407,20 @@
         }
 
         async function checkAuth() {
-            const urlParams = new URLSearchParams(window.location.search); const overrideEmail = urlParams.get('override');
+            const urlParams = new URLSearchParams(window.location.search);
+            const overrideEmail = urlParams.get('override');
 
             if (overrideEmail && localStorage.getItem('userRole') === 'Super Admin') {
                 document.getElementById('authRoleTitle').innerText = "Super Admin (Impersonating)";
-                document.getElementById('authEmail').innerText = overrideEmail; localStorage.setItem('userEmail', overrideEmail); 
+                document.getElementById('authEmail').innerText = overrideEmail;
+                localStorage.setItem('userEmail', overrideEmail); 
+                
                 applyRoleAccess('Super Admin'); loadSettings(); loadDashboardData(); window.buildUnifiedTicker(); setInterval(window.buildUnifiedTicker, 30000); 
                 return;
             }
 
-            const userRole = localStorage.getItem('userRole'); const { data: { session } } = await supabase.auth.getSession();
+            const userRole = localStorage.getItem('userRole');
+            const { data: { session } } = await supabase.auth.getSession();
 
             if (userRole === 'Guest') {
                 const loginTime = localStorage.getItem('guestLoginTime'); const timePassed = Date.now() - parseInt(loginTime || '0');
@@ -391,17 +432,22 @@
 
             if (!session) { window.location.href = 'login.html'; return; }
             
-            document.getElementById('authRoleTitle').innerText = userRole || "Admin"; document.getElementById('authEmail').innerText = session.user.email.split('@')[0];
+            document.getElementById('authRoleTitle').innerText = userRole || "Admin";
+            document.getElementById('authEmail').innerText = session.user.email.split('@')[0];
             
             applyRoleAccess(userRole || 'Admin'); loadSettings(); loadDashboardData(); window.buildUnifiedTicker(); setInterval(window.buildUnifiedTicker, 30000); 
+            
+            // Start the handshake engine
             initSecurityHandshake();
         }
 
+        // 🔥 THE BIG FIX: TARGETED BILLING ALERTS INTEGRATED 🔥
         window.buildUnifiedTicker = async function() {
             const wrap = document.getElementById('alertTickerWrap'); const track = document.getElementById('alertTickerTrack');
             let tickerItems = []; const userEmail = localStorage.getItem('userEmail'); const userRole = localStorage.getItem('userRole') || 'Guest'; const now = new Date();
             let currentClient = null; const isAlertsOn = localStorage.getItem('vpk_master_alerts_enabled') !== 'false';
 
+            // 1. Fetch SaaS Expiry, Promo & Custom Billing
             try {
                 if(userEmail) {
                     const { data: clients, error } = await supabase.from('saas_clients').select('*').eq('admin_email', userEmail).limit(1);
@@ -411,27 +457,34 @@
                         currentClient = client; 
                         let pData = {}; try { pData = JSON.parse(client.promo_message || '{}'); } catch(e){}
                         
+                        // Default System Expiry Logic
                         if(isAlertsOn) {
                             let daysLeft = client.valid_until ? Math.ceil((new Date(client.valid_until) - now) / (1000 * 60 * 60 * 24)) : 0;
                             if (daysLeft < 0) tickerItems.push(`<span class="alert-item theme-expiry">⛔ ACCOUNT SUSPENDED: Plan expired. Contact VPKTech.</span>`);
                             else if (daysLeft <= 15) tickerItems.push(`<span class="alert-item theme-warning">⚠️ SUBSCRIPTION ALERT: Your plan expires in ${daysLeft} days.</span>`);
                         }
 
+                        // Advanced Targeted Billing Alert
                         if (isAlertsOn && pData.billing_alert && pData.billing_alert.msg) {
                             const bStart = new Date(pData.billing_alert.starts_at); const bEnd = new Date(pData.billing_alert.expires_at);
-                            if(now >= bStart && now <= bEnd) tickerItems.push(`<span class="alert-item theme-expiry">⚠️ ${pData.billing_alert.msg}</span>`);
+                            if(now >= bStart && now <= bEnd) {
+                                tickerItems.push(`<span class="alert-item theme-expiry">⚠️ ${pData.billing_alert.msg}</span>`);
+                            }
                         }
                         
+                        // Advanced Promo Logic
                         if (pData.promo && pData.promo.msg) {
                             const pStart = new Date(pData.promo.starts_at); const pEnd = new Date(pData.promo.expires_at);
                             if(now >= pStart && now <= pEnd) tickerItems.push(`<span class="alert-item theme-promo">🎁 PROMO: ${pData.promo.msg}</span>`);
                         } else if (client.promo_message && !client.promo_message.includes('{')) {
+                            // Fallback for old plain text promos
                             tickerItems.push(`<span class="alert-item theme-promo">🎁 PROMO: ${client.promo_message}</span>`);
                         }
                     }
                 }
             } catch(e) {}
 
+            // 2. Fetch Advanced Scheduled Broadcast (Blue)
             try {
                 const { data: settingsList, error } = await supabase.from('institute_settings').select('global_broadcast').eq('id', 1).limit(1);
                 const settings = settingsList && settingsList.length > 0 ? settingsList[0] : null;
@@ -455,7 +508,9 @@
                 }
             } catch(e) {}
 
+            // 3. School Bells & Smart Alerts (Yellow/Amber)
             const eventSet = localStorage.getItem('ERP_events_settings'); let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
+            
             if (masterAlertsOn) {
                 const savedBell = localStorage.getItem('ERP_bell_settings_final'); 
                 if(savedBell) {
@@ -476,6 +531,7 @@
                         }
                     }
                 }
+
                 try {
                     let localDate = new Date(); localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
                     const todayStr = localDate.toISOString().split('T')[0];
