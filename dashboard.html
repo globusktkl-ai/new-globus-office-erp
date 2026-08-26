@@ -99,6 +99,16 @@
         .logged-in-email { color: var(--app-theme-color); font-weight: 900; font-size: 11px; }
         .btn-logout-round { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); flex-shrink: 0; transition: 0.2s; }
         .btn-logout-round:active { transform: scale(0.95); }
+
+        /* Remote Support Toggle Widget */
+        .remote-support-widget { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .rs-text { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; }
+        .rs-switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+        .rs-switch input { opacity: 0; width: 0; height: 0; }
+        .rs-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .rs-slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .rs-slider { background-color: #10b981; }
+        input:checked + .rs-slider:before { transform: translateX(16px); }
     </style>
 </head>
 <body>
@@ -127,6 +137,15 @@
 
     <main class="main-content">
         
+        <!-- 24H REMOTE SUPPORT TOGGLE -->
+        <div class="remote-support-widget" id="remoteSupportWidget" style="display:none;">
+            <div class="rs-text">🛡️ Remote Support Access (24H)</div>
+            <label class="rs-switch">
+                <input type="checkbox" id="rsToggle" onchange="toggleRemoteSupport()">
+                <span class="rs-slider"></span>
+            </label>
+        </div>
+
         <div class="alert-ticker-wrap" id="alertTickerWrap">
             <div class="alert-ticker-track" id="alertTickerTrack"></div>
         </div>
@@ -237,7 +256,7 @@
                 </button>
                 <a href="settings.html" class="nav-btn">
                     <span class="nav-icon" style="background: linear-gradient(135deg, #e2e8f0, #cbd5e1);">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     </span>Inst. Settings
                 </a>
             </div>
@@ -272,10 +291,7 @@
                 const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
                 const box = document.createElement('div'); box.id = 'customPromptBox';
                 box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
-                
-                let inputType = isText ? "text" : "number";
-                let btnColor = "#3b82f6";
-
+                let inputType = isText ? "text" : "number"; let btnColor = "#3b82f6";
                 box.innerHTML = `
                     <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
                         <div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 16px; white-space: pre-wrap; line-height: 1.5;">${msg}</div>
@@ -295,12 +311,11 @@
         };
 
         window.alert = function(msg) {
-            const oldBox = document.getElementById('customAlertBox'); 
-            if (oldBox) oldBox.remove();
+            const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
             let iconHtml = `<div style="background:#dbeafe; color:#2563eb; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div>`;
-            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error') || msg.includes('disabled') || msg.includes('Denied')) { iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`; } 
-            else if (msg.includes('✅') || msg.includes('success') || msg.includes('Successfully')) { iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`; }
+            if(msg.includes('⚠️') || msg.includes('❌') || msg.includes('Error')) { iconHtml = `<div style="background:#fee2e2; color:#ef4444; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>`; } 
+            else if (msg.includes('✅') || msg.includes('success')) { iconHtml = `<div style="background:#d1fae5; color:#10b981; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>`; }
             box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
             box.innerHTML = `
                 <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
@@ -310,18 +325,86 @@
                 </div>
             `;
             if(!document.querySelector('style#sheetUpAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="sheetUpAnim">@keyframes sheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}</style>'); }
-            document.body.appendChild(box);
-            document.getElementById('cAlertOk').onclick = () => box.remove();
+            document.body.appendChild(box); document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
         window.openIDStudioSecure = async function() {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ ID Studio is locked in Guest mode."); return; }
-            let num1 = Math.floor(Math.random() * 10) + 1; 
-            let num2 = Math.floor(Math.random() * 10) + 1;
+            let num1 = Math.floor(Math.random() * 10) + 1; let num2 = Math.floor(Math.random() * 10) + 1;
             let userInput = await window.magicPrompt(`🔒 Security Verification\nTo open ID Card Studio, please solve:\n\n${num1} + ${num2} = ?`);
             if (userInput !== null && parseInt(userInput) === (num1+num2)) { window.location.href = 'id card generator.html'; } 
             else { if(userInput !== null) alert('❌ Verification failed! Access denied.'); }
         };
+
+        // 🔥 THE CONSENT HANDSHAKE & HEARTBEAT ENGINE 🔥
+        async function initSecurityHandshake() {
+            const userEmail = localStorage.getItem('userEmail');
+            if(!userEmail || localStorage.getItem('userRole') === 'Super Admin') return;
+
+            document.getElementById('remoteSupportWidget').style.display = 'flex';
+
+            setInterval(async () => {
+                const { data } = await supabase.from('saas_clients').select('promo_message, id').eq('admin_email', userEmail).limit(1);
+                if(data && data.length > 0) {
+                    let pData = {}; try { pData = JSON.parse(data[0].promo_message || '{}'); } catch(e){}
+                    
+                    // Heartbeat every ~30 seconds (10 loops of 3s)
+                    if(!window.hbCount) window.hbCount = 0;
+                    window.hbCount++;
+                    if(window.hbCount > 10) {
+                        pData.last_active = Date.now();
+                        await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', data[0].id);
+                        window.hbCount = 0;
+                    }
+
+                    // Check Impersonation Request
+                    if (pData.impersonation && pData.impersonation.status === 'pending') {
+                        if (Date.now() - pData.impersonation.timestamp < 60000 && !window.isPrompting) {
+                            window.isPrompting = true;
+                            const ans = await showConsentPopup();
+                            pData.impersonation.status = ans ? 'approved' : 'rejected';
+                            await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', data[0].id);
+                            window.isPrompting = false;
+                        }
+                    }
+
+                    // Sync 24H Toggle state
+                    document.getElementById('rsToggle').checked = pData.support_access_24h === true;
+                }
+            }, 3000);
+        }
+
+        window.toggleRemoteSupport = async function() {
+            const userEmail = localStorage.getItem('userEmail');
+            const isOn = document.getElementById('rsToggle').checked;
+            const { data } = await supabase.from('saas_clients').select('promo_message, id').eq('admin_email', userEmail).limit(1);
+            if(data && data.length > 0) {
+                let pData = {}; try { pData = JSON.parse(data[0].promo_message || '{}'); } catch(e){}
+                pData.support_access_24h = isOn;
+                await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', data[0].id);
+            }
+        };
+
+        function showConsentPopup() {
+            return new Promise((resolve) => {
+                const box = document.createElement('div');
+                box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.95); z-index: 100005; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);`;
+                box.innerHTML = `
+                    <div style="background: #ffffff; padding: 25px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); animation: sheetUp 0.3s ease;">
+                        <div style="background:#e0f2fe; color:#2563eb; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="30" height="30" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div>
+                        <div style="font-size: 16px; font-weight: 900; color: #1e3a8a; margin-bottom: 10px;">Security Request</div>
+                        <div style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 25px; line-height: 1.5;">VPKTech Support is requesting secure access to your dashboard to assist you.</div>
+                        <div style="display: flex; gap: 10px; flex-direction:column;">
+                            <button id="consAllow" style="padding: 14px; background: #10b981; color: #fff; border: none; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer;">✅ Allow Access</button>
+                            <button id="consReject" style="padding: 14px; background: #f1f5f9; color: #ef4444; border: none; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer;">⛔ Reject</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(box);
+                document.getElementById('consAllow').onclick = () => { box.remove(); resolve(true); };
+                document.getElementById('consReject').onclick = () => { box.remove(); resolve(false); };
+            });
+        }
 
         async function checkAuth() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -332,11 +415,7 @@
                 document.getElementById('authEmail').innerText = overrideEmail;
                 localStorage.setItem('userEmail', overrideEmail); 
                 
-                applyRoleAccess('Super Admin');
-                loadSettings();
-                loadDashboardData();
-                window.buildUnifiedTicker();
-                setInterval(window.buildUnifiedTicker, 30000); 
+                applyRoleAccess('Super Admin'); loadSettings(); loadDashboardData(); window.buildUnifiedTicker(); setInterval(window.buildUnifiedTicker, 30000); 
                 return;
             }
 
@@ -344,16 +423,10 @@
             const { data: { session } } = await supabase.auth.getSession();
 
             if (userRole === 'Guest') {
-                const loginTime = localStorage.getItem('guestLoginTime');
-                const timePassed = Date.now() - parseInt(loginTime || '0');
-                if (timePassed > 30 * 60 * 1000) {
-                    alert("⏳ Guest session expired (30 minutes). Please login again.");
-                    localStorage.clear(); window.location.href = 'login.html'; return;
-                }
-                document.getElementById('authRoleTitle').innerText = "Guest Demo";
-                document.getElementById('authEmail').innerText = "Read Only";
-                const timeLeft = (30 * 60 * 1000) - timePassed;
-                setTimeout(() => { alert("⏳ Guest session expired!"); localStorage.clear(); window.location.href = 'login.html'; }, Math.max(0, timeLeft));
+                const loginTime = localStorage.getItem('guestLoginTime'); const timePassed = Date.now() - parseInt(loginTime || '0');
+                if (timePassed > 30 * 60 * 1000) { alert("⏳ Guest session expired."); localStorage.clear(); window.location.href = 'login.html'; return; }
+                document.getElementById('authRoleTitle').innerText = "Guest Demo"; document.getElementById('authEmail').innerText = "Read Only";
+                setTimeout(() => { alert("⏳ Guest session expired!"); localStorage.clear(); window.location.href = 'login.html'; }, Math.max(0, (30 * 60 * 1000) - timePassed));
                 applyRoleAccess('Guest'); loadSettings(); loadDashboardData(); window.buildUnifiedTicker(); setInterval(window.buildUnifiedTicker, 30000); return;
             }
 
@@ -362,60 +435,50 @@
             document.getElementById('authRoleTitle').innerText = userRole || "Admin";
             document.getElementById('authEmail').innerText = session.user.email.split('@')[0];
             
-            applyRoleAccess(userRole || 'Admin');
-            loadSettings();
-            loadDashboardData();
+            applyRoleAccess(userRole || 'Admin'); loadSettings(); loadDashboardData(); window.buildUnifiedTicker(); setInterval(window.buildUnifiedTicker, 30000); 
             
-            window.buildUnifiedTicker();
-            setInterval(window.buildUnifiedTicker, 30000); 
+            // Start the handshake engine
+            initSecurityHandshake();
         }
 
-        // 🔥 THE BIG FIX: 406 ERROR RESOLVED WITH .limit(1) 🔥
+        // 🔥 THE BIG FIX: TARGETED BILLING ALERTS INTEGRATED 🔥
         window.buildUnifiedTicker = async function() {
-            const wrap = document.getElementById('alertTickerWrap');
-            const track = document.getElementById('alertTickerTrack');
-            let tickerItems = [];
-            
-            const userEmail = localStorage.getItem('userEmail');
-            const userRole = localStorage.getItem('userRole') || 'Guest';
-            const now = new Date();
-            
-            let currentClient = null;
+            const wrap = document.getElementById('alertTickerWrap'); const track = document.getElementById('alertTickerTrack');
+            let tickerItems = []; const userEmail = localStorage.getItem('userEmail'); const userRole = localStorage.getItem('userRole') || 'Guest'; const now = new Date();
+            let currentClient = null; const isAlertsOn = localStorage.getItem('vpk_master_alerts_enabled') !== 'false';
 
-            const isAlertsOn = localStorage.getItem('vpk_master_alerts_enabled') !== 'false';
-
-            // 1. Fetch SaaS Expiry & Promo (Fixed 406 Error)
+            // 1. Fetch SaaS Expiry, Promo & Custom Billing
             try {
                 if(userEmail) {
-                    // Changed from .single() to .limit(1) to prevent 406 error during testing
                     const { data: clients, error } = await supabase.from('saas_clients').select('*').eq('admin_email', userEmail).limit(1);
                     const client = clients && clients.length > 0 ? clients[0] : null;
 
                     if(!error && client) {
                         currentClient = client; 
+                        let pData = {}; try { pData = JSON.parse(client.promo_message || '{}'); } catch(e){}
                         
+                        // Default System Expiry Logic
                         if(isAlertsOn) {
                             let daysLeft = client.valid_until ? Math.ceil((new Date(client.valid_until) - now) / (1000 * 60 * 60 * 24)) : 0;
-                            if (daysLeft < 0) {
-                                tickerItems.push(`<span class="alert-item theme-expiry">⛔ ACCOUNT SUSPENDED: Plan expired. Contact VPKTech.</span>`);
-                            } else if (daysLeft <= 15) {
-                                tickerItems.push(`<span class="alert-item theme-warning">⚠️ SUBSCRIPTION ALERT: Your plan expires in ${daysLeft} days.</span>`);
+                            if (daysLeft < 0) tickerItems.push(`<span class="alert-item theme-expiry">⛔ ACCOUNT SUSPENDED: Plan expired. Contact VPKTech.</span>`);
+                            else if (daysLeft <= 15) tickerItems.push(`<span class="alert-item theme-warning">⚠️ SUBSCRIPTION ALERT: Your plan expires in ${daysLeft} days.</span>`);
+                        }
+
+                        // Advanced Targeted Billing Alert
+                        if (isAlertsOn && pData.billing_alert && pData.billing_alert.msg) {
+                            const bStart = new Date(pData.billing_alert.starts_at); const bEnd = new Date(pData.billing_alert.expires_at);
+                            if(now >= bStart && now <= bEnd) {
+                                tickerItems.push(`<span class="alert-item theme-expiry">⚠️ ${pData.billing_alert.msg}</span>`);
                             }
                         }
                         
-                        if (client.promo_message && client.promo_message.trim() !== '') {
-                            try {
-                                const pObj = JSON.parse(client.promo_message);
-                                if(pObj.starts_at && pObj.expires_at) {
-                                    const sTime = new Date(pObj.starts_at);
-                                    const eTime = new Date(pObj.expires_at);
-                                    if(now >= sTime && now <= eTime && pObj.msg) {
-                                        tickerItems.push(`<span class="alert-item theme-promo">🎁 PROMO: ${pObj.msg}</span>`);
-                                    }
-                                }
-                            } catch(e) {
-                                tickerItems.push(`<span class="alert-item theme-promo">🎁 PROMO: ${client.promo_message}</span>`);
-                            }
+                        // Advanced Promo Logic
+                        if (pData.promo && pData.promo.msg) {
+                            const pStart = new Date(pData.promo.starts_at); const pEnd = new Date(pData.promo.expires_at);
+                            if(now >= pStart && now <= pEnd) tickerItems.push(`<span class="alert-item theme-promo">🎁 PROMO: ${pData.promo.msg}</span>`);
+                        } else if (client.promo_message && !client.promo_message.includes('{')) {
+                            // Fallback for old plain text promos
+                            tickerItems.push(`<span class="alert-item theme-promo">🎁 PROMO: ${client.promo_message}</span>`);
                         }
                     }
                 }
@@ -423,42 +486,30 @@
 
             // 2. Fetch Advanced Scheduled Broadcast (Blue)
             try {
-                // Also fixing potential 406 here just in case DB gets messy
                 const { data: settingsList, error } = await supabase.from('institute_settings').select('global_broadcast').eq('id', 1).limit(1);
                 const settings = settingsList && settingsList.length > 0 ? settingsList[0] : null;
 
                 if(!error && settings && settings.global_broadcast) {
                     const bCast = JSON.parse(settings.global_broadcast);
-                    
                     if(bCast.starts_at && bCast.expires_at) {
-                        const startTime = new Date(bCast.starts_at);
-                        const endTime = new Date(bCast.expires_at);
-                        
+                        const startTime = new Date(bCast.starts_at); const endTime = new Date(bCast.expires_at);
                         if(now >= startTime && now <= endTime && bCast.message) {
                             let isTargeted = false;
-                            
-                            if(bCast.target === 'All') {
-                                isTargeted = true;
-                            } else if(bCast.target === 'Active' && currentClient && currentClient.is_active) {
-                                isTargeted = true;
-                            } else if(bCast.target === 'Expiring' && currentClient) {
+                            if(bCast.target === 'All') isTargeted = true;
+                            else if(bCast.target === 'Active' && currentClient && currentClient.is_active) isTargeted = true;
+                            else if(bCast.target === 'Expiring' && currentClient) {
                                 let daysLeft = currentClient.valid_until ? Math.ceil((new Date(currentClient.valid_until) - now) / (1000 * 60 * 60 * 24)) : 0;
                                 if(daysLeft >= 0 && daysLeft <= 15) isTargeted = true;
-                            } else if(bCast.target === userEmail) { 
-                                isTargeted = true;
-                            }
+                            } else if(bCast.target === userEmail) isTargeted = true;
                             
-                            if(isTargeted) {
-                                tickerItems.push(`<span class="alert-item theme-broadcast">📢 PROVIDER UPDATE: ${bCast.message}</span>`);
-                            }
+                            if(isTargeted) tickerItems.push(`<span class="alert-item theme-broadcast">📢 PROVIDER UPDATE: ${bCast.message}</span>`);
                         }
                     }
                 }
             } catch(e) {}
 
             // 3. School Bells & Smart Alerts (Yellow/Amber)
-            const eventSet = localStorage.getItem('ERP_events_settings');
-            let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
+            const eventSet = localStorage.getItem('ERP_events_settings'); let masterAlertsOn = eventSet ? JSON.parse(eventSet).isOn : false;
             
             if (masterAlertsOn) {
                 const savedBell = localStorage.getItem('ERP_bell_settings_final'); 
@@ -475,18 +526,15 @@
                             });
                         }
                         if(nextBell) {
-                            let parts = nextBell.time.split(':');
-                            let h = parseInt(parts[0]); let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+                            let parts = nextBell.time.split(':'); let h = parseInt(parts[0]); let ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
                             tickerItems.push(`<a href="reminders.html" class="alert-item theme-local">🔔 UPCOMING BELL: ${nextBell.name} at ${String(h).padStart(2,'0')}:${parts[1]} ${ampm}</a>`);
                         }
                     }
                 }
 
                 try {
-                    let localDate = new Date();
-                    localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
+                    let localDate = new Date(); localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
                     const todayStr = localDate.toISOString().split('T')[0];
-
                     const { data } = await supabase.from('smart_alerts').select('*').gte('alert_date', todayStr).order('alert_date', { ascending: true }).order('alert_time', { ascending: true });
 
                     if (data && data.length > 0) {
@@ -498,8 +546,7 @@
                             else if (alert.target_audience === 'Personal' && alert.created_by === userEmail) canView = true;
 
                             if (canView) {
-                                let timeParts = alert.alert_time.split(':');
-                                let displayTime = `${timeParts[0] % 12 || 12}:${timeParts[1]} ${timeParts[0] >= 12 ? 'PM' : 'AM'}`;
+                                let timeParts = alert.alert_time.split(':'); let displayTime = `${timeParts[0] % 12 || 12}:${timeParts[1]} ${timeParts[0] >= 12 ? 'PM' : 'AM'}`;
                                 let icon = alert.alert_type === 'Reminder' ? '🔔' : (alert.alert_type === 'Event' ? '📅' : '📢');
                                 tickerItems.push(`<a href="reminders.html" class="alert-item theme-local">${icon} ${alert.title} | ${displayTime}</a>`);
                             }
@@ -509,24 +556,19 @@
             }
 
             if (tickerItems.length > 0) {
-                wrap.style.display = 'block';
-                let displayItems = tickerItems.join('');
-                if (tickerItems.length < 4) { displayItems += displayItems + displayItems; }
+                wrap.style.display = 'block'; let displayItems = tickerItems.join('');
+                if (tickerItems.length < 4) displayItems += displayItems + displayItems; 
                 track.innerHTML = displayItems;
-            } else {
-                wrap.style.display = 'none'; 
-                track.innerHTML = '';
-            }
+            } else { wrap.style.display = 'none'; track.innerHTML = ''; }
         };
 
         window.applyRoleAccess = async function(role) {
             if (role === 'Super Admin' || role === 'Admin' || role === 'Guest') {
-                document.querySelectorAll('.nav-btn').forEach(btn => btn.style.setProperty('display', 'flex', 'important'));
-                return;
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.style.setProperty('display', 'flex', 'important')); return;
             }
             document.querySelectorAll('.nav-btn').forEach(btn => btn.style.setProperty('display', 'none', 'important'));
             try {
-                const { data, error } = await supabase.from('role_management').select('permissions').ilike('role_name', role).single();
+                const { data } = await supabase.from('role_management').select('permissions').ilike('role_name', role).single();
                 if (data && data.permissions) {
                     const p = data.permissions;
                     const moduleMap = {
@@ -535,14 +577,10 @@
                         'AdmReport': 'a[href="admission-report.html"]', 'SmartAlerts': 'a[href="reminders.html"]', 'IDCardStudio': 'button[onclick="window.openIDStudioSecure()"]',
                         'FeeCollect': 'a[href="fees.html"]', 'DayBook': 'a[href="expense.html"]', 'MasterDayBook': 'a[href="report.html"]', 'SystemSettings': 'a[href="settings.html"]'
                     };
-                    for (const [modId, selector] of Object.entries(moduleMap)) {
-                        const el = document.querySelector(selector);
-                        if (el && p[modId] && p[modId].view === true) { el.style.setProperty('display', 'flex', 'important'); }
-                    }
+                    for (const [modId, selector] of Object.entries(moduleMap)) { const el = document.querySelector(selector); if (el && p[modId] && p[modId].view === true) el.style.setProperty('display', 'flex', 'important'); }
                     document.querySelectorAll('.module-section').forEach(section => {
                         const visibleBtns = Array.from(section.querySelectorAll('.nav-btn')).filter(btn => btn.style.display === 'flex');
-                        if (visibleBtns.length === 0) section.style.setProperty('display', 'none', 'important');
-                        else section.style.setProperty('display', 'block', 'important');
+                        if (visibleBtns.length === 0) section.style.setProperty('display', 'none', 'important'); else section.style.setProperty('display', 'block', 'important');
                     });
                 }
             } catch (err) {}
@@ -550,22 +588,12 @@
 
         async function loadDashboardData() {
             try {
-                const [stuRes, crsRes, payRes] = await Promise.all([
-                    supabase.from('students').select('*'), 
-                    supabase.from('courses').select('*'), 
-                    supabase.from('fee_payments').select('*')
-                ]);
-                
-                const studentsData = stuRes.data || []; 
-                const coursesData = crsRes.data || []; 
-                const paymentsData = payRes.data || [];
-
+                const [stuRes, crsRes, payRes] = await Promise.all([ supabase.from('students').select('*'), supabase.from('courses').select('*'), supabase.from('fee_payments').select('*') ]);
+                const studentsData = stuRes.data || []; const coursesData = crsRes.data || []; const paymentsData = payRes.data || [];
                 document.getElementById('statTotalStudents').textContent = studentsData.length;
                 const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
                 document.getElementById('statActiveStudents').textContent = activeStudents.length;
-
-                const activeCourses = coursesData.filter(c => c.status === 'Active');
-                document.getElementById('statCourses').textContent = activeCourses.length;
+                document.getElementById('statCourses').textContent = coursesData.filter(c => c.status === 'Active').length;
 
                 const todayDate = new Date().toISOString().split('T')[0];
                 const paymentsToday = paymentsData.filter(p => p.payment_date === todayDate).reduce((sum, p) => sum + Number(p.amount_paid), 0);
@@ -574,30 +602,18 @@
 
                 let totalPendingSum = 0; let currentDueSum = 0; 
                 activeStudents.forEach(s => {
-                    const totalCourseFee = Number(s.total_fee) || 0; 
-                    const admissionFee = Number(s.admission_fee) || 0;
+                    const totalCourseFee = Number(s.total_fee) || 0; const admissionFee = Number(s.admission_fee) || 0;
                     let totalPaidPayments = 0; let totalDiscount = 0;
-                    paymentsData.filter(p => p.student_id === s.id).forEach(p => {
-                        totalPaidPayments += (Number(p.amount_paid) || 0);
-                        totalDiscount += (Number(p.discount_amount) || 0);
-                    });
+                    paymentsData.filter(p => p.student_id === s.id).forEach(p => { totalPaidPayments += (Number(p.amount_paid) || 0); totalDiscount += (Number(p.discount_amount) || 0); });
                     const totalPaidAndDisc = admissionFee + totalPaidPayments + totalDiscount;
-                    let totalCoursePending = totalCourseFee - totalPaidAndDisc;
-                    if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
-
+                    let totalCoursePending = totalCourseFee - totalPaidAndDisc; if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
                     const course = coursesData.find(c => c.id == s.course_id);
                     const totalModules = (course && Array.isArray(course.modules) && course.modules.length > 0) ? course.modules.length : 1;
-                    const feePerModule = totalCourseFee / totalModules;
-                    let currentModIndex = 1;
-                    if (s.status === 'completed' || s.module === 'Course Completed') { currentModIndex = totalModules; } 
-                    else if (course && Array.isArray(course.modules)) { 
-                        let idx = course.modules.indexOf(s.module); 
-                        currentModIndex = idx >= 0 ? idx + 1 : 1; 
-                    }
-                    let expectedTillNow = feePerModule * currentModIndex; 
-                    if (expectedTillNow > totalCourseFee) expectedTillNow = totalCourseFee;
-                    let currentDue = expectedTillNow - totalPaidAndDisc;
-                    if (currentDue > 0) currentDueSum += currentDue;
+                    const feePerModule = totalCourseFee / totalModules; let currentModIndex = 1;
+                    if (s.status === 'completed' || s.module === 'Course Completed') currentModIndex = totalModules; 
+                    else if (course && Array.isArray(course.modules)) { let idx = course.modules.indexOf(s.module); currentModIndex = idx >= 0 ? idx + 1 : 1; }
+                    let expectedTillNow = feePerModule * currentModIndex; if (expectedTillNow > totalCourseFee) expectedTillNow = totalCourseFee;
+                    let currentDue = expectedTillNow - totalPaidAndDisc; if (currentDue > 0) currentDueSum += currentDue;
                 });
                 
                 document.getElementById('statCurrentDue').textContent = Math.round(currentDueSum).toLocaleString('en-IN');
@@ -607,28 +623,18 @@
 
         async function loadSettings() {
             try {
-                // Fixed potential 406 here as well
-                const { data: settingsList, error } = await supabase.from('institute_settings').select('*').eq('id', 1).limit(1);
+                const { data: settingsList } = await supabase.from('institute_settings').select('*').eq('id', 1).limit(1);
                 const data = settingsList && settingsList.length > 0 ? settingsList[0] : null;
-                
                 if (data) {
-                    if (data.theme_color) { document.documentElement.style.setProperty('--app-theme-color', data.theme_color); }
+                    if (data.theme_color) document.documentElement.style.setProperty('--app-theme-color', data.theme_color);
                     document.getElementById('navInstName').innerText = data.institute_name || '';
                     document.getElementById('navSubName').innerText = data.sub_name || '';
-                    if(data.logo_url) {
-                        let logoEl = document.querySelector('.logo-small');
-                        if (logoEl) { logoEl.src = data.logo_url; logoEl.style.display = 'block'; }
-                    }
+                    if(data.logo_url) { let logoEl = document.querySelector('.logo-small'); if (logoEl) { logoEl.src = data.logo_url; logoEl.style.display = 'block'; } }
                 }
             } catch (e) {}
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => { 
-            await supabase.auth.signOut(); 
-            localStorage.clear(); 
-            window.location.replace('login.html'); 
-        });
-
+        document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
         checkAuth();
     </script>
 </body>
