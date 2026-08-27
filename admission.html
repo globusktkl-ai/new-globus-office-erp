@@ -14,10 +14,8 @@
         }
         .btn-submit-custom:hover { filter: brightness(0.9); }
         .btn-submit-custom:active { transform: scale(0.98); }
-        /* 🔥 NEW: Disabled state styling for Hard Lock 🔥 */
         .btn-submit-custom:disabled { background-color: #ef4444 !important; cursor: not-allowed; box-shadow: none; opacity: 0.9; }
 
-        /* Premium 3D Back to Dashboard Button */
         .btn-back-dashboard { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 10px; color: #1e293b; font-weight: 800; font-size: 14px; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05), inset 0 -2px 0 rgba(226,232,240,0.8); transition: all 0.2s ease; cursor: pointer; }
         .btn-back-dashboard:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.08), inset 0 -2px 0 rgba(226,232,240,0.8); border-color: #94a3b8; }
         .btn-back-dashboard:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
@@ -25,18 +23,14 @@
 
         @media (max-width: 600px) {
             .btn-back-dashboard span { display: none; } 
-
-            /* FIXED TOGGLE CONTAINER FOR MOBILE */
             .toggle-container { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
             .toggle-label { margin-left: 0 !important; }
         }
 
-        /* DISABLE SCROLLING ON NUMBER INPUTS */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* Toggle Switch Styling */
         .toggle-container { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
         .toggle-label { font-size: 13px; font-weight: 700; color: #475569; }
         .switch { position: relative; display: inline-block; width: 120px; height: 34px; background-color: #cbd5e1; border-radius: 34px; cursor: pointer; flex-shrink: 0; }
@@ -46,7 +40,6 @@
         input:checked + .slider { background-color: #64748b; }
         input:checked + .slider:before { transform: translateX(58px); content: "Manual"; color: #334155; }
 
-        /* Auto Gen Highlight */
         .auto-highlight { background-color: #eff6ff !important; border-color: var(--app-theme-color, #3b82f6) !important; color: var(--app-theme-color, #1e3a8a) !important; font-weight: bold; }
     </style>
 </head>
@@ -70,7 +63,6 @@
     <main class="main-content">
         <div class="form-card">
 
-            <!-- 🔥 NEW: SAAS TRAFFIC LIGHT WARNING BOX 🔥 -->
             <div id="saasWarningBox"></div>
 
             <form id="admissionForm">
@@ -116,7 +108,6 @@
                     </select>
                 </div>
 
-                <!-- 🔥 NEW: SAAS DYNAMIC PHOTO LOCK CONTAINER 🔥 -->
                 <div class="form-group" id="photoUploadContainer">
                     <label class="form-label">Student Photo</label>
                     <input type="file" id="photoFile" class="form-control" accept="image/*">
@@ -163,7 +154,6 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
 
-        // --- MAGIC ALERT OVERRIDE ---
         window.alert = function(msg) {
             const oldBox = document.getElementById('customAlertBox'); if (oldBox) oldBox.remove();
             const box = document.createElement('div'); box.id = 'customAlertBox';
@@ -175,13 +165,11 @@
             if(!document.querySelector('style#alertAnim')){ document.head.insertAdjacentHTML('beforeend', '<style id="alertAnim">@keyframes slideDown{from{top:-50px;opacity:0}to{top:20px;opacity:1}}</style>'); }
             document.body.appendChild(box); setTimeout(() => { if (box.parentElement) box.remove(); }, 4000);
         };
-        // ----------------------------
 
         let studentsData = [], paymentsData = [], coursesData = [], globalUniqueModules = [];
         let globalCourses = [];
         let institutePrefix = "GLB"; 
 
-        // 🔥 NEW: GLOBAL VARIABLES FOR SAAS LIMIT CHECK 🔥
         window.currentSaaSAdmissions = 0;
         window.maxSaaSAdmissions = 99999;
 
@@ -189,25 +177,8 @@
             if (document.activeElement.type === 'number') { document.activeElement.blur(); }
         });
 
-        // 🔥 NEW: APPLY SAAS DYNAMIC CONTROLS 🔥
         async function applySaaSControls() {
             try {
-                // 1. DYNAMIC MICRO-FEATURE CHECK (Photo Upload)
-                const microFeaturesStr = localStorage.getItem('saas_micro_features');
-                if (microFeaturesStr) {
-                    const microFeatures = JSON.parse(microFeaturesStr);
-                    if (microFeatures.photo_upload === false) {
-                        const photoContainer = document.getElementById('photoUploadContainer');
-                        photoContainer.innerHTML = `
-                            <label class="form-label" style="display:flex; align-items:center; gap:5px;">Student Photo <span style="background:#fef3c7; color:#d97706; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:900;">👑 PRO</span></label>
-                            <div style="background:#f8fafc; border:1px dashed #cbd5e1; padding:15px; border-radius:8px; text-align:center; color:#94a3b8; font-size:12px; font-weight:700;">
-                                🔒 Photo upload feature is locked in your current plan. Upgrade to unlock.
-                            </div>
-                        `;
-                    }
-                }
-
-                // 2. TRAFFIC LIGHT ADMISSION WARNING
                 const limitStr = localStorage.getItem('saas_limit_admissions');
                 if (!limitStr) return;
                 
@@ -242,7 +213,6 @@
                 return; 
             }
 
-            // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
             window.admPermsAdd = false;
             if (userRole === 'Super Admin' || userRole === 'Admin') {
                 window.admPermsAdd = true;
@@ -271,7 +241,6 @@
                 formCard.insertBefore(errorMsg, formCard.firstChild);
                 return; 
             }
-            // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
 
             if (userRole === 'Guest') {
                 setTimeout(() => {
@@ -303,7 +272,6 @@
 
             document.getElementById('admissionDate').value = new Date().toISOString().split('T')[0];
             
-            // 🔥 NEW: Check SaaS Limits before proceeding 🔥
             await applySaaSControls();
             
             await loadSettings();
@@ -477,10 +445,8 @@
             e.preventDefault(); 
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
 
-            // --- 🔒 FINAL SECURITY CHECK (Just in Case) ---
             if (!window.admPermsAdd) { alert("⛔ Permission Denied: You do not have access to add new students."); return; }
 
-            // 🔥 NEW: DOUBLE CHECK SAAS LIMITS BEFORE SUBMIT 🔥
             if (window.currentSaaSAdmissions >= window.maxSaaSAdmissions) {
                 alert(`⛔ LIMIT REACHED: You have used all ${window.maxSaaSAdmissions} seats. Upgrade your plan to admit more students.`);
                 return;
@@ -508,7 +474,6 @@
             const fileInput = document.getElementById('photoFile');
 
             try {
-                // Only process photo if the input exists (hasn't been removed by SaaS Lock)
                 if (fileInput && fileInput.files.length > 0) {
                     btn.textContent = 'Compressing Image...';
                     let originalFile = fileInput.files[0];
