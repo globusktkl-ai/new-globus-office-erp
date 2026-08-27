@@ -573,11 +573,6 @@
                                     <div style="font-size: 14px; font-weight: bold;">Controller of Examinations</div>
                                 </div>
                             </div>
-
-                            <!-- 🔥 NEW: SAAS WATERMARK 🔥 -->
-                            <div class="vpk-watermark" style="position: absolute; bottom: 10px; right: 15px; font-size: 11px; color: #64748b; font-weight: 800; font-family: 'Segoe UI', Tahoma, sans-serif; display: none; opacity: 0.7;">
-                                ⚡ Powered by VPKTech Solutions
-                            </div>
                             
                         </div>
                     </div>
@@ -715,11 +710,6 @@
                                         <div class="cert-sign-label">Board of Examinations</div>
                                     </div>
                                 </div>
-
-                                <!-- 🔥 NEW: SAAS WATERMARK 🔥 -->
-                                <div class="vpk-watermark" style="position: absolute; bottom: 10px; right: 15px; font-size: 11px; color: #64748b; font-weight: 800; font-family: 'Segoe UI', Tahoma, sans-serif; display: none; opacity: 0.7;">
-                                    ⚡ Powered by VPKTech Solutions
-                                </div>
                                 
                             </div>
                         </div>
@@ -733,12 +723,8 @@
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
         
-        // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
         window.exmPerms = { view: true, add: false, edit: false, delete: false };
 
-        // ==========================================
-        // NEW MAGIC ALERT OVERRIDE FOR ALL WARNINGS AND ERRORS
-        // ==========================================
         window.alert = function(msg) {
             const oldBox = document.getElementById('customPromptBox'); 
             if (oldBox) oldBox.remove();
@@ -766,9 +752,6 @@
             document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
-        // ==========================================
-        // NEW MAGIC PROMPT FOR VERIFICATIONS
-        // ==========================================
         window.magicPrompt = function(msg) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox');
@@ -811,28 +794,12 @@
             return 'GM-' + Math.abs(hash).toString().padStart(7, '0').substring(0, 7);
         }
 
-        // 🔥 NEW: APPLY SAAS CONTROLS FOR WATERMARK 🔥
-        async function applySaaSControls() {
-            try {
-                const microFeaturesStr = localStorage.getItem('saas_micro_features');
-                if (microFeaturesStr) {
-                    const microFeatures = JSON.parse(microFeaturesStr);
-                    if (microFeatures.remove_watermark === false) {
-                        document.querySelectorAll('.vpk-watermark').forEach(el => el.style.display = 'block');
-                    } else {
-                        document.querySelectorAll('.vpk-watermark').forEach(el => el.style.display = 'none');
-                    }
-                }
-            } catch(e) { console.log("SaaS Control Error:", e); }
-        }
-
         async function checkAuth() {
             try {
                 const userRole = localStorage.getItem('userRole') || 'Admin';
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session && userRole !== 'Guest') { window.location.href = 'login.html'; return; }
                 
-                // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
                 if (userRole === 'Super Admin' || userRole === 'Admin') {
                     window.exmPerms = { view: true, add: true, edit: true, delete: true };
                 } else if (userRole !== 'Guest') {
@@ -841,9 +808,7 @@
                         window.exmPerms = data.permissions['Exams'];
                     }
                 }
-                // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
 
-                await applySaaSControls(); // Check SaaS restrictions before fetching
                 loadSettings(); 
                 fetchData();
             } catch(e) {
@@ -851,7 +816,6 @@
             }
         }
 
-        // --- NEW FILTER UI LOGIC ---
         window.updateStatusColor = function(select) {
             if(select.value === 'active') { select.style.color = '#15803d'; select.style.borderColor = '#bbf7d0'; select.style.backgroundColor = '#f0fdf4'; }
             else if(select.value === 'completed') { select.style.color = '#1d4ed8'; select.style.borderColor = '#bfdbfe'; select.style.backgroundColor = '#eff6ff'; }
@@ -918,7 +882,6 @@
             });
             renderStudents(filtered);
         }
-        // ---------------------------
 
         async function loadSettings() {
             try {
@@ -1096,7 +1059,6 @@
                     });
                 }
 
-                // --- 🔒 DYNAMIC ACTION AREA HIDE/SHOW ---
                 let displayActionArea = (isCompleted || !window.exmPerms.edit) ? 'none' : 'block';
                 let isLastModule = (!isCompleted && (currentModule.toLowerCase() === 'job training' || currentModule === course.modules[course.modules.length - 1]));
                 let btnText = isLastModule ? '2. Finish' : '2. Promotion';
@@ -1123,7 +1085,6 @@
                         <button class="action-btn" style="background: linear-gradient(135deg, #f59e0b, #ea580c); margin-top:8px; width:100%; font-size:13px; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.2);" onclick="validateAndOpenCert('${student.id}', '${course.id}')">🎓 Generate Certificate</button>
                     `;
                 }
-                // ----------------------------------------
 
                 const card = document.createElement('div');
                 card.className = 'exam-card';
@@ -1447,7 +1408,6 @@
             }
         };
 
-        // ====== CERTIFICATE FEE VALIDATION ======
         window.validateAndOpenCert = async function(studentId, courseId) {
             const student = allStudents.find(s => s.id === studentId);
             const course = allCourses.find(c => c.id == courseId);
@@ -1455,7 +1415,6 @@
                 alert("Error: No modules found for this course."); return;
             }
 
-            // 1. Fee Payment Validation Check
             try {
                 const { data: payments } = await supabase
                     .from('fee_payments')
@@ -1475,7 +1434,7 @@
 
                 if (pendingBalance > 0) {
                     alert(`⚠️ Cannot generate certificate!\n\nThe student has a pending fee balance of ₹ ${pendingBalance}. Please clear all dues before generating the certificate.`);
-                    return; // Stop execution if fee is pending
+                    return; 
                 }
             } catch (err) {
                 console.error("Fee validation error:", err);
@@ -1483,7 +1442,6 @@
                 return;
             }
 
-            // 2. Exam Completion Validation Check
             const { data: pastResults, error } = await supabase
                 .from('exam_results')
                 .select('module_name')
