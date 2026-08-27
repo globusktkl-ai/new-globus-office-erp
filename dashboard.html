@@ -110,25 +110,26 @@
 </head>
 <body>
 
-    <!-- 🔥 NEW: TERMS & CONDITIONS MODAL (MANDATORY) 🔥 -->
+    <!-- 🔥 NEW: TERMS & CONDITIONS MODAL (DYNAMIC VERSION CONTROL) 🔥 -->
     <div id="tncModal">
         <div class="tnc-content">
             <div class="tnc-header">
                 <h2 style="margin:0; color:#1e3a8a; font-size:18px; font-weight:900; display:flex; align-items:center; gap:8px;">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                    Software Terms of Service
+                    <span id="tncModalTitle">Software Terms of Service</span>
                 </h2>
                 <p style="margin:5px 0 0 0; font-size:12px; color:#64748b; font-weight:700;">VPKTech Solutions - End User License Agreement (EULA)</p>
             </div>
-            <div class="tnc-body">
-                <p><strong>1. Acceptable Use Policy (AUP):</strong> You agree not to use the ERP system for any unlawful activities or to store illegal data. VPKTech Solutions reserves the right to suspend accounts violating this policy without prior notice.</p>
-                <p><strong>2. Data Ownership & Retention:</strong> All data entered remains the property of the client. However, upon subscription expiry, data will be retained for a maximum of 60 days. VPKTech is not responsible for data loss after this period.</p>
-                <p><strong>3. Service Level Agreement (SLA):</strong> We strive for 99.9% uptime. Occasional downtime for scheduled server maintenance may occur.</p>
-                <p><strong>4. Payment & Refund Policy:</strong> All subscription fees are strictly non-refundable. Failure to renew will result in account suspension after the grace period.</p>
-                <p><strong>5. Limitation of Liability:</strong> VPKTech Solutions shall not be liable for any direct, indirect, incidental, or consequential financial losses resulting from the use or inability to use this software. Regular data backups are the client's responsibility.</p>
+            
+            <!-- This is where the Master Console's policies will be injected -->
+            <div class="tnc-body" id="tncDynamicBody">
+                <div style="text-align:center; padding: 30px; color: #64748b; font-weight: bold; font-size: 14px;">
+                    Loading latest policies from secure server...
+                </div>
             </div>
-            <!-- 🔥 NEW DECLINE & LOGOUT BUTTON ADDED HERE 🔥 -->
-            <div class="tnc-footer">
+
+            <!-- Footer 1: For Mandatory Acceptance -->
+            <div class="tnc-footer" id="tncActionFooter">
                 <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer; margin-bottom:15px;">
                     <input type="checkbox" id="tncCheckbox" style="width:18px; height:18px; accent-color:#3b82f6; margin-top:2px;" onchange="document.getElementById('tncAcceptBtn').disabled = !this.checked; document.getElementById('tncAcceptBtn').style.opacity = this.checked ? '1' : '0.5';">
                     <span style="font-size:13px; font-weight:700; color:#0f172a;">I have read, understood, and agree to the Terms of Service and Privacy Policy.</span>
@@ -137,6 +138,11 @@
                     <button onclick="window.declineTNC()" style="flex:1; padding:14px; background:#f1f5f9; color:#ef4444; border:1px solid #cbd5e1; border-radius:8px; font-weight:900; font-size:14px; cursor:pointer; transition:0.2s;">Decline & Logout</button>
                     <button id="tncAcceptBtn" disabled onclick="window.acceptTNC()" style="flex:2; padding:14px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:900; font-size:14px; cursor:pointer; transition:0.2s; opacity:0.5;">Accept & Continue</button>
                 </div>
+            </div>
+
+            <!-- Footer 2: For Read-Only View -->
+            <div class="tnc-footer" id="tncReadFooter" style="display: none; text-align: right;">
+                <button onclick="document.getElementById('tncModal').style.display='none'" style="padding:12px 25px; background:#e2e8f0; color:#0f172a; border:none; border-radius:8px; font-weight:900; font-size:13px; cursor:pointer;">Close Window</button>
             </div>
         </div>
     </div>
@@ -301,6 +307,13 @@
                 </a>
             </div>
         </div>
+
+        <!-- 🔥 NEW: TERMS OF SERVICE FOOTER LINK 🔥 -->
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px dashed #cbd5e1; margin-bottom: 20px;">
+            <a href="#" onclick="window.viewTNC(); return false;" style="font-size: 11px; font-weight: 800; color: #64748b; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; transition: 0.2s;">📜 Read Terms of Service & Privacy Policy</a>
+            <div style="font-size: 10px; color: #94a3b8; margin-top: 5px; font-weight: bold;">⚡ Powered by VPKTech Solutions</div>
+        </div>
+
     </main>
 
     <script type="module" src="assets/js/theme-manager.js"></script>
@@ -408,14 +421,39 @@
             });
         }
 
-        // 🔥 NEW: T&C CHECKER FUNCTION 🔥
+        // 🔥 DYNAMIC T&C ENGINE (FETCH & VERIFY) 🔥
+        window.latestPolicyData = null;
+
         window.checkTNC = async function(userEmail, userRole) {
             if (userRole !== 'Admin') return; 
             try {
+                // 1. Fetch Latest Policy from Database
+                const { data: instSettings } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
+                if(instSettings && instSettings.provider_config) {
+                    const conf = JSON.parse(instSettings.provider_config);
+                    if(conf.policies && conf.policies.length > 0) {
+                        window.latestPolicyData = conf.policies[conf.policies.length - 1]; // Get latest version
+                    }
+                }
+
+                if(!window.latestPolicyData) return; // No policy published yet
+
+                // 2. Check what the Client has accepted
                 const { data: clients } = await supabase.from('saas_clients').select('promo_message').eq('admin_email', userEmail).limit(1);
                 if(clients && clients.length > 0) {
                     let pData = {}; try { pData = JSON.parse(clients[0].promo_message || '{}'); } catch(e){}
-                    if(pData.tc_accepted !== true) {
+                    
+                    // If client's accepted version doesn't match the latest version, force them to accept
+                    if(pData.tc_version !== window.latestPolicyData.version) {
+                        document.getElementById('tncDynamicBody').innerHTML = window.latestPolicyData.content;
+                        document.getElementById('tncModalTitle').innerText = `Software Terms of Service (v${window.latestPolicyData.version})`;
+                        
+                        document.getElementById('tncCheckbox').checked = false;
+                        document.getElementById('tncAcceptBtn').disabled = true;
+                        document.getElementById('tncAcceptBtn').style.opacity = '0.5';
+                        
+                        document.getElementById('tncActionFooter').style.display = 'flex';
+                        document.getElementById('tncReadFooter').style.display = 'none';
                         document.getElementById('tncModal').style.display = 'flex';
                     }
                 }
@@ -430,25 +468,42 @@
                 const { data: clients } = await supabase.from('saas_clients').select('id, promo_message').eq('admin_email', userEmail).limit(1);
                 if(clients && clients.length > 0) {
                     let pData = {}; try { pData = JSON.parse(clients[0].promo_message || '{}'); } catch(e){}
+                    
                     pData.tc_accepted = true;
+                    pData.tc_version = window.latestPolicyData.version; // Save the version!
                     pData.tc_accepted_date = new Date().toISOString();
+                    
                     await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', clients[0].id);
                     document.getElementById('tncModal').style.display = 'none';
-                    alert("✅ Terms accepted successfully. Welcome to your Dashboard!");
+                    alert(`✅ Version ${window.latestPolicyData.version} accepted successfully. Welcome to your Dashboard!`);
                 }
             } catch(e) {
                 alert("❌ Error: " + e.message);
-                btn.innerText = 'Accept & Continue to Dashboard'; btn.disabled = false;
+                btn.innerText = 'Accept & Continue'; btn.disabled = false;
             }
         };
 
-        // 🔥 നിയമങ്ങൾ അംഗീകരിക്കാത്തവരെ ലോഗൗട്ട് ചെയ്യാനുള്ള കോഡ് 🔥
         window.declineTNC = async function() {
-            const ans = confirm("⚠️ Are you sure you want to decline? You must accept the terms to use the ERP system. You will be logged out now.");
+            const ans = confirm("⚠️ Are you sure you want to decline?\n\nYou must accept the latest Terms of Service to use the ERP system. You will be logged out now.");
             if(ans) {
                 await supabase.auth.signOut(); 
                 localStorage.clear(); 
                 window.location.replace('login.html');
+            }
+        };
+
+        // For reading T&C from Footer Link
+        window.viewTNC = async function() {
+            document.getElementById('tncModal').style.display = 'flex';
+            document.getElementById('tncActionFooter').style.display = 'none';
+            document.getElementById('tncReadFooter').style.display = 'block';
+            
+            if(window.latestPolicyData) {
+                document.getElementById('tncDynamicBody').innerHTML = window.latestPolicyData.content;
+                document.getElementById('tncModalTitle').innerText = `Software Terms of Service (v${window.latestPolicyData.version})`;
+            } else {
+                document.getElementById('tncDynamicBody').innerHTML = "<div style='text-align:center; padding:20px;'>No active policies published yet.</div>";
+                document.getElementById('tncModalTitle').innerText = `Software Terms of Service`;
             }
         };
 
@@ -483,7 +538,7 @@
             applyRoleAccess(userRole || 'Admin'); loadSettings(); loadDashboardData(); window.buildUnifiedTicker(); setInterval(window.buildUnifiedTicker, 30000); 
             initSecurityHandshake();
 
-            // 🔥 NEW: CALL T&C CHECKER 🔥
+            // 🔥 CHECK FOR LATEST T&C 🔥
             window.checkTNC(session.user.email, userRole || 'Admin');
         }
 
@@ -503,7 +558,6 @@
                         
                         if(isAlertsOn) {
                             let daysLeft = client.valid_until ? Math.ceil((new Date(client.valid_until) - now) / (1000 * 60 * 60 * 24)) : 0;
-                            // 🔥 FIXED: Free Plan Warning Text 🔥
                             let isFreePlan = (client.plan_name && client.plan_name.toLowerCase().includes('free'));
                             
                             if (isFreePlan) {
