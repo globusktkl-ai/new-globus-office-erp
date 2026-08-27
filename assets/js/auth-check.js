@@ -82,18 +82,39 @@ async function verifySaaSStatus() {
         }
 
         const userRole = localStorage.getItem('userRole');
+
+        // 🔥 3. GLOBAL T&C ENFORCEMENT (Mandatory Acceptance Check) 🔥
+        if (userRole === 'Admin') {
+            const { data: instSettings } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
+            let latestVersion = null;
+            if(instSettings && instSettings.provider_config) {
+                const conf = JSON.parse(instSettings.provider_config);
+                if(conf.policies && conf.policies.length > 0) {
+                    latestVersion = conf.policies[conf.policies.length - 1].version;
+                }
+            }
+
+            // If a policy exists, and the user hasn't accepted this exact version
+            if (latestVersion && pData.tc_version !== latestVersion) {
+                const currentPage = window.location.pathname.split('/').pop();
+                // Redirect them to dashboard immediately if they are on any other page
+                if (currentPage !== 'dashboard.html' && currentPage !== 'login.html' && currentPage !== '') {
+                    window.location.replace('dashboard.html');
+                    return;
+                }
+            }
+        }
+
         const isFreePlan = (client.plan_name && client.plan_name.toLowerCase().includes('free'));
-        
         let diffDays = 0;
         if (client.valid_until) {
             diffDays = Math.ceil((new Date(client.valid_until) - new Date()) / (1000 * 60 * 60 * 24));
         }
 
-        // 3. Set Read-Only Global State for Free Plan or Expired Plans
+        // 4. Set Read-Only Global State for Free Plan or Expired Plans
         if (isFreePlan || diffDays < 0) {
             window.isFreeOrExpired = true;
             
-            // Add interceptor to all save/submit buttons to prevent writing to DB
             setTimeout(() => {
                 const actionButtons = document.querySelectorAll('button[type="submit"], button');
                 actionButtons.forEach(btn => {
@@ -126,6 +147,7 @@ async function verifySaaSStatus() {
             }, 1000);
         }
 
+        // 5. Check Module Access Permissions
         if (client.plan_name) {
             const { data: plan } = await supabase.from('subscription_plans').select('*').eq('plan_name', client.plan_name).single();
             
@@ -143,7 +165,7 @@ async function verifySaaSStatus() {
                 if ((currentPage === 'expense.html' || currentPage === 'report.html') && mods.day_book === false) isBlocked = true;
                 if (currentPage === 'inventory.html' && mods.inventory === false) isBlocked = true;
 
-                if (isBlocked && !isFreePlan) { // Only block complete access if it's not a free plan
+                if (isBlocked && !isFreePlan) { 
                     document.body.innerHTML = ''; 
                     showCustomAlert(`👑 PREMIUM FEATURE LOCKED\n\nYour current plan (${plan.plan_name}) does not include access to this module.\n\nPlease contact VPKTech to upgrade your plan.`, 'dashboard.html');
                     throw new Error("SAAS_MODULE_LOCKED");
