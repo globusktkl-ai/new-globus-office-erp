@@ -132,10 +132,11 @@
                     <input type="checkbox" id="tncCheckbox" style="width:18px; height:18px; accent-color:#3b82f6; margin-top:2px;" onchange="document.getElementById('tncAcceptBtn').disabled = !this.checked; document.getElementById('tncAcceptBtn').style.opacity = this.checked ? '1' : '0.5';">
                     <span style="font-size:13px; font-weight:700; color:#0f172a;">I have read, understood, and agree to the Terms of Service and Privacy Policy.</span>
                 </label>
-                <button id="tncAcceptBtn" disabled onclick="window.acceptTNC()" style="width:100%; padding:14px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:900; font-size:14px; cursor:pointer; transition:0.2s; opacity:0.5;">Accept & Continue to Dashboard</button>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="window.declineTNC()" style="flex:1; padding:14px; background:#f1f5f9; color:#ef4444; border:1px solid #cbd5e1; border-radius:8px; font-weight:900; font-size:14px; cursor:pointer; transition:0.2s;">Decline & Logout</button>
+                    <button id="tncAcceptBtn" disabled onclick="window.acceptTNC()" style="flex:2; padding:14px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:900; font-size:14px; cursor:pointer; transition:0.2s; opacity:0.5;">Accept & Continue</button>
+                </div>
             </div>
-        </div>
-    </div>
 
     <nav class="app-header" style="padding: 10px 15px;">
        <div class="header-left" style="flex: 1; display: flex; align-items: center; gap: 8px;">
@@ -435,7 +436,16 @@
                 btn.innerText = 'Accept & Continue to Dashboard'; btn.disabled = false;
             }
         };
-
+// 🔥 നിയമങ്ങൾ അംഗീകരിക്കാത്തവരെ ലോഗൗട്ട് ചെയ്യാനുള്ള കോഡ് 🔥
+        window.declineTNC = async function() {
+            const ans = confirm("⚠️ Are you sure you want to decline? You must accept the terms to use the ERP system. You will be logged out now.");
+            if(ans) {
+                // സിസ്റ്റത്തിൽ നിന്നും പൂർണ്ണമായും ലോഗൗട്ട് ചെയ്യിക്കുന്നു
+                await supabase.auth.signOut(); 
+                localStorage.clear(); 
+                window.location.replace('login.html');
+            }
+        };
         async function checkAuth() {
             const urlParams = new URLSearchParams(window.location.search);
             const overrideEmail = urlParams.get('override');
