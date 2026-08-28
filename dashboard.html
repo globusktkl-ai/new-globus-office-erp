@@ -708,22 +708,33 @@
             } catch (err) {}
         };
 
-      async function loadDashboardData() {
+     async function loadDashboardData() {
             try {
                 const [stuRes, crsRes, payRes] = await Promise.all([ supabase.from('students').select('*'), supabase.from('courses').select('*'), supabase.from('fee_payments').select('*') ]);
                 const studentsData = stuRes.data || []; const coursesData = crsRes.data || []; const paymentsData = payRes.data || [];
+                
                 document.getElementById('statTotalStudents').textContent = studentsData.length;
                 const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
                 document.getElementById('statActiveStudents').textContent = activeStudents.length;
                 document.getElementById('statCourses').textContent = coursesData.filter(c => c.status === 'Active').length;
 
-                // 🔥 FIXED: ഇന്ത്യൻ സമയം (IST) കൃത്യമായി എടുക്കാനും, 'T' മുറിച്ചുമാറ്റാനുമുള്ള മാറ്റങ്ങൾ 🔥
+                // 🔥 കൃത്യമായ തിയ്യതി (IST) എടുക്കുന്നു 🔥
                 let localDate = new Date();
                 localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
-                const todayDate = localDate.toISOString().split('T')[0];
+                const todayStr = localDate.toISOString().split('T')[0];
 
-                const paymentsToday = paymentsData.filter(p => p.payment_date && p.payment_date.split('T')[0] === todayDate).reduce((sum, p) => sum + Number(p.amount_paid), 0);
-                const admissionsToday = studentsData.filter(s => s.admission_date && s.admission_date.split('T')[0] === todayDate).reduce((sum, s) => sum + Number(s.admission_fee), 0);
+                // ഫീസ് കളക്ഷൻ കൂട്ടുന്നു (സമയം ഒഴിവാക്കി ആദ്യത്തെ 10 അക്ഷരം മാത്രം എടുക്കുന്നു)
+                const paymentsToday = paymentsData.filter(p => {
+                    return p.payment_date && p.payment_date.substring(0, 10) === todayStr;
+                }).reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
+
+                // അഡ്മിഷൻ ഫീസ് കൂട്ടുന്നു (സമയം ഒഴിവാക്കി ആദ്യത്തെ 10 അക്ഷരം മാത്രം എടുക്കുന്നു)
+                const admissionsToday = studentsData.filter(s => {
+                    let admDate = s.admission_date || s.created_at; // അഡ്മിഷൻ തിയ്യതിയോ, അക്കൗണ്ട് ഉണ്ടാക്കിയ തിയ്യതിയോ നോക്കുന്നു
+                    return admDate && admDate.substring(0, 10) === todayStr;
+                }).reduce((sum, s) => sum + (Number(s.admission_fee) || 0), 0);
+
+                // രണ്ടും കൂടി കൂട്ടി ഡാഷ്ബോർഡിൽ കാണിക്കുന്നു
                 document.getElementById('statTodayCollection').textContent = (paymentsToday + admissionsToday).toLocaleString('en-IN');
 
                 let totalPendingSum = 0; let currentDueSum = 0; 
@@ -744,20 +755,9 @@
                 
                 document.getElementById('statCurrentDue').textContent = Math.round(currentDueSum).toLocaleString('en-IN');
                 document.getElementById('statPendingFees').textContent = Math.round(totalPendingSum).toLocaleString('en-IN');
-            } catch (err) {}
-        }
-
-        async function loadSettings() {
-            try {
-                const { data: settingsList } = await supabase.from('institute_settings').select('*').eq('id', 1).limit(1);
-                const data = settingsList && settingsList.length > 0 ? settingsList[0] : null;
-                if (data) {
-                    if (data.theme_color) document.documentElement.style.setProperty('--app-theme-color', data.theme_color);
-                    document.getElementById('navInstName').innerText = data.institute_name || '';
-                    document.getElementById('navSubName').innerText = data.sub_name || '';
-                    if(data.logo_url) { let logoEl = document.querySelector('.logo-small'); if (logoEl) { logoEl.src = data.logo_url; logoEl.style.display = 'block'; } }
-                }
-            } catch (e) {}
+            } catch (err) {
+                console.error("Dashboard Data Load Error:", err);
+            }
         }
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
