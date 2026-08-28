@@ -701,8 +701,7 @@
             } catch (err) {}
         };
 
-        // 🔥 FIXED: കൃത്യമായി അഡ്മിഷൻ ഫീസും കളക്ഷനും കൂട്ടാൻ സിന്റാക്സ് എറർ ഒഴിവാക്കിയ കോഡ് 🔥
-        async function loadDashboardData() {
+       async function loadDashboardData() {
             try {
                 const [stuRes, crsRes, payRes] = await Promise.all([ 
                     supabase.from('students').select('*'), 
@@ -718,20 +717,24 @@
                 document.getElementById('statActiveStudents').textContent = activeStudents.length;
                 document.getElementById('statCourses').textContent = coursesData.filter(c => c.status === 'Active').length;
 
+                // ഇന്നത്തെ കൃത്യമായ തിയ്യതി എടുക്കുന്നു
                 let localDate = new Date();
                 localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
                 const todayStr = localDate.toISOString().split('T')[0];
 
+                // 1. സാധാരണ ഫീസ് പേയ്മെന്റുകൾ കൂട്ടുന്നു (Safe Checking)
                 const paymentsToday = paymentsData.filter(p => {
-                    let pDate = p.payment_date || p.created_at || '';
-                    return pDate.substring(0, 10) === todayStr;
+                    if (!p.payment_date) return false;
+                    return String(p.payment_date).includes(todayStr) || String(p.created_at).includes(todayStr);
                 }).reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
 
+                // 2. അഡ്മിഷൻ ഫീസുകൾ കൂട്ടുന്നു (Safe Checking)
                 const admissionsToday = studentsData.filter(s => {
-                    let admDate = s.admission_date || s.created_at || '';
-                    return admDate.substring(0, 10) === todayStr;
+                    let admDate = s.admission_date || s.created_at || "";
+                    return String(admDate).includes(todayStr);
                 }).reduce((sum, s) => sum + (Number(s.admission_fee) || 0), 0);
 
+                // ഡാഷ്ബോർഡിൽ സംഖ്യ കാണിക്കുന്നു
                 document.getElementById('statTodayCollection').textContent = (paymentsToday + admissionsToday).toLocaleString('en-IN');
 
                 let totalPendingSum = 0; let currentDueSum = 0; 
@@ -772,7 +775,7 @@
                 document.getElementById('statCurrentDue').textContent = Math.round(currentDueSum).toLocaleString('en-IN');
                 document.getElementById('statPendingFees').textContent = Math.round(totalPendingSum).toLocaleString('en-IN');
             } catch (err) {
-                console.error("Error loading dashboard data:", err);
+                console.error("Dashboard Error:", err);
             }
         }
 
