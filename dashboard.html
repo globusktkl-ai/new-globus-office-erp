@@ -445,29 +445,25 @@
             });
         }
 
-        // 🔥 DYNAMIC T&C ENGINE (FETCH & VERIFY) 🔥
         window.latestPolicyData = null;
 
         window.checkTNC = async function(userEmail, userRole) {
             if (userRole !== 'Admin') return; 
             try {
-                // 1. Fetch Latest Policy from Database
                 const { data: instSettings } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
                 if(instSettings && instSettings.provider_config) {
                     const conf = JSON.parse(instSettings.provider_config);
                     if(conf.policies && conf.policies.length > 0) {
-                        window.latestPolicyData = conf.policies[conf.policies.length - 1]; // Get latest version
+                        window.latestPolicyData = conf.policies[conf.policies.length - 1]; 
                     }
                 }
 
-                if(!window.latestPolicyData) return; // No policy published yet
+                if(!window.latestPolicyData) return; 
 
-                // 2. Check what the Client has accepted
                 const { data: clients } = await supabase.from('saas_clients').select('promo_message').eq('admin_email', userEmail).limit(1);
                 if(clients && clients.length > 0) {
                     let pData = {}; try { pData = JSON.parse(clients[0].promo_message || '{}'); } catch(e){}
                     
-                    // If client's accepted version doesn't match the latest version, force them to accept
                     if(pData.tc_version !== window.latestPolicyData.version) {
                         document.getElementById('tncDynamicBody').innerHTML = window.latestPolicyData.content;
                         document.getElementById('tncModalTitle').innerText = `Software Terms of Service (v${window.latestPolicyData.version})`;
@@ -494,7 +490,7 @@
                     let pData = {}; try { pData = JSON.parse(clients[0].promo_message || '{}'); } catch(e){}
                     
                     pData.tc_accepted = true;
-                    pData.tc_version = window.latestPolicyData.version; // Save the version!
+                    pData.tc_version = window.latestPolicyData.version; 
                     pData.tc_accepted_date = new Date().toISOString();
                     
                     await supabase.from('saas_clients').update({ promo_message: JSON.stringify(pData) }).eq('id', clients[0].id);
@@ -507,7 +503,6 @@
             }
         };
 
-        // 🔥 FIXED: Custom magicConfirm properly linked here 🔥
         window.declineTNC = async function() {
             const ans = await window.magicConfirm("⚠️ Are you sure you want to decline?\n\nYou must accept the latest Terms of Service to use the ERP system. You will be logged out now.");
             if(ans) {
@@ -517,7 +512,6 @@
             }
         };
 
-        // For reading T&C from Footer Link
         window.viewTNC = async function() {
             document.getElementById('tncModal').style.display = 'flex';
             document.getElementById('tncActionFooter').style.display = 'none';
@@ -563,7 +557,6 @@
             applyRoleAccess(userRole || 'Admin'); loadSettings(); loadDashboardData(); window.buildUnifiedTicker(); setInterval(window.buildUnifiedTicker, 30000); 
             initSecurityHandshake();
 
-            // 🔥 CHECK FOR LATEST T&C 🔥
             window.checkTNC(session.user.email, userRole || 'Admin');
         }
 
@@ -708,56 +701,92 @@
             } catch (err) {}
         };
 
-     async function loadDashboardData() {
+        // 🔥 FIXED: കൃത്യമായി അഡ്മിഷൻ ഫീസും കളക്ഷനും കൂട്ടാൻ സിന്റാക്സ് എറർ ഒഴിവാക്കിയ കോഡ് 🔥
+        async function loadDashboardData() {
             try {
-                const [stuRes, crsRes, payRes] = await Promise.all([ supabase.from('students').select('*'), supabase.from('courses').select('*'), supabase.from('fee_payments').select('*') ]);
-                const studentsData = stuRes.data || []; const coursesData = crsRes.data || []; const paymentsData = payRes.data || [];
+                const [stuRes, crsRes, payRes] = await Promise.all([ 
+                    supabase.from('students').select('*'), 
+                    supabase.from('courses').select('*'), 
+                    supabase.from('fee_payments').select('*') 
+                ]);
+                const studentsData = stuRes.data || []; 
+                const coursesData = crsRes.data || []; 
+                const paymentsData = payRes.data || [];
                 
                 document.getElementById('statTotalStudents').textContent = studentsData.length;
                 const activeStudents = studentsData.filter(s => (s.status || 'active').toLowerCase() === 'active');
                 document.getElementById('statActiveStudents').textContent = activeStudents.length;
                 document.getElementById('statCourses').textContent = coursesData.filter(c => c.status === 'Active').length;
 
-                // 🔥 കൃത്യമായ തിയ്യതി (IST) എടുക്കുന്നു 🔥
                 let localDate = new Date();
                 localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
                 const todayStr = localDate.toISOString().split('T')[0];
 
-                // ഫീസ് കളക്ഷൻ കൂട്ടുന്നു (സമയം ഒഴിവാക്കി ആദ്യത്തെ 10 അക്ഷരം മാത്രം എടുക്കുന്നു)
                 const paymentsToday = paymentsData.filter(p => {
-                    return p.payment_date && p.payment_date.substring(0, 10) === todayStr;
+                    let pDate = p.payment_date || p.created_at || '';
+                    return pDate.substring(0, 10) === todayStr;
                 }).reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
 
-                // അഡ്മിഷൻ ഫീസ് കൂട്ടുന്നു (സമയം ഒഴിവാക്കി ആദ്യത്തെ 10 അക്ഷരം മാത്രം എടുക്കുന്നു)
                 const admissionsToday = studentsData.filter(s => {
-                    let admDate = s.admission_date || s.created_at; // അഡ്മിഷൻ തിയ്യതിയോ, അക്കൗണ്ട് ഉണ്ടാക്കിയ തിയ്യതിയോ നോക്കുന്നു
-                    return admDate && admDate.substring(0, 10) === todayStr;
+                    let admDate = s.admission_date || s.created_at || '';
+                    return admDate.substring(0, 10) === todayStr;
                 }).reduce((sum, s) => sum + (Number(s.admission_fee) || 0), 0);
 
-                // രണ്ടും കൂടി കൂട്ടി ഡാഷ്ബോർഡിൽ കാണിക്കുന്നു
                 document.getElementById('statTodayCollection').textContent = (paymentsToday + admissionsToday).toLocaleString('en-IN');
 
                 let totalPendingSum = 0; let currentDueSum = 0; 
                 activeStudents.forEach(s => {
-                    const totalCourseFee = Number(s.total_fee) || 0; const admissionFee = Number(s.admission_fee) || 0;
-                    let totalPaidPayments = 0; let totalDiscount = 0;
-                    paymentsData.filter(p => p.student_id === s.id).forEach(p => { totalPaidPayments += (Number(p.amount_paid) || 0); totalDiscount += (Number(p.discount_amount) || 0); });
+                    const totalCourseFee = Number(s.total_fee) || 0; 
+                    const admissionFee = Number(s.admission_fee) || 0;
+                    let totalPaidPayments = 0; 
+                    let totalDiscount = 0;
+                    
+                    paymentsData.filter(p => p.student_id === s.id).forEach(p => { 
+                        totalPaidPayments += (Number(p.amount_paid) || 0); 
+                        totalDiscount += (Number(p.discount_amount) || 0); 
+                    });
+                    
                     const totalPaidAndDisc = admissionFee + totalPaidPayments + totalDiscount;
-                    let totalCoursePending = totalCourseFee - totalPaidAndDisc; if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
+                    let totalCoursePending = totalCourseFee - totalPaidAndDisc; 
+                    if (totalCoursePending > 0) totalPendingSum += totalCoursePending;
+                    
                     const course = coursesData.find(c => c.id == s.course_id);
                     const totalModules = (course && Array.isArray(course.modules) && course.modules.length > 0) ? course.modules.length : 1;
-                    const feePerModule = totalCourseFee / totalModules; let currentModIndex = 1;
-                    if (s.status === 'completed' || s.module === 'Course Completed') currentModIndex = totalModules; 
-                    else if (course && Array.isArray(course.modules)) { let idx = course.modules.indexOf(s.module); currentModIndex = idx >= 0 ? idx + 1 : 1; }
-                    let expectedTillNow = feePerModule * currentModIndex; if (expectedTillNow > totalCourseFee) expectedTillNow = totalCourseFee;
-                    let currentDue = expectedTillNow - totalPaidAndDisc; if (currentDue > 0) currentDueSum += currentDue;
+                    const feePerModule = totalCourseFee / totalModules; 
+                    let currentModIndex = 1;
+                    
+                    if (s.status === 'completed' || s.module === 'Course Completed') {
+                        currentModIndex = totalModules; 
+                    } else if (course && Array.isArray(course.modules)) { 
+                        let idx = course.modules.indexOf(s.module); 
+                        currentModIndex = idx >= 0 ? idx + 1 : 1; 
+                    }
+                    
+                    let expectedTillNow = feePerModule * currentModIndex; 
+                    if (expectedTillNow > totalCourseFee) expectedTillNow = totalCourseFee;
+                    
+                    let currentDue = expectedTillNow - totalPaidAndDisc; 
+                    if (currentDue > 0) currentDueSum += currentDue;
                 });
                 
                 document.getElementById('statCurrentDue').textContent = Math.round(currentDueSum).toLocaleString('en-IN');
                 document.getElementById('statPendingFees').textContent = Math.round(totalPendingSum).toLocaleString('en-IN');
             } catch (err) {
-                console.error("Dashboard Data Load Error:", err);
+                console.error("Error loading dashboard data:", err);
             }
+        }
+
+        async function loadSettings() {
+            try {
+                const { data: settingsList } = await supabase.from('institute_settings').select('*').eq('id', 1).limit(1);
+                const data = settingsList && settingsList.length > 0 ? settingsList[0] : null;
+                if (data) {
+                    if (data.theme_color) document.documentElement.style.setProperty('--app-theme-color', data.theme_color);
+                    document.getElementById('navInstName').innerText = data.institute_name || '';
+                    document.getElementById('navSubName').innerText = data.sub_name || '';
+                    if(data.logo_url) { let logoEl = document.querySelector('.logo-small'); if (logoEl) { logoEl.src = data.logo_url; logoEl.style.display = 'block'; } }
+                }
+            } catch (e) {}
         }
 
         document.getElementById('logoutBtn').addEventListener('click', async () => { await supabase.auth.signOut(); localStorage.clear(); window.location.replace('login.html'); });
