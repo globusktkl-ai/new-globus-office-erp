@@ -1113,6 +1113,8 @@
             activeClientId = id;
             document.getElementById('uClientName').innerText = name;
             
+            // തുറക്കുമ്പോൾ പ്ലാൻ സെലക്ഷൻ ഡിഫോൾട്ട് ആയി കാലിയാക്കി വെക്കുന്നു
+            if(document.getElementById('uPlanSelect')) document.getElementById('uPlanSelect').value = '';
             if(document.getElementById('uDemoToggle')) document.getElementById('uDemoToggle').checked = false;
             if(document.getElementById('demoTimeBlock')) document.getElementById('demoTimeBlock').style.display = 'none';
             if(document.getElementById('uDemoHours')) document.getElementById('uDemoHours').value = '2';
@@ -1121,44 +1123,53 @@
             document.getElementById('upgradeModal').style.display = 'flex';
         };
 
-        // 🔥 FIXED: SUBMIT PLAN FUNCTION UPDATED TO SAVE THEME COLOR 🔥
         window.submitPlanUpgrade = async function() {
             const planId = document.getElementById('uPlanSelect').value;
             const demoEnabled = document.getElementById('uDemoToggle').checked;
             const themeColor = document.getElementById('uThemeColor').value;
             
-            if(!planId) return alert("⚠️ Select a plan.");
-            
-            const selectedPlan = plansData.find(p => p.id === planId);
-            let validUntilDate = new Date(); 
-            if(selectedPlan.duration_type === 'Days') validUntilDate.setDate(validUntilDate.getDate() + selectedPlan.duration_value);
-            else if(selectedPlan.duration_type === 'Months') validUntilDate.setMonth(validUntilDate.getMonth() + selectedPlan.duration_value);
-
-            const { data } = await supabase.from('saas_clients').select('promo_message').eq('id', activeClientId).single();
-            let pData = {}; try { pData = JSON.parse(data.promo_message || '{}'); } catch(e){}
-
-            if (demoEnabled) {
-                const demoHours = parseInt(document.getElementById('uDemoHours').value) || 2;
-                pData.demo_expiry = Date.now() + (demoHours * 60 * 60 * 1000); 
-            } else {
-                delete pData.demo_expiry;
-            }
-            
-            pData.theme_color = themeColor;
-
             try {
-                // 1. SaaS ക്ലയന്റ് ടേബിൾ അപ്ഡേറ്റ് ചെയ്യുന്നു
-                await supabase.from('saas_clients').update({
-                    plan_name: selectedPlan.plan_name, admission_limit: selectedPlan.usage_limits.max_admissions, valid_until: validUntilDate.toISOString().split('T')[0], is_active: true, promo_message: JSON.stringify(pData)
-                }).eq('id', activeClientId);
+                // പഴയ ഡാറ്റ വലിച്ചെടുക്കുന്നു
+                const { data } = await supabase.from('saas_clients').select('promo_message').eq('id', activeClientId).single();
+                let pData = {}; try { pData = JSON.parse(data.promo_message || '{}'); } catch(e){}
 
-                // 🔥 2. പുതിയ മാറ്റം: ERP-യുടെ സെറ്റിംഗ്സ് ടേബിളിലേക്ക് (institute_settings) തീം കളർ നേരിട്ട് സേവ് ചെയ്യുന്നു 🔥
+                // ഡെമോ സെറ്റിംഗ്സ് അപ്ഡേറ്റ്
+                if (demoEnabled) {
+                    const demoHours = parseInt(document.getElementById('uDemoHours').value) || 2;
+                    pData.demo_expiry = Date.now() + (demoHours * 60 * 60 * 1000); 
+                } else {
+                    delete pData.demo_expiry;
+                }
+                
+                // തീം കളർ അപ്ഡേറ്റ്
+                pData.theme_color = themeColor;
+
+                // അടിസ്ഥാനമായി അപ്ഡേറ്റ് ചെയ്യേണ്ട കാര്യങ്ങൾ (Payload)
+                let updatePayload = { promo_message: JSON.stringify(pData) };
+
+                // പ്ലാൻ സെലക്ട് ചെയ്തിട്ടുണ്ടെങ്കിൽ മാത്രം പ്ലാൻ വിവരങ്ങൾ കൂട്ടിച്ചേർക്കുന്നു (Plan is OPTIONAL now)
+                if (planId) {
+                    const selectedPlan = plansData.find(p => p.id === planId);
+                    let validUntilDate = new Date(); 
+                    if(selectedPlan.duration_type === 'Days') validUntilDate.setDate(validUntilDate.getDate() + selectedPlan.duration_value);
+                    else if(selectedPlan.duration_type === 'Months') validUntilDate.setMonth(validUntilDate.getMonth() + selectedPlan.duration_value);
+                    
+                    updatePayload.plan_name = selectedPlan.plan_name;
+                    updatePayload.admission_limit = selectedPlan.usage_limits.max_admissions;
+                    updatePayload.valid_until = validUntilDate.toISOString().split('T')[0];
+                    updatePayload.is_active = true;
+                }
+
+                // ക്ലയന്റ് ടേബിളിലേക്ക് സേവ് ചെയ്യുന്നു
+                await supabase.from('saas_clients').update(updatePayload).eq('id', activeClientId);
+
+                // ഇൻസ്റ്റിറ്റ്യൂട്ട് സെറ്റിംഗ്സിലേക്ക് തീം കളർ സേവ് ചെയ്യുന്നു
                 await supabase.from('institute_settings').update({
                     theme_color: themeColor
                 }).eq('id', 1);
 
-                if(demoEnabled) alert(`✅ Client updated. Demo Link: login.html?demo=${activeClientId}&theme=${themeColor.replace('#', '')}`);
-                else alert("✅ Client updated successfully.");
+                if(demoEnabled) alert(`✅ Settings saved! Demo Link: login.html?demo=${activeClientId}&theme=${themeColor.replace('#', '')}`);
+                else alert("✅ Settings saved successfully.");
                 
                 document.getElementById('upgradeModal').style.display = 'none';
                 fetchClients();
