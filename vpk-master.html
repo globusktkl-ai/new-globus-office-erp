@@ -397,9 +397,8 @@
         </div>
     </div>
 
-    <!-- TAB 6: AUTOMATION & POLICIES (🔥 NEW: DYNAMIC POLICY ENGINE 🔥) -->
+    <!-- TAB 6: AUTOMATION & POLICIES -->
     <div id="tab-automation" class="tab-content">
-        <!-- New Version Control Card -->
         <div class="card" style="border-color: var(--purple);">
             <div class="card-title" style="color: var(--purple);">📜 Terms & Conditions (Version Control)</div>
             <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px;">Manage your EULA. Publishing a new version will automatically force all clients to re-accept the terms on their next login.</p>
@@ -477,6 +476,12 @@
                     <label style="font-size:10px; color:var(--text-muted); margin-bottom:5px; display:block;">Demo Duration (In Hours)</label>
                     <input type="number" id="uDemoHours" class="form-control" value="2" min="1" placeholder="e.g. 2">
                 </div>
+            </div>
+
+            <!-- 🔥 NEW: Theme Color Picker Restored 🔥 -->
+            <div class="form-group" style="margin-top: 15px;">
+                <label>ERP Theme Color</label>
+                <input type="color" id="uThemeColor" class="form-control" value="#2563eb" style="padding: 2px; height: 40px; cursor: pointer;">
             </div>
 
             <div style="display:flex; gap:10px; margin-top:25px;">
@@ -585,7 +590,7 @@
             await fetchGlobalProviderInfo();
             await fetchSupportTickets();
             await checkActiveBroadcast(); 
-            await fetchPolicies(); // 🔥 NEW: LOAD POLICIES 🔥
+            await fetchPolicies(); 
             
             document.getElementById('aWarnDays').value = localStorage.getItem('vpk_auto_warn_days') || 15;
             document.getElementById('aGraceDays').value = localStorage.getItem('vpk_auto_grace_days') || 7;
@@ -599,9 +604,6 @@
             if(ans) { await supabase.auth.signOut(); window.location.reload(); }
         };
 
-        // ==========================================
-        // 🔥 NEW: DYNAMIC POLICY ENGINE (EULA) 🔥
-        // ==========================================
         let globalPolicies = [];
 
         async function fetchPolicies() {
@@ -625,7 +627,6 @@
             }
             
             let html = '';
-            // Show latest first
             [...globalPolicies].reverse().forEach((p, idx) => {
                 const realIndex = globalPolicies.length - 1 - idx;
                 html += `
@@ -663,7 +664,6 @@
                 
                 if(!currentConf.policies) currentConf.policies = [];
 
-                // Update if exists, else push new
                 const existingIndex = currentConf.policies.findIndex(p => p.version === ver);
                 const newPol = { version: ver, content: content, date: new Date().toISOString() };
                 
@@ -688,9 +688,6 @@
             }
         };
 
-        // ==========================================
-        // DYNAMIC PLAN MANAGEMENT
-        // ==========================================
         async function fetchPlans() {
             try {
                 const { data } = await supabase.from('subscription_plans').select('*').order('price', { ascending: true });
@@ -745,9 +742,6 @@
             if(ans) { await supabase.from('subscription_plans').delete().eq('id', id); fetchPlans(); } 
         };
 
-        // ==========================================
-        // SMART CLIENT MATRIX & BLINKING CARDS 🔥
-        // ==========================================
         window.openAddClientModal = () => document.getElementById('addClientModal').style.display = 'flex';
         
         async function fetchClients() {
@@ -832,7 +826,6 @@
                     ? `<button class="btn-icon" style="color:var(--danger); border-color:rgba(239,68,68,0.3);" title="Suspend Account" onclick="openSuspendModal('${c.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></button>`
                     : `<button class="btn-icon" style="color:var(--success); border-color:rgba(16,185,129,0.3); background:rgba(16,185,129,0.1);" title="Unblock Account" onclick="unblockClient('${c.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg></button>`;
 
-                // 🔥 FIXED: BROKEN SETTINGS ICON SVG 🔥
                 html += `
                 <div class="client-card" style="${!c.is_active ? 'opacity: 0.7; border-color: var(--danger);' : ''}">
                     <div class="cc-header">
@@ -863,9 +856,6 @@
             container.innerHTML = html || '<div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:13px;">No clients found.</div>';
         }
 
-        // ==========================================
-        // ACCOUNT SUSPENSION LOGIC
-        // ==========================================
         window.openSuspendModal = function(id) {
             activeClientId = id;
             document.getElementById('suspendReason').value = 'Subscription Expired (Payment Default)';
@@ -909,9 +899,6 @@
             } catch(e) { alert("❌ Error: " + e.message); }
         };
 
-        // ==========================================
-        // IMPERSONATION (Login as Client)
-        // ==========================================
         window.impersonateClient = async function(email) {
             const ans = await window.magicConfirm(`SUPER ADMIN OVERRIDE\n\nYou are about to securely login directly into ${email}'s dashboard. Proceed?`);
             if(ans) {
@@ -921,9 +908,6 @@
             }
         };
 
-        // ==========================================
-        // SUPPORT INBOX (HELPDESK & WEBHOOK)
-        // ==========================================
         async function fetchGlobalProviderInfo() {
             try {
                 const { data, error } = await supabase.from('institute_settings').select('provider_config').eq('id', 1).single();
@@ -1058,9 +1042,6 @@
             }
         };
 
-        // ==========================================
-        // DEDICATED PROMO ENGINE (OFFERS TAB)
-        // ==========================================
         window.launchPromo = async function() {
             const msg = document.getElementById('promoMsgInput').value.trim();
             const target = document.getElementById('promoTarget').value;
@@ -1127,22 +1108,25 @@
             } catch(e) { alert("❌ Error: " + e.message); }
         };
 
-        // Settings / Upgrade Modal (🔥 DYNAMIC DEMO TIMER FIXED 🔥)
+        // 🔥 FIXED: OPEN MODAL FUNCTION UPDATED 🔥
         window.openUpgradeModal = function(id, name) {
             activeClientId = id;
             document.getElementById('uClientName').innerText = name;
             
-            // Reset modal state
             if(document.getElementById('uDemoToggle')) document.getElementById('uDemoToggle').checked = false;
             if(document.getElementById('demoTimeBlock')) document.getElementById('demoTimeBlock').style.display = 'none';
             if(document.getElementById('uDemoHours')) document.getElementById('uDemoHours').value = '2';
+            if(document.getElementById('uThemeColor')) document.getElementById('uThemeColor').value = '#2563eb';
             
             document.getElementById('upgradeModal').style.display = 'flex';
         };
 
+        // 🔥 FIXED: SUBMIT PLAN FUNCTION UPDATED TO SAVE THEME COLOR 🔥
         window.submitPlanUpgrade = async function() {
             const planId = document.getElementById('uPlanSelect').value;
             const demoEnabled = document.getElementById('uDemoToggle').checked;
+            const themeColor = document.getElementById('uThemeColor').value;
+            
             if(!planId) return alert("⚠️ Select a plan.");
             
             const selectedPlan = plansData.find(p => p.id === planId);
@@ -1150,23 +1134,23 @@
             if(selectedPlan.duration_type === 'Days') validUntilDate.setDate(validUntilDate.getDate() + selectedPlan.duration_value);
             else if(selectedPlan.duration_type === 'Months') validUntilDate.setMonth(validUntilDate.getMonth() + selectedPlan.duration_value);
 
-            // Fetch existing promo_message
             const { data } = await supabase.from('saas_clients').select('promo_message').eq('id', activeClientId).single();
             let pData = {}; try { pData = JSON.parse(data.promo_message || '{}'); } catch(e){}
 
-            // Set Demo Mode Expiry
             if (demoEnabled) {
                 const demoHours = parseInt(document.getElementById('uDemoHours').value) || 2;
                 pData.demo_expiry = Date.now() + (demoHours * 60 * 60 * 1000); 
             } else {
                 delete pData.demo_expiry;
             }
+            
+            pData.theme_color = themeColor;
 
             await supabase.from('saas_clients').update({
                 plan_name: selectedPlan.plan_name, admission_limit: selectedPlan.usage_limits.max_admissions, valid_until: validUntilDate.toISOString().split('T')[0], is_active: true, promo_message: JSON.stringify(pData)
             }).eq('id', activeClientId);
 
-            if(demoEnabled) alert(`✅ Client updated. Demo Link: login.html?demo=${activeClientId}`);
+            if(demoEnabled) alert(`✅ Client updated. Demo Link: login.html?demo=${activeClientId}&theme=${themeColor.replace('#', '')}`);
             else alert("✅ Client updated successfully.");
             
             document.getElementById('upgradeModal').style.display = 'none';
@@ -1193,9 +1177,6 @@
             } catch (err) { alert("❌ Error: " + err.message); } finally { document.getElementById('saveBtn').innerText = 'Deploy'; }
         };
 
-        // ==========================================
-        // SMART GLOBAL BROADCAST ENGINE 🚀
-        // ==========================================
         window.checkActiveBroadcast = async function() {
             try {
                 const { data } = await supabase.from('institute_settings').select('global_broadcast').eq('id', 1).single();
