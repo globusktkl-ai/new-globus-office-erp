@@ -1146,17 +1146,26 @@
             
             pData.theme_color = themeColor;
 
-            await supabase.from('saas_clients').update({
-                plan_name: selectedPlan.plan_name, admission_limit: selectedPlan.usage_limits.max_admissions, valid_until: validUntilDate.toISOString().split('T')[0], is_active: true, promo_message: JSON.stringify(pData)
-            }).eq('id', activeClientId);
+            try {
+                // 1. SaaS ക്ലയന്റ് ടേബിൾ അപ്ഡേറ്റ് ചെയ്യുന്നു
+                await supabase.from('saas_clients').update({
+                    plan_name: selectedPlan.plan_name, admission_limit: selectedPlan.usage_limits.max_admissions, valid_until: validUntilDate.toISOString().split('T')[0], is_active: true, promo_message: JSON.stringify(pData)
+                }).eq('id', activeClientId);
 
-            if(demoEnabled) alert(`✅ Client updated. Demo Link: login.html?demo=${activeClientId}&theme=${themeColor.replace('#', '')}`);
-            else alert("✅ Client updated successfully.");
-            
-            document.getElementById('upgradeModal').style.display = 'none';
-            fetchClients();
+                // 🔥 2. പുതിയ മാറ്റം: ERP-യുടെ സെറ്റിംഗ്സ് ടേബിളിലേക്ക് (institute_settings) തീം കളർ നേരിട്ട് സേവ് ചെയ്യുന്നു 🔥
+                await supabase.from('institute_settings').update({
+                    theme_color: themeColor
+                }).eq('id', 1);
+
+                if(demoEnabled) alert(`✅ Client updated. Demo Link: login.html?demo=${activeClientId}&theme=${themeColor.replace('#', '')}`);
+                else alert("✅ Client updated successfully.");
+                
+                document.getElementById('upgradeModal').style.display = 'none';
+                fetchClients();
+            } catch (err) {
+                alert("❌ Error: " + err.message);
+            }
         };
-
         window.addClient = async function(e) {
             e.preventDefault();
             const email = document.getElementById('cEmail').value.trim(); const pass = document.getElementById('cPassword').value.trim();
