@@ -717,21 +717,24 @@
                 document.getElementById('statActiveStudents').textContent = activeStudents.length;
                 document.getElementById('statCourses').textContent = coursesData.filter(c => c.status === 'Active').length;
 
-                // ഇന്നത്തെ കൃത്യമായ തിയ്യതി എടുക്കുന്നു
-                let localDate = new Date();
-                localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
-                const todayStr = localDate.toISOString().split('T')[0];
+                // 🔥 മാസ്റ്റർ ഡേ ബുക്കിലെ അതേ തിയ്യതി ലോജിക് (Master Day Book Logic) 🔥
+                const initDate = new Date();
+                const todayStr = initDate.getFullYear() + "-" + String(initDate.getMonth() + 1).padStart(2, '0') + "-" + String(initDate.getDate()).padStart(2, '0');
 
-                // 1. സാധാരണ ഫീസ് പേയ്മെന്റുകൾ കൂട്ടുന്നു (Safe Checking)
+                function getLocalDateStr(utcString) {
+                    if (!utcString) return '';
+                    const d = new Date(utcString);
+                    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
+                }
+
+                // 1. സാധാരണ ഫീസ് പേയ്മെന്റുകൾ കൂട്ടുന്നു
                 const paymentsToday = paymentsData.filter(p => {
-                    if (!p.payment_date) return false;
-                    return String(p.payment_date).includes(todayStr) || String(p.created_at).includes(todayStr);
+                    return getLocalDateStr(p.payment_date) === todayStr;
                 }).reduce((sum, p) => sum + (Number(p.amount_paid) || 0), 0);
 
-                // 2. അഡ്മിഷൻ ഫീസുകൾ കൂട്ടുന്നു (Safe Checking)
+                // 2. അഡ്മിഷൻ ഫീസുകൾ കൂട്ടുന്നു (created_at അടിസ്ഥാനമാക്കി)
                 const admissionsToday = studentsData.filter(s => {
-                    let admDate = s.admission_date || s.created_at || "";
-                    return String(admDate).includes(todayStr);
+                    return getLocalDateStr(s.created_at) === todayStr;
                 }).reduce((sum, s) => sum + (Number(s.admission_fee) || 0), 0);
 
                 // ഡാഷ്ബോർഡിൽ സംഖ്യ കാണിക്കുന്നു
