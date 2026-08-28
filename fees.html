@@ -727,7 +727,8 @@
                 }, 1000);
             }
 
-            document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
+            let localD = new Date(); localD.setMinutes(localD.getMinutes() - localD.getTimezoneOffset());
+            document.getElementById('paymentDate').value = localD.toISOString().split('T')[0];
             loadSettings(); 
             fetchData();
         }
