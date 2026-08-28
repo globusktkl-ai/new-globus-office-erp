@@ -128,7 +128,8 @@
                 </div>
             </div>
 
-           <!-- Footer 1: For Mandatory Acceptance -->
+            <!-- 🔥 FIXED UI: Text aligned properly on top, smaller buttons on bottom 🔥 -->
+            <!-- Footer 1: For Mandatory Acceptance -->
             <div class="tnc-footer" id="tncActionFooter" style="display: flex; flex-direction: column; gap: 15px;">
                 <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
                     <input type="checkbox" id="tncCheckbox" style="width:18px; height:18px; accent-color:#3b82f6; margin-top:2px; flex-shrink:0;" onchange="document.getElementById('tncAcceptBtn').disabled = !this.checked; document.getElementById('tncAcceptBtn').style.opacity = this.checked ? '1' : '0.5';">
@@ -282,7 +283,7 @@
                 </button>
                 <a href="settings.html" class="nav-btn">
                     <span class="nav-icon" style="background: linear-gradient(135deg, #e2e8f0, #cbd5e1);">
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="#475569" stroke="none"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.05-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22l-1.92 3.32c-.12.22-.07.49.12.61l2.03 1.58c-.04.3-.06.61-.06.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="#475569" stroke="none"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.05-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22l-1.92 3.32c-.12.22-.07.49-.12-.61l2.03 1.58c-.04.3-.06.61-.06.94s.02.64.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .43-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.49-.12-.61l-2.03-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
                     </span>Inst. Settings
                 </a>
             </div>
@@ -320,12 +321,13 @@
 
     <script type="module">
         import { supabase } from './assets/js/supabase-config.js';
-        // 🔥 NEW: Beautiful Magic Confirm Alert for Dashboard 🔥
+        
+        // 🔥 FIXED: Beautiful Magic Confirm Alert with Ultra High Z-Index to stay above T&C Modal 🔥
         window.magicConfirm = function(msg) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
                 const box = document.createElement('div'); box.id = 'customPromptBox';
-                box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 100000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
+                box.style.cssText = `position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.85); z-index: 9999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);`;
                 box.innerHTML = `
                     <div style="background: #ffffff; padding: 24px; border-radius: 16px; width: 90%; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; animation: sheetUp 0.3s ease;">
                         <div style="background:#fef3c7; color:#d97706; width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px;"><svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
@@ -342,6 +344,7 @@
                 document.getElementById('cConfirmOk').onclick = () => { box.remove(); resolve(true); };
             });
         };
+
         window.magicPrompt = function(msg, isText = false) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox'); if (oldBox) oldBox.remove();
@@ -504,8 +507,8 @@
             }
         };
 
-       window.declineTNC = async function() {
-            // 🔥 പഴയഞ്ചൻ അലേർട്ടിന് പകരം നമ്മുടെ മാജിക് അലേർട്ട് കൊടുക്കുന്നു 🔥
+        // 🔥 FIXED: Custom magicConfirm properly linked here 🔥
+        window.declineTNC = async function() {
             const ans = await window.magicConfirm("⚠️ Are you sure you want to decline?\n\nYou must accept the latest Terms of Service to use the ERP system. You will be logged out now.");
             if(ans) {
                 await supabase.auth.signOut(); 
