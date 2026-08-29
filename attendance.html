@@ -277,7 +277,6 @@
                     Advanced Reports
                 </div>
 
-                <!-- 🔥 NEW: Reports UI with Custom Date & Dynamic Student Filter 🔥 -->
                 <div class="frm-row">
                     <div>
                         <label class="frm-label">Filter Period</label>
@@ -317,7 +316,6 @@
 
             <div id="printableReport" style="display:none; background:#fff; padding:15px; border-radius:12px; border:1px solid #e2e8f0;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #1e293b;">
-                    <!-- Left: Institute Details -->
                     <div style="display:flex; align-items:center; gap:12px; width: 33%;">
                         <img id="rptLogo" src="assets/images/logo.png" style="height: 50px; width: auto;" onerror="this.style.display='none'">
                         <div>
@@ -327,13 +325,11 @@
                         </div>
                     </div>
                     
-                    <!-- Center: Document Title -->
                     <div style="text-align:center; width: 34%;">
                         <h2 style="font-size:16px;font-weight:900;color:#0f172a;text-transform:uppercase;margin:0;">Attendance Log</h2>
                         <div style="font-size:10px;color:#64748b;font-weight:600;margin-top:4px;" id="rptGeneratedMeta">Generated: -</div>
                     </div>
 
-                    <!-- Right: Print Button -->
                     <div style="width: 33%; text-align: right;">
                         <button class="btn-primary btn-sm" onclick="window.print()" style="background:#4338ca; display:inline-block;">🖨️ Print</button>
                     </div>
@@ -438,8 +434,12 @@
             <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             Defaulters
         </button>
+        
+        <!-- 🔥 FIXED: Beautiful, Unbroken Security Shield Icon for Admin 🔥 -->
         <button class="btab" onclick="switchTab('admin')">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.32 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
             Admin
         </button>
     </nav>
@@ -634,7 +634,6 @@
 
         // ======================== DROPDOWNS & FILTER LOGIC ========================
         
-        // 🔥 NEW: Dynamic Student Filter Logic for Reports 🔥
         window.updateReportStudentFilter = function() {
             const courseId = document.getElementById('rptCourseFilter').value;
             const stuFilter = document.getElementById('rptStudentFilter');
@@ -643,7 +642,6 @@
             stuFilter.innerHTML = '<option value="all">All Students</option>';
             let filteredStudents = allStudents;
             
-            // Only show students related to the selected course
             if (courseId !== 'all') {
                 filteredStudents = allStudents.filter(s => s.course_id == courseId);
             }
@@ -674,7 +672,7 @@
             mapTeacher.innerHTML = '<option value="">-- Select Teacher --</option>';
             allStaff.forEach(s => mapTeacher.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)));
 
-            window.updateReportStudentFilter(); // Populate student filter initially
+            window.updateReportStudentFilter(); 
         }
 
         window.switchTab = function(tab) {
@@ -778,7 +776,6 @@
             window._currentStudents = students;
             window._existingMap = existingMap;
 
-            // 🔥 ADMIN BYPASS & TEACHER AUTH 🔥
             const uRole = localStorage.getItem('userRole') || 'Admin';
             if(uRole === 'Super Admin' || uRole === 'Admin') {
                 isVerified = true;
@@ -820,11 +817,14 @@
 
             container.innerHTML = students.map(s => {
                 const status = currentAttendanceMarks[s.id] || 'Present';
+                const originalStatus = existingMap[s.id] ? existingMap[s.id].status : 'Present';
                 const avatar = s.photo_url || generateAvatar(s.full_name, s.gender);
                 const rowClass = status === 'Absent' ? 'absent' : status === 'Half-Day' ? 'halfday' : '';
                 const oldReason = existingMap[s.id] ? (existingMap[s.id].late || '') : '';
                 
-                const showReasonInput = isEditMode && (status === 'Present' || status === 'Half-Day');
+                // 🔥 FIXED: Reason input only shows if the status was ACTUALLY changed from original 🔥
+                const hasChanged = isEditMode && (status !== originalStatus);
+                const showReasonInput = hasChanged;
 
                 return `
                 <div class="att-student ${rowClass}" id="att-row-${s.id}">
@@ -842,7 +842,7 @@
                             <button class="att-btn ${status === 'Half-Day' ? 'sel-h' : ''}" onclick="window.toggleStatus('${s.id}','Half-Day')" title="Half Day">H</button>
                         </div>
                     </div>
-                    <input type="text" class="frm-input late-reason-input" id="late-reason-${s.id}" placeholder="Reason for late/edit..." value="${oldReason}" style="display:${showReasonInput ? 'block' : 'none'};">
+                    <input type="text" class="frm-input late-reason-input" id="late-reason-${s.id}" placeholder="Why changed to ${status}?" value="${oldReason}" style="display:${showReasonInput ? 'block' : 'none'};">
                 </div>`;
             }).join('');
         }
@@ -927,9 +927,14 @@
                     if (b.title === 'Half Day' && status === 'Half-Day') b.classList.add('sel-h');
                 });
 
+                // 🔥 FIXED: Show reason box only if the status differs from original database status 🔥
+                const originalStatus = window._existingMap[studentId] ? window._existingMap[studentId].status : 'Present';
+                const hasChanged = isEditMode && (status !== originalStatus);
+                
                 const reasonInput = document.getElementById(`late-reason-${studentId}`);
                 if(reasonInput) {
-                    reasonInput.style.display = (isEditMode && (status === 'Present' || status === 'Half-Day')) ? 'block' : 'none';
+                    reasonInput.placeholder = `Why changed to ${status}?`;
+                    reasonInput.style.display = hasChanged ? 'block' : 'none';
                 }
             }
         };
@@ -978,11 +983,17 @@
                     };
                 });
 
+                // 🔥 FIXED: Only enforce missing reason check if the status ACTUALLY changed 🔥
                 if(isEditMode) {
-                    const missingReason = records.find(r => (r.status === 'Present' || r.status === 'Half-Day') && !r.late_reason);
+                    const missingReason = records.find(r => {
+                        const origStatus = window._existingMap[r.student_id] ? window._existingMap[r.student_id].status : 'Present';
+                        const hasChanged = r.status !== origStatus;
+                        return hasChanged && !r.late_reason;
+                    });
+                    
                     if(missingReason) {
                         btn.disabled = false; btn.textContent = '💾 Update Edited Attendance';
-                        showToast('Please provide a Late/Edit reason for the changed students!', 'error');
+                        showToast('Please provide a reason for the students whose attendance was modified!', 'error');
                         return;
                     }
                 }
@@ -1015,11 +1026,10 @@
         window.generateDetailedReport = function() {
             const period = document.getElementById('rptPeriod').value;
             const courseId = document.getElementById('rptCourseFilter').value;
-            const studentId = document.getElementById('rptStudentFilter').value; // 🔥 NEW FILTER 🔥
+            const studentId = document.getElementById('rptStudentFilter').value; 
             
             let filteredAtt = [...allAttendance];
 
-            // 1. Date / Period Filter
             if (period === 'custom') {
                 const fDate = document.getElementById('rptFromDate').value;
                 const tDate = document.getElementById('rptToDate').value;
@@ -1040,13 +1050,11 @@
                 filteredAtt = filteredAtt.filter(a => a.date >= fromStr && a.date <= toStr);
             }
 
-            // 2. Course Filter
             if (courseId !== 'all') {
                 const modsInCourse = allModules.filter(m => m.course_id === courseId).map(m => m.id);
                 filteredAtt = filteredAtt.filter(a => modsInCourse.includes(a.module_id));
             }
 
-            // 3. Individual Student Filter
             if (studentId !== 'all') {
                 filteredAtt = filteredAtt.filter(a => a.student_id === studentId);
             }
@@ -1068,7 +1076,7 @@
                     const editTime = a.is_edited ? `<span style="color:#b45309;font-weight:700">✏️ ${formatTimeDisplay(a.updated_at)}</span>` : `<span style="color:#64748b">${formatTimeDisplay(a.created_at || a.updated_at)}</span>`;
                     
                     let reasons = [];
-                    if(a.late_reason) reasons.push(`<b>Late/Edit:</b> ${a.late_reason}`);
+                    if(a.late_reason) reasons.push(`<b>Reason:</b> ${a.late_reason}`);
                     if(a.past_date_reason) reasons.push(`<b>Past Date:</b> ${a.past_date_reason}`);
                     const reasonStr = reasons.length > 0 ? reasons.join(' <br> ') : '-';
 
