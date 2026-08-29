@@ -123,7 +123,7 @@
         /* Empty State */
         .empty-state{text-align:center;padding:40px 20px;color:#94a3b8;font-weight:700;font-size:13px;background:#fff;border-radius:12px;border:1px dashed #cbd5e1}
 
-        /* FIXED: Professional Toast Notification */
+        /* Professional Toast Notification */
         .toast {
             position: fixed;
             top: -120px;
@@ -226,7 +226,6 @@
                 </div>
             </div>
 
-            <!-- Security Verification Box with Close Button & 10 digit limit -->
             <div id="teacherAuthBox" class="verify-box" style="display:none">
                 <button class="close-auth-btn" onclick="window.cancelAuth()" title="Cancel">✖</button>
                 <label class="frm-label" style="color:#1e3a8a">🔒 Teacher Security Verification</label>
@@ -239,7 +238,6 @@
 
             <div id="attStudentsList" style="display:none">
                 
-                <!-- Past Date Reason Box -->
                 <div id="pastDateReasonBox" class="past-date-box" style="display:none">
                     <label class="frm-label" style="color:#b45309">⚠️ Reason for Past Date Attendance</label>
                     <input type="text" id="pastDateReason" class="frm-input" placeholder="Why are you marking this attendance late?">
@@ -279,10 +277,11 @@
                     Advanced Reports
                 </div>
 
+                <!-- 🔥 NEW: Reports UI with Custom Date & Dynamic Student Filter 🔥 -->
                 <div class="frm-row">
                     <div>
                         <label class="frm-label">Filter Period</label>
-                        <select class="frm-select" id="rptPeriod">
+                        <select class="frm-select" id="rptPeriod" onchange="document.getElementById('customDateWrap').style.display = this.value === 'custom' ? 'flex' : 'none'">
                             <option value="today">Today</option>
                             <option value="1m">Last 1 Month</option>
                             <option value="2m">Last 2 Months</option>
@@ -290,21 +289,33 @@
                             <option value="6m">Last 6 Months</option>
                             <option value="1y">Last 1 Year</option>
                             <option value="all">All Time</option>
+                            <option value="custom" style="font-weight:bold;color:#1d4ed8;">📅 Custom Date Range</option>
                         </select>
                     </div>
                     <div>
                         <label class="frm-label">Filter Course</label>
-                        <select class="frm-select" id="rptCourseFilter">
+                        <select class="frm-select" id="rptCourseFilter" onchange="window.updateReportStudentFilter()">
                             <option value="all">All Courses</option>
                         </select>
                     </div>
                 </div>
+
+                <div id="customDateWrap" style="display:none; gap:10px; margin-bottom:12px;">
+                    <div style="flex:1;"><label class="frm-label">From Date</label><input type="date" id="rptFromDate" class="frm-input"></div>
+                    <div style="flex:1;"><label class="frm-label">To Date</label><input type="date" id="rptToDate" class="frm-input"></div>
+                </div>
+
+                <div style="margin-bottom:12px;">
+                    <label class="frm-label">Filter Student (Individual Report)</label>
+                    <select class="frm-select" id="rptStudentFilter">
+                        <option value="all">All Students</option>
+                    </select>
+                </div>
+                
                 <button class="btn-primary" onclick="window.generateDetailedReport()">📄 Generate Report</button>
             </div>
 
             <div id="printableReport" style="display:none; background:#fff; padding:15px; border-radius:12px; border:1px solid #e2e8f0;">
-                
-                <!-- FIXED: Professional Print Report Header -->
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #1e293b;">
                     <!-- Left: Institute Details -->
                     <div style="display:flex; align-items:center; gap:12px; width: 33%;">
@@ -441,9 +452,6 @@
         // --- SECURITY: GLOBAL VARIABLE FOR BUTTON PERMISSIONS ---
         window.attPerms = { view: true, add: false, edit: false, delete: false };
 
-        // ==========================================
-        // NEW MAGIC ALERT OVERRIDE FOR ALL WARNINGS AND ERRORS
-        // ==========================================
         window.alert = function(msg) {
             const oldBox = document.getElementById('customPromptBox'); 
             if (oldBox) oldBox.remove();
@@ -471,9 +479,6 @@
             document.getElementById('cAlertOk').onclick = () => box.remove();
         };
 
-        // ==========================================
-        // NEW MAGIC PROMPT FOR VERIFICATIONS
-        // ==========================================
         window.magicPrompt = function(msg) {
             return new Promise((resolve) => {
                 const oldBox = document.getElementById('customPromptBox');
@@ -522,7 +527,6 @@
                 const { data: { session } } = await supabase.auth.getSession();
                 if (!session) { window.location.href = 'login.html'; return; }
                 
-                // --- 🔒 ACTION LEVEL SECURITY CHECK (START) ---
                 if (userRole === 'Super Admin' || userRole === 'Admin') {
                     window.attPerms = { view: true, add: true, edit: true, delete: true };
                 } else if (userRole !== 'Guest') {
@@ -532,14 +536,20 @@
                     }
                 }
 
-                // Hide Admin Tab for non-admins
                 if (userRole !== 'Super Admin' && userRole !== 'Admin') {
                     const adminTabBtn = document.querySelector('.btab[onclick="switchTab(\\\'admin\\\')"]');
                     if (adminTabBtn) adminTabBtn.style.display = 'none';
                 }
-                // --- 🔒 ACTION LEVEL SECURITY CHECK (END) ---
 
-                document.getElementById('attDate').value = new Date().toISOString().split('T')[0];
+                // 🔥 DATE SECURITY LOCK 🔥
+                const todayStr = new Date().toISOString().split('T')[0];
+                const attDateInput = document.getElementById('attDate');
+                attDateInput.value = todayStr;
+                attDateInput.max = todayStr; 
+                if (userRole !== 'Super Admin' && userRole !== 'Admin') {
+                    attDateInput.min = todayStr; 
+                }
+
                 await fetchAllData();
             } catch(e) { console.error("Init error:", e); }
         }
@@ -622,7 +632,27 @@
             return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
         }
 
-        // ======================== DROPDOWNS ========================
+        // ======================== DROPDOWNS & FILTER LOGIC ========================
+        
+        // 🔥 NEW: Dynamic Student Filter Logic for Reports 🔥
+        window.updateReportStudentFilter = function() {
+            const courseId = document.getElementById('rptCourseFilter').value;
+            const stuFilter = document.getElementById('rptStudentFilter');
+            if(!stuFilter) return;
+
+            stuFilter.innerHTML = '<option value="all">All Students</option>';
+            let filteredStudents = allStudents;
+            
+            // Only show students related to the selected course
+            if (courseId !== 'all') {
+                filteredStudents = allStudents.filter(s => s.course_id == courseId);
+            }
+            
+            filteredStudents.forEach(s => {
+                stuFilter.add(new Option(s.full_name + ' (' + (s.register_number || 'N/A') + ')', s.id));
+            });
+        };
+
         function populateDropdowns() {
             const attCourse = document.getElementById('attCourse');
             attCourse.innerHTML = '<option value="">-- Select Course --</option>';
@@ -643,6 +673,8 @@
             const mapTeacher = document.getElementById('mapTeacher');
             mapTeacher.innerHTML = '<option value="">-- Select Teacher --</option>';
             allStaff.forEach(s => mapTeacher.add(new Option(`${s.full_name} (${s.role || 'Staff'})`, s.id)));
+
+            window.updateReportStudentFilter(); // Populate student filter initially
         }
 
         window.switchTab = function(tab) {
@@ -726,7 +758,6 @@
             document.getElementById('attDateChip').textContent = '📅 ' + formatDateDisplay(dateVal);
             document.getElementById('attCount').textContent = students.length + ' Students';
 
-            // --- 🔒 UI LOCK FOR NEW ATTENDANCE ---
             if (!isAlreadySaved && !window.attPerms.add) {
                 document.getElementById('attStudentsList').style.display = 'block';
                 document.getElementById('teacherAuthBox').style.display = 'none';
@@ -743,14 +774,23 @@
                 if(msgArea) msgArea.style.display = 'none';
                 return;
             }
-            // ------------------------------------
-
-            document.getElementById('teacherAuthBox').style.display = 'block';
-            document.getElementById('verifyPhone').value = '';
-            document.getElementById('attStudentsList').style.display = 'none';
 
             window._currentStudents = students;
             window._existingMap = existingMap;
+
+            // 🔥 ADMIN BYPASS & TEACHER AUTH 🔥
+            const uRole = localStorage.getItem('userRole') || 'Admin';
+            if(uRole === 'Super Admin' || uRole === 'Admin') {
+                isVerified = true;
+                document.getElementById('teacherAuthBox').style.display = 'none';
+                document.getElementById('attStudentsList').style.display = 'block';
+                renderAttStudents(window._currentStudents, window._existingMap);
+                toggleActionAreas();
+            } else {
+                document.getElementById('teacherAuthBox').style.display = 'block';
+                document.getElementById('verifyPhone').value = '';
+                document.getElementById('attStudentsList').style.display = 'none';
+            }
         };
 
         window.verifyTeacher = function() {
@@ -811,7 +851,6 @@
             if (isAlreadySaved && !isEditMode) {
                 document.getElementById('saveActionArea').style.display = 'none';
                 
-                // --- 🔒 HIDE EDIT BUTTON IF NO EDIT PERMISSION ---
                 if (window.attPerms.edit) {
                     document.getElementById('lockedActionArea').style.display = 'block';
                     let msgArea = document.getElementById('readonlySavedMsg');
@@ -828,7 +867,6 @@
                     }
                     msgArea.style.display = 'block';
                 }
-                // -----------------------------------------------
             } else {
                 document.getElementById('lockedActionArea').style.display = 'none';
                 let msgArea = document.getElementById('readonlySavedMsg');
@@ -854,21 +892,28 @@
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
             if (!window.attPerms.edit) { alert("⛔ Permission Denied: You cannot edit attendance."); return; }
 
-            document.getElementById('teacherAuthBox').style.display = 'block';
-            document.getElementById('verifyPhone').value = '';
-            document.getElementById('attStudentsList').style.display = 'none';
-            isEditMode = true; 
-            isVerified = false;
+            const uRole = localStorage.getItem('userRole') || 'Admin';
+            if(uRole === 'Super Admin' || uRole === 'Admin') {
+                isEditMode = true; 
+                isVerified = true;
+                document.getElementById('attStudentsList').style.display = 'block';
+                renderAttStudents(window._currentStudents, window._existingMap);
+                toggleActionAreas();
+            } else {
+                document.getElementById('teacherAuthBox').style.display = 'block';
+                document.getElementById('verifyPhone').value = '';
+                document.getElementById('attStudentsList').style.display = 'none';
+                isEditMode = true; 
+                isVerified = false;
+            }
         };
 
         window.toggleStatus = function(studentId, status) {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
             if(isAlreadySaved && !isEditMode) return; 
             
-            // --- 🔒 ACTION LOCKS ---
             if (!isAlreadySaved && !window.attPerms.add) return;
             if (isEditMode && !window.attPerms.edit) return;
-            // -----------------------
 
             currentAttendanceMarks[studentId] = status;
             const row = document.getElementById(`att-row-${studentId}`);
@@ -901,10 +946,8 @@
         window.submitAttendance = async function() {
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode. You cannot mark attendance."); return; }
             
-            // --- 🔒 SUBMIT LOCKS ---
             if (isEditMode && !window.attPerms.edit) { alert("⛔ Permission Denied: You cannot edit attendance."); return; }
             if (!isEditMode && !window.attPerms.add) { alert("⛔ Permission Denied: You cannot add new attendance."); return; }
-            // -----------------------
 
             const moduleId = document.getElementById('attModule').value;
             const dateVal = document.getElementById('attDate').value;
@@ -972,10 +1015,17 @@
         window.generateDetailedReport = function() {
             const period = document.getElementById('rptPeriod').value;
             const courseId = document.getElementById('rptCourseFilter').value;
+            const studentId = document.getElementById('rptStudentFilter').value; // 🔥 NEW FILTER 🔥
             
             let filteredAtt = [...allAttendance];
 
-            if (period !== 'all') {
+            // 1. Date / Period Filter
+            if (period === 'custom') {
+                const fDate = document.getElementById('rptFromDate').value;
+                const tDate = document.getElementById('rptToDate').value;
+                if(!fDate || !tDate) { showToast('Please select From and To dates', 'error'); return; }
+                filteredAtt = filteredAtt.filter(a => a.date >= fDate && a.date <= tDate);
+            } else if (period !== 'all') {
                 const today = new Date();
                 let fromDate = new Date();
                 if(period === 'today') { fromDate = today; }
@@ -990,9 +1040,15 @@
                 filteredAtt = filteredAtt.filter(a => a.date >= fromStr && a.date <= toStr);
             }
 
+            // 2. Course Filter
             if (courseId !== 'all') {
                 const modsInCourse = allModules.filter(m => m.course_id === courseId).map(m => m.id);
                 filteredAtt = filteredAtt.filter(a => modsInCourse.includes(a.module_id));
+            }
+
+            // 3. Individual Student Filter
+            if (studentId !== 'all') {
+                filteredAtt = filteredAtt.filter(a => a.student_id === studentId);
             }
 
             filteredAtt.sort((a, b) => new Date(b.date) - new Date(a.date));
