@@ -188,9 +188,9 @@
                         <div class="pay-box"><div class="pay-box-label">Advance Deduction</div><div class="pay-box-value" id="payDeduction" style="color:#ef4444">₹ 0</div></div>
                     </div>
                     <div class="pay-net"><div class="pay-net-label">Net Payable Amount</div><div class="pay-net-value" id="payNet">₹ 0</div></div>
-                    <button class="frm-submit" id="payProcessBtn" onclick="processSalary()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25)">💳 Process Salary</button>
+                    <button class="frm-submit" id="payProcessBtn" onclick="processSalary()" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);box-shadow:0 4px 12px rgba(37,99,235,.25)">Process Salary</button>
                     <button class="frm-submit" id="paySlipBtn" onclick="downloadLastSlip()" style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 4px 12px rgba(245,158,11,.25);margin-top:10px;display:none">📄 Download Salary Slip</button>
-                    <button class="frm-submit" id="payLedgerBtn" onclick="downloadStaffLedger()" style="background:linear-gradient(135deg,#4f46e5,#3b82f6);box-shadow:0 4px 12px rgba(79,70,229,.25);margin-top:10px;">📊 Download Full Payment Ledger</button>
+                    <button class="frm-submit" id="payLedgerBtn" onclick="downloadStaffLedger()" style="background:linear-gradient(135deg,#4f46e5,#3b82f6);box-shadow:0 4px 12px rgba(79,70,229,.25);margin-top:10px;">Download Payments Ledger</button>
                 </div>
             </div>
             <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Payment History</h3>
@@ -868,7 +868,7 @@
                 alert('✅ Salary processed' + (expenseInserted ? ' & added to Day Book!' : '! (Day Book update failed - check console)'));
                 document.getElementById('payProcessBtn').style.display = 'none'; document.getElementById('paySlipBtn').style.display = 'block';
                 await fetchAllData();
-            } catch(e) { alert('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = '💳 Process Salary'; }
+            } catch(e) { alert('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = 'Process Salary'; }
         };
 
         function renderSalaryHistory() {
