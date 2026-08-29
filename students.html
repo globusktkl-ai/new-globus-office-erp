@@ -26,11 +26,8 @@
 
         @media (max-width: 600px) { .btn-back-dashboard span { display: none; } .btn-back-dashboard { padding: 10px; } .page-title { padding: 0 50px; } }
 
-        /* --------------------------------------------------- */
         /* PERFECT ADVANCED FILTER UI */
-        /* --------------------------------------------------- */
         .search-container { background: white; border-radius: 12px; padding: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; width: 100%;}
-        
         .main-search-box { width: 100%; padding: 10px 12px 10px 35px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 10px center; margin-bottom: 10px; transition: 0.2s;}
         .main-search-box:focus { border-color: var(--app-theme-color, #4c1d95); background-color: #fff; box-shadow: 0 0 0 3px rgba(var(--app-theme-rgb, 76, 29, 149), 0.1); }
 
@@ -52,9 +49,7 @@
             .status-select { font-size: 12px; }
         }
 
-        /* --------------------------------------------------- */
-        /* Student Cards (Avatar Overflow Bug Fixed)           */
-        /* --------------------------------------------------- */
+        /* Student Cards */
         .student-mobile-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s; width: 100%; }
         .smc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 15px; }
         
@@ -63,9 +58,11 @@
         
         .smc-reg { font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .avatar-circle { width: 65px; height: 65px; border-radius: 50%; background: #fbcfe8; border: 3px solid #fdf2f8; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; flex-shrink: 0;}
-        .avatar-circle svg { width: 40px; height: 40px; fill: #ec4899; margin-top: 10px;}
-        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+        /* NEW: ZOOM AVATAR CSS */
+        .avatar-circle { width: 65px; height: 65px; border-radius: 50%; background: #fbcfe8; border: 3px solid #fdf2f8; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; flex-shrink: 0; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), z-index 0.2s ease, box-shadow 0.2s ease; position: relative; cursor: pointer; user-select: none; -webkit-user-select: none;}
+        .avatar-circle.zoomed { transform: scale(2.2); z-index: 1000; box-shadow: 0 15px 35px rgba(0,0,0,0.4); border-color: #fff; }
+        .avatar-circle svg { width: 40px; height: 40px; fill: #ec4899; margin-top: 10px; pointer-events: none;}
+        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
         
         .smc-row { display: flex; align-items: flex-start; margin-bottom: 8px; font-size: 14px; }
         .smc-label { width: 110px; color: #64748b; font-weight: 700; flex-shrink: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -307,6 +304,10 @@
             renderList(filtered);
         }
 
+        /* --- NEW: AVATAR ZOOM LOGIC --- */
+        window.zoomAvatar = function(el) { el.classList.add('zoomed'); };
+        window.unzoomAvatar = function(el) { el.classList.remove('zoomed'); };
+
         function renderList(data) {
             const container = document.getElementById('studentsList'); container.innerHTML = '';
             if (data.length === 0) { container.innerHTML = '<div class="empty-state">No students found matching your search/filters.</div>'; return; }
@@ -345,26 +346,48 @@
                     </div>
                 `;
 
-                // --- SMART BUTTON LOGIC ---
+                // --- SMART BUTTON LOGIC WITH NEW ARCHIVE & DELETE OPTIONS ---
                 let actionBtnsHTML = `<div class="card-action-btns">`;
                 
                 if (s.status === 'archived') {
-                    actionBtnsHTML += `<div style="text-align:center; padding:10px; color:#ea580c; font-weight:800; background:#fff7ed; border-radius:8px; border:1px dashed #fdba74;">🗄️ Archived (Read-Only List)</div>`;
+                    actionBtnsHTML += `<div style="text-align:center; padding:10px; color:#ea580c; font-weight:800; background:#fff7ed; border-radius:8px; border:1px dashed #fdba74; margin-bottom:12px;">🗄️ Archived (Read-Only List)</div>`;
+                    
+                    if (window.dirPerms.edit || window.dirPerms.delete) {
+                        actionBtnsHTML += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">`;
+                        
+                        if (window.dirPerms.edit) {
+                            actionBtnsHTML += `<button onclick="window.restoreStudent('${s.id}')" style="background: #dcfce7; color: #166534; border: 1px solid #86efac; padding: 10px 5px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; display: flex; justify-content: center; align-items: center; gap: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🔄 Restore to Active</button>`;
+                        } else { actionBtnsHTML += `<div></div>`; } // Empty div to maintain grid 50/50 layout
+                        
+                        if (window.dirPerms.delete) {
+                            actionBtnsHTML += `<button onclick="window.deleteStudentPermanently('${s.id}', '${s.register_number}', '${s.photo_url || ''}')" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 10px 5px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 13px; display: flex; justify-content: center; align-items: center; gap: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🗑️ Delete Permanently</button>`;
+                        } else { actionBtnsHTML += `<div></div>`; }
+                        
+                        actionBtnsHTML += `</div>`;
+                    }
                     actionBtnsHTML += `</div>`;
                 } else {
                     if (window.dirPerms.edit || window.dirPerms.view) {
                         let btnText = window.dirPerms.edit ? "View / Edit" : "View Details";
                         actionBtnsHTML += `<button onclick="window.viewAndEditStudent('${s.id}')" class="btn-card btn-view"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> ${btnText}</button>`;
                     }
-                    actionBtnsHTML += `</div>`;
 
                     if (window.dirPerms.delete) {
-                        actionBtnsHTML += `
-                        <button onclick="window.archiveAndFreeSpace('${s.id}', '${s.register_number}', '${s.photo_url || ''}')" class="btn-del-full">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
-                            Archive & Free Storage
-                        </button>`;
+                        if (s.status === 'completed') {
+                            // Completed students get both Archive and Permanent Delete options
+                            actionBtnsHTML += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">`;
+                            actionBtnsHTML += `<button onclick="window.archiveAndFreeSpace('${s.id}', '${s.register_number}', '${s.photo_url || ''}')" class="btn-del-full" style="margin-top:0; padding:10px 5px; font-size:12px;">🗄️ Archive Data</button>`;
+                            actionBtnsHTML += `<button onclick="window.deleteStudentPermanently('${s.id}', '${s.register_number}', '${s.photo_url || ''}')" style="background: #fee2e2; color: #b91c1c; border: 1px dashed #fca5a5; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 12px; display: flex; justify-content: center; align-items: center; gap: 5px; padding:10px 5px;">🗑️ Delete Perm</button>`;
+                            actionBtnsHTML += `</div>`;
+                        } else {
+                            actionBtnsHTML += `
+                            <button onclick="window.archiveAndFreeSpace('${s.id}', '${s.register_number}', '${s.photo_url || ''}')" class="btn-del-full">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                                Archive & Free Storage
+                            </button>`;
+                        }
                     }
+                    actionBtnsHTML += `</div>`;
                 }
                 // --------------------------
 
@@ -376,7 +399,7 @@
                             <div class="smc-name">${s.full_name || 'N/A'}</div>
                             <div class="smc-reg">Reg No: ${s.register_number || 'N/A'}</div>
                         </div>
-                        <div class="smc-header-center avatar-circle"><img src="${avatarUrl}" alt="Photo"></div>
+                        <div class="smc-header-center avatar-circle" onmousedown="window.zoomAvatar(this)" onmouseup="window.unzoomAvatar(this)" onmouseleave="window.unzoomAvatar(this)" ontouchstart="window.zoomAvatar(this)" ontouchend="window.unzoomAvatar(this)"><img src="${avatarUrl}" alt="Photo"></div>
                     </div>
                     <div class="smc-row"><span class="smc-label">Phone:</span> <span class="smc-value">${s.phone_number || 'N/A'}</span></div>
                     <div class="smc-row"><span class="smc-label">Qualification:</span> <span class="smc-value">${qualBadge}</span></div>
@@ -458,7 +481,18 @@
                             </select>
                         </div>
                     </div>
-                    <button type="submit" style="width:100%; background:var(--app-theme-color, #10B981); color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; ${btnState}">Update Profile</button>
+                    
+                    <!-- NEW: PHOTO UPDATE FIELD -->
+                    <div style="margin-bottom:15px; background: #fff; padding: 10px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                        <label style="font-size:12px; font-weight:800; color:#1e293b; display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span>Update Profile Photo</span> 
+                            <span style="color:#10b981;">(Optional)</span>
+                        </label>
+                        <input type="file" id="fullEditPhoto" accept="image/*" class="form-control-cert" style="padding: 6px; font-size:13px; margin-bottom:5px;" ${lockState}>
+                        <p style="font-size:11px; color:#64748b; margin:0; line-height:1.4; font-weight:600;">Note: Uploading a new photo will automatically delete the old one to save storage. Highly useful for restored students.</p>
+                    </div>
+
+                    <button id="btnUpdateProfile" type="submit" style="width:100%; background:var(--app-theme-color, #10B981); color:#fff; border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer; ${btnState}">Update Profile</button>
                 </form>
             `;
         };
@@ -477,6 +511,9 @@
             if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
             if (!window.dirPerms.edit) { alert("⛔ Permission Denied: You don't have edit access."); return; }
             
+            const s = allStudents.find(x => x.id === id); if (!s) return;
+            const submitBtn = document.getElementById('btnUpdateProfile');
+            
             let hasMarks = false;
             try {
                 const { data: pastMarks, error: marksErr } = await supabase.from('exam_results').select('id').eq('student_id', id).limit(1);
@@ -489,6 +526,7 @@
             const newModule = document.getElementById('fullEditModule').value || null;
             const newStatus = document.getElementById('fullEditStatus').value;
             const newQual = document.getElementById('fullEditQual').value;
+            const photoInput = document.getElementById('fullEditPhoto');
 
             if (hasMarks) {
                 let userInput = await window.magicPrompt(`🔒 Security Verification\nThis student has been assigned exam marks. Please solve this to edit:\n\n7 + 3 = ?`);
@@ -496,17 +534,102 @@
             }
 
             if(newPhone.length !== 10) { alert('Phone number must be 10 digits.'); return; }
+            
+            if(submitBtn) { submitBtn.innerText = 'Updating Profile & Photo...'; submitBtn.disabled = true; }
+
+            // --- PHOTO UPDATE & STORAGE OPTIMIZATION LOGIC ---
+            let newPhotoUrl = s.photo_url;
+            
+            if (photoInput && photoInput.files.length > 0) {
+                const file = photoInput.files[0];
+                const fileExt = file.name.split('.').pop();
+                const fileName = `stu_${Date.now()}_${id.substring(0,6)}.${fileExt}`;
+                
+                // 1. Upload new photo
+                const { data: uploadData, error: uploadErr } = await supabase.storage
+                    .from('student_photos')
+                    .upload(`public/${fileName}`, file, { cacheControl: '3600', upsert: false });
+                    
+                if (uploadErr) {
+                    alert('❌ Photo Upload Error: ' + uploadErr.message);
+                    if(submitBtn) { submitBtn.innerText = 'Update Profile'; submitBtn.disabled = false; }
+                    return;
+                }
+                
+                // 2. Get new public URL
+                const { data: publicUrlData } = supabase.storage.from('student_photos').getPublicUrl(`public/${fileName}`);
+                newPhotoUrl = publicUrlData.publicUrl;
+
+                // 3. ZERO DUPLICATE LOGIC: Delete old photo if it exists
+                if (s.photo_url && s.photo_url.includes('student_photos/')) {
+                    try {
+                        const oldPath = s.photo_url.substring(s.photo_url.indexOf('student_photos/') + 15);
+                        await supabase.storage.from('student_photos').remove([oldPath]);
+                        console.log("Old photo removed successfully to free space.");
+                    } catch(e) { console.error("Error deleting old photo:", e); }
+                }
+            }
+            // ------------------------------------------------
 
             const { error } = await supabase.from('students').update({
-                full_name: newName, phone_number: newPhone, qualification: newQual, status: newStatus, course_id: newCourse, module: newModule
+                full_name: newName, phone_number: newPhone, qualification: newQual, status: newStatus, course_id: newCourse, module: newModule, photo_url: newPhotoUrl
             }).eq('id', id);
 
-            if (error) alert('Error updating: ' + error.message);
+            if (error) {
+                alert('Error updating: ' + error.message);
+                if(submitBtn) { submitBtn.innerText = 'Update Profile'; submitBtn.disabled = false; }
+            }
             else { 
-                if(window.ThemeManager) { window.ThemeManager.logAction('Directory', 'UPDATE', `Updated profile for: ${newName}`); }
+                if(window.ThemeManager) { window.ThemeManager.logAction('Directory', 'UPDATE', `Updated profile & media for: ${newName}`); }
                 alert('✅ Profile updated successfully!'); 
                 window.closeModal(); 
                 fetchStudents(); 
+            }
+        };
+
+        // --- NEW: RESTORE STUDENT FROM ARCHIVE ---
+        window.restoreStudent = async function(id) {
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.dirPerms.edit) { alert("⛔ Permission Denied: You don't have edit access."); return; }
+            
+            const { error } = await supabase.from('students').update({ status: 'active' }).eq('id', id);
+            
+            if (error) { 
+                alert('❌ Error restoring student: ' + error.message); 
+            } else { 
+                if(window.ThemeManager) { window.ThemeManager.logAction('Directory', 'UPDATE', `Restored student ID ${id} to active.`); }
+                alert('✅ Student restored successfully! You can now update their photo via View/Edit.'); 
+                fetchStudents(); 
+            }
+        };
+
+        // --- NEW: PERMANENT (HARD) DELETE ---
+        window.deleteStudentPermanently = async function(id, regNo, photoUrl) {
+            if (localStorage.getItem('userRole') === 'Guest') { alert("⚠️ This action is disabled in Guest/Demo mode."); return; }
+            if (!window.dirPerms.delete) { alert("⛔ Permission Denied: You don't have delete access."); return; }
+            
+            let ans = await window.magicPrompt(`⚠️ DANGER: PERMANENT DELETE\nYou are about to PERMANENTLY delete student ${regNo}. This completely removes them from the database and cannot be undone.\n\nSolve to confirm:\n\n8 + 4 = ?`);
+            
+            if (ans !== null && parseInt(ans) === 12) {
+                // Delete photo if it exists to ensure no orphan files remain
+                if (photoUrl && photoUrl.includes('student_photos/')) {
+                    try {
+                        const oldPath = photoUrl.substring(photoUrl.indexOf('student_photos/') + 15);
+                        await supabase.storage.from('student_photos').remove([oldPath]);
+                    } catch(e) { console.error("Photo delete error", e); }
+                }
+                
+                // Hard delete from database
+                const { error } = await supabase.from('students').delete().eq('id', id);
+                if (error) { 
+                    alert('❌ Error deleting student: ' + error.message); 
+                } else { 
+                    if(window.ThemeManager) { window.ThemeManager.logAction('Directory', 'DELETE', `Permanently deleted student: ${regNo}`); }
+                    alert('✅ Student deleted permanently!'); 
+                    fetchStudents(); 
+                }
+            } else { 
+                if(ans !== null) alert('❌ Verification failed! Deletion aborted.'); 
             }
         };
 
@@ -518,22 +641,16 @@
             let ans = await window.magicPrompt(`⚠️ STORAGE WARNING\nArchiving Reg No: ${regNo} will permanently delete their Photo to free up space. Their basic text details will remain in the 'Archived' list.\n\nSolve to confirm:\n\n5 + 5 = ?`);
             
             if (ans !== null && parseInt(ans) === 10) {
-                // 1. Delete Photo from Storage to save space
                 if (photoUrl && photoUrl.includes('student_photos/')) {
                     try {
                         const fileName = photoUrl.substring(photoUrl.lastIndexOf('/') + 1);
                         await supabase.storage.from('student_photos').remove([fileName]);
                     } catch(e) { console.error("Photo delete error", e); }
                 }
-                
-                // 2. Soft-Delete in Database (Status = archived, Photo = null)
                 const { error } = await supabase.from('students').update({ status: 'archived', photo_url: null }).eq('id', id);
-                if (error) { 
-                    alert('❌ Error archiving student: ' + error.message); 
-                } else { 
-                    if(window.ThemeManager) {
-                        window.ThemeManager.logAction('Directory', 'DELETE', `Archived student & freed photo space: ${regNo}`);
-                    }
+                if (error) { alert('❌ Error archiving student: ' + error.message); } 
+                else { 
+                    if(window.ThemeManager) { window.ThemeManager.logAction('Directory', 'DELETE', `Archived student & freed photo space: ${regNo}`); }
                     alert('✅ Student archived and photo storage freed!'); 
                     fetchStudents(); 
                 }
@@ -541,7 +658,6 @@
                 if(ans !== null) alert('❌ Verification failed! Archiving aborted.'); 
             }
         };
-        // ---------------------------------------------
 
         window.closeModal = function() { 
             document.getElementById('studentModal').style.display = 'none';
