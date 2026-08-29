@@ -168,7 +168,7 @@
                     <div><label class="frm-label">Date</label><input type="date" class="frm-input" id="advDate"></div>
                 </div>
                 <div class="frm-group"><label class="frm-label">Remarks (Optional)</label><input type="text" class="frm-input" id="advRemarks" placeholder="Purpose of advance..."></div>
-                <button class="frm-submit" id="advSubmitBtn" onclick="saveAdvance()">💰 Record Advance</button>
+                <button class="frm-submit" id="advSubmitBtn" onclick="saveAdvance()">Save Advance Payment</button>
             </div>
             <h3 style="font-size:14px;color:#1e3a8a;font-weight:900;margin:0 0 10px;text-transform:uppercase;">Recent Advances</h3>
             <div id="advancesList"><div class="empty-state">Loading advances...</div></div>
@@ -803,7 +803,7 @@
 
                 alert('✅ Advance recorded' + (expenseInserted ? ' & added to Day Book!' : '! (Day Book update failed - check console)'));
                 document.getElementById('advAmount').value = ''; document.getElementById('advRemarks').value = ''; await fetchAllData();
-            } catch(e) { alert('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = '💰 Record Advance'; }
+            } catch(e) { alert('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = 'Save Advance Payment'; }
         };
 
         // ===================== TAB 3: PAYROLL =====================
